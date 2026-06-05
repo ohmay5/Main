@@ -4494,7 +4494,7 @@ Setting:AddTextBox({
     Title = "Tween Speed",
     Description = "tốc độ tween",
     PlaceHolder = "370",
-    Default = "300",
+    Default = "250",
     Callback = function(I)
         if tonumber(I) then
             getgenv().TweenSpeedFar = tonumber(I)
@@ -11700,7 +11700,7 @@ spawn(function()
 		end);
 	end;
 end);
-Get:AddToggle({
+Fruit:AddToggle({
 	Name = "Auto Drop Fruit",
 	Description = "Automatic drop devil fruit",
 	Default = false,
