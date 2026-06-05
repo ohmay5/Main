@@ -382,7 +382,7 @@ G.DistH = function(I, e)
 		return (Root.Position - (I:FindFirstChild("HumanoidRootPart")).Position).Magnitude > e;
 	end;
 -- ALTURA ÚNICA AJUSTÁVEL DO MOB
-_G.MobHeight = _G.MobHeight or 30
+_G.MobHeight = _G.MobHeight or 20
 
 G.Kill = function(I, e)
 	if not (I and e) then return end
@@ -581,7 +581,7 @@ _G = _G or {}
 _B = false
 PosMon = nil
 
-_G.BringRange = _G.BringRange or 250
+_G.BringRange = _G.BringRange or 200
 _G.MaxBringMobs = _G.MaxBringMobs or 15 -- LIMITE DE MOBS
 
 _G.FarmPriorityElf = _G.FarmPriorityElf or false
@@ -4467,7 +4467,7 @@ Setting:AddSection({"Select"})
 Setting:AddTextBox({
     Title = "Bring Mobs Range",
     Description = "độ xa gom quái",
-    PlaceHolder = "250",
+    PlaceHolder = "200",
     Default = tostring(_G.BringRange),
     Callback = function(Value)
         local num = tonumber(Value)
@@ -4480,7 +4480,7 @@ Setting:AddTextBox({
 Setting:AddTextBox({
     Title = "Select Farm Height",
     Description = "độ cao đứng trên đầu",
-    PlaceHolder = "30",
+    PlaceHolder = "20",
     Default = tostring(_G.MobHeight),
     Callback = function(Value)
         local num = tonumber(Value)
@@ -4494,7 +4494,7 @@ Setting:AddTextBox({
     Title = "Tween Speed",
     Description = "tốc độ tween",
     PlaceHolder = "370",
-    Default = "370",
+    Default = "300",
     Callback = function(I)
         if tonumber(I) then
             getgenv().TweenSpeedFar = tonumber(I)
