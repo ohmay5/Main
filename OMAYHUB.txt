@@ -3137,32 +3137,6 @@ Farm:AddToggle({
         SaveSettings()
 	end,
 })
-
-Farm:AddToggle({
-	Name = "Bring Mob",
-	Description = "gom quái",
-	-- 1. Carrega o estado salvo ou inicia como true
-	Default = GetSetting("BringMobs_Save", true),
-	Callback = function(I)
-		_B = I
-        -- 2. Salva
-        _G.SaveData["BringMobs_Save"] = I
-        SaveSettings()
-	end,
-})
-
-Farm:AddButton({ Name = "Fps Fix Lag", Description = "giảm lag", Callback = function()
-		LowCpu();
-	end });
-local V5 = game.Players.LocalPlayer;
-local function y5(I)
-	if not I then
-		return false;
-	end;
-	local e = I:FindFirstChild("Humanoid");
-	return e and e.Health > 0;
-end
-
 Farm:AddSection({"Auto Farm"})
 Farm:AddDropdown({
     Name = "Select Farm Mode",
@@ -4329,7 +4303,30 @@ Setting:AddButton({
         shouldTween = true
     end
 })
+Setting:AddToggle({
+	Name = "Bring Mob",
+	Description = "gom quái",
+	-- 1. Carrega o estado salvo ou inicia como true
+	Default = GetSetting("BringMobs_Save", true),
+	Callback = function(I)
+		_B = I
+        -- 2. Salva
+        _G.SaveData["BringMobs_Save"] = I
+        SaveSettings()
+	end,
+})
 
+Setting:AddButton({ Name = "Fps Fix Lag", Description = "giảm lag", Callback = function()
+		LowCpu();
+	end });
+local V5 = game.Players.LocalPlayer;
+local function y5(I)
+	if not I then
+		return false;
+	end;
+	local e = I:FindFirstChild("Humanoid");
+	return e and e.Health > 0;
+end
 Setting:AddToggle({
 	Name = "Safe Mode",
 	Description = "bật lên để bảo vệ máu của bạn nếu mức thấp",
