@@ -1121,8 +1121,8 @@ end);
 -- =======================
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
-getgenv().TweenSpeedFar = 370   -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 370  -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedFar = 320   -- Velocidade Padrão (Longe)
+getgenv().TweenSpeedNear = 320  -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -1148,7 +1148,7 @@ local dist = (I.Position - HRP.Position).Magnitude
 --  SE ESTIVER ATÉ 15 STUDS → USA A VELOCIDADE DE PERTO
 --  CASO CONTRÁRIO → USA A VELOCIDADE PADRÃO
 -- ===============================  
-local speed = dist <= 15 and (getgenv().TweenSpeedNear or 370) or (getgenv().TweenSpeedFar or 370)
+local speed = dist <= 15 and (getgenv().TweenSpeedNear or 370) or (getgenv().TweenSpeedFar or 320)
 
 local info = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)  
 local tween = game:GetService("TweenService"):Create(C, info, { CFrame = I })  
@@ -4493,7 +4493,7 @@ Setting:AddTextBox({
 Setting:AddTextBox({
     Title = "Tween Speed",
     Description = "tốc độ tween",
-    PlaceHolder = "370",
+    PlaceHolder = "320",
     Default = "250",
     Callback = function(I)
         if tonumber(I) then
@@ -4527,7 +4527,7 @@ local ToolAbilities = Net:WaitForChild("RF/JobToolAbilities")
 -- =========================================================
 -- CONFIGURAÇÃO DA NOTIFICAÇÃO CUSTOMIZADA (FULL BLACK)
 -- =========================================================
-local LogoID = "rbxassetid://18919385586"
+local LogoID = "rbxassetid://114476175638281"
 
 local function NotifyNightMystic(texto)
     task.spawn(function()
@@ -8522,7 +8522,7 @@ DevEsp = function()
                         K.TextYAlignment = "Top";
                         K.BackgroundTransparency = 1;
                         K.TextStrokeTransparency = .5;
-                        K.TextColor3 = Color3.fromRGB(255, 255, 255);
+                        K.TextColor3 = Color3.fromRGB(255, 0, 0);
                         K.Text = e.Name .. (" \n" .. (G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Handle.Position).Magnitude / 3) .. " M"));
                     else
                         e.Handle["NameEsp" .. Number].TextLabel.Text = "[" .. (e.Name .. ("]" .. ("   \n" .. (G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Handle.Position).Magnitude / 3) .. " M"))));
@@ -8560,24 +8560,15 @@ flowerEsp = function()
                         K.TextStrokeTransparency = .5;
                         K.TextColor3 = Color3.fromRGB(255, 255, 255);
                         if e.Name == "Flower1" then
-                            K.Text = "Blue Flower" .. (" \n" .. (G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Position).Magnitude / 3) .. " M"));
-                        end;
-                        if e.Name == "Flower2" then
-                            K.Text = "Red Flower" .. (" \n" .. (G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Position).Magnitude / 3) .. " M"));
-                        end;
-                    else
-                        e["NameEsp" .. Number].TextLabel.Text = e.Name .. ("   \n" .. (G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Position).Magnitude / 3) .. " M"));
-                    end;
-                else
-                    if e:FindFirstChild("NameEsp" .. Number) then
-                        (e:FindFirstChild("NameEsp" .. Number)):Destroy();
-                    end;
-                end;
-            end;
-        end);
-    end;
-end;
+                            if e.Name == "Flower1" then
+    K.TextColor3 = Color3.fromRGB(0, 170, 255)
+    K.Text = "Blue Flower" .. (" \n" .. (G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Position).Magnitude / 3) .. " M"))
+end
 
+if e.Name == "Flower2" then
+    K.TextColor3 = Color3.fromRGB(255, 0, 0)
+    K.Text = "Red Flower" .. (" \n" .. (G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Position).Magnitude / 3) .. " M"))
+end
 -- ESP DE GEAR
 gearEsp = function()
     for I, e in pairs(workspace.Map.MysticIsland:GetDescendants()) do
@@ -8737,7 +8728,7 @@ LegenSword = function()
                         txt.TextYAlignment = "Top";
                         txt.BackgroundTransparency = 1;
                         txt.TextStrokeTransparency = .5;
-                        txt.TextColor3 = Color3.fromRGB(255, 255, 255);
+                        txt.TextColor3 = Color3.fromRGB(255, 0, 0);
                     else
                         Lgd.NameEsp.TextLabel.Text = e.Name .. ("   \n" .. (G5((game.Players.LocalPlayer.Character.Head.Position - e.HumanoidRootPart.Position).Magnitude / 3) .. " M"));
                     end;
@@ -8789,44 +8780,68 @@ ChestEsp = function()
 end;
 
 -- ESP BERRIES
+local BerryColors = {
+    ["Blue Icicle Berry"] = Color3.fromRGB(0, 170, 255),
+    ["Green Toad Berry"] = Color3.fromRGB(0, 255, 0),
+    ["Orange Berry"] = Color3.fromRGB(255, 170, 0),
+    ["Pink Pig Berry"] = Color3.fromRGB(255, 105, 180),
+    ["Purple Jelly Berry"] = Color3.fromRGB(170, 0, 255),
+    ["Red Cherry Berry"] = Color3.fromRGB(255, 0, 0),
+    ["White Cloud Berry"] = Color3.fromRGB(255, 255, 255),
+    ["Yellow Star Berry"] = Color3.fromRGB(255, 255, 0)
+}
+
 berriesEsp = function()
     if BerryEsp then
-        local I = game:GetService("CollectionService");
-        local n = I:GetTagged("BerryBush");
+        local I = game:GetService("CollectionService")
+        local n = I:GetTagged("BerryBush")
+
         for _, e in ipairs(n) do
-            local pos = (e.Parent:GetPivot()).Position;
+            local pos = (e.Parent:GetPivot()).Position
+
             for _, attr in pairs(e:GetAttributes()) do
-                local name = "BerryEspPart_" .. tostring(pos);
-                local d = workspace:FindFirstChild(name);
+                local name = "BerryEspPart_" .. tostring(pos)
+                local d = workspace:FindFirstChild(name)
+
                 if not d then
-                    d = Instance.new("Part", workspace);
-                    d.Name = name;
-                    d.Transparency = 1;
-                    d.Anchored = true;
-                    d.CanCollide = false;
-                    d.CFrame = CFrame.new(pos);
-                end;
+                    d = Instance.new("Part", workspace)
+                    d.Name = name
+                    d.Transparency = 1
+                    d.Anchored = true
+                    d.CanCollide = false
+                    d.CFrame = CFrame.new(pos)
+                end
+
                 if not d:FindFirstChild("NameEsp") then
-                    local gui = Instance.new("BillboardGui", d);
-                    gui.Name = "NameEsp";
-                    gui.Size = UDim2.new(0, 200, 0, 30);
-                    gui.AlwaysOnTop = true;
-                    local txt = Instance.new("TextLabel", gui);
-                    txt.Font = Enum.Font.Code;
-                    txt.TextColor3 = Color3.new(1, 1, 1);
-                    txt.BackgroundTransparency = 1;
-                    txt.Size = UDim2.new(1, 0, 1, 0);
-                end;
-                local dist = (game.Players.LocalPlayer.Character.Head.Position - pos).Magnitude / 3;
-                d.NameEsp.TextLabel.Text = "[" .. attr .. "] " .. math.round(dist) .. " M";
-            end;
-        end;
+                    local gui = Instance.new("BillboardGui", d)
+                    gui.Name = "NameEsp"
+                    gui.Size = UDim2.new(0, 200, 0, 30)
+                    gui.AlwaysOnTop = true
+
+                    local txt = Instance.new("TextLabel", gui)
+                    txt.Font = Enum.Font.Code
+                    txt.BackgroundTransparency = 1
+                    txt.Size = UDim2.new(1, 0, 1, 0)
+                    txt.TextStrokeTransparency = 0
+                end
+
+                local dist = (game.Players.LocalPlayer.Character.Head.Position - pos).Magnitude / 3
+
+                d.NameEsp.TextLabel.TextColor3 =
+                    BerryColors[tostring(attr)] or Color3.fromRGB(255,255,255)
+
+                d.NameEsp.TextLabel.Text =
+                    "[" .. attr .. "] " .. math.round(dist) .. " M"
+            end
+        end
     else
         for _, e in ipairs(workspace:GetChildren()) do
-            if e.Name:match("BerryEspPart_") then e:Destroy(); end;
-        end;
-    end;
-end;
+            if e.Name:match("BerryEspPart_") then
+                e:Destroy()
+            end
+        end
+    end
+end
 
 -- ISLAND ESP
 _G.ESPColor = Color3.fromRGB(255, 255, 255)
