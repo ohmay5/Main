@@ -11595,41 +11595,12 @@ while wait(Sec) do
 end
 end)
 end)
-Fruit:AddToggle({
-    Name = "Kill aura",
-    Default = false,
-    Callback = function(Value)
-        _G.KillH = Value
-    end
-})
-
-spawn(function()
-    while wait(Sec) do
-        if _G.KillH then
-            for _, v in pairs(workspace.Enemies:GetChildren()) do
-                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-                    pcall(function()
-                        repeat
-                            wait(Sec)
-                            sethiddenproperty(plr, "SimulationRadius", math.huge)
-                            v:BreakJoints()
-                            v.Humanoid.Health = 0
-                            v.HumanoidRootPart.CanCollide = false
-                        until not _G.KillH 
-                            or not v.Parent 
-                            or v.Humanoid.Health <= 0
-                    end)
-                end
-            end
-        end
-    end
-end)
 -- Định nghĩa thời gian delay giữa mỗi lần quét (giây)
 local Sec = 0.1 
 local plr = game.Players.LocalPlayer -- Tự động lấy LocalPlayer nếu bạn chưa khai báo
 
 Fruit:AddToggle({
-    Name = "Kill aura 2",
+    Name = "Kill aura",
     Default = false,
     Callback = function(Value)
         _G.KillH = Value
