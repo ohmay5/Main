@@ -6704,7 +6704,7 @@ task.spawn(function()
 end)
 Event:AddToggle({
     Name = "Auto Event Prehistoric Island",
-    Description = "",
+    Description = "Sự kiện đảo tiền sử",
     -- 1. Carrega o estado salvo
     Default = GetSetting("AutoEventPrehistoric_Save", false),
     Callback = function(I)
@@ -6872,7 +6872,7 @@ end)
 
 Event:AddButton({
     Name = "Remove Lava",
-    Description = "",
+    Description = "Xoá lava",
     Callback = function()
         -- Workspace
         for _, v in pairs(game.Workspace:GetDescendants()) do
@@ -6892,7 +6892,7 @@ Event:AddButton({
 -- 1. TOGGLE: Dino Bones
 Event:AddToggle({
     Name = "Auto Collect Dino Bones",
-    Description = "",
+    Description = "Nhặt Xương dino",
     Default = GetSetting("DinoBones_Save", false),
     Callback = function(I)
         _G.Prehis_DB = I
@@ -6904,7 +6904,7 @@ Event:AddToggle({
 -- 2. TOGGLE: Dragon Eggs
 Event:AddToggle({
     Name = "Auto Collect Dragon Eggs",
-    Description = "",
+    Description = "Nhặt trứng dragon",
     Default = GetSetting("DragonEggs_Save", false),
     Callback = function(I)
         _G.Prehis_DE = I
@@ -6916,7 +6916,7 @@ Event:AddToggle({
 -- 3. TOGGLE: Auto Reset
 Event:AddToggle({
     Name = "Auto Reset When Complete Volcano",
-    Description = "",
+    Description = "Tự reset khi xong đảo",
     Default = GetSetting("ResetVolcano_Save", false),
     Callback = function(I)
         _G.ResetPH = I
@@ -11451,7 +11451,7 @@ Fruit:AddSection({"Raid Farming"});
 
 Fruit:AddToggle({
 	Name  = "Auto Start Raid",
-    Description = "",
+    Description = "Bắt đầu raid",
     Default = false,
     Callback = function(I)
         _G.Auto_StartRaid = I;
@@ -11499,7 +11499,7 @@ end);
 
 Fruit:AddToggle({
 	Name  = "Auto Complete Raid",
-    Description = "",
+    Description = "Hoàn thành raid",
     Default = false,
     Callback = function(I)
         _G.Raiding = I
@@ -11595,10 +11595,38 @@ while wait(Sec) do
 end
 end)
 end)
+Fruit:AddToggle({
+    Name = "Kill aura",
+    Default = false,
+    Callback = function(Value)
+        _G.KillH = Value
+    end
+})
 
+spawn(function()
+    while wait(Sec) do
+        if _G.KillH then
+            for _, v in pairs(workspace.Enemies:GetChildren()) do
+                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                    pcall(function()
+                        repeat
+                            wait(Sec)
+                            sethiddenproperty(plr, "SimulationRadius", math.huge)
+                            v:BreakJoints()
+                            v.Humanoid.Health = 0
+                            v.HumanoidRootPart.CanCollide = false
+                        until not _G.KillH 
+                            or not v.Parent 
+                            or v.Humanoid.Health <= 0
+                    end)
+                end
+            end
+        end
+    end
+end)
 Fruit:AddToggle({
 	Name = "Auto Awakening",
-	Description = "",
+	Description = "Thức tỉnh fruit",
 	Default = false,
 	Callback = function(I)
 		_G.Auto_Awakener = I;
