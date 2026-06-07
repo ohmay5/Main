@@ -4259,42 +4259,39 @@ Setting:AddButton({
 })
 Setting:AddSection({"Setting Farm"})
 -- ========================================================
--- 1. KHỞI TẠO ĐỐI TƯỢNG PHÁT NHẠC (ĐỂ Ở ĐẦU SCRIPT)
+-- 1. KHỞI TẠO ĐỐI TƯỢNG ÂM THANH
 -- ========================================================
 local OMAYHUB_Sound = game:GetService("SoundService"):FindFirstChild("OMAYHUB_BGM")
 if not OMAYHUB_Sound then
     OMAYHUB_Sound = Instance.new("Sound")
     OMAYHUB_Sound.Name = "OMAYHUB_BGM"
-    OMAYHUB_Sound.Volume = 0.6 -- Độ to của nhạc (chỉnh từ 0 đến 1)
-    OMAYHUB_Sound.Looped = true -- Tự động lặp lại khi hết bài
+    OMAYHUB_Sound.Volume = 0.5 
+    OMAYHUB_Sound.Looped = true
     OMAYHUB_Sound.Parent = game:GetService("SoundService")
 end
 
--- Danh sách 4 bài hát siêu phẩm của bạn
--- Danh sách ID mới (Đã test hoạt động)
+-- Danh sách bài hát
 local MyPlaylist = {
     ["Tắt Nhạc (Mute)"] = "0",
-    ["Thanh Tiêu (Qingsi)"] = "rbxassetid://1843358913", -- ID bản phối mới
-    ["Gió Nổi Lên Rồi"] = "rbxassetid://9114227104",     -- Bản không lời chuẩn
-    ["Ái Nhân Bất Thị Phan"] = "rbxassetid://9043887091", -- Bản lofi nhẹ
-    ["Vì Gặp Bạn (Remix)"] = "rbxassetid://7044033100",  -- Bản remix sôi động
-    
-    -- Nhạc hệ thống Roblox (100% LUÔN CÓ TIẾNG, KHÔNG LO BỊ LỖI)
-    ["Blox Fruits Sea 3 BGM"] = "rbxassetid://9114227104",
-    ["Anime Epic Battle"] = "rbxassetid://1837013384",
-    ["Lofi Chill Roblox"] = "rbxassetid://15364177439"
+    ["Thanh Tiêu (Qingsi)"] = "rbxassetid://5698308101",
+    ["Bán hồ sa"] = "rbxassetid://5863260718",
+    ["thăm cố tri"] = "rbxassetid://6745127600",
+    ["Đại thiên bồng"] = "rbxassetid://5696115998",
+    ["Liễu thanh yên"] = "rbxassetid://18541243577",
 }
 
-
--- Tự động gom tên bài hát vào danh sách hiển thị
+-- Sắp xếp tên bài hát vào danh sách hiển thị
 local SongNames = {}
 for name, _ in pairs(MyPlaylist) do
     table.insert(SongNames, name)
 end
+table.sort(SongNames) -- Sắp xếp tên theo bảng chữ cái
 
 -- ========================================================
--- 2. ĐOẠN CODE NÀY DÁN VÀO CHỖ TẠO MENU (REDZ UI)
+-- 2. TÍCH HỢP VÀO REDZ UI
 -- ========================================================
+
+-- Dropdown chọn nhạc
 Get:AddDropdown({ 
     Name = "OMAYHUB Music Player 🎵",
     Description = "Chọn nhạc nền để quẩy khi đang treo farm",
@@ -4304,14 +4301,32 @@ Get:AddDropdown({
     Callback = function(SelectedSong)
         local songId = MyPlaylist[SelectedSong]
         
-        if songId == "0" then
-            OMAYHUB_Sound:Stop() -- Tắt nhạc
+        if songId == "0" or not songId then
+            OMAYHUB_Sound:Stop()
         else
-            OMAYHUB_Sound:Stop() -- Dừng bài cũ
-            OMAYHUB_Sound.SoundId = songId -- Gắn ID bài mới chọn
-            OMAYHUB_Sound:Play() -- Phát nhạc
+            -- Sử dụng pcall để tránh script bị đứng nếu ID lỗi
+            local success = pcall(function()
+                OMAYHUB_Sound:Stop()
+                OMAYHUB_Sound.SoundId = songId
+                OMAYHUB_Sound:Play()
+            end)
+            if not success then
+                warn("OMAYHUB: Không thể phát nhạc, ID có thể đã bị xóa.")
+            end
         end
     end,
+})
+
+-- Slider chỉnh âm lượng (Rất cần thiết khi treo máy)
+Get:AddSlider({
+    Name = "Âm lượng nhạc",
+    Min = 0,
+    Max = 1,
+    Default = 0.5,
+    Increment = 0.1,
+    Callback = function(Value)
+        OMAYHUB_Sound.Volume = Value
+    end
 })
 
 
