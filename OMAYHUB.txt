@@ -9390,8 +9390,7 @@ Player:AddToggle({
 		end);
 	end,
 });
---------------------------
--------------------------
+
 local SilentAim_Enabled = false
 local currentTarget = nil
 local MAX_DISTANCE = 1000 -- Khoảng cách tối đa để bẻ chiêu (Studs)
@@ -9537,8 +9536,7 @@ rawmt.__index = newcclosure(function(self, index)
 end)
 
 setreadonly(rawmt, true)
--------------------------------
--------------------------------
+
 Player:AddSection({"Speed/Jump"});
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
