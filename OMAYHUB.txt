@@ -4258,78 +4258,6 @@ Setting:AddButton({
     end
 })
 Setting:AddSection({"Setting Farm"})
--- ========================================================
--- 1. KHỞI TẠO ĐỐI TƯỢNG ÂM THANH
--- ========================================================
-local OMAYHUB_Sound = game:GetService("SoundService"):FindFirstChild("OMAYHUB_BGM")
-if not OMAYHUB_Sound then
-    OMAYHUB_Sound = Instance.new("Sound")
-    OMAYHUB_Sound.Name = "OMAYHUB_BGM"
-    OMAYHUB_Sound.Volume = 0.5 
-    OMAYHUB_Sound.Looped = true
-    OMAYHUB_Sound.Parent = game:GetService("SoundService")
-end
-
--- Danh sách bài hát
-local MyPlaylist = {
-    ["Tắt Nhạc (Mute)"] = "0",
-    ["Thanh Tiêu (Qingsi)"] = "rbxassetid://5698308101",
-    ["Bán hồ sa"] = "rbxassetid://5863260718",
-    ["thăm cố tri"] = "rbxassetid://6745127600",
-    ["Đại thiên bồng"] = "rbxassetid://5696115998",
-    ["Liễu thanh yên"] = "rbxassetid://18541243577",
-}
-
--- Sắp xếp tên bài hát vào danh sách hiển thị
-local SongNames = {}
-for name, _ in pairs(MyPlaylist) do
-    table.insert(SongNames, name)
-end
-table.sort(SongNames) -- Sắp xếp tên theo bảng chữ cái
-
--- ========================================================
--- 2. TÍCH HỢP VÀO REDZ UI
--- ========================================================
-
--- Dropdown chọn nhạc
-Get:AddDropdown({ 
-    Name = "OMAYHUB Music Player 🎵",
-    Description = "Chọn nhạc nền để quẩy khi đang treo farm",
-    Options = SongNames,
-    Default = "Tắt Nhạc (Mute)",
-    Multi = false,
-    Callback = function(SelectedSong)
-        local songId = MyPlaylist[SelectedSong]
-        
-        if songId == "0" or not songId then
-            OMAYHUB_Sound:Stop()
-        else
-            -- Sử dụng pcall để tránh script bị đứng nếu ID lỗi
-            local success = pcall(function()
-                OMAYHUB_Sound:Stop()
-                OMAYHUB_Sound.SoundId = songId
-                OMAYHUB_Sound:Play()
-            end)
-            if not success then
-                warn("OMAYHUB: Không thể phát nhạc, ID có thể đã bị xóa.")
-            end
-        end
-    end,
-})
-
--- Slider chỉnh âm lượng (Rất cần thiết khi treo máy)
-Get:AddSlider({
-    Name = "Âm lượng nhạc",
-    Min = 0,
-    Max = 1,
-    Default = 0.5,
-    Increment = 0.1,
-    Callback = function(Value)
-        OMAYHUB_Sound.Volume = Value
-    end
-})
-
-
 Setting:AddToggle({
 	Name = "Bring Mob",
 	Description = "gom quái",
@@ -4553,7 +4481,7 @@ Setting:AddTextBox({
 Setting:AddTextBox({
     Title = "Select Farm Height",
     Description = "độ cao đứng trên đầu",
-    PlaceHolder = "30",
+    PlaceHolder = "20",
     Default = tostring(_G.MobHeight),
     Callback = function(Value)
         local num = tonumber(Value)
@@ -4566,8 +4494,8 @@ Setting:AddTextBox({
 Setting:AddTextBox({
     Title = "Tween Speed",
     Description = "tốc độ tween",
-    PlaceHolder = "370",
-    Default = "370",
+    PlaceHolder = "320",
+    Default = "320",
     Callback = function(I)
         if tonumber(I) then
             getgenv().TweenSpeedFar = tonumber(I)
@@ -7752,7 +7680,41 @@ Race:AddButton({ Name = "Teleport to Ancient One", Description = "", Callback = 
 	end });
 Race:AddButton({ Name = "Teleport to Ancient Clock", Description = "", Callback = function()
 		notween(CFrame.new(29549, 15069, -88));
-	end });
+	end })
+	
+Race:AddButton({
+    Name = "Teleport & Load Temple",
+    Description = "TP đến Temple và load map nếu bị ẩn",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        
+        if not hrp then return end
+
+        -- 1. Dịch chuyển trước
+        hrp.CFrame = CFrame.new(28286.355, 14895.301, 102.624)
+
+        -- 2. Xử lý load map với pcall để tránh crash
+        task.spawn(function()
+            pcall(function()
+                local map = workspace:FindFirstChild("Map")
+                local mapStash = game:GetService("ReplicatedStorage"):FindFirstChild("MapStash")
+                
+                if map and mapStash then
+                    if not map:FindFirstChild("Temple of Time") and mapStash:FindFirstChild("Temple of Time") then
+                        -- Clone để tránh lỗi mất map của Server
+                        local temple = mapStash["Temple of Time"]:Clone()
+                        temple.Parent = map
+                        print("Temple đã được load thành công!")
+                    end
+                end
+            end)
+        end)
+    end
+})
+
+	
 Race:AddToggle({
 	Name = "Auto Teleport to Race Doors",
 	Description = "",
@@ -7891,6 +7853,43 @@ spawn(function()
 	end;
 end);
 Race:AddToggle({
+	Name = "Auto Complete Trial Race 2",
+	Description = "",
+	Default = false,
+	Callback = function(I)
+		_G.Complete_Trials = I;
+	end,
+});
+spawn(function()
+    while task.wait(Sec) do
+        if _G.Complete_Trials then
+            local currentRace = tostring(plr.Data.Race.Value)
+            
+            if currentRace == "Mink" then
+                notween(workspace.Map.MinkTrial.Ceiling.CFrame * CFrame.new(0, -20, 0))
+            
+            elseif currentRace == "Fishman" then
+                local sb = GetSeaBeastTrial()
+                if sb then
+                    _tp(CFrame.new(sb.HumanoidRootPart.Position.X, workspace.Map["WaterBase-Plane"].Position.Y + 300, sb.HumanoidRootPart.Position.Z))
+                    -- Gọi hàm Skill của bạn ở đây...
+                end
+            
+            elseif currentRace == "Cyborg" then
+                _tp(workspace.Map.CyborgTrial.Floor.CFrame * CFrame.new(0, 500, 0))
+            
+            elseif currentRace == "Skypiea" then
+                notween(workspace.Map.SkyTrial.Model.FinishPart.CFrame)
+            
+            elseif currentRace == "Human" or currentRace == "Ghoul" then
+                local enemies = GetConnectionEnemies({"Ancient Vampire", "Ancient Zombie"})
+                if enemies then G.Kill(enemies, _G.Complete_Trials) end
+            end
+        end
+    end
+end)
+
+Race:AddToggle({
 	Name = "Auto Kill Player After Trial",
 	Description = "turn on for kill player after the race trials",
 	Default = false,
@@ -7908,7 +7907,7 @@ spawn(function()
 							repeat
 								task.wait();
 								EquipWeapon(_G.SelectWeapon);
-								_tp(e.HumanoidRootPart.CFrame * CFrame.new(0, 0, 15));
+								_tp(e.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0));
 								sethiddenproperty(plr, "SimulationRadius", math.huge);
 							until _G.Defeating == false or e.Humanoid.Health <= 0 or not e.Parent or not e:FindFirstChild("HumanoidRootPart") or not e:FindFirstChild("Humanoid");
 						end;
@@ -8327,6 +8326,80 @@ spawn(function()
 		end;
 	end;
 end);
+--================================================--
+-- TÍCH HỢP TWEEN SERVICE
+--================================================--
+local TweenService = game:GetService("TweenService")
+local player = game:GetService("Players").LocalPlayer
+
+local function TweenTo(targetCFrame)
+    local char = player.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    
+    local root = char.HumanoidRootPart
+    local distance = (root.Position - targetCFrame.Position).Magnitude
+    local speed = 300 -- Tốc độ bay (càng cao càng nhanh)
+    
+    local tweenInfo = TweenInfo.new(distance / speed, Enum.EasingStyle.Linear)
+    local tween = TweenService:Create(root, tweenInfo, {CFrame = targetCFrame})
+    tween:Play()
+    tween.Completed:Wait()
+end
+
+--================================================--
+-- TOGGLE NÚT BẤM (GUI)
+--================================================--
+Dojo:AddToggle({
+    Name = "Auto Relic Draco Trial [VIP]",
+    Description = "Tự động lắp lồng đèn bằng Tween mượt",
+    Default = false,
+    Callback = function(I)
+        _G.Relic123 = I;
+    end,
+});
+
+--================================================--
+-- VÒNG LẶP XỬ LÝ
+--================================================--
+spawn(function()
+    while task.wait(0.5) do -- Dùng task.wait() để tối ưu hơn wait()
+        if _G.Relic123 then
+            pcall(function()
+                local Map = workspace:FindFirstChild("Map")
+                if Map and Map:FindFirstChild("DracoTrial") then
+                    -- Kích hoạt Trial
+                    replicated.Remotes.DracoTrial:InvokeServer();
+                    task.wait(0.5);
+                    
+                    -- Danh sách các điểm cần đến (Dùng Tween để bay mượt)
+                    local Points = {
+                        CFrame.new(-39934.9765625, 10685.359375, 22999.34375),
+                        CFrame.new(-40511.25390625, 9376.4013671875, 23458.37890625),
+                        CFrame.new(-39914.65625, 10685.384765625, 23000.177734375),
+                        CFrame.new(-40045.83203125, 9376.3984375, 22791.287109375),
+                        CFrame.new(-39908.5, 10685.405273438, 22990.04296875),
+                        CFrame.new(-39609.5, 9376.400390625, 23472.94335975)
+                    }
+
+                    for _, point in pairs(Points) do
+                        if not _G.Relic123 then break end
+                        TweenTo(point)
+                        task.wait(0.5) -- Đợi một chút tại mỗi điểm để server xác nhận
+                    end
+                else
+                    -- Tìm đến đảo Trial
+                    local Island = Map and Map:FindFirstChild("PrehistoricIsland")
+                    local Teleport = Island and Island:FindFirstChild("TrialTeleport")
+                    if Teleport and Teleport:IsA("Part") then
+                        TweenTo(CFrame.new(Teleport.Position))
+                    end
+                end
+            end);
+        end;
+    end;
+end);
+
+
 Dojo:AddToggle({
 	Name = "Auto to train race draco",
 	Description = "turn on for training Drago race v4 + auto upgrade tier",
@@ -9330,61 +9403,54 @@ Player:AddToggle({
 	end,
 });
 
+-- ========================================================
+-- BANANA STYLE SILENT AIM (OPTIMIZED - NO CAMERA LOCK)
+-- ========================================================
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
 local SilentAim_Enabled = false
 local currentTarget = nil
-local MAX_DISTANCE = 1000 -- Khoảng cách tối đa để bẻ chiêu (Studs)
+local MAX_DISTANCE = 1000 
 
--- Khởi tạo nút gạt trên Menu Redz của bạn
+-- Khởi tạo nút gạt trên Menu Redz
 Player:AddToggle({
 	Name = "Banana Silent Aim",
-	Description = "Bẻ hướng tia kỹ năng chuẩn giống Banana Hub",
+	Description = "Bẻ hướng tia kỹ năng chuẩn",
 	Default = false,
 	Callback = function(state)
 		SilentAim_Enabled = state
-		if not state then
-			currentTarget = nil
-		end
+		if not state then currentTarget = nil end
 	end
 })
 
---==================================================
--- HỆ THỐNG RAYCAST SILENT AIM (BANANA STYLE)
---==================================================
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local Mouse = LocalPlayer:GetMouse()
-
--- Thuật toán dự đoán hướng chạy nâng cao dựa trên Ping và Vận tốc (Prediction)
+-- Hàm tính toán dự đoán vị trí (Prediction)
 local function GetPredictedPosition(targetHRP)
 	if not targetHRP then return nil end
 	local humanoid = targetHRP.Parent:FindFirstChildWhichIsA("Humanoid")
+	if not humanoid or humanoid.WalkSpeed < 2 then return targetHRP.Position end
 	
-	-- Nếu địch đứng im hoặc di chuyển quá chậm thì không cần tính độ rơi
-	if not humanoid or humanoid.WalkSpeed < 2 then
-		return targetHRP.Position
-	end
-	
-	-- Tính toán độ trễ (Ping) ước tính để bắn đón đầu góc chạy
-	local ping = tonumber(string.match(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString(), "%d+")) or 100
-	local predictionAmount = (ping / 1000) * 1.1 -- Hệ số tùy chỉnh độ mượt đón đầu
+	local success, ping = pcall(function() 
+		return tonumber(string.match(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString(), "%d+")) 
+	end)
+	local pingValue = success and ping or 100
+	local predictionAmount = (pingValue / 1000) * 1.1 
 	
 	return targetHRP.Position + (targetHRP.Velocity * predictionAmount)
 end
 
--- Hàm lọc phe Hải quân và Băng đảng (Crew)
+-- Hàm lọc đồng đội
 local function IsAlly(targetPlayer)
+	if not LocalPlayer:FindFirstChild("Leaderstats") then return false end
 	if targetPlayer.Team == LocalPlayer.Team and targetPlayer.Team ~= nil then return true end
-	if targetPlayer.TeamColor == LocalPlayer.TeamColor and targetPlayer.TeamColor ~= nil then return true end
 	
-	local myCrew = LocalPlayer:FindFirstChild("Leaderstats") and LocalPlayer.Leaderstats:FindFirstChild("Crew")
+	local myCrew = LocalPlayer.Leaderstats:FindFirstChild("Crew")
 	local targetCrew = targetPlayer:FindFirstChild("Leaderstats") and targetPlayer.Leaderstats:FindFirstChild("Crew")
-	if myCrew and targetCrew and myCrew.Value ~= "" and myCrew.Value == targetCrew.Value then 
-		return true 
-	end
+	if myCrew and targetCrew and myCrew.Value ~= "" and myCrew.Value == targetCrew.Value then return true end
 	return false
 end
 
--- Hàm quét tìm mục tiêu tối ưu nhất
+-- Tìm mục tiêu gần nhất
 local function GetClosestTarget()
 	local closestPlayer = nil
 	local shortestDistance = MAX_DISTANCE
@@ -9394,11 +9460,9 @@ local function GetClosestTarget()
 	for _, p in pairs(Players:GetPlayers()) do
 		if p ~= LocalPlayer and not IsAlly(p) then
 			local char = p.Character
-			if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChildOfClass("Humanoid") then
+			if char and char:FindFirstChild("HumanoidRootPart") then
 				local hum = char:FindFirstChildOfClass("Humanoid")
-				
-				-- Địch phải còn sống và không ở trong khu vực Safe Zone (DisablePvP)
-				if hum.Health > 0 and not char:FindFirstChild("DisablePvP") and not p:FindFirstChild("DisablePvP") then
+				if hum and hum.Health > 0 and not char:FindFirstChild("DisablePvP") then
 					local distance = (myChar.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Magnitude
 					if distance < shortestDistance then
 						shortestDistance = distance
@@ -9411,67 +9475,33 @@ local function GetClosestTarget()
 	return closestPlayer
 end
 
--- Vòng lặp quét mục tiêu liên tục để giảm độ trễ khi khóa mục tiêu
-game:GetService("RunService").Heartbeat:Connect(function()
-	if SilentAim_Enabled then
-		currentTarget = GetClosestTarget()
-	else
-		currentTarget = nil
-	end
+-- Vòng lặp quét mục tiêu
+RunService.Heartbeat:Connect(function()
+	if SilentAim_Enabled then currentTarget = GetClosestTarget() end
 end)
 
--- ========================================================
--- CAN THIỆP SÂU METAMETHOD: BẺ CHIÊU TỪ GỐC SERVER
--- ========================================================
+-- Hook __namecall để bẻ hướng chiêu (Không đụng vào camera)
 local rawmt = getrawmetatable(game)
 local oldNamecall = rawmt.__namecall
-local oldIndex = rawmt.__index
-
 setreadonly(rawmt, false)
 
--- 1. Hook __namecall: Chặn đứng dữ liệu kỹ năng truyền lên Server game
 rawmt.__namecall = newcclosure(function(self, ...)
 	local method = getnamecallmethod()
 	local args = {...}
 	
 	if SilentAim_Enabled and currentTarget then
-		-- Nếu game gọi các hàm bắn tia Raycast để tìm điểm trúng đạn
-		if method == "Raycast" or method == "FindPartOnRay" or method == "FindPartOnRayWithIgnoreList" then
+		if (method == "FireServer" or method == "InvokeServer") then
 			local predictedPos = GetPredictedPosition(currentTarget)
-			if predictedPos then
-				-- Thay đổi hướng tia dò đường bay thẳng vào vị trí dự đoán của địch
-				local origin = args[1]
-				if typeof(origin) == "Vector3" then
-					args[2] = (predictedPos - origin).Unit * MAX_DISTANCE
-					return oldNamecall(self, unpack(args))
+			for i, v in pairs(args) do
+				if typeof(v) == "Vector3" then
+					args[i] = predictedPos
 				end
 			end
-		end
-		
-		-- Nếu vũ khí gửi tọa độ Vector3 (Vị trí chuột bấm) về Server để ra chiêu
-		if (method == "FireServer" or method == "InvokeServer") and typeof(args[1]) == "Vector3" then
-			local predictedPos = GetPredictedPosition(currentTarget)
-			if predictedPos then
-				args[1] = predictedPos -- Ép chiêu thức phải nổ tại người kẻ địch
-				return oldNamecall(self, unpack(args))
-			end
+			return oldNamecall(self, unpack(args))
 		end
 	end
 	
 	return oldNamecall(self, ...)
-end)
-
--- 2. Hook __index: Bẻ hướng tâm chuột ảo để hỗ trợ các chiêu giữ chuột chọn mục tiêu
-rawmt.__index = newcclosure(function(self, index)
-	if SilentAim_Enabled and currentTarget and self == Mouse then
-		if index == "Hit" then
-			local predictedPos = GetPredictedPosition(currentTarget)
-			return predictedPos and CFrame.new(predictedPos) or oldIndex(self, index)
-		elseif index == "Target" then
-			return currentTarget.Parent
-		end
-	end
-	return oldIndex(self, index)
 end)
 
 setreadonly(rawmt, true)
