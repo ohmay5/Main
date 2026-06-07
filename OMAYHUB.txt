@@ -5765,81 +5765,8 @@ local z5 = {
         });
     end
 
-    Event:AddToggle({
-        Name = "Auto Start farm",
-        Description = "mua thuyền và chuyển đến khu vực biển",
-        Default = false,
-        Callback = function(I)
-            _G.SailBoats = I;
-        end,
-    });
-spawn(function()
-    while wait() do
-        if _G.SailBoats then
-            pcall(function()
-                local I = CheckBoat();
-                -- CORREÇÃO: Compra barco mesmo se houver inimigos, para não travar no spawn
-                if not I then
-                    local BoatDealerPos = CFrame.new(-16927.451, 9.086, 433.864);
-                    TeleportToTarget(BoatDealerPos);
-                    if (BoatDealerPos.Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 10 then
-                        replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat);
-                    end;
-                elseif I and (not (CheckShark() and _G.Shark or CheckTerrorShark() and _G.TerrorShark or CheckFishCrew() and _G.MobCrew or CheckPiranha() and _G.Piranha) and (not (CheckEnemiesBoat() and _G.FishBoat) and (not (CheckSeaBeast() and _G.SeaBeast1) and (not (_G.PGB and CheckPirateGrandBrigade()) and (not (_G.HCM and CheckHauntedCrew()) and not (_G.Leviathan1 and CheckLeviathan())))))) then
-                    if plr.Character.Humanoid.Sit == false then
-                        local e = I.VehicleSeat.CFrame * CFrame.new(0, 1, 0);
-                        _tp(e);
-                    else
-                        if _G.DangerSc == "Lv 1" then
-                            CFrameSelectedZone = CFrame.new(-21998.375, 30.0006084, -682.309143);
-                        elseif _G.DangerSc == "Lv 2" then
-                            CFrameSelectedZone = CFrame.new(-26779.5215, 30.0005474, -822.858032);
-                        elseif _G.DangerSc == "Lv 3" then
-                            CFrameSelectedZone = CFrame.new(-31171.957, 30.0001011, -2256.93774);
-                        elseif _G.DangerSc == "Lv 4" then
-                            CFrameSelectedZone = CFrame.new(-34054.6875, 30.2187767, -2560.12012);
-                        elseif _G.DangerSc == "Lv 5" then
-                            CFrameSelectedZone = CFrame.new(-38887.5547, 30.0004578, -2162.99023);
-                        elseif _G.DangerSc == "Lv 6" then
-                            CFrameSelectedZone = CFrame.new(-44541.7617, 30.0003204, -1244.8584);
-                        elseif _G.DangerSc == "Lv Infinite" then
-                            CFrameSelectedZone = CFrame.new(-10000000, 31, 37016.25);
-                        end;
-                        repeat
-                            wait();
-                            if not _G.FishBoat and CheckEnemiesBoat() or not _G.PGB and CheckPirateGrandBrigade() or not _G.TerrorShark and CheckTerrorShark() then
-                                _tp(CFrameSelectedZone * CFrame.new(0, 150, 0));
-                            else
-                                _tp(CFrameSelectedZone);
-                            end;
-                        until _G.SailBoats == false or CheckShark() and _G.Shark or CheckTerrorShark() and _G.TerrorShark or CheckFishCrew() and _G.MobCrew or CheckPiranha() and _G.Piranha or CheckSeaBeast() and _G.SeaBeast1 or CheckEnemiesBoat() and _G.FishBoat or _G.Leviathan1 and CheckLeviathan() or _G.HCM and CheckHauntedCrew() or _G.PGB and CheckPirateGrandBrigade() or (plr.Character:WaitForChild("Humanoid")).Sit == false;
-                        plr.Character.Humanoid.Sit = false;
-                    end;
-                end;
-            end);
-        end;
-    end;
-end);
-
-spawn(function()
-    while wait(Sec) do
-        pcall(function()
-            for I, e in pairs(workspace.Boats:GetChildren()) do
-                for I, e in pairs(workspace.Boats[e.Name]:GetDescendants()) do
-                    if e:IsA("BasePart") then
-                        if _G.SailBoats or _G.Prehis_Find or _G.FindMirage or _G.SailBoat_Hydra or _G.AutofindKitIs then
-                            e.CanCollide = false;
-                        else
-                            e.CanCollide = true;
-                        end;
-                    end;
-                end;
-            end;
-        end);
-    end;
-end);
 Event:AddToggle({
-    Name = "Auto Start farm 2",
+    Name = "Auto Start farm",
     Description = "mua thuyền và chuyển đến khu vực biển",
     Default = false,
     Callback = function(I)
@@ -6271,6 +6198,31 @@ Event:AddToggle({
 		_G.Leviathan1 = I;
 	end,
 });
+-- Biến lưu cấu hình lựa chọn
+_G.SelectIslandHeart = "Tiki Outpost";
+
+-- Menu thả xuống chọn điểm đến
+Event:AddDropdown({
+    Name = "Chọn Đảo Kéo Tim Về",
+    Default = "Tiki Outpost",
+    Options = {"Tiki Outpost", "Hydra Waterfall"},
+    Callback = function(Value)
+        _G.SelectIslandHeart = Value;
+    end,
+});
+
+-- Nút bật tắt tính năng
+Event:AddToggle({
+    Name = "Auto Bring Heart To Island",
+    Description = "Tự động móc tim Leviathan và kéo về bến",
+    Default = false,
+    Callback = function(I)
+        _G.AutoBringHeart = I;
+    end,
+});
+
+
+
 Event:AddSection({"Kitsune Island / Event"});
 Event:AddToggle({
     Name = "Auto Find Kitsune Island",
@@ -12507,4 +12459,110 @@ local t=ch and ch:FindFirstChildOfClass("Tool")
 if t then Funcs:Attack() end
 end)
 end
+end)
+-- Bảng tọa độ bến đỗ an toàn (Tiki và khu vực mặt nước trước Thác nước Hydra)
+local IslandPositions = {
+    ["Tiki Outpost"] = CFrame.new(-16927.451, 9.086, 433.864),
+    ["Hydra Waterfall"] = CFrame.new(5748.12, 15.42, -1218.43)
+}
+
+-- Hàm quét tìm Tim Leviathan ngoài Workspace
+local function FindLeviathanHeart()
+    for _, v in pairs(workspace:GetChildren()) do
+        if v.Name == "Leviathan Heart" or v.Name == "Frozen Heart" then
+            return v
+        end
+    end
+    return nil
+end
+
+-- Hàm di chuyển thuyền mượt mà với tốc độ vừa phải (Không quá nhanh để tránh lật thuyền)
+local function MoveBoatSmoothly(boat, targetCFrame, speed)
+    if not boat or not boat:FindFirstChild("PrimaryPart") then return end
+    speed = speed or 250 -- Tốc độ mặc định an toàn là 250 studs/giây (bạn có thể chỉnh thấp xuống nếu muốn)
+    
+    local primaryPart = boat.PrimaryPart
+    local distance = (targetCFrame.Position - primaryPart.Position).Magnitude
+    local duration = distance / speed
+    
+    local tweenService = game:GetService("TweenService")
+    local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+    
+    local tween = tweenService:Create(primaryPart, tweenInfo, {CFrame = targetCFrame})
+    tween:Play()
+    
+    -- Đợi cho đến khi di chuyển xong hoặc người dùng tắt tính năng
+    repeat
+        task.wait(0.1)
+        -- Tắt va chạm liên tục khi đang di chuyển để thuyền không húc vào đá/đảo ngầm
+        for _, part in pairs(boat:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide then
+                part.CanCollide = false
+            end
+        end
+    until tween.PlaybackState == Enum.PlaybackState.Completed or not _G.AutoBringHeart
+    
+    if not _G.AutoBringHeart then
+        tween:Cancel()
+    end
+end
+
+-- Luồng chạy ngầm xử lý tự động kéo Tim Leviathan
+task.spawn(function()
+    while task.wait(1) do -- Quét mỗi giây để tiết kiệm hiệu năng máy
+        if _G.AutoBringHeart then
+            pcall(function()
+                local heart = FindLeviathanHeart()
+                local myBoat = CheckBoat() -- Hàm check thuyền từ code gốc của bạn
+                
+                if heart and myBoat then
+                    local primaryPart = myBoat.PrimaryPart
+                    if not primaryPart then return end
+                    
+                    local distanceToHeart = (primaryPart.Position - heart.Position).Magnitude
+                    
+                    -- BƯỚC 1: Nếu ở xa tim, lái thuyền tới gần tim trước
+                    if distanceToHeart > 120 then
+                        if plr.Character.Humanoid.Sit then
+                            -- Tiếp cận tim ở khoảng cách vừa phải để chuẩn bị bắn móc
+                            local approachPos = heart.CFrame * CFrame.new(0, 10, 40)
+                            MoveBoatSmoothly(myBoat, approachPos, 200)
+                        else
+                            -- Nếu chưa ngồi vào ghế lái thì teleport nhân vật lên ghế
+                            if myBoat:FindFirstChild("VehicleSeat") then
+                                _tp(myBoat.VehicleSeat.CFrame * CFrame.new(0, 1, 0))
+                            end
+                        end
+                    
+                    -- BƯỚC 2: Khi đã ở khoảng cách đủ gần (dưới 120 studs), bắn mỏ neo để móc Tim
+                    else
+                        if replicated.Remotes:FindFirstChild("CommF_") then
+                            replicated.Remotes.CommF_:InvokeServer("FireHarpoon", heart.Position)
+                        end
+                        task.wait(1) -- Chờ 1 giây để mỏ neo dính vào Tim
+                        
+                        -- BƯỚC 3: Bắt đầu hành trình kéo Tim về hòn đảo đã chọn trên GUI
+                        local SelectedTarget = IslandPositions[_G.SelectIslandHeart] or IslandPositions["Tiki Outpost"]
+                        
+                        -- Đảm bảo nhân vật vẫn ngồi trên ghế lái để thuyền chạy ổn định
+                        if plr.Character.Humanoid.Sit == false and myBoat:FindFirstChild("VehicleSeat") then
+                            _tp(myBoat.VehicleSeat.CFrame * CFrame.new(0, 1, 0))
+                            task.wait(0.5)
+                        end
+                        
+                        -- Thực hiện kéo thuyền đi với tốc độ ổn định 220 (Kéo nặng nên chạy chậm hơn xíu cho an toàn)
+                        MoveBoatSmoothly(myBoat, SelectedTarget, 220)
+                        
+                        -- Thả nhân vật ra khi đã về tới đích
+                        if (SelectedTarget.Position - primaryPart.Position).Magnitude <= 35 then
+                            if plr.Character and plr.Character:FindFirstChild("Humanoid") then
+                                plr.Character.Humanoid.Sit = false
+                            end
+                            print("Đã kéo Tim Leviathan về đích thành công!")
+                        end
+                    end
+                end
+            end)
+        end
+    end
 end)
