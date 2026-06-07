@@ -9947,6 +9947,177 @@ Player:AddToggle({
 	end,
 });
 Player:AddSection({"Settings Combat / Aimbot Settings"});
+
+local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Aimbot-skill-config/refs/heads/main/Aimbot.lua"))()
+
+local AimbotEnabled = false
+local AimPlayers = false
+local AimMobs = false
+local IgnoreMobs = true
+
+-- ===============================
+-- FUNÇÃO DE ATUALIZAÇÃO (COMPATÍVEL COM SUA LÓGICA)
+-- ===============================
+local function UpdateAimbot()
+    if not AimbotEnabled then
+        v1:SetPlayerSilentAim(false)
+        v1:SetNPCSilentAim(false)
+        return
+    end
+
+    -- Se estiver mirando players
+    if AimPlayers then
+        v1:SetPlayerSilentAim(true)
+        v1:SetNPCSilentAim(false)
+        return
+    end
+
+    -- Se estiver mirando mobs
+    if AimMobs then
+        if IgnoreMobs then
+            v1:SetNPCSilentAim(false)
+        else
+            v1:SetNPCSilentAim(true)
+        end
+        v1:SetPlayerSilentAim(false)
+        return
+    end
+
+    -- fallback de segurança
+    v1:SetPlayerSilentAim(false)
+    v1:SetNPCSilentAim(false)
+end
+
+-- ===============================
+-- TOGGLE PRINCIPAL
+-- ===============================
+Player:AddToggle({
+    Name = "Aimbot Gun",
+    Default = true,
+    Callback = function(v)
+        AimbotEnabled = v
+
+        if not v then
+            v1:Pause()
+        else
+            v1:Restore()
+        end
+
+        UpdateAimbot()
+    end
+})
+
+-- ===============================
+-- AIM PLAYERS
+-- ===============================
+Player:AddToggle({
+    Name = "Aimbot Tap",
+    Default = true,
+    Callback = function(v)
+        AimPlayers = v
+
+        if v then
+            AimMobs = false
+        end
+
+        UpdateAimbot()
+    end
+})
+
+-- ===============================
+-- AIM MOBS
+-- ===============================
+Player:AddToggle({
+    Name = "Aimbot Skills",
+    Default = true,
+    Callback = function(v)
+        AimMobs = v
+
+        if v then
+            AimPlayers = false
+        end
+
+        UpdateAimbot()
+    end
+})
+
+-- ===============================
+-- IGNORE MOBS (AGORA FUNCIONAL)
+-- ===============================
+Player:AddToggle({
+    Name = "Ignore Mobs",
+    Default = true,
+    Callback = function(v)
+        IgnoreMobs = v
+        UpdateAimbot()
+    end
+})
+Player:AddSection({"Aimbot skill V2"})
+local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Aimbot-skill-config/refs/heads/main/Aimbot.lua"))()
+
+local AimbotEnabled = false
+local AimPlayers = false
+local AimMobs = false
+
+Player:AddToggle({
+    Name = "Enable Aimbot Skill",
+    Default = true,
+    Callback = function(v)
+        AimbotEnabled = v
+
+        if not v then
+            v1:Pause()
+            v1:SetPlayerSilentAim(false)
+            v1:SetNPCSilentAim(false)
+        else
+            if AimPlayers then
+                v1:SetPlayerSilentAim(true)
+            end
+            if AimMobs then
+                v1:SetNPCSilentAim(true)
+            end
+            v1:Restore()
+        end
+    end
+})
+
+Player:AddToggle({
+    Name = "Aimbot on Players",
+    Default = false,
+    Callback = function(v)
+        AimPlayers = v
+
+        if v then
+            AimMobs = false
+            v1:SetNPCSilentAim(false)
+        end
+
+        if AimbotEnabled then
+            v1:SetPlayerSilentAim(v)
+        else
+            v1:SetPlayerSilentAim(false)
+        end
+    end
+})
+
+Player:AddToggle({
+    Name = "Aimbot on Mobs",
+    Default = false,
+    Callback = function(v)
+        AimMobs = v
+
+        if v then
+            AimPlayers = false
+            v1:SetPlayerSilentAim(false)
+        end
+
+        if AimbotEnabled then
+            v1:SetNPCSilentAim(v)
+        else
+            v1:SetNPCSilentAim(false)
+        end
+    end
+})
 Player:AddToggle({
 	Name = "Ignore Same Teams",
 	Description = "turn on for ignore not aimbot same team",
