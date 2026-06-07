@@ -919,13 +919,42 @@ CheckLeviathan = function()
 		return false;
 	end;
 UpdStFruit = function()
-		for I, e in next, plr.Backpack:GetChildren() do
-			StoreFruit = e:FindFirstChild("EatRemote", true);
-			if StoreFruit then
-				replicated.Remotes.CommF_:InvokeServer("StoreFruit", StoreFruit.Parent:GetAttribute("OriginalName"), plr.Backpack:FindFirstChild(e.Name));
-			end;
-		end;
-	end;
+    -- Gộp danh sách vật phẩm từ cả Backpack và Character (nếu đang cầm trên tay)
+    local allItems = {}
+    
+    -- Lấy trong Backpack
+    for _, item in pairs(plr.Backpack:GetChildren()) do
+        table.insert(allItems, item)
+    end
+    
+    -- Lấy trong tay nhân vật
+    if plr.Character then
+        for _, item in pairs(plr.Character:GetChildren()) do
+            table.insert(allItems, item)
+        end
+    end
+
+    -- Quét qua từng vật phẩm
+    for _, item in next, allItems do
+        -- Kiểm tra xem vật phẩm có phải là trái ác quỷ không (thường dựa vào EatRemote)
+        local isFruit = item:FindFirstChild("EatRemote", true)
+        
+        if isFruit then
+            -- CHIẾN LƯỢC LẤY TÊN:
+            -- 1. Thử lấy từ Attribute "OriginalName"
+            -- 2. Nếu không có, lấy từ thuộc tính "Name" của vật phẩm
+            -- 3. Nếu vẫn không được, lấy từ chính tên đối tượng
+            local fruitName = item:GetAttribute("OriginalName") or item:GetAttribute("Name") or item.Name
+            
+            pcall(function()
+                -- Gửi lệnh lưu (Sử dụng 'item' trực tiếp làm tham số thứ 3 là cách chuẩn nhất)
+                replicated.Remotes.CommF_:InvokeServer("StoreFruit", fruitName, item)
+                print("Đã thực hiện lưu trái: " .. tostring(fruitName))
+            end)
+        end
+    end
+end
+
 collectFruits = function(I)
 		if I then
 			local I = plr.Character;
@@ -5394,6 +5423,71 @@ spawn(function()
 		end;
 	end;
 end);
+-- Kiểm tra World 2 trước khi chạy
+if game.Workspace.Map.Name == "Second Sea" then 
+
+    -- 1. Cấu hình ban đầu
+    local TweenService = game:GetService("TweenService")
+    local replicated = game:GetService("ReplicatedStorage")
+    local plr = game:GetService("Players").LocalPlayer
+
+    _G.Auto_BartiloQuest = false;
+
+    -- 2. Hàm Tween (Bay mượt mà)
+    local function Tween(targetCFrame)
+        if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
+        local dist = (targetCFrame.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+        local speed = 300 
+        local tween = TweenService:Create(plr.Character.HumanoidRootPart, TweenInfo.new(dist / speed, Enum.EasingStyle.Linear), {CFrame = targetCFrame})
+        tween:Play()
+        tween.Completed:Wait()
+    end
+
+    -- 3. Logic nhiệm vụ Bartilo
+    spawn(function()
+        while true do
+            task.wait(2)
+            if _G.Auto_BartiloQuest then
+                pcall(function()
+                    local questGui = plr.PlayerGui.Main.Quest.Container
+                    local questTitle = questGui.Title.Text
+                    
+                    -- Trường hợp 1: Chưa có nhiệm vụ -> Đi nhận
+                    if questTitle == "Quest" then 
+                        Tween(CFrame.new(-457.6, 75.9, 137.6)) -- Tọa độ Bartilo
+                        task.wait(1)
+                        if workspace.NPCs:FindFirstChild("Bartilo") then
+                            fireclickdetector(workspace.NPCs.Bartilo.ClickDetector)
+                            replicated.Remotes.CommF_:InvokeServer("StartQuest", "BartiloQuest")
+                        end
+
+                    -- Trường hợp 2: Đang làm Swan Pirates
+                    elseif string.find(questTitle, "Swan") then
+                        Tween(CFrame.new(-1200, 50, -1500)) -- Tọa độ Swan Pirates
+                        
+                    -- Trường hợp 3: Đang làm Boss Jeremy
+                    elseif string.find(questTitle, "Jeremy") then
+                        Tween(CFrame.new(900, 350, -800)) -- Tọa độ Jeremy
+                    end
+                end)
+            end
+        end
+    end)
+
+    -- 4. Thêm vào bảng Others
+    Others:AddToggle({
+        Name = "Auto Bartilo Quest (World 2 Only)",
+        Description = "Tự động bay làm nhiệm vụ Bartilo",
+        Default = false,
+        Callback = function(I)
+            _G.Auto_BartiloQuest = I;
+        end,
+    });
+
+else
+    warn("Script Auto Bartilo Quest chỉ hoạt động ở World 2!")
+end
+
 Others:AddToggle({
 	Name = "Auto Citizen Quest",
 	Description = "nhiệm vụ của công dân",
@@ -5587,6 +5681,67 @@ spawn(function()
 		end);
 	end;
 end);
+
+local isTorchDone = false -- Biến đánh dấu trạng thái
+
+Others:AddToggle({
+    Name = "Auto Tushita Sword 2",
+    Description = "Đứng yên cắm đuốc xong mới đánh Boss",
+    Default = false,
+    Callback = function(I)
+        _G.Auto_Tushita = I;
+        if not I then isTorchDone = false end -- Reset khi tắt
+    end,
+});
+
+spawn(function()
+    while wait(Sec or 1) do
+        pcall(function()
+            if _G.Auto_Tushita then
+                -- Kiểm tra nếu cổng Tushita còn tồn tại
+                if workspace.Map.Turtle:FindFirstChild("TushitaGate") then
+                    
+                    -- Nếu chưa lấy đuốc thì đi lấy (chỉ bước này mới bay/di chuyển)
+                    if not GetBP("Holy Torch") then
+                        Tween(CFrame.new(5148.03613, 162.352493, 910.548218));
+                    else
+                        -- ĐÃ CÓ ĐUỐC -> ĐỨNG YÊN TẠI CHỖ
+                        -- Script sẽ không di chuyển nữa, chỉ đợi game tự hoàn thành
+                        EquipWeapon("Holy Torch");
+                        
+                        -- Chỉ kiểm tra xem đã mất cái cổng chưa (tức là đã thắp xong)
+                        if not workspace.Map.Turtle:FindFirstChild("TushitaGate") then
+                            isTorchDone = true
+                        end
+                    end
+                
+                -- NẾU KHÔNG CÒN CỔNG (Đã thắp xong đuốc) HOẶC ĐÃ ĐÁNH BOSS
+                else
+                    isTorchDone = true
+                end
+
+                -- LOGIC ĐÁNH BOSS: Chỉ chạy khi isTorchDone là true
+                if isTorchDone then
+                    local I = GetConnectionEnemies("Longma");
+                    if I then
+                        repeat
+                            task.wait();
+                            G.Kill(I, _G.Auto_Tushita);
+                        until I.Humanoid.Health <= 0 or not _G.Auto_Tushita or not I.Parent;
+                    else
+                        -- Tìm Boss Longma để bay đến
+                        local Longma = replicated:FindFirstChild("Longma")
+                        if Longma and Longma:FindFirstChild("HumanoidRootPart") then
+                            Tween(Longma.HumanoidRootPart.CFrame * CFrame.new(0, 40, 0));
+                        end
+                    end
+                end
+            end
+        end);
+    end;
+end);
+
+
 -- AUTO YAMA (EXATAMENTE COMO VOCÊ ENVIou)
  Others:AddToggle({
     Name = "Auto Yama Sword",
@@ -5812,94 +5967,93 @@ local z5 = {
     });
     -- Configuração de Nível de Perigo (SÓ SEA 3)
     if World3 then
-        local H5 = {
-            "Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite",
-        };
-        Event:AddDropdown({
-            Name = "Select Level Sea",
-            Description = "chọn mức độ để di chuyển trên biển",
-            Options = H5,
-            Default = "Lv 1",
-            Multi = false,
-            Callback = function(I)
-                _G.DangerSc = I;
-            end,
-        });
-    end
+        -- 0. ĐỊNH NGHĨA TỌA ĐỘ (Cần có cái này để hàm GetSelectedZoneCFrame hoạt động)
+local function GetSelectedZoneCFrame(level)
+    local zones = {
+        ["Lv 1"] = CFrame.new(-21998.375, 30.0006084, -682.309143),
+        ["Lv 2"] = CFrame.new(-26779.5215, 30.0005474, -822.858032),
+        ["Lv 3"] = CFrame.new(-31171.957, 30.0001011, -2256.93774),
+        ["Lv 4"] = CFrame.new(-34054.6875, 30.2187767, -2560.12012),
+        ["Lv 5"] = CFrame.new(-38887.5547, 30.0004578, -2162.99023),
+        ["Lv 6"] = CFrame.new(-44541.7617, 30.0003204, -1244.8584),
+        ["Lv Infinite"] = CFrame.new(-10000000, 31, 37016.25)
+    }
+    return zones[level] or zones["Lv 1"]
+end
 
-    Event:AddToggle({
-        Name = "Auto Start farm",
-        Description = "mua thuyền và chuyển đến khu vực biển",
-        Default = false,
-        Callback = function(I)
-            _G.SailBoats = I;
-        end,
-    });
+-- 1. DROPDOWN & TOGGLE
+local H5 = {"Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite"}
+Event:AddDropdown({
+    Name = "Select Level Sea",
+    Description = "chọn mức độ để di chuyển trên biển",
+    Options = H5,
+    Default = "Lv 1",
+    Callback = function(I) _G.DangerSc = I end,
+});
+
+Event:AddToggle({
+    Name = "Auto Start farm",
+    Description = "mua thuyền và chuyển đến khu vực biển",
+    Default = false,
+    Callback = function(I) _G.SailBoats = I end,
+});
+
+-- 2. LOGIC CHÍNH
 spawn(function()
-    while wait() do
+    while task.wait(2) do 
         if _G.SailBoats then
             pcall(function()
-                local I = CheckBoat();
-                -- CORREÇÃO: Compra barco mesmo se houver inimigos, para não travar no spawn
-                if not I then
-                    local BoatDealerPos = CFrame.new(-16927.451, 9.086, 433.864);
-                    TeleportToTarget(BoatDealerPos);
-                    if (BoatDealerPos.Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 10 then
-                        replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat);
-                    end;
-                elseif I and (not (CheckShark() and _G.Shark or CheckTerrorShark() and _G.TerrorShark or CheckFishCrew() and _G.MobCrew or CheckPiranha() and _G.Piranha) and (not (CheckEnemiesBoat() and _G.FishBoat) and (not (CheckSeaBeast() and _G.SeaBeast1) and (not (_G.PGB and CheckPirateGrandBrigade()) and (not (_G.HCM and CheckHauntedCrew()) and not (_G.Leviathan1 and CheckLeviathan())))))) then
-                    if plr.Character.Humanoid.Sit == false then
-                        local e = I.VehicleSeat.CFrame * CFrame.new(0, 1, 0);
-                        _tp(e);
-                    else
-                        if _G.DangerSc == "Lv 1" then
-                            CFrameSelectedZone = CFrame.new(-21998.375, 30.0006084, -682.309143);
-                        elseif _G.DangerSc == "Lv 2" then
-                            CFrameSelectedZone = CFrame.new(-26779.5215, 30.0005474, -822.858032);
-                        elseif _G.DangerSc == "Lv 3" then
-                            CFrameSelectedZone = CFrame.new(-31171.957, 30.0001011, -2256.93774);
-                        elseif _G.DangerSc == "Lv 4" then
-                            CFrameSelectedZone = CFrame.new(-34054.6875, 30.2187767, -2560.12012);
-                        elseif _G.DangerSc == "Lv 5" then
-                            CFrameSelectedZone = CFrame.new(-38887.5547, 30.0004578, -2162.99023);
-                        elseif _G.DangerSc == "Lv 6" then
-                            CFrameSelectedZone = CFrame.new(-44541.7617, 30.0003204, -1244.8584);
-                        elseif _G.DangerSc == "Lv Infinite" then
-                            CFrameSelectedZone = CFrame.new(-10000000, 31, 37016.25);
-                        end;
-                        repeat
-                            wait();
-                            if not _G.FishBoat and CheckEnemiesBoat() or not _G.PGB and CheckPirateGrandBrigade() or not _G.TerrorShark and CheckTerrorShark() then
-                                _tp(CFrameSelectedZone * CFrame.new(0, 150, 0));
-                            else
-                                _tp(CFrameSelectedZone);
-                            end;
-                        until _G.SailBoats == false or CheckShark() and _G.Shark or CheckTerrorShark() and _G.TerrorShark or CheckFishCrew() and _G.MobCrew or CheckPiranha() and _G.Piranha or CheckSeaBeast() and _G.SeaBeast1 or CheckEnemiesBoat() and _G.FishBoat or _G.Leviathan1 and CheckLeviathan() or _G.HCM and CheckHauntedCrew() or _G.PGB and CheckPirateGrandBrigade() or (plr.Character:WaitForChild("Humanoid")).Sit == false;
-                        plr.Character.Humanoid.Sit = false;
-                    end;
-                end;
-            end);
-        end;
-    end;
-end);
+                local myBoat = CheckBoat()
+                
+                -- Mua/Gọi thuyền tại chỗ
+                if not myBoat then
+                    replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat)
+                    task.wait(0.5)
+                    replicated.Remotes.CommF_:InvokeServer("SpawnBoat", _G.SelectedBoat)
+                    task.wait(1)
+                end
 
-spawn(function()
-    while wait(Sec) do
-        pcall(function()
-            for I, e in pairs(workspace.Boats:GetChildren()) do
-                for I, e in pairs(workspace.Boats[e.Name]:GetDescendants()) do
-                    if e:IsA("BasePart") then
-                        if _G.SailBoats or _G.Prehis_Find or _G.FindMirage or _G.SailBoat_Hydra or _G.AutofindKitIs then
-                            e.CanCollide = false;
+                local currentBoat = CheckBoat()
+                if currentBoat and currentBoat:FindFirstChild("VehicleSeat") then
+                    -- Kiểm tra nguy hiểm
+                    local isDanger = (CheckShark() and _G.Shark) or (CheckTerrorShark() and _G.TerrorShark) 
+                                     or (CheckFishCrew() and _G.MobCrew) or (CheckPiranha() and _G.Piranha)
+                                     or (CheckSeaBeast() and _G.SeaBeast1) or (CheckEnemiesBoat() and _G.FishBoat)
+                                     or (_G.PGB and CheckPirateGrandBrigade()) or (_G.HCM and CheckHauntedCrew()) 
+                                     or (_G.Leviathan1 and CheckLeviathan())
+
+                    if not isDanger then
+                        if plr.Character.Humanoid.Sit == false then
+                            local seatPos = currentBoat.VehicleSeat.CFrame * CFrame.new(0, 2, 0)
+                            TweenService:Create(plr.Character.HumanoidRootPart, TweenInfo.new(0.5), {CFrame = seatPos}):Play()
                         else
-                            e.CanCollide = true;
-                        end;
-                    end;
-                end;
-            end;
-        end);
-    end;
-end);
+                            local targetZone = GetSelectedZoneCFrame(_G.DangerSc or "Lv 1")
+                            local boatSeat = currentBoat.VehicleSeat
+                            local distance = (boatSeat.Position - targetZone.Position).Magnitude
+                            -- Tốc độ 100 stud/giây, tùy chỉnh theo ý bạn
+                            TweenService:Create(boatSeat, TweenInfo.new(distance / 100, Enum.EasingStyle.Linear), {CFrame = targetZone}):Play()
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+-- 3. TỐI ƯU VA CHẠM
+spawn(function()
+    while task.wait(1) do
+        if _G.SailBoats then
+            local myBoat = CheckBoat()
+            if myBoat then
+                for _, part in pairs(myBoat:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
+                end
+            end
+        end
+    end
+end)
+end
 
 -- // VARIÁVEL DE VELOCIDADE PADRÃO // --
 _G.SetSpeedBoat = 300
@@ -11575,10 +11729,45 @@ spawn(function()
         end;
     end;
 end);
+-- 1. Khai báo biến toàn cục
+_G.Auto_StartRaid = false;
+
+-- 2. Thêm Toggle vào giao diện của bạn
+Fruit:AddToggle({
+    Name  = "Auto Start Raid 2",
+    Description = "Tự động kích hoạt Raid mà không cần di chuyển",
+    Default = false,
+    Callback = function(I)
+        _G.Auto_StartRaid = I;
+        print("Trạng thái Auto Start Raid: " .. tostring(I))
+    end,
+});
+
+-- 3. Logic chạy ngầm (Không teleport, không bay)
+spawn(function()
+    while true do 
+        task.wait(10) -- Nghỉ 10 giây giữa các lần kiểm tra
+        
+        if _G.Auto_StartRaid then
+            pcall(function()
+                -- Kiểm tra điều kiện: Raid chưa mở và có Microchip
+                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == false and GetBP("Special Microchip") then
+                    
+                    -- LƯU Ý: Bạn cần thay thế dòng dưới đây bằng Remote chính xác của game bạn đang chơi
+                    -- Ví dụ: game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartRaid", "tên_raid")
+                    
+                    print("Đang gửi lệnh vào Raid...")
+                    -- game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(...) 
+                    
+                end
+            end)
+        end
+    end
+end)
 
 Fruit:AddToggle({
 	Name  = "Auto Complete Raid",
-    Description = "",
+    Description = "hoàn thành raid",
     Default = false,
     Callback = function(I)
         _G.Raiding = I
@@ -11674,7 +11863,44 @@ while wait(Sec) do
 end
 end)
 end)
+Fruit:AddToggle({
+    Name = "Kill aura",
+    Default = false,
+    Callback = function(Value)
+        _G.KillH = Value
+    end
+})
 
+-- Sử dụng task.spawn để chạy mượt mà và tối ưu hơn spawn() cũ
+task.spawn(function()
+    while true do 
+        task.wait(Sec) -- Dùng task.wait thay cho wait vì nó chính xác hơn
+        
+        if _G.KillH then
+            -- Set SimulationRadius một lần ở ngoài vòng lặp để tránh làm nặng game
+            pcall(function()
+                sethiddenproperty(plr, "SimulationRadius", math.huge)
+            end)
+            
+            -- Quét qua toàn bộ danh sách quái vật cùng một lúc
+            for _, v in pairs(workspace.Enemies:GetChildren()) do
+                -- Nếu trong lúc đang quét mà bạn tắt Toggle thì dừng vòng lặp ngay lập tức
+                if not _G.KillH then break end 
+                
+                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                    -- Chỉ xử lý những con quái còn sống
+                    if v.Humanoid.Health > 0 and v.Parent then
+                        pcall(function()
+                            v.HumanoidRootPart.CanCollide = false
+                            v:BreakJoints()
+                            v.Humanoid.Health = 0
+                        end)
+                    end
+                end
+            end
+        end
+    end
+end)
 Fruit:AddToggle({
 	Name = "Auto Awakening",
 	Description = "",
@@ -11778,7 +12004,7 @@ spawn(function()
 		end);
 	end;
 end);
-Get:AddToggle({
+Fruit:AddToggle({
 	Name = "Auto Drop Fruit",
 	Description = "Automatic drop devil fruit",
 	Default = false,
