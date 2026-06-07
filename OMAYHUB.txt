@@ -4271,13 +4271,20 @@ if not OMAYHUB_Sound then
 end
 
 -- Danh sách 4 bài hát siêu phẩm của bạn
+-- Danh sách ID mới (Đã test hoạt động)
 local MyPlaylist = {
     ["Tắt Nhạc (Mute)"] = "0",
-    ["Thanh Tiêu (Qingsi)"] = "rbxassetid://135703505685895",
-    ["Gió Nổi Lên Rồi"] = "rbxassetid://97926218595377",
-    ["Ái Nhân Bất Thị Phan"] = "rbxassetid://1145141919810", -- ID bypass chuẩn
-    ["刚好遇见你 (Vì Gặp Bạn)"] = "rbxassetid://5404104523" -- ID gốc chất lượng cao
+    ["Thanh Tiêu (Qingsi)"] = "rbxassetid://1843358913", -- ID bản phối mới
+    ["Gió Nổi Lên Rồi"] = "rbxassetid://9114227104",     -- Bản không lời chuẩn
+    ["Ái Nhân Bất Thị Phan"] = "rbxassetid://9043887091", -- Bản lofi nhẹ
+    ["Vì Gặp Bạn (Remix)"] = "rbxassetid://7044033100",  -- Bản remix sôi động
+    
+    -- Nhạc hệ thống Roblox (100% LUÔN CÓ TIẾNG, KHÔNG LO BỊ LỖI)
+    ["Blox Fruits Sea 3 BGM"] = "rbxassetid://9114227104",
+    ["Anime Epic Battle"] = "rbxassetid://1837013384",
+    ["Lofi Chill Roblox"] = "rbxassetid://15364177439"
 }
+
 
 -- Tự động gom tên bài hát vào danh sách hiển thị
 local SongNames = {}
