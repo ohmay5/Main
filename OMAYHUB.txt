@@ -2997,6 +2997,67 @@ spawn(function()
         end
     end)
 end)
+
+
+local TeleportService = game:GetService("TeleportService")
+local HttpService = game:GetService("HttpService")
+
+-- Hàm nhảy Server
+local function HopServer()
+    local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?limit=100"
+    local response = request({Url = url, Method = "GET"})
+    local data = HttpService:JSONDecode(response.Body)
+    
+    local servers = {}
+    if data and data.data then
+        for _, server in pairs(data.data) do
+            if server.playing < server.maxPlayers and server.id ~= game.JobId then
+                table.insert(servers, server.id)
+            end
+        end
+    end
+    
+    if #servers > 0 then
+        TeleportService:TeleportToPlaceInstance(game.PlaceId, servers[math.random(1, #servers)], game.Players.LocalPlayer)
+    end
+end
+
+-- Hàm kiểm tra Boss
+local function CheckBoss()
+    local enemies = workspace:FindFirstChild("Enemies")
+    if enemies then
+        -- Tên Boss Katakuri V2 (Dough King) và Rip_Indra trong Blox Fruits
+        if enemies:FindFirstChild("Dough King") or enemies:FindFirstChild("Rip_Indra") then
+            return true
+        end
+    end
+    return false
+end
+
+-- Toggle trong Dojo UI
+Status:AddToggle({
+    Name = "Auto Hop Boss [Indra/Dough King]",
+    Description = "Nhảy server tìm Boss",
+    Callback = function(v)
+        _G.AutoHopBoss = v
+        if _G.AutoHopBoss then
+            spawn(function()
+                while _G.AutoHopBoss do
+                    if CheckBoss() then
+                        print("Đã tìm thấy Boss!")
+                        _G.AutoHopBoss = false 
+                    else
+                        HopServer()
+                        task.wait(20) -- Đợi 20s để tránh bị Roblox khóa IP
+                    end
+                end
+            end)
+        end
+    end
+})
+
+
+
 Status:AddTextBox({
     Name = "Input Job Id",
     Placeholder = "Job ID",
