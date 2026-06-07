@@ -7482,7 +7482,96 @@ spawn(function()
         end);
     end;
 end);
+Race:AddToggle({
+    Name = "Auto Human V2/V3 số 2",
+    Description = "",
+    Default = false,
+    Callback = function(I)
+        G.Auto_Human = I;
+    end,
+});
 
+-- Vòng lặp chính xử lý Logic Human V2/V3
+task.spawn(function()
+    while true do
+        task.wait(Sec)
+        
+        if G.Auto_Human then
+            pcall(function()
+                -- Lấy trạng thái Alchemist (Chỉ gọi 1 lần để chống spam)
+                local alchemistState = CommF:InvokeServer("Alchemist", "1")
+                
+                if alchemistState ~= 2 then
+                    -- === LOGIC TIẾN HÓA V2 (Tìm Hoa) ===
+                    if alchemistState == 0 then
+                        CommF:InvokeServer("Alchemist", "2")
+                    elseif alchemistState == 1 then
+                        if not hasItem("Flower 1") then
+                            if workspace:FindFirstChild("Flower1") then
+                                tp(workspace.Flower1.CFrame)
+                            end
+                        elseif not hasItem("Flower 2") then
+                            if workspace:FindFirstChild("Flower2") then
+                                tp(workspace.Flower2.CFrame)
+                            end
+                        elseif not hasItem("Flower 3") then
+                            local enemy = GetEnemy("Swan Pirate")
+                            if enemy then
+                                repeat 
+                                    task.wait()
+                                    AttackEnemy(enemy)
+                                until hasItem("Flower 3") or not enemy.Parent or enemy.Humanoid.Health <= 0 or G.Auto_Human == false
+                            else
+                                tp(CFrame.new(980, 121, 1287))
+                            end
+                        end
+                    end
+                else
+                    -- Trả nhiệm vụ V2 nếu xong để bắt đầu làm V3
+                    CommF:InvokeServer("Alchemist", "3")
+                    
+                    -- === LOGIC TIẾN HÓA V3 (Diệt 3 Boss) ===
+                    local wenlockState = CommF:InvokeServer("Wenlocktoad", "1")
+                    if wenlockState == 0 then
+                        CommF:InvokeServer("Wenlocktoad", "2")
+                    elseif wenlockState == 1 then
+                        
+                        -- 1. Diệt Boss Fajita
+                        local b1 = GetEnemy(BossesV3[1])
+                        if b1 then
+                            repeat task.wait()
+                                AttackEnemy(b1)
+                            until b1.Humanoid.Health <= 0 or not b1.Parent or not G.Auto_Human
+                        else
+                            tp(CFrame.new(-2172, 103, -4015)) -- Tọa độ Fajita
+                        end
+
+                        -- 2. Diệt Boss Jeremy
+                        local b2 = GetEnemy(BossesV3[2])
+                        if b2 then
+                            repeat task.wait()
+                                AttackEnemy(b2)
+                            until b2.Humanoid.Health <= 0 or not b2.Parent or not G.Auto_Human
+                        else
+                            tp(CFrame.new(2006, 448, 853)) -- Tọa độ Jeremy
+                        end
+
+                        -- 3. Diệt Boss Diamond
+                        local b3 = GetEnemy(BossesV3[3])
+                        if b3 then
+                            repeat task.wait()
+                                AttackEnemy(b3)
+                            until b3.Humanoid.Health <= 0 or not b3.Parent or not G.Auto_Human
+                        else
+                            tp(CFrame.new(-1576, 198, 13)) -- Tọa độ Diamond
+                        end
+                        
+                    end
+                end
+            end)
+        end
+    end
+end)
 Race:AddToggle({
     Name = "Auto Angel V2/V3",
     Description = "",
