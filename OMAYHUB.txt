@@ -6154,72 +6154,6 @@ task.spawn(function()
         end)
     end
 end)
-
--- =========================================================================
--- MỤC 1: TOÀN BỘ GIAO DIỆN MENU CỦA BẠN (ĐÃ THÊM DROPDOWN & TOGGLE KÉO TIM)
--- =========================================================================
-Event:AddSection({"Select what you will farm."})
-
-Event:AddToggle({
-    Name = "Auto Attack Sea Beast",
-    Description = "tự động đánh sea beast",
-    Default = false,
-    Callback = function(I)
-        _G.SeaBeast1 = I;
-    end,
-});
-
-Event:AddToggle({
-    Name = "Auto Attack Pirate GrandBrigade",
-    Description = "tự động tấn công thuyền cướp biển",
-    Default = false,
-    Callback = function(I)
-        _G.PGB = I;
-    end,
-});
-
-if World2 then
-    Event:AddSection({"Go to Sea 3 for more options."})
-end
-
-if World1 then
-    Event:AddSection({"Go to Sea 3 or Sea 2 for Farm maritime events"})
-end
-
-if game.PlaceId == 7449423635 or game.PlaceId == 100117331123089 then
-    Event:AddToggle({
-        Name = "Auto Shark",
-        Description = "đánh cá mập",
-        Default = false,
-        Callback = function(I)
-            _G.Shark = I;
-        end,
-    });
-    Event:AddToggle({
-        Name = "Auto Piranha",
-        Description = "đánh cá piranha",
-        Default = false,
-        Callback = function(I)
-            _G.Piranha = I;
-        end,
-    });
-    Event:AddToggle({
-        Name = "Auto Terror Shark",
-        Description = "đánh cá mập khủng bố",
-        Default = false,
-        Callback = function(I)
-            _G.TerrorShark = I;
-        end,
-    });
-    Event:AddToggle({
-        Name = "Auto Fish Crew Member",
-        Description = "đánh đội đánh cá",
-        Default = false,
-        Callback = function(I)
-            _G.MobCrew = I;
-        end,
-    });
-   
 if game.PlaceId == 7449423635 or game.PlaceId == 100117331123089 then
 Event:AddSection({"Frozen Dimension"})
 Event:AddButton({
@@ -6264,8 +6198,6 @@ Event:AddToggle({
 		_G.Leviathan1 = I;
 	end,
 });
-
-
 Event:AddSection({"Kitsune Island / Event"});
 Event:AddToggle({
     Name = "Auto Find Kitsune Island",
