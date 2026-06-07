@@ -4258,6 +4258,55 @@ Setting:AddButton({
     end
 })
 Setting:AddSection({"Setting Farm"})
+-- ========================================================
+-- KHỞI TẠO HỆ THỐNG PHÁT NHẠC (ĐỂ ĐẦU HOẶC TRONG SCRIPT)
+-- ========================================================
+local HubMusic = game:GetService("SoundService"):FindFirstChild("OMAYHUB_Music")
+if not HubMusic then
+    HubMusic = Instance.new("Sound")
+    HubMusic.Name = "OMAYHUB_Music"
+    HubMusic.Volume = 0.5 -- Âm lượng
+    HubMusic.Looped = true -- Tự động lặp lại bài hát
+    HubMusic.Parent = game:GetService("SoundService")
+end
+
+-- Danh sách các bài hát bạn muốn thêm vào menu (Tên bài = ID bài hát)
+local SongList = {
+    ["Tắt Nhạc (Mute)"] = "0",
+    ["Nhạc Gặp đúng lúc"] = "rbxassetid://135703505685895",
+    ["Nhạc đại thiên bồng"] = "rbxassetid://97926218595377",
+    ["Nhạc bán hồ sa"] = "rbxassetid://135909195315238",
+    ["Nhạc Thăm cố tri"] = "rbxassetid://108045280020844"
+}
+
+-- Tạo danh sách chữ hiển thị cho Dropdown
+local SongNames = {}
+for name, _ in pairs(SongList) do
+    table.insert(SongNames, name)
+end
+
+-- ========================================================
+-- NÚT CHỌN NHẠC TRÊN MENU REDZ UI CỦA BẠN
+-- ========================================================
+Setting:AddDropdown({ 
+    Name = "Select Menu Music",
+    Description = "Chọn bài hát nền bạn muốn nghe",
+    Options = SongNames,
+    Default = "Tắt Nhạc (Mute)",
+    Multi = false,
+    Callback = function(SelectedSong)
+        local songId = SongList[SelectedSong]
+        
+        if songId == "0" then
+            HubMusic:Stop() -- Nếu chọn Tắt Nhạc thì dừng phát
+        else
+            HubMusic:Stop() -- Dừng bài cũ đang phát để đổi bài
+            HubMusic.SoundId = songId -- Đổi sang ID bài mới
+            HubMusic:Play() -- Phát bài mới
+        end
+    end,
+})
+
 Setting:AddToggle({
 	Name = "Bring Mob",
 	Description = "gom quái",
