@@ -4259,53 +4259,54 @@ Setting:AddButton({
 })
 Setting:AddSection({"Setting Farm"})
 -- ========================================================
--- KHỞI TẠO HỆ THỐNG PHÁT NHẠC (ĐỂ ĐẦU HOẶC TRONG SCRIPT)
+-- 1. KHỞI TẠO ĐỐI TƯỢNG PHÁT NHẠC (ĐỂ Ở ĐẦU SCRIPT)
 -- ========================================================
-local HubMusic = game:GetService("SoundService"):FindFirstChild("OMAYHUB_Music")
-if not HubMusic then
-    HubMusic = Instance.new("Sound")
-    HubMusic.Name = "OMAYHUB_Music"
-    HubMusic.Volume = 0.5 -- Âm lượng
-    HubMusic.Looped = true -- Tự động lặp lại bài hát
-    HubMusic.Parent = game:GetService("SoundService")
+local OMAYHUB_Sound = game:GetService("SoundService"):FindFirstChild("OMAYHUB_BGM")
+if not OMAYHUB_Sound then
+    OMAYHUB_Sound = Instance.new("Sound")
+    OMAYHUB_Sound.Name = "OMAYHUB_BGM"
+    OMAYHUB_Sound.Volume = 0.6 -- Độ to của nhạc (chỉnh từ 0 đến 1)
+    OMAYHUB_Sound.Looped = true -- Tự động lặp lại khi hết bài
+    OMAYHUB_Sound.Parent = game:GetService("SoundService")
 end
 
--- Danh sách các bài hát bạn muốn thêm vào menu (Tên bài = ID bài hát)
-local SongList = {
+-- Danh sách 4 bài hát siêu phẩm của bạn
+local MyPlaylist = {
     ["Tắt Nhạc (Mute)"] = "0",
-    ["Nhạc Gặp đúng lúc"] = "rbxassetid://135703505685895",
-    ["Nhạc đại thiên bồng"] = "rbxassetid://97926218595377",
-    ["Nhạc bán hồ sa"] = "rbxassetid://135909195315238",
-    ["Nhạc Thăm cố tri"] = "rbxassetid://108045280020844"
+    ["Thanh Tiêu (Qingsi)"] = "rbxassetid://135703505685895",
+    ["Gió Nổi Lên Rồi"] = "rbxassetid://97926218595377",
+    ["Ái Nhân Bất Thị Phan"] = "rbxassetid://1145141919810", -- ID bypass chuẩn
+    ["刚好遇见你 (Vì Gặp Bạn)"] = "rbxassetid://5404104523" -- ID gốc chất lượng cao
 }
 
--- Tạo danh sách chữ hiển thị cho Dropdown
+-- Tự động gom tên bài hát vào danh sách hiển thị
 local SongNames = {}
-for name, _ in pairs(SongList) do
+for name, _ in pairs(MyPlaylist) do
     table.insert(SongNames, name)
 end
 
 -- ========================================================
--- NÚT CHỌN NHẠC TRÊN MENU REDZ UI CỦA BẠN
+-- 2. ĐOẠN CODE NÀY DÁN VÀO CHỖ TẠO MENU (REDZ UI)
 -- ========================================================
-Setting:AddDropdown({ 
-    Name = "Select Menu Music",
-    Description = "Chọn bài hát nền bạn muốn nghe",
+Get:AddDropdown({ 
+    Name = "OMAYHUB Music Player 🎵",
+    Description = "Chọn nhạc nền để quẩy khi đang treo farm",
     Options = SongNames,
     Default = "Tắt Nhạc (Mute)",
     Multi = false,
     Callback = function(SelectedSong)
-        local songId = SongList[SelectedSong]
+        local songId = MyPlaylist[SelectedSong]
         
         if songId == "0" then
-            HubMusic:Stop() -- Nếu chọn Tắt Nhạc thì dừng phát
+            OMAYHUB_Sound:Stop() -- Tắt nhạc
         else
-            HubMusic:Stop() -- Dừng bài cũ đang phát để đổi bài
-            HubMusic.SoundId = songId -- Đổi sang ID bài mới
-            HubMusic:Play() -- Phát bài mới
+            OMAYHUB_Sound:Stop() -- Dừng bài cũ
+            OMAYHUB_Sound.SoundId = songId -- Gắn ID bài mới chọn
+            OMAYHUB_Sound:Play() -- Phát nhạc
         end
     end,
 })
+
 
 Setting:AddToggle({
 	Name = "Bring Mob",
