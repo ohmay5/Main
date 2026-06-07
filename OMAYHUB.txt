@@ -4495,7 +4495,7 @@ spawn(function()
 	end;
 end);
 Setting:AddSection({"Select"})
-AddSlider({
+Setting:AddSlider({
     Title = "Bring Mobs Range",
     Description = "Điều chỉnh độ xa để gom quái",
     Default = _G.BringRange or 250,
