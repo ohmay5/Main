@@ -11352,7 +11352,7 @@ Fruit:AddSection({"Raid Farming"});
 
 Fruit:AddToggle({
 	Name  = "Auto Start Raid",
-    Description = "Bắt đầu raid",
+    Description = "",
     Default = false,
     Callback = function(I)
         _G.Auto_StartRaid = I;
@@ -11400,7 +11400,7 @@ end);
 
 Fruit:AddToggle({
 	Name  = "Auto Complete Raid",
-    Description = "Hoàn thành raid",
+    Description = "",
     Default = false,
     Callback = function(I)
         _G.Raiding = I
@@ -11496,52 +11496,10 @@ while wait(Sec) do
 end
 end)
 end)
--- Định nghĩa thời gian delay giữa mỗi lần quét (giây)
-local Sec = 0.1 
-local plr = game.Players.LocalPlayer -- Tự động lấy LocalPlayer nếu bạn chưa khai báo
-
-Fruit:AddToggle({
-    Name = "Kill aura",
-    Default = false,
-    Callback = function(Value)
-        _G.KillH = Value
-    end
-})
-
--- Sử dụng task.spawn để chạy mượt mà và tối ưu hơn spawn() cũ
-task.spawn(function()
-    while true do 
-        task.wait(Sec) -- Dùng task.wait thay cho wait vì nó chính xác hơn
-        
-        if _G.KillH then
-            -- Set SimulationRadius một lần ở ngoài vòng lặp để tránh làm nặng game
-            pcall(function()
-                sethiddenproperty(plr, "SimulationRadius", math.huge)
-            end)
-            
-            -- Quét qua toàn bộ danh sách quái vật cùng một lúc
-            for _, v in pairs(workspace.Enemies:GetChildren()) do
-                -- Nếu trong lúc đang quét mà bạn tắt Toggle thì dừng vòng lặp ngay lập tức
-                if not _G.KillH then break end 
-                
-                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-                    -- Chỉ xử lý những con quái còn sống
-                    if v.Humanoid.Health > 0 and v.Parent then
-                        pcall(function()
-                            v.HumanoidRootPart.CanCollide = false
-                            v:BreakJoints()
-                            v.Humanoid.Health = 0
-                        end)
-                    end
-                end
-            end
-        end
-    end
-end)
 
 Fruit:AddToggle({
 	Name = "Auto Awakening",
-	Description = "Thức tỉnh fruit",
+	Description = "",
 	Default = false,
 	Callback = function(I)
 		_G.Auto_Awakener = I;
@@ -11642,7 +11600,7 @@ spawn(function()
 		end);
 	end;
 end);
-Fruit:AddToggle({
+Get:AddToggle({
 	Name = "Auto Drop Fruit",
 	Description = "Automatic drop devil fruit",
 	Default = false,
