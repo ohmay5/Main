@@ -5838,6 +5838,125 @@ spawn(function()
         end);
     end;
 end);
+Event:AddToggle({
+    Name = "Auto Start farm 2",
+    Description = "mua thuyền và chuyển đến khu vực biển",
+    Default = false,
+    Callback = function(I)
+        _G.SailBoats = I;
+    end,
+})
+
+-- Tối ưu hóa việc tắt Va chạm (CanCollide) của thuyền để tránh lag
+spawn(function()
+    local updateInterval = 1 -- Thay cho biến Sec bị thiếu (1 giây quét 1 lần là đủ)
+    while wait(updateInterval) do
+        if _G.SailBoats or _G.Prehis_Find or _G.FindMirage or _G.SailBoat_Hydra or _G.AutofindKitIs then
+            pcall(function()
+                local boatsFolder = workspace:FindFirstChild("Boats")
+                if boatsFolder then
+                    for _, boat in pairs(boatsFolder:GetChildren()) do
+                        for _, part in pairs(boat:GetDescendants()) do
+                            if part:IsA("BasePart") and part.CanCollide then
+                                part.CanCollide = false
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+-- Vòng lặp chính Auto Farm Biển
+spawn(function()
+    while wait(0.5) do -- Tăng lên 0.5s để giảm tải cho CPU thay vì wait() trống
+        if _G.SailBoats then
+            pcall(function()
+                local myBoat = CheckBoat()
+                
+                -- Khởi tạo vị trí Zone mặc định đề phòng lỗi
+                local CFrameSelectedZone = CFrame.new(-16927.451, 9.086, 433.864) 
+
+                -- Nếu chưa có thuyền -> Đi mua thuyền
+                if not myBoat then
+                    local BoatDealerPos = CFrame.new(-16927.451, 9.086, 433.864)
+                    TeleportToTarget(BoatDealerPos)
+                    
+                    if plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                        if (BoatDealerPos.Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 15 then
+                            local boatType = _G.SelectedBoat or "Boat" -- Nếu nil thì chọn mặc định là "Boat"
+                            replicated.Remotes.CommF_:InvokeServer("BuyBoat", boatType)
+                            wait(1) -- Chờ 1 giây để thuyền kịp spawn
+                        end
+                    end
+                
+                -- Nếu đã có thuyền và KHÔNG có quái vật nào xuất hiện -> Tiếp tục di chuyển ra biển
+                elseif myBoat and (
+                    not (CheckShark() and _G.Shark or CheckTerrorShark() and _G.TerrorShark or CheckFishCrew() and _G.MobCrew or CheckPiranha() and _G.Piranha) 
+                    and not (CheckEnemiesBoat() and _G.FishBoat) 
+                    and not (CheckSeaBeast() and _G.SeaBeast1) 
+                    and not (_G.PGB and CheckPirateGrandBrigade()) 
+                    and not (_G.HCM and CheckHauntedCrew()) 
+                    and not (_G.Leviathan1 and CheckLeviathan())
+                ) then
+                    
+                    -- Nếu chưa ngồi vào ghế -> Teleport vào ghế lái
+                    if plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Sit == false then
+                        if myBoat:FindFirstChild("VehicleSeat") then
+                            local seatCFrame = myBoat.VehicleSeat.CFrame * CFrame.new(0, 1, 0)
+                            _tp(seatCFrame)
+                        end
+                    else
+                        -- Đã ngồi vào ghế -> Xác định tọa độ tầng biển (Danger Level)
+                        if _G.DangerSc == "Lv 1" then
+                            CFrameSelectedZone = CFrame.new(-21998.375, 30.0006084, -682.309143)
+                        elseif _G.DangerSc == "Lv 2" then
+                            CFrameSelectedZone = CFrame.new(-26779.5215, 30.0005474, -822.858032)
+                        elseif _G.DangerSc == "Lv 3" then
+                            CFrameSelectedZone = CFrame.new(-31171.957, 30.0001011, -2256.93774)
+                        elseif _G.DangerSc == "Lv 4" then
+                            CFrameSelectedZone = CFrame.new(-34054.6875, 30.2187767, -2560.12012)
+                        elseif _G.DangerSc == "Lv 5" then
+                            CFrameSelectedZone = CFrame.new(-38887.5547, 30.0004578, -2162.99023)
+                        elseif _G.DangerSc == "Lv 6" then
+                            CFrameSelectedZone = CFrame.new(-44541.7617, 30.0003204, -1244.8584)
+                        elseif _G.DangerSc == "Lv Infinite" then
+                            CFrameSelectedZone = CFrame.new(-10000000, 31, 37016.25)
+                        end
+                        
+                        -- Vòng lặp di chuyển ra biển cho tới khi tới nơi hoặc gặp quái
+                        repeat
+                            wait(0.1) -- Giới hạn tốc độ lặp lại để tránh lật thuyền/văng game
+                            
+                            -- Nếu có quái nguy hiểm chặn đường mà không bật tự động đánh nó -> Bay lên cao né
+                            if (not _G.FishBoat and CheckEnemiesBoat()) or (not _G.PGB and CheckPirateGrandBrigade()) or (not _G.TerrorShark and CheckTerrorShark()) then
+                                _tp(CFrameSelectedZone * CFrame.new(0, 150, 0))
+                            else
+                                _tp(CFrameSelectedZone)
+                            end
+                        until _G.SailBoats == false 
+                            or (CheckShark() and _G.Shark) 
+                            or (CheckTerrorShark() and _G.TerrorShark) 
+                            or (CheckFishCrew() and _G.MobCrew) 
+                            or (CheckPiranha() and _G.Piranha) 
+                            or (CheckSeaBeast() and _G.SeaBeast1) 
+                            or (CheckEnemiesBoat() and _G.FishBoat) 
+                            or (_G.Leviathan1 and CheckLeviathan()) 
+                            or (_G.HCM and CheckHauntedCrew()) 
+                            or (_G.PGB and CheckPirateGrandBrigade()) 
+                            or (plr.Character and plr.Character:FindFirstChild("Humanoid") and plr.Character.Humanoid.Sit == false)
+                        
+                        -- Rời ghế khi dừng di chuyển (Để bắt đầu farm quái)
+                        if plr.Character and plr.Character:FindFirstChild("Humanoid") then
+                            plr.Character.Humanoid.Sit = false
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
 
 -- // VARIÁVEL DE VELOCIDADE PADRÃO // --
 _G.SetSpeedBoat = 300
