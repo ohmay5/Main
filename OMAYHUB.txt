@@ -4243,22 +4243,32 @@ end);
 end
 Setting:AddSection({"Manual Save"})
 
-Setting:AddButton({
-    Name = "Salvar Config UI",
-    Description = "Lưu chức năng",
-    Callback = function()
-        -- Verifica se a função existe antes de chamar
-        if SaveSettings then
-            SaveSettings()
-            
-            -- Notificação Universal (Funciona sem a lib Fluent)
+Setting:AddToggle({
+    Name = "Auto Save Settings",
+    Description = "Tự động lưu khi thay đổi",
+    Default = true, -- Mặc định là bật khi vừa mở script
+    Callback = function(I)
+        _G.SaveData["AutoSave_Save"] = I -- Lưu trạng thái (true hoặc false) vào biến
+        
+        if I then
+            -- Khi người chơi bật (hoặc mặc định lúc đầu là true)
+            if SaveSettings then
+                SaveSettings()
+                game.StarterGui:SetCore("SendNotification", {
+                    Title = "OMAY Hub",
+                    Text = "Đã bật tự động lưu!",
+                    Duration = 5,
+                    Icon = "rbxassetid://114476175638281"
+                })
+            end
+        else
+            -- Khi người chơi chủ động gạt tắt
             game.StarterGui:SetCore("SendNotification", {
                 Title = "OMAY Hub",
-                Text = "Done",
-                Duration = 5
+                Text = "Đã tắt tự động lưu.",
+                Duration = 5,
+                Icon = "rbxassetid://114476175638281"
             })
-        else
-            warn("Erro!")
         end
     end
 })
@@ -4267,26 +4277,30 @@ Setting:AddButton({
     Name = "Resetar Config UI",
     Description = "Xoá các chức năng đã lưu",
     Callback = function()
-        -- Usa a variável FullPath que foi definida lá no topo do script
+        -- Dùng biến FullPath để xóa file
         if isfile and isfile(FullPath) then
             delfile(FullPath)
-            _G.SaveData = {} -- Limpa a tabela na memória ram
+            _G.SaveData = {} -- Xóa dữ liệu trong bộ nhớ
             
-            -- Notificação Universal
+            -- Thông báo khi xóa thành công
             game.StarterGui:SetCore("SendNotification", {
                 Title = "OMAY Hub",
-                Text = "Done",
-                Duration = 5
+                Text = "Đã reset cấu hình!",
+                Duration = 5,
+                Icon = "rbxassetid://114476175638281" -- ID Logo của bạn
             })
         else
+            -- Thông báo nếu không tìm thấy file
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Turbo Lite Hub",
-                Text = "Done",
-                Duration = 3
+                Title = "OMAY Hub",
+                Text = "Không có dữ liệu để reset.",
+                Duration = 3,
+                Icon = "rbxassetid://114476175638281" -- ID Logo của bạn
             })
         end
     end
 })
+
 Setting:AddSection({"Setting Farm"})
 Setting:AddToggle({
 	Name = "Bring Mob",
@@ -9338,69 +9352,145 @@ end
 -- UI E TOGGLES
 Esp:AddSection({"Esp Items / Entity / Island"});
 -- Hàm hỗ trợ lưu để code gọn hơn
-local function SaveToggle(name, value)
-    _G.SaveData[name] = value
-    if SaveSettings then SaveSettings() end
-end
+-- ESP Berries
+Esp:AddToggle({
+    Name = "Esp Berries", 
+    Default = _G.SaveData["EspBerries_Save"] or false, 
+    Callback = function(I) 
+        BerryEsp = I
+        _G.SaveData["EspBerries_Save"] = I
+        if SaveSettings then SaveSettings() end
+        if I then
+            spawn(function() while BerryEsp do wait(1); pcall(berriesEsp); end; end)
+        end
+    end
+})
 
--- 1. Các Toggle cơ bản (Có Save)
-local ESP_List = {
-    {"Esp Berries", "EspBerries_Save", function() pcall(berriesEsp) end, 1},
-    {"Esp Players", "EspPlayers_Save", function() pcall(EspPly) end, 0.1},
-    {"Esp Chests", "EspChests_Save", function() pcall(ChestEsp) end, 1},
-    {"Esp Fruits", "EspFruits_Save", function() pcall(DevEsp) end, 1},
-    {"Esp Island", "EspIsland_Save", function() IslandESP_Func() end, 2}
-}
+-- ESP Players
+Esp:AddToggle({
+    Name = "Esp Players", 
+    Default = _G.SaveData["EspPlayers_Save"] or false, 
+    Callback = function(I) 
+        PlayerEsp = I
+        _G.SaveData["EspPlayers_Save"] = I
+        if SaveSettings then SaveSettings() end
+        if I then
+            spawn(function() while PlayerEsp do wait(0.1); pcall(EspPly); end; end)
+        end
+    end
+})
 
-for _, v in pairs(ESP_List) do
+-- ESP Chests
+Esp:AddToggle({
+    Name = "Esp Chests", 
+    Default = _G.SaveData["EspChests_Save"] or false, 
+    Callback = function(I) 
+        ChestESP = I
+        _G.SaveData["EspChests_Save"] = I
+        if SaveSettings then SaveSettings() end
+        if I then
+            spawn(function() while ChestESP do wait(1); pcall(ChestEsp); end; end)
+        end
+    end
+})
+
+-- ESP Fruits
+Esp:AddToggle({
+    Name = "Esp Fruits", 
+    Default = _G.SaveData["EspFruits_Save"] or false, 
+    Callback = function(I)
+        DevilFruitESP = I
+        _G.SaveData["EspFruits_Save"] = I
+        if SaveSettings then SaveSettings() end
+        if I then
+            task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp); end; end)
+        end
+    end
+})
+
+-- ESP Island
+Esp:AddToggle({
+    Name = "Esp Island", 
+    Default = _G.SaveData["EspIsland_Save"] or false, 
+    Callback = function(I)
+        _G.IslandESP = I
+        _G.SaveData["EspIsland_Save"] = I
+        if SaveSettings then SaveSettings() end
+        if I then
+            task.spawn(function() while _G.IslandESP do IslandESP_Func(); task.wait(2); end; end)
+        end
+    end
+})
+
+-- ESP World 2 & 3
+if World2 then
     Esp:AddToggle({
-        Name = v[1],
-        Default = _G.SaveData[v[2]] or false,
+        Name = "Esp Flower", 
+        Default = _G.SaveData["EspFlower_Save"] or false, 
         Callback = function(I)
-            _G[v[2]:gsub("_Save", "")] = I -- Gán biến toàn cục tương ứng
-            SaveToggle(v[2], I)
+            FlowerESP = I
+            _G.SaveData["EspFlower_Save"] = I
+            if SaveSettings then SaveSettings() end
             if I then
-                task.spawn(function()
-                    while _G[v[2]:gsub("_Save", "")] do
-                        v[3]()
-                        task.wait(v[4])
-                    end
-                end)
+                task.spawn(function() while FlowerESP do task.wait(1); pcall(flowerEsp); end; end)
+            end
+        end
+    })
+    Esp:AddToggle({
+        Name = "Esp Legendary Sword", 
+        Default = _G.SaveData["EspLegen_Save"] or false, 
+        Callback = function(I)
+            LegenS = I
+            _G.SaveData["EspLegen_Save"] = I
+            if SaveSettings then SaveSettings() end
+            if I then
+                task.spawn(function() while LegenS do task.wait(1); pcall(LegenSword); end; end)
             end
         end
     })
 end
 
--- 2. Các Toggle theo World (Có Save)
-local World_ESP = {
-    {World2, "Esp Flower", "EspFlower_Save", function() pcall(flowerEsp) end},
-    {World2, "Esp Legendary Sword", "EspLegen_Save", function() pcall(LegenSword) end},
-    {World2 or World3, "Esp Aura Colour Dealers", "EspAura_Save", function() pcall(HakiClorEsp) end},
-    {World3, "Esp Gears", "EspGear_Save", function() pcall(gearEsp) end},
-    {World3, "Esp Advanced Fruits Dealer", "EspAdvan_Save", function() pcall(AdvanFruitEsp) end}
-}
-
-for _, v in pairs(World_ESP) do
-    if v[1] then
-        Esp:AddToggle({
-            Name = v[2],
-            Default = _G.SaveData[v[3]] or false,
-            Callback = function(I)
-                _G[v[3]:gsub("_Save", "")] = I
-                SaveToggle(v[3], I)
-                if I then
-                    task.spawn(function()
-                        while _G[v[3]:gsub("_Save", "")] do
-                            v[4]()
-                            task.wait(1)
-                        end
-                    end)
-                end
+if World2 or World3 then
+    Esp:AddToggle({
+        Name = "Esp Aura Colour Dealers", 
+        Default = _G.SaveData["EspAura_Save"] or false, 
+        Callback = function(I)
+            ColorEsp = I
+            _G.SaveData["EspAura_Save"] = I
+            if SaveSettings then SaveSettings() end
+            if I then
+                task.spawn(function() while ColorEsp do task.wait(1); pcall(HakiClorEsp); end; end)
             end
-        })
-    end
+        end
+    })
 end
 
+if World3 then
+    Esp:AddToggle({
+        Name = "Esp Gears", 
+        Default = _G.SaveData["EspGear_Save"] or false, 
+        Callback = function(I)
+            ESPGear = I
+            _G.SaveData["EspGear_Save"] = I
+            if SaveSettings then SaveSettings() end
+            if I then
+                task.spawn(function() while ESPGear do task.wait(1); pcall(gearEsp); end; end)
+            end
+        end
+    })
+    Esp:AddToggle({
+        Name = "Esp Advanced Fruits Dealer", 
+        Default = _G.SaveData["EspAdvan_Save"] or false, 
+        Callback = function(I)
+            advanEsp = I
+            _G.SaveData["EspAdvan_Save"] = I
+            if SaveSettings then SaveSettings() end
+            if I then
+                task.spawn(function() while advanEsp do task.wait(1); pcall(AdvanFruitEsp); end; end)
+            end
+        end
+    })
+end
 
 Esp:AddSection({"Fontes"});
 
