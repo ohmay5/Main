@@ -12003,27 +12003,25 @@ task.spawn(function()
     while task.wait(5) do
         if _G.Auto_StartRaid then
             pcall(function()
-                -- 1. Kiểm tra Raid đã bắt đầu chưa (Tránh spam lệnh)
+                -- 1. Kiểm tra Raid chưa bắt đầu
                 local timer = plr.PlayerGui.Main.TopHUDList.RaidTimer
                 if not timer.Visible then
                     
-                    -- 2. Kiểm tra và trang bị Chip (Yêu cầu bắt buộc để kích hoạt)
-                    local chip = plr.Backpack:FindFirstChild("Special Microchip") or plr.Character:FindFirstChild("Special Microchip")
-                    if chip then
-                        -- Trang bị chip lên tay
-                        if not plr.Character:FindFirstChild("Special Microchip") then
-                            plr.Character.Humanoid:EquipTool(chip)
-                            task.wait(0.5)
-                        end
+                    -- 2. Kiểm tra vật phẩm trong túi (không cần equip)
+                    local hasChip = plr.Backpack:FindFirstChild("Special Microchip")
+                    
+                    if hasChip then
+                        -- 3. Teleport đến vị trí Lobby (Bắt buộc để tránh Anti-cheat hoặc lỗi khoảng cách)
+                        _tp(CFrame.new(-282, 335, 1422)) 
+                        task.wait(1)
                         
-                        -- 3. Gọi Remote kích hoạt (Điền đúng loại Raid: "Flame", "Dark", v.v.)
-                        -- Đảm bảo thay "Flame" bằng loại Raid bạn đang có
+                        -- 4. Kích hoạt thông qua Remote (Cách này bỏ qua việc phải cầm chip)
+                        -- Đảm bảo thay "Flame" bằng đúng tên Raid bạn muốn
                         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartRaid", "Flame")
                         
-                        print("Đã gửi lệnh kích hoạt Raid Flame thành công!")
-                        task.wait(2) 
+                        print("Đã kích hoạt Raid thành công từ xa!")
                     else
-                        warn("Không tìm thấy Special Microchip trong hành trang!")
+                        warn("Bạn không có Special Microchip trong túi!")
                     end
                 end
             end)
