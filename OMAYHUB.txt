@@ -4543,7 +4543,7 @@ Setting:AddSlider({
 })
 
 -- 2. Toggle bật tắt Dash Speed
-MiscTab:AddToggle({
+Setting:AddToggle({
     Name = "Change Dash Speed",
     Default = false,
     Callback = function(Value)
@@ -4563,8 +4563,6 @@ Setting:AddToggle({
         _G.InfiniteJump = Value
     end
 })
-
--- Xử lý Nhảy vô hạn
 game:GetService("UserInputService").JumpRequest:Connect(function()
     if _G.InfiniteJump then
         game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
