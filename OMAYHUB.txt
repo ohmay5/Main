@@ -4536,7 +4536,7 @@ Setting:AddSlider({
     Name = "Dash Distance Boost",
     Min = 5,
     Max = 300, -- Tăng nhẹ khoảng cách, đừng để quá cao để tránh bị lỗi
-    Default = 10,
+    Default = 50,
     Callback = function(Value)
         _G.DashBoost = Value
     end
