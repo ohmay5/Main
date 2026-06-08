@@ -9348,11 +9348,28 @@ end});
 
 Esp:AddToggle({
     Name = "Esp Players", 
-    Default = false, 
+    Default = _G.SaveData["EspPlayers_Save"] or false, -- Đọc giá trị đã lưu
     Callback = function(I) 
-    PlayerEsp = I; 
-    spawn(function() while PlayerEsp do wait(0.1); EspPly(); end; end); 
-end});
+        PlayerEsp = I
+        _G.SaveData["EspPlayers_Save"] = I -- Cập nhật trạng thái mới
+        
+        -- Lưu vào file Settings.json
+        if SaveSettings then
+            SaveSettings()
+        end
+        
+        -- Logic chạy ESP
+        if I then
+            spawn(function() 
+                while PlayerEsp do 
+                    wait(0.1) 
+                    pcall(EspPly) -- Dùng pcall để tránh lỗi văng game
+                end 
+            end)
+        end
+    end
+});
+
 
 Esp:AddToggle({
      Name = "Esp Chests", 
