@@ -9455,6 +9455,69 @@ if World3 then
         task.spawn(function() while advanEsp do pcall(AdvanFruitEsp); task.wait(1) end; pcall(AdvanFruitEsp) end)
     end})
 end
+-- Hàm hỗ trợ lưu để code gọn hơn
+local function SaveToggle(name, value)
+    _G.SaveData[name] = value
+    if SaveSettings then SaveSettings() end
+end
+
+-- 1. Các Toggle cơ bản (Có Save)
+local ESP_List = {
+    {"Esp Berries", "EspBerries_Save", function() pcall(berriesEsp) end, 1},
+    {"Esp Players", "EspPlayers_Save", function() pcall(EspPly) end, 0.1},
+    {"Esp Chests", "EspChests_Save", function() pcall(ChestEsp) end, 1},
+    {"Esp Fruits", "EspFruits_Save", function() pcall(DevEsp) end, 1},
+    {"Esp Island", "EspIsland_Save", function() IslandESP_Func() end, 2}
+}
+
+for _, v in pairs(ESP_List) do
+    Esp:AddToggle({
+        Name = v[1],
+        Default = _G.SaveData[v[2]] or false,
+        Callback = function(I)
+            _G[v[2]:gsub("_Save", "")] = I -- Gán biến toàn cục tương ứng
+            SaveToggle(v[2], I)
+            if I then
+                task.spawn(function()
+                    while _G[v[2]:gsub("_Save", "")] do
+                        v[3]()
+                        task.wait(v[4])
+                    end
+                end)
+            end
+        end
+    })
+end
+
+-- 2. Các Toggle theo World (Có Save)
+local World_ESP = {
+    {World2, "Esp Flower", "EspFlower_Save", function() pcall(flowerEsp) end},
+    {World2, "Esp Legendary Sword", "EspLegen_Save", function() pcall(LegenSword) end},
+    {World2 or World3, "Esp Aura Colour Dealers", "EspAura_Save", function() pcall(HakiClorEsp) end},
+    {World3, "Esp Gears", "EspGear_Save", function() pcall(gearEsp) end},
+    {World3, "Esp Advanced Fruits Dealer", "EspAdvan_Save", function() pcall(AdvanFruitEsp) end}
+}
+
+for _, v in pairs(World_ESP) do
+    if v[1] then
+        Esp:AddToggle({
+            Name = v[2],
+            Default = _G.SaveData[v[3]] or false,
+            Callback = function(I)
+                _G[v[3]:gsub("_Save", "")] = I
+                SaveToggle(v[3], I)
+                if I then
+                    task.spawn(function()
+                        while _G[v[3]:gsub("_Save", "")] do
+                            v[4]()
+                            task.wait(1)
+                        end
+                    end)
+                end
+            end
+        })
+    end
+end
 
 
 Esp:AddSection({"Fontes"});
