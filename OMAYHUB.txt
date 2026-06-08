@@ -4532,11 +4532,6 @@ Setting:AddSlider({
         getgenv().TweenSpeedFar = I
     end
 });
-
-
--- 1. Tab Setting (giống như bạn đã yêu cầu)
-local Setting = Window:AddTab("Setting")
-
 Setting:AddSlider({
     Name = "Dash Distance Boost",
     Min = 10,
@@ -4572,9 +4567,6 @@ task.spawn(function()
     end
 end)
 
-
-
--- 3. Toggle Nhảy vô hạn
 Setting:AddToggle({
     Name = "Infinite Jump",
     Default = true,
