@@ -4533,36 +4533,41 @@ Setting:AddSlider({
     end
 });
 Setting:AddSlider({
-    Name = "Select Dash Speed",
-    Min = 50,
+    Name = "Select Dash Distance",
+    Min = 10,
     Max = 300,
-    Default = 153,
+    Default = 50,
     Callback = function(Value)
-        _G.DashSpeed = Value
+        _G.DashDistance = Value
     end
 })
 
+-- 3. Toggle bật/tắt tính năng lướt xa
 Setting:AddToggle({
-    Name = "Change Dash Speed",
+    Name = "Change Dash Distance",
     Default = false,
     Callback = function(Value)
         _G.DashSpeedEnabled = Value
     end
 })
 
--- Logic xử lý Dash thực tế (Đặt phần này bên ngoài các hàm AddTab)
+-- 4. Logic can thiệp vào hành động lướt (đảm bảo nó nằm ngoài phần tạo Tab)
 local plr = game:GetService("Players").LocalPlayer
-local runService = game:GetService("RunService")
+local root = plr.Character:WaitForChild("HumanoidRootPart")
 
-runService.RenderStepped:Connect(function()
-    if _G.DashSpeedEnabled and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-        -- Cách này ép tốc độ lướt bằng cách thay đổi lực tác động hoặc vị trí
-        -- Lưu ý: Đây là cách mô phỏng Dash nhanh
-        if plr.Character:FindFirstChild("DashEffect") then -- Kiểm tra hiệu ứng lướt
-            plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + (plr.Character.HumanoidRootPart.CFrame.LookVector * (_G.DashSpeed / 50))
-        end
+plr.Character.Humanoid.StateChanged:Connect(function(old, new)
+    if _G.DashSpeedEnabled and new == Enum.HumanoidStateType.Physics then
+        local lookVector = root.CFrame.LookVector
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.MaxForce = Vector3.new(100000, 0, 100000)
+        bodyVelocity.Velocity = lookVector * (_G.DashDistance or 50)
+        bodyVelocity.Parent = root
+        
+        task.wait(0.2)
+        bodyVelocity:Destroy()
     end
 end)
+
 
 
 -- 3. Toggle Nhảy vô hạn
