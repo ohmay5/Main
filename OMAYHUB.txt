@@ -4532,10 +4532,12 @@ Setting:AddSlider({
         getgenv().TweenSpeedFar = I
     end
 });
+
+
 Setting:AddSlider({
     Name = "Dash Distance Boost",
     Min = 5,
-    Max = 300, -- Tăng nhẹ khoảng cách, đừng để quá cao để tránh bị lỗi
+    Max = 300, 
     Default = 50,
     Callback = function(Value)
         _G.DashBoost = Value
@@ -4550,27 +4552,37 @@ Setting:AddToggle({
     end
 })
 
--- 2. Logic can thiệp
+-- 2. Logic "xịn" sử dụng ApplyImpulse
 local plr = game:GetService("Players").LocalPlayer
-local root = plr.Character:WaitForChild("HumanoidRootPart")
+local runService = game:GetService("RunService")
 
--- Lắng nghe hành động lướt thông qua thuộc tính Velocity hoặc thay đổi vị trí
-task.spawn(function()
-    while task.wait(0.1) do
-        if _G.ExtendDash and _G.DashBoost then
-            -- Kiểm tra nếu vận tốc tăng đột ngột (đặc trưng của việc lướt)
-            if root.Velocity.Magnitude > 60 then
-                -- Dịch chuyển nhân vật về phía trước một khoảng ngắn theo hướng nhìn
-                root.CFrame = root.CFrame + (root.CFrame.LookVector * (_G.DashBoost / 10))
+-- Sử dụng biến để tránh lướt liên tục gây lỗi
+local lastDash = 0
+local debounceTime = 0.5 -- Thời gian hồi chiêu giữa mỗi lần boost
+
+runService.Heartbeat:Connect(function()
+    if _G.ExtendDash and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+        local root = plr.Character.HumanoidRootPart
+        
+        -- Kiểm tra nếu vận tốc đang ở mức lướt (trên 60)
+        if root.Velocity.Magnitude > 60 then
+            if tick() - lastDash > debounceTime then
+                -- Áp dụng lực đẩy (Impulse) thay vì dịch chuyển CFrame
+                -- Điều này giúp game hiểu là bạn đang có lực đẩy tự nhiên
+                local force = root.CFrame.LookVector * (_G.DashBoost * 5)
+                root:ApplyImpulse(Vector3.new(force.X, 0, force.Z))
+                
+                lastDash = tick() -- Cập nhật thời gian lướt cuối
             end
         end
     end
 end)
 
+
 -- 3. Toggle Nhảy vô hạn
 Setting:AddToggle({
     Name = "Infinite Jump",
-    Default = false,
+    Default = true,
     Callback = function(Value)
         _G.InfiniteJump = Value
     end
