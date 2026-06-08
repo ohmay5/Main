@@ -12000,27 +12000,38 @@ Fruit:AddToggle({
 });
 
 task.spawn(function()
-    while true do 
-        task.wait(2) -- Kiểm tra mỗi 2 giây sẽ nhạy hơn 10 giây
-        
+    while task.wait(5) do
         if _G.Auto_StartRaid then
             pcall(function()
+                -- 1. Kiểm tra Raid đã bắt đầu chưa (Tránh spam lệnh)
                 local timer = plr.PlayerGui.Main.TopHUDList.RaidTimer
-                
-                -- Kiểm tra Raid chưa bắt đầu (Visible == false)
                 if not timer.Visible then
-                    -- Kiểm tra vật phẩm (Đảm bảo hàm GetBP đã được định nghĩa)
-                    if GetBP and GetBP("Special Microchip") then
-                        print("Đã tìm thấy Microchip, đang kích hoạt Raid...")
+                    
+                    -- 2. Kiểm tra và trang bị Chip (Yêu cầu bắt buộc để kích hoạt)
+                    local chip = plr.Backpack:FindFirstChild("Special Microchip") or plr.Character:FindFirstChild("Special Microchip")
+                    if chip then
+                        -- Trang bị chip lên tay
+                        if not plr.Character:FindFirstChild("Special Microchip") then
+                            plr.Character.Humanoid:EquipTool(chip)
+                            task.wait(0.5)
+                        end
                         
-                        -- ĐIỀN REMOTE CỦA BẠN VÀO ĐÂY
-                        -- Ví dụ: game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartRaid", "Flame")
+                        -- 3. Gọi Remote kích hoạt (Điền đúng loại Raid: "Flame", "Dark", v.v.)
+                        -- Đảm bảo thay "Flame" bằng loại Raid bạn đang có
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartRaid", "Flame")
+                        
+                        print("Đã gửi lệnh kích hoạt Raid Flame thành công!")
+                        task.wait(2) 
+                    else
+                        warn("Không tìm thấy Special Microchip trong hành trang!")
                     end
                 end
             end)
         end
     end
 end)
+
+
 
 
 Fruit:AddToggle({
