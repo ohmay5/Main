@@ -4551,22 +4551,26 @@ Setting:AddToggle({
     end
 })
 
--- 4. Logic can thiệp vào hành động lướt (đảm bảo nó nằm ngoài phần tạo Tab)
-local plr = game:GetService("Players").LocalPlayer
-local root = plr.Character:WaitForChild("HumanoidRootPart")
-
-plr.Character.Humanoid.StateChanged:Connect(function(old, new)
-    if _G.DashSpeedEnabled and new == Enum.HumanoidStateType.Physics then
-        local lookVector = root.CFrame.LookVector
-        local bodyVelocity = Instance.new("BodyVelocity")
-        bodyVelocity.MaxForce = Vector3.new(100000, 0, 100000)
-        bodyVelocity.Velocity = lookVector * (_G.DashDistance or 50)
-        bodyVelocity.Parent = root
-        
-        task.wait(0.2)
-        bodyVelocity:Destroy()
+--- Logic thay thế (Chèn phần này vào thay cho đoạn StateChanged cũ)
+task.spawn(function()
+    while task.wait() do
+        if _G.DashSpeedEnabled and _G.DashDistance then
+            local char = game:GetService("Players").LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local root = char.HumanoidRootPart
+                
+                -- Kiểm tra nếu nhân vật đang lướt (dựa vào vận tốc hoặc hiệu ứng)
+                -- Blox Fruits thường set vận tốc cực cao khi lướt
+                if root.Velocity.Magnitude > 60 then 
+                    -- Tăng vận tốc hiện tại lên theo tỉ lệ DashDistance
+                    -- Chúng ta cộng thêm vận tốc theo hướng nhìn để nó bay xa hơn
+                    root.Velocity = root.Velocity + (root.CFrame.LookVector * (_G.DashDistance / 2))
+                end
+            end
+        end
     end
 end)
+
 
 
 
