@@ -11991,47 +11991,52 @@ Fruit:AddSection({"Raid Farming"});
 
 -- 1. Khai báo biến toàn cục
 Fruit:AddToggle({
-    Name  = "Auto Start Raid 2",
-    Description = "Tự động kích hoạt Raid",
+	Name  = "Auto Start Raid",
+    Description = "",
     Default = false,
     Callback = function(I)
-        _G.Auto_StartRaid = I
+        _G.Auto_StartRaid = I;
     end,
 });
 
-task.spawn(function()
-    while task.wait(5) do
+spawn(function()
+    -- O loop agora espera 10 segundos para cada execução
+    while true do 
+        task.wait(10)
+        
         if _G.Auto_StartRaid then
             pcall(function()
-                -- 1. Kiểm tra Raid chưa bắt đầu
-                local timer = plr.PlayerGui.Main.TopHUDList.RaidTimer
-                if not timer.Visible then
+                -- Só tenta iniciar se a Raid não estiver ativa (Timer invisível)
+                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == false then
                     
-                    -- 2. Kiểm tra vật phẩm trong túi (không cần equip)
-                    local hasChip = plr.Backpack:FindFirstChild("Special Microchip")
-                    
-                    if hasChip then
-                        -- 3. Teleport đến vị trí Lobby (Bắt buộc để tránh Anti-cheat hoặc lỗi khoảng cách)
-                        _tp(CFrame.new(-282, 335, 1422)) 
-                        task.wait(1)
+                    -- Verifica se o player possui o Microchip
+                    if GetBP("Special Microchip") then
                         
-                        -- 4. Kích hoạt thông qua Remote (Cách này bỏ qua việc phải cầm chip)
-                        -- Đảm bảo thay "Flame" bằng đúng tên Raid bạn muốn
-                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartRaid", "Flame")
+                        if World2 then
+                            _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684));
+                            fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector);
+                            
+                        elseif World3 then
+                            -- 1. Tenta usar o portal via InvokeServer (apenas uma tentativa rápida)
+                            replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602));
+                            
+                            -- Pequena pausa para o teleporte do jogo acontecer
+                            task.wait(0.5); 
+                            
+                            -- 2. Fallback: Se o portal falhou ou o player não tem acesso, 
+                            -- o script usa o seu _tp para ir até a posição do botão.
+                            _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539));
+                            
+                            -- 3. Aciona o botão da Raid
+                            fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector);
+                        end;
                         
-                        print("Đã kích hoạt Raid thành công từ xa!")
-                    else
-                        warn("Bạn không có Special Microchip trong túi!")
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-
-
-
+                    end;
+                end;
+            end);
+        end;
+    end;
+end);
 Fruit:AddToggle({
 	Name  = "Auto Complete Raid",
     Description = "hoàn thành raid",
