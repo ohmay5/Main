@@ -4533,46 +4533,39 @@ Setting:AddSlider({
     end
 });
 Setting:AddSlider({
-    Name = "Select Dash Distance",
-    Min = 10,
-    Max = 300,
-    Default = 50,
+    Name = "Dash Distance Boost",
+    Min = 5,
+    Max = 300, -- Tăng nhẹ khoảng cách, đừng để quá cao để tránh bị lỗi
+    Default = 10,
     Callback = function(Value)
-        _G.DashDistance = Value
+        _G.DashBoost = Value
     end
 })
 
--- 3. Toggle bật/tắt tính năng lướt xa
 Setting:AddToggle({
-    Name = "Change Dash Distance",
+    Name = "Extend Dash",
     Default = false,
     Callback = function(Value)
-        _G.DashSpeedEnabled = Value
+        _G.ExtendDash = Value
     end
 })
 
---- Logic thay thế (Chèn phần này vào thay cho đoạn StateChanged cũ)
+-- 2. Logic can thiệp
+local plr = game:GetService("Players").LocalPlayer
+local root = plr.Character:WaitForChild("HumanoidRootPart")
+
+-- Lắng nghe hành động lướt thông qua thuộc tính Velocity hoặc thay đổi vị trí
 task.spawn(function()
-    while task.wait() do
-        if _G.DashSpeedEnabled and _G.DashDistance then
-            local char = game:GetService("Players").LocalPlayer.Character
-            if char and char:FindFirstChild("HumanoidRootPart") then
-                local root = char.HumanoidRootPart
-                
-                -- Kiểm tra nếu nhân vật đang lướt (dựa vào vận tốc hoặc hiệu ứng)
-                -- Blox Fruits thường set vận tốc cực cao khi lướt
-                if root.Velocity.Magnitude > 60 then 
-                    -- Tăng vận tốc hiện tại lên theo tỉ lệ DashDistance
-                    -- Chúng ta cộng thêm vận tốc theo hướng nhìn để nó bay xa hơn
-                    root.Velocity = root.Velocity + (root.CFrame.LookVector * (_G.DashDistance / 2))
-                end
+    while task.wait(0.1) do
+        if _G.ExtendDash and _G.DashBoost then
+            -- Kiểm tra nếu vận tốc tăng đột ngột (đặc trưng của việc lướt)
+            if root.Velocity.Magnitude > 60 then
+                -- Dịch chuyển nhân vật về phía trước một khoảng ngắn theo hướng nhìn
+                root.CFrame = root.CFrame + (root.CFrame.LookVector * (_G.DashBoost / 10))
             end
         end
     end
 end)
-
-
-
 
 -- 3. Toggle Nhảy vô hạn
 Setting:AddToggle({
