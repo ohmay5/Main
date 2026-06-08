@@ -11809,53 +11809,6 @@ Fruit:AddToggle({
 
 Fruit:AddSection({"Raid Farming"});
 
-Fruit:AddToggle({
-	Name  = "Auto Start Raid",
-    Description = "",
-    Default = false,
-    Callback = function(I)
-        _G.Auto_StartRaid = I;
-    end,
-});
-
-spawn(function()
-    -- O loop agora espera 10 segundos para cada execução
-    while true do 
-        task.wait(10)
-        
-        if _G.Auto_StartRaid then
-            pcall(function()
-                -- Só tenta iniciar se a Raid não estiver ativa (Timer invisível)
-                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == false then
-                    
-                    -- Verifica se o player possui o Microchip
-                    if GetBP("Special Microchip") then
-                        
-                        if World2 then
-                            _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684));
-                            fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector);
-                            
-                        elseif World3 then
-                            -- 1. Tenta usar o portal via InvokeServer (apenas uma tentativa rápida)
-                            replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602));
-                            
-                            -- Pequena pausa para o teleporte do jogo acontecer
-                            task.wait(0.5); 
-                            
-                            -- 2. Fallback: Se o portal falhou ou o player não tem acesso, 
-                            -- o script usa o seu _tp para ir até a posição do botão.
-                            _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539));
-                            
-                            -- 3. Aciona o botão da Raid
-                            fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector);
-                        end;
-                        
-                    end;
-                end;
-            end);
-        end;
-    end;
-end);
 -- 1. Khai báo biến toàn cục
 _G.Auto_StartRaid = false;
 
@@ -12028,6 +11981,62 @@ task.spawn(function()
         end
     end
 end)
+
+Fruit:AddToggle({
+    Name = "Auto Raid Pro (1-3 Kill | 4-5 Insta)",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoRaidPro = Value
+    end,
+})
+
+task.spawn(function()
+    while task.wait(0.2) do -- Tốc độ quét nhanh
+        if _G.AutoRaidPro then
+            pcall(function()
+                -- Chỉ chạy khi đang trong Raid
+                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible then
+                    
+                    -- Xác định đảo hiện tại (Dùng hàm của bạn)
+                    local currentIsland = nil
+                    for i = 1, 5 do
+                        local island = IsIslandRaid(i)
+                        if island then
+                            local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                            if dist < 1000 then currentIsland = i break end
+                        end
+                    end
+
+                    if currentIsland then
+                        if currentIsland <= 3 then
+                            -- Đảo 1-3: Dùng G.Kill (như bạn yêu cầu)
+                            attackNearbyEnemies()
+                        else
+                            -- Đảo 4-5: Ép máu về 0 ngay lập tức (Instakill)
+                            pcall(function() sethiddenproperty(plr, "SimulationRadius", math.huge) end)
+                            for _, mob in pairs(workspace.Enemies:GetChildren()) do
+                                if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
+                                    local dist = (mob.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                                    if dist <= 1500 then
+                                        mob.Humanoid.Health = 0
+                                    end
+                                end
+                            end
+                        end
+
+                        -- Teleport đến đảo tiếp theo (Dùng logic của bạn)
+                        local nextIsland = getNextIsland()
+                        if nextIsland then
+                            _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+
 Fruit:AddToggle({
 	Name = "Auto Awakening",
 	Description = "",
