@@ -4534,11 +4534,14 @@ Setting:AddSlider({
 });
 
 
+-- 1. Tab Setting (giống như bạn đã yêu cầu)
+local Setting = Window:AddTab("Setting")
+
 Setting:AddSlider({
     Name = "Dash Distance Boost",
-    Min = 5,
-    Max = 300, 
-    Default = 50,
+    Min = 10,
+    Max = 300, -- Tăng nhẹ khoảng cách, đừng để quá cao để tránh bị lỗi
+    Default = 20,
     Callback = function(Value)
         _G.DashBoost = Value
     end
@@ -4552,31 +4555,23 @@ Setting:AddToggle({
     end
 })
 
--- 2. Logic "xịn" sử dụng ApplyImpulse
+-- 2. Logic can thiệp
 local plr = game:GetService("Players").LocalPlayer
-local runService = game:GetService("RunService")
+local root = plr.Character:WaitForChild("HumanoidRootPart")
 
--- Sử dụng biến để tránh lướt liên tục gây lỗi
-local lastDash = 0
-local debounceTime = 0.5 -- Thời gian hồi chiêu giữa mỗi lần boost
-
-runService.Heartbeat:Connect(function()
-    if _G.ExtendDash and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
-        local root = plr.Character.HumanoidRootPart
-        
-        -- Kiểm tra nếu vận tốc đang ở mức lướt (trên 60)
-        if root.Velocity.Magnitude > 60 then
-            if tick() - lastDash > debounceTime then
-                -- Áp dụng lực đẩy (Impulse) thay vì dịch chuyển CFrame
-                -- Điều này giúp game hiểu là bạn đang có lực đẩy tự nhiên
-                local force = root.CFrame.LookVector * (_G.DashBoost * 5)
-                root:ApplyImpulse(Vector3.new(force.X, 0, force.Z))
-                
-                lastDash = tick() -- Cập nhật thời gian lướt cuối
+-- Lắng nghe hành động lướt thông qua thuộc tính Velocity hoặc thay đổi vị trí
+task.spawn(function()
+    while task.wait(0.1) do
+        if _G.ExtendDash and _G.DashBoost then
+            -- Kiểm tra nếu vận tốc tăng đột ngột (đặc trưng của việc lướt)
+            if root.Velocity.Magnitude > 60 then
+                -- Dịch chuyển nhân vật về phía trước một khoảng ngắn theo hướng nhìn
+                root.CFrame = root.CFrame + (root.CFrame.LookVector * (_G.DashBoost / 10))
             end
         end
     end
 end)
+
 
 
 -- 3. Toggle Nhảy vô hạn
@@ -9351,55 +9346,102 @@ end
 -- UI E TOGGLES
 Esp:AddSection({"Esp Items / Entity / Island"});
 
-Esp:AddToggle({Name = "Esp Berries", Default = false, Callback = function(I) 
+Esp:AddToggle({
+    Name = "Esp Berries", 
+    Default = false, 
+    Callback = function(I) 
     BerryEsp = I; 
     spawn(function() while BerryEsp do wait(1); berriesEsp(); end; end); 
 end});
 
-Esp:AddToggle({Name = "Esp Players", Default = false, Callback = function(I) 
+Esp:AddToggle({
+    Name = "Esp Players", 
+    Default = false, 
+    Callback = function(I) 
     PlayerEsp = I; 
     spawn(function() while PlayerEsp do wait(0.1); EspPly(); end; end); 
 end});
 
-Esp:AddToggle({Name = "Esp Chests", Default = false, Callback = function(I) 
+Esp:AddToggle({
+     Name = "Esp Chests", 
+     Default = false, 
+     Callback = function(I) 
     ChestESP = I; 
     spawn(function() while ChestESP do wait(1); ChestEsp(); end; end); 
 end});
 
-Esp:AddToggle({Name = "Esp Fruits", Default = false, Callback = function(I)
-    DevilFruitESP = I
-    task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp) end end)
-end})
+Esp:AddToggle({
+    Name = "Esp Fruits", 
+    Default = _G.SaveData["EspFruits_Save"] or false, -- Lấy giá trị đã lưu
+    Callback = function(I)
+        DevilFruitESP = I
+        _G.SaveData["EspFruits_Save"] = I -- Lưu giá trị mới vào biến
+        
+        -- Gọi hàm lưu file để ghi lại thay đổi
+        if SaveSettings then
+            SaveSettings()
+        end
+        
+        -- Logic chạy ESP
+        if I then
+            task.spawn(function() 
+                while DevilFruitESP do 
+                    task.wait(1) 
+                    pcall(DevEsp) 
+                end 
+            end)
+        end
+    end
+})
 
-Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
+
+Esp:AddToggle({
+    Name = "Esp Island", 
+    Default = false, 
+    Callback = function(I)
     _G.IslandESP = I;
     task.spawn(function() while _G.IslandESP do IslandESP_Func(); task.wait(2) end; IslandESP_Func() end)
 end});
 
 if World2 then
-    Esp:AddToggle({Name = "Esp Flower", Default = false, Callback = function(I)
+Esp:AddToggle({
+    Name = "Esp Flower", 
+    Default = false, 
+    Callback = function(I)
         FlowerESP = I
         task.spawn(function() while FlowerESP do pcall(flowerEsp); task.wait(1) end end)
     end})
-    Esp:AddToggle({Name = "Esp Legendary Sword", Default = false, Callback = function(I)
+Esp:AddToggle({
+    Name = "Esp Legendary Sword", 
+    Default = false, 
+    Callback = function(I)
         LegenS = I
         task.spawn(function() while LegenS do pcall(LegenSword); task.wait(1) end end)
     end})
 end
 
 if World2 or World3 then
-    Esp:AddToggle({Name = "Esp Aura Colour Dealers", Default = false, Callback = function(I)
+    Esp:AddToggle({
+        Name = "Esp Aura Colour Dealers", 
+        Default = false, 
+        Callback = function(I)
         ColorEsp = I
         task.spawn(function() while ColorEsp do pcall(HakiClorEsp); task.wait(1) end; pcall(HakiClorEsp) end)
     end})
 end
 
 if World3 then
-    Esp:AddToggle({Name = "Esp Gears", Default = false, Callback = function(I)
+    Esp:AddToggle({
+        Name = "Esp Gears", 
+        Default = false, 
+        Callback = function(I)
         ESPGear = I
         task.spawn(function() while ESPGear do pcall(gearEsp); task.wait(1) end end)
     end})
-    Esp:AddToggle({Name = "Esp Advanced Fruits Dealer", Default = false, Callback = function(I)
+    Esp:AddToggle({
+        Name = "Esp Advanced Fruits Dealer", 
+        Default = false, 
+        Callback = function(I)
         advanEsp = I
         task.spawn(function() while advanEsp do pcall(AdvanFruitEsp); task.wait(1) end; pcall(AdvanFruitEsp) end)
     end})
