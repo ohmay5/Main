@@ -4542,18 +4542,28 @@ Setting:AddSlider({
     end
 })
 
--- 2. Toggle bật tắt Dash Speed
 Setting:AddToggle({
     Name = "Change Dash Speed",
     Default = false,
     Callback = function(Value)
         _G.DashSpeedEnabled = Value
-        if Value then
-            -- Áp dụng thay đổi DashSpeed tại đây
-            -- Ví dụ: game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = _G.DashSpeed
-        end
     end
 })
+
+-- Logic xử lý Dash thực tế (Đặt phần này bên ngoài các hàm AddTab)
+local plr = game:GetService("Players").LocalPlayer
+local runService = game:GetService("RunService")
+
+runService.RenderStepped:Connect(function()
+    if _G.DashSpeedEnabled and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+        -- Cách này ép tốc độ lướt bằng cách thay đổi lực tác động hoặc vị trí
+        -- Lưu ý: Đây là cách mô phỏng Dash nhanh
+        if plr.Character:FindFirstChild("DashEffect") then -- Kiểm tra hiệu ứng lướt
+            plr.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame + (plr.Character.HumanoidRootPart.CFrame.LookVector * (_G.DashSpeed / 50))
+        end
+    end
+end)
+
 
 -- 3. Toggle Nhảy vô hạn
 Setting:AddToggle({
