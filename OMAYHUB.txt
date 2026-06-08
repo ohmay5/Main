@@ -4532,6 +4532,44 @@ Setting:AddSlider({
         getgenv().TweenSpeedFar = I
     end
 });
+Setting:AddSlider({
+    Name = "Select Dash Speed",
+    Min = 50,
+    Max = 300,
+    Default = 153,
+    Callback = function(Value)
+        _G.DashSpeed = Value
+    end
+})
+
+-- 2. Toggle bật tắt Dash Speed
+MiscTab:AddToggle({
+    Name = "Change Dash Speed",
+    Default = false,
+    Callback = function(Value)
+        _G.DashSpeedEnabled = Value
+        if Value then
+            -- Áp dụng thay đổi DashSpeed tại đây
+            -- Ví dụ: game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = _G.DashSpeed
+        end
+    end
+})
+
+-- 3. Toggle Nhảy vô hạn
+Setting:AddToggle({
+    Name = "Infinite Jump",
+    Default = false,
+    Callback = function(Value)
+        _G.InfiniteJump = Value
+    end
+})
+
+-- Xử lý Nhảy vô hạn
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if _G.InfiniteJump then
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
 
 Others:AddSection({"Fishing"})
 -- =========================================================
@@ -11810,40 +11848,38 @@ Fruit:AddToggle({
 Fruit:AddSection({"Raid Farming"});
 
 -- 1. Khai báo biến toàn cục
-_G.Auto_StartRaid = false;
-
--- 2. Thêm Toggle vào giao diện của bạn
 Fruit:AddToggle({
     Name  = "Auto Start Raid 2",
-    Description = "Tự động kích hoạt Raid mà không cần di chuyển",
+    Description = "Tự động kích hoạt Raid",
     Default = false,
     Callback = function(I)
-        _G.Auto_StartRaid = I;
-        print("Trạng thái Auto Start Raid: " .. tostring(I))
+        _G.Auto_StartRaid = I
     end,
 });
 
--- 3. Logic chạy ngầm (Không teleport, không bay)
-spawn(function()
+task.spawn(function()
     while true do 
-        task.wait(10) -- Nghỉ 10 giây giữa các lần kiểm tra
+        task.wait(2) -- Kiểm tra mỗi 2 giây sẽ nhạy hơn 10 giây
         
         if _G.Auto_StartRaid then
             pcall(function()
-                -- Kiểm tra điều kiện: Raid chưa mở và có Microchip
-                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == false and GetBP("Special Microchip") then
-                    
-                    -- LƯU Ý: Bạn cần thay thế dòng dưới đây bằng Remote chính xác của game bạn đang chơi
-                    -- Ví dụ: game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartRaid", "tên_raid")
-                    
-                    print("Đang gửi lệnh vào Raid...")
-                    -- game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(...) 
-                    
+                local timer = plr.PlayerGui.Main.TopHUDList.RaidTimer
+                
+                -- Kiểm tra Raid chưa bắt đầu (Visible == false)
+                if not timer.Visible then
+                    -- Kiểm tra vật phẩm (Đảm bảo hàm GetBP đã được định nghĩa)
+                    if GetBP and GetBP("Special Microchip") then
+                        print("Đã tìm thấy Microchip, đang kích hoạt Raid...")
+                        
+                        -- ĐIỀN REMOTE CỦA BẠN VÀO ĐÂY
+                        -- Ví dụ: game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartRaid", "Flame")
+                    end
                 end
             end)
         end
     end
 end)
+
 
 Fruit:AddToggle({
 	Name  = "Auto Complete Raid",
@@ -11981,62 +12017,6 @@ task.spawn(function()
         end
     end
 end)
-
-Fruit:AddToggle({
-    Name = "Auto Raid Pro (1-3 Kill | 4-5 Insta)",
-    Default = false,
-    Callback = function(Value)
-        _G.AutoRaidPro = Value
-    end,
-})
-
-task.spawn(function()
-    while task.wait(0.2) do -- Tốc độ quét nhanh
-        if _G.AutoRaidPro then
-            pcall(function()
-                -- Chỉ chạy khi đang trong Raid
-                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible then
-                    
-                    -- Xác định đảo hiện tại (Dùng hàm của bạn)
-                    local currentIsland = nil
-                    for i = 1, 5 do
-                        local island = IsIslandRaid(i)
-                        if island then
-                            local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                            if dist < 1000 then currentIsland = i break end
-                        end
-                    end
-
-                    if currentIsland then
-                        if currentIsland <= 3 then
-                            -- Đảo 1-3: Dùng G.Kill (như bạn yêu cầu)
-                            attackNearbyEnemies()
-                        else
-                            -- Đảo 4-5: Ép máu về 0 ngay lập tức (Instakill)
-                            pcall(function() sethiddenproperty(plr, "SimulationRadius", math.huge) end)
-                            for _, mob in pairs(workspace.Enemies:GetChildren()) do
-                                if mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
-                                    local dist = (mob.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                                    if dist <= 1500 then
-                                        mob.Humanoid.Health = 0
-                                    end
-                                end
-                            end
-                        end
-
-                        -- Teleport đến đảo tiếp theo (Dùng logic của bạn)
-                        local nextIsland = getNextIsland()
-                        if nextIsland then
-                            _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-
 Fruit:AddToggle({
 	Name = "Auto Awakening",
 	Description = "",
