@@ -12751,14 +12751,29 @@ function SmartFull:Execute()
     end
 end
 
-    -- XỬ LÝ FRUIT (MELEE DELAY)
-    elseif tt == "Blox Fruit" and tool:FindFirstChild("LeftClickRemote") then
+    ---- DANH SÁCH CÁC TRÁI CÓ M1 (CẦN TỰ ĐỘNG ĐÁNH)
+local AllowedFruits = {
+    ["Light"] = true,
+    ["Ice"] = true,
+    ["T-Rex"] = true,
+    ["Kitsune"] = true,
+    ["Tiger"] = true,
+    ["Control"] = true,
+    ["Dragon"] = true
+}
+
+-- ... (Đặt đoạn này trong hàm SmartFull:Execute)
+
+    -- XỬ LÝ FRUIT (Kiểm tra trong danh sách AllowedFruits)
+    elseif AllowedFruits[tool.Name] and tool:FindFirstChild("LeftClickRemote") then
         if now - self.LastMelee >= Config.MeleeDelay then
             self.LastMelee = now
+            -- Combo chạy từ 1 đến 3 như bạn yêu cầu
             self.Combo = (self.Combo % 3) + 1
             local dir = (targets[1].Root.Position - char:GetPivot().Position).Unit
             tool.LeftClickRemote:FireServer(dir, self.Combo)
         end
+
 
     -- XỬ LÝ KIẾM/MELEE (MELEE DELAY)
     elseif tt == "Sword" or tt == "Melee" then
