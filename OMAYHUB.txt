@@ -617,7 +617,7 @@ local function FarmAtivo()
         _G.FarmMastery_G or  
         (getgenv()).AutoMaterial or  
         _G.AutoTyrant or
-        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Bartilo_Quest or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _ or _G.Auto_Mink or _G.Auto_Human or _G.Auto_Skypiea or _G.Auto_Fish or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S
+        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Bartilo_Quest or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.Fullykatakuri or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _ or _G.Auto_Mink or _G.Auto_Human or _G.Auto_Skypiea or _G.Auto_Fish or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S
     )
 end
 
@@ -1237,7 +1237,7 @@ end;
 spawn(function()
 	while task.wait() do
 		pcall(function()
-			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Bartilo_Quest or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Mink or _G.Auto_Human or _G.Auto_Skypiea or _G.Auto_Fish or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S then
+			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Bartilo_Quest or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.Fullykatakuri or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Mink or _G.Auto_Human or _G.Auto_Skypiea or _G.Auto_Fish or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S then
 				shouldTween = true;
 				if not plr.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
 					local I = Instance.new("BodyVelocity");
@@ -2498,11 +2498,21 @@ Status:AddDiscordInvite({
 
 Shop:AddSection("Fighting Shop")
 Shop:AddButton({
-    Name = "Black Leg",
+    Name = "Buy Black Leg (Direct)",
     Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyBlackLeg")
+        pcall(function()
+            -- Giả lập tương tác với NPC (Cần tìm đúng tên NPC trong Workspace)
+            -- Thay "Mad Scientist" bằng tên NPC chính xác trong game
+            local npc = workspace.NPCs:FindFirstChild("Mad Scientist") 
+            if npc then
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartConversation", npc)
+                task.wait(0.3)
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyBlackLeg")
+            end
+        end)
     end
 })
+
 Shop:AddButton({
     Name = "Fishman Karate",
     Callback = function()
@@ -3156,17 +3166,24 @@ end
 -- 1. UI: DROPDOWN + TOGGLES (Coloque isso na seção da sua UI)
 ----------------------------------------------------------------------------
 Farm:AddToggle({
-	Name = "Super Attack",
-	Description = "đánh siêu nhanh",
-	-- 1. Carrega o estado salvo ou inicia como true (padrão original)
-	Default = GetSetting("AutoAttack_Save", true),
-	Callback = function(I)
-		_G.Seriality = I
-        -- 2. Salva
+    Name = "Attack",
+    Description = "Đánh",
+    Default = GetSetting("AutoAttack_Save", true),
+    Callback = function(I)
+        _G.Seriality = I
         _G.SaveData["AutoAttack_Save"] = I
         SaveSettings()
-	end,
+        
+        -- Thêm thông báo phản hồi
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "OMAY Hub",
+            Text = I and "Đã bật Attack!" or "Đã tắt Attack.",
+            Duration = 3,
+            Icon = "rbxassetid://114476175638281"
+        })
+    end,
 })
+
 Farm:AddSection({"Auto Farm"})
 Farm:AddDropdown({
     Name = "Select Farm Mode",
@@ -3921,6 +3938,121 @@ spawn(function()
         end
     end
 end)
+
+Farm:AddToggle({
+    Name = "Farm Katakuri V2",
+    Description = "Vua bột",
+    Default = false,
+    Callback = function(j)
+        _G.Fullykatakuri = j
+        StopTween(_G.Fullykatakuri)
+    end
+})
+spawn(function()
+    while wait() do
+        if _G.Fullykatakuri then
+            pcall(function()
+                if not game.Players.LocalPlayer.Backpack:FindFirstChild("God's Chalice") and not game.Players.LocalPlayer.Character:FindFirstChild("God's Chalice") then
+                    if game.Players.LocalPlayer.Backpack:FindFirstChild("Sweet Chalice") or game.Players.LocalPlayer.Character:FindFirstChild("Sweet Chalice") then
+                        if string.find(game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("CakePrinceSpawner"), "Do you want to open the portal now?") then
+                            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("CakePrinceSpawner")
+                        elseif game.Workspace.Enemies:FindFirstChild("Baking Staff") or game.Workspace.Enemies:FindFirstChild("Head Baker") or game.Workspace.Enemies:FindFirstChild("Cake Guard") or game.Workspace.Enemies:FindFirstChild("Cookie Crafter") then
+                            for _, v621 in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                                if (v621.Name == "Baking Staff" or v621.Name == "Head Baker" or v621.Name == "Cake Guard" or v621.Name == "Cookie Crafter") and v621.Humanoid.Health > 0 then
+                                    repeat
+                                        wait()
+                                        AutoHaki()
+                                        EquipWeapon(_G.SelectWeapon)
+                                        AutoHaki()
+                                        PosMon = v621.HumanoidRootPart.CFrame
+                                        topos(v621.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
+                                        v621.HumanoidRootPart.CanCollide = false
+                                        v621.Humanoid.WalkSpeed = 0
+                                        v621.Head.CanCollide = false
+                                        attackGunEnemies(v621.Name, 5)
+                                        v621.HumanoidRootPart.Size = Vector3.new(70, 70, 70)
+                                        StartBring = false
+                                        MonFarm = v621.Name
+                                        game:GetService("VirtualUser"):CaptureController()
+                                        game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
+                                    until _G.Fullykatakuri == false or game:GetService("ReplicatedStorage"):FindFirstChild("Cake Prince") or not v621.Parent or v621.Humanoid.Health <= 0
+                                end
+                            end
+                        else
+                            CakeBring = false
+                            StartBring = false
+                            topos(CFrame.new(-1820.0634765625, 210.74781799316406, -12297.49609375))
+                        end
+                    elseif game.ReplicatedStorage:FindFirstChild("Dough King") or game:GetService("Workspace").Enemies:FindFirstChild("Dough King") then
+                        if not game:GetService("Workspace").Enemies:FindFirstChild("Dough King") then
+                            topos(CFrame.new(-2009.2802734375, 4532.97216796875, -14937.3076171875))
+                        else
+                            for _, v623 in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                                if v623.Name == "Dough King" then
+                                    repeat
+                                        wait()
+                                        AutoHaki()
+                                        EquipWeapon(_G.SelectWeapon)
+                                        v623.HumanoidRootPart.Size = Vector3.new(70, 70, 70)
+                                        v623.HumanoidRootPart.CanCollide = false
+                                        StartBring = false
+                                        topos(v623.HumanoidRootPart.CFrame * CFrame.new(0, -40, 0))
+                                        game:GetService("VirtualUser"):CaptureController()
+                                        game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
+                                    until _G.Fullykatakuri == false or not v623.Parent or v623.Humanoid.Health <= 0
+                                end
+                            end
+                        end
+                    elseif game.Players.LocalPlayer.Backpack:FindFirstChild("Red Key") or game.Players.LocalPlayer.Character:FindFirstChild("Red Key") then
+                        local v624 = {[1] = "CakeScientist", [2] = "Check"}
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(v624))
+                    elseif game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible ~= true then
+                        wait(0.5)
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("EliteHunter")
+                    elseif string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Diablo") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Deandre") or string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Urban") then
+                        if not game:GetService("Workspace").Enemies:FindFirstChild("Diablo") and not game:GetService("Workspace").Enemies:FindFirstChild("Deandre") and not game:GetService("Workspace").Enemies:FindFirstChild("Urban") then
+                            if game:GetService("ReplicatedStorage"):FindFirstChild("Diablo") then
+                                topos(game:GetService("ReplicatedStorage"):FindFirstChild("Diablo").HumanoidRootPart.CFrame * CFrame.new(2, 20, 2))
+                            elseif not game:GetService("ReplicatedStorage"):FindFirstChild("Deandre") then
+                                if game:GetService("ReplicatedStorage"):FindFirstChild("Urban") then
+                                    topos(game:GetService("ReplicatedStorage"):FindFirstChild("Urban").HumanoidRootPart.CFrame * CFrame.new(2, 20, 2))
+                                end
+                            else
+                                topos(game:GetService("ReplicatedStorage"):FindFirstChild("Deandre").HumanoidRootPart.CFrame * CFrame.new(2, 20, 2))
+                            end
+                        else
+                            for _, v626 in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                                if (v626.Name == "Diablo" or v626.Name == "Deandre" or v626.Name == "Urban") and v626:FindFirstChild("Humanoid") and v626:FindFirstChild("HumanoidRootPart") and v626.Humanoid.Health > 0 then
+                                    repeat
+                                        wait()
+                                        AutoHaki()
+                                        EquipWeapon(_G.SelectWeapon)
+                                        PosMon = v626.HumanoidRootPart.CFrame
+                                        topos(v626.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
+                                        v626.HumanoidRootPart.CanCollide = false
+                                        v626.Humanoid.WalkSpeed = 0
+                                        v626.Head.CanCollide = false
+                                        attackGunEnemies(v626.Name, 5)
+                                        v626.HumanoidRootPart.Size = Vector3.new(70, 70, 70)
+                                        StartBring = false
+                                        MonFarm = v626.Name
+                                        game:GetService("VirtualUser"):CaptureController()
+                                        game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
+                                        sethiddenproperty(game:GetService("Players").LocalPlayer, "SimulationRadius", math.huge)
+                                    until _G.Fullykatakuri == false or v626.Humanoid.Health <= 0 or not v626.Parent or game.Players.LocalPlayer.Backpack:FindFirstChild("God's Chalice") or game.Players.LocalPlayer.Character:FindFirstChild("God's Chalice")
+                                end
+                            end
+                        end
+                    end
+                elseif string.find(game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SweetChaliceNpc"), "Where") then
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SweetChaliceNpc")
+                end
+            end)
+        end
+    end
+end)
+
+
 end
 Farm:AddSection({"Collect"})
 -- Botão Auto Collect Chest
@@ -4546,43 +4678,9 @@ Setting:AddSlider({
         getgenv().TweenSpeedFar = I
     end
 });
-Setting:AddSlider({
-    Name = "Dash Distance Boost",
-    Min = 10,
-    Max = 300, -- Tăng nhẹ khoảng cách, đừng để quá cao để tránh bị lỗi
-    Default = 20,
-    Callback = function(Value)
-        _G.DashBoost = Value
-    end
-})
 
 Setting:AddToggle({
-    Name = "Extend Dash",
-    Default = false,
-    Callback = function(Value)
-        _G.ExtendDash = Value
-    end
-})
-
--- 2. Logic can thiệp
-local plr = game:GetService("Players").LocalPlayer
-local root = plr.Character:WaitForChild("HumanoidRootPart")
-
--- Lắng nghe hành động lướt thông qua thuộc tính Velocity hoặc thay đổi vị trí
-task.spawn(function()
-    while task.wait(0.1) do
-        if _G.ExtendDash and _G.DashBoost then
-            -- Kiểm tra nếu vận tốc tăng đột ngột (đặc trưng của việc lướt)
-            if root.Velocity.Magnitude > 60 then
-                -- Dịch chuyển nhân vật về phía trước một khoảng ngắn theo hướng nhìn
-                root.CFrame = root.CFrame + (root.CFrame.LookVector * (_G.DashBoost / 10))
-            end
-        end
-    end
-end)
-
-Setting:AddToggle({
-    Name = "Infinite Jump",
+    Name = "Nhảy cao vô hạn",
     Default = true,
     Callback = function(Value)
         _G.InfiniteJump = Value
@@ -11999,44 +12097,43 @@ Fruit:AddToggle({
     end,
 });
 
-spawn(function()
-    -- O loop agora espera 10 segundos para cada execução
-    while true do 
-        task.wait(10)
-        
+task.spawn(function()
+    while task.wait(10) do -- Dùng task.wait trực tiếp trong điều kiện vòng lặp
         if _G.Auto_StartRaid then
             pcall(function()
-                -- Só tenta iniciar se a Raid não estiver ativa (Timer invisível)
-                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == false then
+                -- Kiểm tra Raid Timer và Microchip
+                local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
+                if not raidTimer.Visible and GetBP("Special Microchip") then
                     
-                    -- Verifica se o player possui o Microchip
-                    if GetBP("Special Microchip") then
+                    -- Lưu vị trí hiện tại của người chơi để sau này quay lại
+                    local oldPos = plr.Character:GetPivot()
+                    
+                    if World2 then
+                        _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
+                        task.wait(0.5) -- Đợi teleport hoàn tất
+                        fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
                         
-                        if World2 then
-                            _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684));
-                            fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector);
-                            
-                        elseif World3 then
-                            -- 1. Tenta usar o portal via InvokeServer (apenas uma tentativa rápida)
-                            replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602));
-                            
-                            -- Pequena pausa para o teleporte do jogo acontecer
-                            task.wait(0.5); 
-                            
-                            -- 2. Fallback: Se o portal falhou ou o player não tem acesso, 
-                            -- o script usa o seu _tp para ir até a posição do botão.
-                            _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539));
-                            
-                            -- 3. Aciona o botão da Raid
-                            fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector);
-                        end;
+                    elseif World3 then
+                        -- Thử vào cổng nếu cần
+                        replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
+                        task.wait(0.8) 
                         
-                    end;
-                end;
-            end);
-        end;
-    end;
-end);
+                        -- Di chuyển đến nút bấm
+                        _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
+                        task.wait(0.5)
+                        fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
+                    end
+                    
+                    -- Quay lại vị trí cũ sau khi đã bấm nút
+                    task.wait(0.5)
+                    _tp(oldPos)
+                    print("Đã kích hoạt Raid và quay trở lại vị trí cũ.")
+                end
+            end)
+        end
+    end
+end)
+
 Fruit:AddToggle({
 	Name  = "Auto Complete Raid",
     Description = "hoàn thành raid",
@@ -12346,50 +12443,58 @@ spawn(function()
 	end;
 end);
 Fruit:AddToggle({
-	Name  = "Auto Collect Fruit",
-    Description = "Automatic bring devil fruit",
-    -- 1. Carrega o estado salvo ou false por padrão
+    Name = "Auto Collect Fruit",
+    Description = "Dịch chuyển trái ác quỷ vào tay",
     Default = GetSetting("AutoCollectFruit_Save", false),
     Callback = function(I)
         _G.InstanceF = I
-        
-        -- 2. Guarda na memória de salvamento
         _G.SaveData["AutoCollectFruit_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
         SaveSettings()
     end,
 })
-spawn(function()
-	while wait(Sec) do
-		if _G.InstanceF then
-			pcall(function()
-				collectFruits(_G.InstanceF);
-			end);
-		end;
-	end;
-end);
+
+-- Sử dụng task.spawn và task.wait thay vì spawn/wait để chạy mượt hơn trong Roblox 2026
+task.spawn(function()
+    while true do
+        -- Đợi một khoảng thời gian trước khi kiểm tra tiếp (ví dụ 0.5 giây)
+        task.wait(0.5) 
+        
+        if _G.InstanceF then
+            pcall(function()
+                -- Gọi hàm dịch chuyển trái vào tay
+                collectFruits() 
+            end)
+        end
+    end
+end)
+
 Setting:AddSection({"Codes"});
 Setting:AddButton({
-	Name = "Redeem All Codes",
-	Description = "",
-	Callback = function()
-		local Codes = {
-			"KITT_RESET", "Sub2UncleKizaru", "SUB2GAMERROBOT_RESET1", "Sub2Fer999", "Enyu_is_Pro", "JCWK",
-			"StarcodeHEO", "MagicBus", "KittGaming", "Sub2CaptainMaui", "Sub2OfficalNoobie", "TheGreatAce",
-			"Sub2NoobMaster123", "Sub2Daigrock", "Axiore", "StrawHatMaine", "TantaiGaming", "Bluxxy",
-			"SUB2GAMERROBOT_EXP1", "Chandler", "NOMOREHACK", "BANEXPLOIT", "WildDares", "BossBuild",
-			"GetPranked", "EARN_FRUITS", "FIGHT4FRUIT", "NOEXPLOITER", "NOOB2ADMIN", "CODESLIDE", "ADMINHACKED",
-			"ADMINDARES", "fruitconcepts", "krazydares", "TRIPLEABUSE", "SEATROLLING", "24NOADMIN", "REWARDFUN",
-			"NEWTROLL", "fudd10_v2", "Fudd10", "Bignews", "SECRET_ADMIN"
-		};
+    Name = "Redeem All Codes",
+    Description = "Tự động nhập các code còn hiệu lực",
+    Callback = function()
+        -- Danh sách code đã lọc các mã "rác" và code lỗi
+        local Codes = {
+            "SUB2GAMERROBOT_RESET1", "KITTRST_RELOAD", "Sub2GamerRobot_EXP1", 
+            "KittGaming", "Sub2OfficialNoobie", "TheGreatAce", "Sub2NoobMaster123", 
+            "Sub2Daigrock", "Axiore", "TantaiGaming", "StrawHatMaine", "Bluxxy", 
+            "Enyu_is_Pro", "MagicBus", "StarcodeHEO", "JCWK", "Sub2CaptainMaui", 
+            "Sub2Fer999", "Sub2UncleKizaru", "Fudd10", "Bignews"
+        };
 
-		for _, code in ipairs(Codes) do
-			pcall(function()
-				game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code);
-			end);
-		end;
-	end,
+        for _, code in ipairs(Codes) do
+            pcall(function()
+                -- Gửi yêu cầu lên server
+                game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code)
+                print("Đã thử nhập code: " .. code)
+            end)
+            
+            -- Chờ 0.5s giữa các lần nhập để tránh bị server chặn (Rate Limit)
+            task.wait(0.5)
+        end
+        
+        print("Đã hoàn tất quá trình nhập code!")
+    end,
 });
 
 Setting:AddSection({"Team"});
@@ -12433,7 +12538,63 @@ Setting:AddButton({ Name = "Change Haki", Description = "", Callback = function(
 			replicated.Remotes.CommF_:InvokeServer("ChangeBusoStage", 5);
 		end;
 	end });
-Setting:AddButton({ Name = "Nofog", Description = "", Callback = function()
+	
+	
+local Lighting = game:GetService("Lighting")
+
+-- Bảng lưu trữ các đối tượng ánh sáng để khôi phục khi tắt Toggle
+local storedEffects = {}
+
+Setting:AddToggle({
+    Name = "Nofog",
+    -- 1. Tải trạng thái đã lưu (mặc định là false nếu chưa có)
+    Default = GetSetting("NoFog_Save", false),
+    Callback = function(state)
+        if state then
+            -- Khi bật Toggle (Bật chế độ không sương mù)
+            storedEffects = {}
+            
+            -- Kiểm tra và lưu/xóa LightingLayers
+            local layers = Lighting:FindFirstChild("LightingLayers")
+            if layers then
+                storedEffects["LightingLayers"] = layers:Clone()
+                layers:Destroy()
+            end
+            
+            -- Kiểm tra và lưu/xóa SeaTerrorCC
+            local cc = Lighting:FindFirstChild("SeaTerrorCC")
+            if cc then
+                storedEffects["SeaTerrorCC"] = cc:Clone()
+                cc:Destroy()
+            end
+            
+            -- Kiểm tra và lưu/xóa FantasySky
+            local sky = Lighting:FindFirstChild("FantasySky")
+            if sky then
+                storedEffects["FantasySky"] = sky:Clone()
+                sky:Destroy()
+            end
+        else
+            -- Khi tắt Toggle (Khôi phục lại các hiệu ứng như ban đầu)
+            for name, effect in pairs(storedEffects) do
+                if not Lighting:FindFirstChild(name) then
+                    effect.Parent = Lighting
+                end
+            end
+        end
+        
+        -- 2. Lưu trạng thái vào bảng dữ liệu
+        _G.SaveData["NoFog_Save"] = state
+        
+        -- 3. Lưu vào file Settings.json
+        SaveSettings()
+    end
+})
+
+Setting:AddButton({ 
+      Name = "Nofog", 
+      Description = "", 
+      Callback = function()
 		if Lighting:FindFirstChild("LightingLayers") then
 			Lighting.LightingLayers:Destroy();
 		end;
@@ -12528,310 +12689,121 @@ Setting:AddToggle({
 	end
 })
 
-Setting:AddButton({
-    Name = "Stretch the screen",
-    Description = "",
-    Callback = function()
-        -- SETAR A RESOLUÇÃO
-        getgenv().Resolution = {
-            [".gg/scripters"] = 0.65
-        }
-
-        local Camera = workspace.CurrentCamera
-
-        -- SE O SCRIPT AINDA NÃO TÁ RODANDO
-        if getgenv().gg_scripters == nil then
-            game:GetService("RunService").RenderStepped:Connect(function()
-                pcall(function()
-                    Camera.CFrame =
-                        Camera.CFrame *
-                        CFrame.new(
-                            0, 0, 0,
-                            1, 0, 0,
-                            0, getgenv().Resolution[".gg/scripters"], 0,
-                            0, 0, 1
-                        )
-                end)
-            end)
-        end
-
-        -- FLAG PRA NÃO DUPLICAR
-        getgenv().gg_scripters = "Aori0001"
-    end
-})
-
-
 loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/attack-module.lua"))()
 
-local function GetBladeHits()
-local t={}
-local function d(v)return(v.Position-game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude end
-for _,p in pairs({game.Workspace.Enemies,game.Workspace.Characters})do
-for _,v in pairs(p:GetChildren())do
-if v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Head") and v:FindFirstChild("Humanoid") then
-if d(v.HumanoidRootPart)<60 then table.insert(t,v)end
-end
-end
-end
-return t
-end
-local function AttackAll()
-local plr=game.Players.LocalPlayer
-local ch=plr.Character
-if not ch then return end
-local ew=ch:FindFirstChild("EquippedWeapon")
-if not ew then return end
-local e=GetBladeHits()
-if #e>0 then
-local n=game:GetService("ReplicatedStorage"):WaitForChild("Modules"):WaitForChild("Net")
-n:WaitForChild("RE/RegisterAttack"):FireServer(-math.huge)
-local a={nil,{}}
-for i,v in pairs(e)do
-if not a[1] then a[1]=v.Head end
-a[2][i]={v,v.HumanoidRootPart}
-end
-n:WaitForChild("RE/RegisterHit"):FireServer(unpack(a))
-end
-end
-spawn(function()while task.wait()do AttackAll()end end)
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
 
-local Players=game:GetService("Players")
-local RunService=game:GetService("RunService")
-local ReplicatedStorage=game:GetService("ReplicatedStorage")
-local Workspace=game:GetService("Workspace")
+local Player = Players.LocalPlayer
+local Net = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
+local RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
+local RegisterHit = Net:WaitForChild("RE/RegisterHit")
+local ShootGunEvent = Net:WaitForChild("RE/ShootGunEvent")
 
-local Player=Players.LocalPlayer
-local Modules=ReplicatedStorage:WaitForChild("Modules")
-local Net=Modules:WaitForChild("Net")
-local RegisterAttack=Net:WaitForChild("RE/RegisterAttack")
-local RegisterHit=Net:WaitForChild("RE/RegisterHit")
-local ShootGunEvent=Net:WaitForChild("RE/ShootGunEvent")
+-- CẤU HÌNH CÓ ĐỘ TRỄ RIÊNG CHO SÚNG
+local Config = {
+    MaxDistance = 60,
+    MeleeDelay = 0.10,    -- Tốc độ chém
+    GunDelay = 0.2,       -- Tốc độ bắn súng (chỉnh cao lên để không bắn liên tục)
+    DragonDelay = 0.15
+    MaxTargetsPerHit = 3,
+}
 
-getgenv().PMT_GunFast=(getgenv().PMT_GunFast~=false)
-getgenv().PMT_GunFast_Delay=getgenv().PMT_GunFast_Delay or 0.02
-getgenv().PMT_GunFast_PrimeEvery=getgenv().PMT_GunFast_PrimeEvery or 0.35
+local SmartFull = {}
+SmartFull.__index = SmartFull
 
-local Config={AttackDistance=65,AttackMobs=true,AttackPlayers=true,AttackCooldown=0.01,ComboResetTime=0.3,MaxCombo=4,HitboxLimbs={"RightLowerArm","RightUpperArm","LeftLowerArm","LeftUpperArm","RightHand","LeftHand"},AutoClickEnabled=true}
-
-local FastAttack={}
-FastAttack.__index=FastAttack
-
-function FastAttack.new()
-local s=setmetatable({Debounce=0,ComboDebounce=0,ShootDebounce=0,M1Combo=0,EnemyRootPart=nil,Connections={},Overheat={Dragonstorm={MaxOverheat=3,Cooldown=0,TotalOverheat=0,Distance=350,Shooting=false}},ShootsPerTarget={["Dual Flintlock"]=2},SpecialShoots={["Skull Guitar"]="TAP",["Bazooka"]="Position",["Cannon"]="Position",["Dragonstorm"]="Overheat"},_GunLastPrime=0,_GunLastShot=0,_LastGunTargetModel=nil,CombatFlags=nil,ShootFunction=nil,HitFunction=nil},FastAttack)
-pcall(function()
-s.CombatFlags=require(Modules.Flags).COMBAT_REMOTE_THREAD
-s.ShootFunction=getupvalue(require(ReplicatedStorage.Controllers.CombatController).Attack,9)
-local ls=Player:WaitForChild("PlayerScripts"):FindFirstChildOfClass("LocalScript")
-if ls and getsenv then s.HitFunction=getsenv(ls)._G.SendHitsToServer end
-end)
-return s
+function SmartFull.new()
+    return setmetatable({ LastMelee = 0, LastGun = 0, Combo = 0 }, SmartFull)
 end
 
-function FastAttack:IsEntityAlive(e)
-local h=e and e:FindFirstChild("Humanoid")
-return h and h.Health>0
+function SmartFull:GetTargets()
+    local myPos = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart") and Player.Character.HumanoidRootPart.Position
+    if not myPos then return {} end
+    
+    local targets = {}
+    local function scan(folder)
+        if not folder then return end
+        for _, v in ipairs(folder:GetChildren()) do
+            local hum = v:FindFirstChild("Humanoid")
+            local hrp = v:FindFirstChild("HumanoidRootPart")
+            if v ~= Player.Character and hum and hum.Health > 0 and hrp and (hrp.Position - myPos).Magnitude <= Config.MaxDistance then
+                table.insert(targets, {Instance = v, Root = hrp, Dist = (hrp.Position - myPos).Magnitude})
+            end
+        end
+    end
+    
+    scan(Workspace:FindFirstChild("Enemies"))
+    scan(Workspace:FindFirstChild("Characters"))
+    table.sort(targets, function(a, b) return a.Dist < b.Dist end)
+    
+    local limited = {}
+    for i = 1, math.min(#targets, Config.MaxTargetsPerHit) do table.insert(limited, targets[i]) end
+    return limited
 end
 
-function FastAttack:CheckStun(c,h,tt)
-local st=c:FindFirstChild("Stun")
-local bs=c:FindFirstChild("Busy")
-if h.Sit and (tt=="Sword" or tt=="Melee" or tt=="Blox Fruit") then return false end
-if (st and st.Value>0) or (bs and bs.Value) then return false end
-return true
+function SmartFull:Execute()
+    local char = Player.Character
+    local tool = char and char:FindFirstChildOfClass("Tool")
+    if not tool then return end
+    
+    local targets = self:GetTargets()
+    if #targets == 0 then return end
+    
+    local now = os.clock()
+    local tt = tool.ToolTip
+
+    -- XỬ LÝ SÚNG (CÓ ĐỘ TRỄ RIÊNG - GUN DELAY)
+   if tt == "Gun" then
+    local delay = Config.GunDelay
+    
+    if tool.Name == "Dragonstorm" then
+        delay = Config.DragonDelay
+    end
+    
+    if now - self.LastGun >= delay then
+        self.LastGun = now
+        local targetPos = targets[1].Root.Position
+        local targetModel = targets[1].Instance
+        ShootGunEvent:FireServer(
+            targetPos,
+            {targetModel:FindFirstChild("HumanoidRootPart")}
+        )
+    end
 end
 
-function FastAttack:GetBladeHits(c,dist)
-local pos=c:GetPivot().Position
-local bh={}
-dist=dist or Config.AttackDistance
-local function proc(f)
-for _,e in ipairs(f:GetChildren())do
-if e~=c and self:IsEntityAlive(e) then
-local bp=e:FindFirstChild(Config.HitboxLimbs[math.random(#Config.HitboxLimbs)]) or e:FindFirstChild("HumanoidRootPart")
-if bp and (pos-bp.Position).Magnitude<=dist then
-if not self.EnemyRootPart then self.EnemyRootPart=bp else table.insert(bh,{e,bp})end
-end
-end
-end
-end
-if Config.AttackMobs then proc(Workspace.Enemies)end
-if Config.AttackPlayers then proc(Workspace.Characters)end
-return bh
-end
+    -- XỬ LÝ FRUIT (MELEE DELAY)
+    elseif tt == "Blox Fruit" and tool:FindFirstChild("LeftClickRemote") then
+        if now - self.LastMelee >= Config.MeleeDelay then
+            self.LastMelee = now
+            self.Combo = (self.Combo % 3) + 1
+            local dir = (targets[1].Root.Position - char:GetPivot().Position).Unit
+            tool.LeftClickRemote:FireServer(dir, self.Combo)
+        end
 
-function FastAttack:GetClosestEnemy(c,dist)
-local hits=self:GetBladeHits(c,dist)
-local cl,md=nil,math.huge
-self._LastGunTargetModel=nil
-for _,h in ipairs(hits)do
-local m=(c:GetPivot().Position-h[2].Position).Magnitude
-if m<md then md=m;cl=h[2];self._LastGunTargetModel=h[1] end
+    -- XỬ LÝ KIẾM/MELEE (MELEE DELAY)
+    elseif tt == "Sword" or tt == "Melee" then
+        if now - self.LastMelee >= Config.MeleeDelay then
+            self.LastMelee = now
+            self.Combo = (self.Combo % 4) + 1
+            RegisterAttack:FireServer(self.Combo)
+            local hitArgs = { targets[1].Instance:FindFirstChild("Head") or targets[1].Root, {} }
+            for i, t in ipairs(targets) do
+                hitArgs[2][i] = {t.Instance, t.Root}
+            end
+            RegisterHit:FireServer(unpack(hitArgs))
+        end
+    end
 end
-return cl
-end
+_G.Seriality = _G.Seriality or false
 
-function FastAttack:GetCombo()
-local cb=(tick()-self.ComboDebounce)<=Config.ComboResetTime and self.M1Combo or 0
-cb=cb>=Config.MaxCombo and 1 or cb+1
-self.ComboDebounce=tick()
-self.M1Combo=cb
-return cb
-end
-
-local function _nv3(p)
-if vector and vector.create then return vector.create(p.X,p.Y,p.Z) end
-return Vector3.new(p.X,p.Y,p.Z)
-end
-
-local function _handle(m)
-if not m or not m.Parent then return nil end
-for _,d in ipairs(m:GetDescendants())do
-if d:IsA("Accessory") then
-local h=d:FindFirstChild("Handle")
-if h and h:IsA("BasePart") then return h end
-end
-end
-local hrp=m:FindFirstChild("HumanoidRootPart")
-if hrp and hrp:IsA("BasePart") then return hrp end
-return nil
-end
-
-function FastAttack:_PrimeGun(tl)
-if not tl or not tl.Parent or tl.Parent~=Player.Character then return end
-local now=os.clock()
-local ev=tonumber(getgenv().PMT_GunFast_PrimeEvery) or 0.35
-if now-(self._GunLastPrime or 0)<ev then return end
-self._GunLastPrime=now
-pcall(function()tl:Activate()end)
-pcall(function()if firesignal and tl.Activated then firesignal(tl.Activated)end end)
-end
-
-function FastAttack:ShootInTarget(tp)
-if not getgenv().PMT_GunFast then return end
-local c=Player.Character
-if not self:IsEntityAlive(c) then return end
-local tl=c:FindFirstChildOfClass("Tool")
-if not tl or tl.ToolTip~="Gun" then return end
-self:_PrimeGun(tl)
-local now=os.clock()
-local del=tonumber(getgenv().PMT_GunFast_Delay) or 0.02
-if now-(self._GunLastShot or 0)<del then return end
-self._GunLastShot=now
-local m=self._LastGunTargetModel
-local h=_handle(m)
-if not h then return end
-pcall(function()ShootGunEvent:FireServer(_nv3(tp),{h})end)
-end
-
-function FastAttack:UseNormalClick(c,h,cd)
-self.EnemyRootPart=nil
-local bh=self:GetBladeHits(c)
-if self.EnemyRootPart then
-RegisterAttack:FireServer(cd)
-if self.CombatFlags and self.HitFunction then
-self.HitFunction(self.EnemyRootPart,bh)
-else
-RegisterHit:FireServer(self.EnemyRootPart,bh)
-end
-end
-end
-
-function FastAttack:UseFruitM1(c,eq,cb)
-local t=self:GetBladeHits(c)
-if not t[1] then return end
-local dir=(t[1][2].Position-c:GetPivot().Position).Unit
-eq.LeftClickRemote:FireServer(dir,cb)
-end
-
-function FastAttack:Attack()
-if not Config.AutoClickEnabled or (tick()-self.Debounce)<Config.AttackCooldown then return end
-local c=Player.Character
-if not c or not self:IsEntityAlive(c) then return end
-local h=c.Humanoid
-local eq=c:FindFirstChildOfClass("Tool")
-if not eq then return end
-local tt=eq.ToolTip
-if not table.find({"Melee","Blox Fruit","Sword","Gun"},tt) then return end
-local cd=eq:FindFirstChild("Cooldown") and eq.Cooldown.Value or Config.AttackCooldown
-if not self:CheckStun(c,h,tt) then return end
-local cb=self:GetCombo()
-cd=cd+(cb>=Config.MaxCombo and 0.05 or 0)
-self.Debounce=cb>=Config.MaxCombo and tt~="Gun" and (tick()+0.05) or tick()
-if tt=="Blox Fruit" and eq:FindFirstChild("LeftClickRemote") then
-self:UseFruitM1(c,eq,cb)
-elseif tt=="Gun" then
-local t=self:GetClosestEnemy(c,120)
-if t then self:ShootInTarget(t.Position)end
-else
-self:UseNormalClick(c,h,cd)
-end
-end
-
-local AttackInstance=FastAttack.new()
-table.insert(AttackInstance.Connections,RunService.Stepped:Connect(function()AttackInstance:Attack()end))
+local Processor = SmartFull.new()
 
 RunService.Heartbeat:Connect(function()
-if not getgenv().PMT_GunFast then return end
-local c=Player.Character
-if not c then return end
-local tl=c:FindFirstChildOfClass("Tool")
-if not tl or tl.ToolTip~="Gun" then return end
-AttackInstance:_PrimeGun(tl)
-end)
-
-for _,v in pairs(getgc(true))do
-if typeof(v)=="function" and iscclosure(v) then
-local n=debug.getinfo(v).name
-if n=="Attack" or n=="attack" or n=="RegisterHit" then
-hookfunction(v,function(...)
-AttackInstance:Attack()
-return v(...)
-end)
-end
-end
-end
-
-local Modules=game.ReplicatedStorage.Modules
-local Net=Modules.Net
-local Register_Hit,Register_Attack=Net:WaitForChild("RE/RegisterHit"),Net:WaitForChild("RE/RegisterAttack")
-local Funcs={}
-function GetAllBladeHits()
-bladehits={}
-for _,v in pairs(workspace.Enemies:GetChildren())do
-if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health>0 and (v.HumanoidRootPart.Position-game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude<=65 then
-table.insert(bladehits,v)
-end
-end
-return bladehits
-end
-function Getplayerhit()
-bladehits={}
-for _,v in pairs(workspace.Characters:GetChildren())do
-if v.Name~=game.Players.LocalPlayer.Name and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health>0 and (v.HumanoidRootPart.Position-game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude<=65 then
-table.insert(bladehits,v)
-end
-end
-return bladehits
-end
-function Funcs:Attack()
-local bladehits={}
-for _,v in pairs(GetAllBladeHits())do table.insert(bladehits,v)end
-for _,v in pairs(Getplayerhit())do table.insert(bladehits,v)end
-if #bladehits==0 then return end
-local args={[1]=nil,[2]={},[4]="078da341"}
-for r,v in pairs(bladehits)do
-Register_Attack:FireServer(0)
-if not args[1] then args[1]=v.Head end
-args[2][r]={[1]=v,[2]=v.HumanoidRootPart}
-end
-Register_Hit:FireServer(unpack(args))
-end
-spawn(function()
-while task.wait(0.05) do
-pcall(function()
-local ch=game.Players.LocalPlayer.Character
-local t=ch and ch:FindFirstChildOfClass("Tool")
-if t then Funcs:Attack() end
-end)
-end
+    if _G.Seriality then
+        pcall(function()
+            Processor:Execute()
+        end)
+    end
 end)
