@@ -12177,30 +12177,29 @@ spawn(function()
 	end;
 end);
 Fruit:AddToggle({
-    Name = "Auto Collect Fruit",
-    Description = "Dịch chuyển trái ác quỷ vào tay",
+	Name  = "Auto Collect Fruit",
+    Description = "Automatic bring devil fruit",
+    -- 1. Carrega o estado salvo ou false por padrão
     Default = GetSetting("AutoCollectFruit_Save", false),
     Callback = function(I)
         _G.InstanceF = I
+        
+        -- 2. Guarda na memória de salvamento
         _G.SaveData["AutoCollectFruit_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
         SaveSettings()
     end,
 })
-
--- Sử dụng task.spawn và task.wait thay vì spawn/wait để chạy mượt hơn trong Roblox 2026
-task.spawn(function()
-    while true do
-        -- Đợi một khoảng thời gian trước khi kiểm tra tiếp (ví dụ 0.5 giây)
-        task.wait(0.5) 
-        
-        if _G.InstanceF then
-            pcall(function()
-                -- Gọi hàm dịch chuyển trái vào tay
-                collectFruits() 
-            end)
-        end
-    end
-end)
+spawn(function()
+	while wait(Sec) do
+		if _G.InstanceF then
+			pcall(function()
+				collectFruits(_G.InstanceF);
+			end);
+		end;
+	end;
+end);
 
 Setting:AddSection({"Codes"});
 Setting:AddButton({
