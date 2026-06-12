@@ -3164,26 +3164,7 @@ end
 
 ----------------------------------------------------------------------------
 -- 1. UI: DROPDOWN + TOGGLES (Coloque isso na seção da sua UI)
-----------------------------------------------------------------------------
-Farm:AddToggle({
-    Name = "Attack",
-    Description = "Đánh",
-    Default = GetSetting("AutoAttack_Save", true),
-    Callback = function(I)
-        _G.Seriality = I
-        _G.SaveData["AutoAttack_Save"] = I
-        SaveSettings()
-        
-        -- Thêm thông báo phản hồi
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "OMAY Hub",
-            Text = I and "Đã bật Attack!" or "Đã tắt Attack.",
-            Duration = 3,
-            Icon = "rbxassetid://114476175638281"
-        })
-    end,
-})
-
+---------------------------------------------------------------------------
 Farm:AddSection({"Auto Farm"})
 Farm:AddDropdown({
     Name = "Select Farm Mode",
@@ -12793,14 +12774,7 @@ end
         end
     end
 end
-_G.Seriality = _G.Seriality or false
-
 local Processor = SmartFull.new()
-
 RunService.Heartbeat:Connect(function()
-    if _G.Seriality then
-        pcall(function()
-            Processor:Execute()
-        end)
-    end
+    pcall(function() Processor:Execute() end)
 end)
