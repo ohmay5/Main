@@ -7849,16 +7849,6 @@ spawn(function()
 		end);
 	end;
 end);
-Race:AddButton({ Name = "Teleport to Temple of Time", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28286.35546875, 14895.301757812, 102.62469482422));
-	end });
-Race:AddButton({ Name = "Teleport to Ancient One", Description = "", Callback = function()
-		notween(CFrame.new(28981.552734375, 14888.426757812, -120.24584960938));
-	end });
-Race:AddButton({ Name = "Teleport to Ancient Clock", Description = "", Callback = function()
-		notween(CFrame.new(29549, 15069, -88));
-	end })
-	
 Race:AddButton({
     Name = "Teleport & Load Temple",
     Description = "TP đến Temple và load map nếu bị ẩn",
@@ -10347,7 +10337,7 @@ spawn(function()
 end);
 
 Get:AddToggle({
-    Name = "Auto Skull Guitar",
+    Name = "Auto Skull Guitar 2",
     Description = "Tự động làm nhiệm vụ lấy đàn Soul Guitar",
     Default = _G.SaveData["AutoSoulGuitar_Save"] or false,
     Callback = function(I)
@@ -10439,7 +10429,7 @@ end
 if World2 or World3 then
 Get:AddToggle({
 	Name = "Auto Farm Material Skull Guitar",
-	Description = "",
+	Description = "Tự động farm nguyên liệu khi mua skull guitar",
 	Default = false,
 	Callback = function(I)
 		_G.AutoMatSoul = I;
