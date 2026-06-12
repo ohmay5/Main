@@ -2334,7 +2334,7 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	local Library = loadstring(game:HttpGet("https://github.com/ohmay5/Main/blob/main/menuhack.txt"))():MakeWindow({
+	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/xRedzLib.lua"))():MakeWindow({
     Title = "OMAY Hub",
     SubTitle = "Blox Fruit",
     SaveFolder = ""
