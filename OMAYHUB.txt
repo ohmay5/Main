@@ -4301,6 +4301,8 @@ Setting:AddButton({
 })
 
 Setting:AddSection({"Setting Farm"})
+getgenv().FastAttackFruit = true
+loadstring(game:HttpGet("https://raw.githubusercontent.com/PainRoblox/Main/refs/heads/main/koby.txt"))()
 Setting:AddToggle({
 	Name = "Bring Mob",
 	Description = "gom quái",
