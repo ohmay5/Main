@@ -955,16 +955,16 @@ UpdStFruit = function()
     end
 end
 
-collectFruits = function(I)
-		if I then
-			local I = plr.Character;
-			for e, K in pairs(workspace:GetChildren()) do
-				if string.find(K.Name, "Fruit") then
-					K.Handle.CFrame = I.HumanoidRootPart.CFrame;
-				end;
-			end;
-		end;
-	end;
+collectFruits = function(enabled)
+	if enabled then
+		local char = plr.Character
+		for _, fruit in pairs(workspace:GetChildren()) do
+			if string.find(fruit.Name, "Fruit") and fruit:FindFirstChild("Handle") then
+				fruit.Handle.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
+			end
+		end
+	end
+end
 Getmoon = function()
 		if World1 then
 			return Lighting.FantasySky.MoonTextureId;
