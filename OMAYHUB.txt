@@ -189,7 +189,7 @@ elseif World2 then
 	Boss = {
 			"Diamond",
 			"Jeremy",
-			"Fajita",
+			"Orbitus",
 			"Don Swan",
 			"Smoke Admiral",
 			"Awakened Ice Admiral",
@@ -273,7 +273,7 @@ local d = {
 	};
 local z = { "Swan Pirate", "Jeremy" };
 local H = { "Forest Pirate", "Captain Elephant" };
-local F = { "Fajita", "Jeremy", "Diamond" };
+local F = { "Orbitus", "Jeremy", "Diamond" };
 local Q = {
 		"Beast Hunter",
 		"Lantern",
@@ -1371,8 +1371,8 @@ QuestB = function()
 				Qdata = 3;
 				PosQBoss = CFrame.new(636.79943847656, 73.413787841797, 918.00415039063);
 				PosB = CFrame.new(2006.9261474609, 448.95666503906, 853.98284912109);
-			elseif _G.FindBoss == "Fajita" then
-				bMon = "Fajita";
+			elseif _G.FindBoss == "Orbitus" then
+				bMon = "Orbitus";
 				Qname = "MarineQuest3";
 				Qdata = 3;
 				PosQBoss = CFrame.new(-2441.986328125, 73.359344482422, -3217.5324707031);
@@ -7618,7 +7618,7 @@ spawn(function()
             -- BƯỚC 2: Thực hiện nhiệm vụ theo tộc
             elseif status == 1 then
                 if currentRace == "Human" then
-                    local bosses = {"Diamond", "Jeremy", "Fajita"}
+                    local bosses = {"Diamond", "Jeremy", "Orbitus"}
                     for _, bName in pairs(bosses) do
                         local b = workspace.Enemies:FindFirstChild(bName)
                         if b and b.Humanoid.Health > 0 then
