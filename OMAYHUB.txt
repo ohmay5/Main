@@ -617,7 +617,7 @@ local function FarmAtivo()
         _G.FarmMastery_G or  
         (getgenv()).AutoMaterial or  
         _G.AutoTyrant or
-        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Bartilo_Quest or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S
+        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.AutoNewWorld or _G.AutoThirdSea or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Bartilo_Quest or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S
     )
 end
 
@@ -1237,7 +1237,7 @@ end;
 spawn(function()
 	while task.wait() do
 		pcall(function()
-			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Bartilo_Quest or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S then
+			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.AutoNewWorld or _G.AutoThirdSea or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Bartilo_Quest or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S then
 				shouldTween = true;
 				if not plr.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
 					local I = Instance.new("BodyVelocity");
@@ -4555,141 +4555,155 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
     end
 end)
 if world1 then
-Others:AddSection({"Quest sea2"})
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
-
-getgenv().AutoSea2Quest = false
-local Step = 0
-Player:AddToggle({
-    Name = "Auto Sea 2 Quest",
-    Description = "Nhiệm vụ lên sea 2",
+Others:AddSection({"Quest sea2/sea3"})
+Others:AddToggle('Toggle', {
+    Title = 'Auto New World',
     Default = false,
-    Callback = function(Value)
-        getgenv().AutoSea2Quest = Value
+}):OnChanged(function(p539)
+    _G.AutoNewWorld = p539
 
-        if Value then
-            print("Auto Sea 2 Quest: ON")
-            Step = 0 -- reset bắt đầu từ bước đầu
-        else
-            print("Auto Sea 2 Quest: OFF")
-        end
-    end
-}) 
+    StopTween(_G.AutoNewWorld)
+end)
+spawn(function()
+    while task.wait(0.1) do
+        if _G.AutoNewWorld and World1 then
+            spawn(function()
+                local _LocalPlayer18 = game:GetService('Players').LocalPlayer
+                local _Workspace4 = game:GetService('Workspace')
+                local _ReplicatedStorage4 = game:GetService('ReplicatedStorage')
 
-local Locations = {
-    PrisonNPC  = CFrame.new(-4952, 40, -1463),
-    SnowBoss   = CFrame.new(-2182, 120, 2102),
-    Sea2Portal = CFrame.new(-2400, 10, 1900),
-}
+                if _LocalPlayer18.Data.Level.Value >= 700 and World1 then
+                    local _Door = _Workspace4.Map.Ice.Door
 
--- Teleport
-local function teleport(cf)
-    local char = LocalPlayer.Character
-    if char and char:FindFirstChild("HumanoidRootPart") then
-        char.HumanoidRootPart.CFrame = cf
-    end
-end
+                    if _Door.CanCollide ~= false or _Door.Transparency ~= 1 then
+                        if _Workspace4.Enemies:FindFirstChild('Ice Admiral [Lv. 700] [Boss]') then
+                            local v544, v545, v546 = pairs(_Workspace4.Enemies:GetChildren())
 
--- Lấy humanoid
-local function getHum()
-    local char = LocalPlayer.Character
-    if char then
-        return char:FindFirstChildOfClass("Humanoid")
-    end
-end
+                            while true do
+                                local v547
 
--- Click NPC gần nhất
-local function clickNearestNPC(name)
-    for _, v in ipairs(workspace:GetDescendants()) do
-        if v:IsA("Model") and v.Name:lower():find(name:lower()) then
-            local root = v:FindFirstChild("HumanoidRootPart")
-                or v:FindFirstChild("Torso")
+                                v546, v547 = v544(v545, v546)
 
-            if root then
-                local prompt = root:FindFirstChildOfClass("ProximityPrompt")
-                if prompt then
-                    fireproximityprompt(prompt)
-                    return true
+                                if v546 == nil then
+                                    break
+                                end
+                                if v547.Name == 'Ice Admiral' and (v547:FindFirstChild('Humanoid') and v547:FindFirstChild('HumanoidRootPart')) then
+                                    local _CFrame3 = v547.HumanoidRootPart.CFrame
+
+                                    repeat
+                                        task.wait(0.05)
+                                        AutoHaki()
+                                        EquipWeapon(getgenv().SelectWeapon)
+
+                                        v547.HumanoidRootPart.CanCollide = false
+                                        v547.Humanoid.WalkSpeed = 0
+                                        v547.Head.CanCollide = false
+                                        v547.HumanoidRootPart.CFrame = _CFrame3
+
+                                        topos(v547.HumanoidRootPart.CFrame * Pos)
+                                    until not _G.AutoNewWorld or (not v547.Parent or v547.Humanoid.Health <= 0)
+                                end
+                            end
+                        elseif _ReplicatedStorage4:FindFirstChild('Ice Admiral') then
+                            topos(_ReplicatedStorage4:FindFirstChild('Ice Admiral').HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
+                        else
+                            _ReplicatedStorage4.Remotes.CommF_:InvokeServer('TravelDressrosa')
+                        end
+                    else
+                        local v549 = CFrame.new(4849.29883, 5.65138149, 719.611877)
+
+                        repeat
+                            topos(v549)
+                            task.wait(0.1)
+                        until (v549.Position - _LocalPlayer18.Character.HumanoidRootPart.Position).Magnitude <= 3 or not _G.AutoNewWorld
+
+                        task.wait(1.1)
+                        _ReplicatedStorage4.Remotes.CommF_:InvokeServer('DressrosaQuestProgress', 'Detective')
+                        task.wait(0.1)
+                        EquipWeapon('Key')
+
+                        local v550 = CFrame.new(1347.7124, 37.3751602, -1325.6488)
+
+                        repeat
+                            topos(v550)
+                            task.wait(0.1)
+                        until (v550.Position - _LocalPlayer18.Character.HumanoidRootPart.Position).Magnitude <= 3 or not _G.AutoNewWorld
+
+                        task.wait(0.1)
+                    end
                 end
-            end
+            end)
         end
-    end
-    return false
-end
--- Auto các bước nhiệm vụ
-local function runStep()
-    local hum = getHum()
-    if not hum or hum.Health <= 0 then
-        return
-    end
-
-    -- Bước 1: Bay lấy chìa khóa Prison
-    if Step == 0 then
-        print("Đang đi lấy chìa khóa Prison...")
-        teleport(Locations.PrisonNPC)
-        task.wait(2)
-
-        clickNearestNPC("Prisoner")
-        task.wait(2)
-
-        Step = 1
-
-    -- Bước 2: Bay tới Snow Mountain đánh boss
-    elseif Step == 1 then
-        print("Đang đi đánh Snow Boss...")
-        teleport(Locations.SnowBoss)
-        task.wait(2)
-
-        for _, v in ipairs(workspace:GetDescendants()) do
-            if v:IsA("Model")
-            and v ~= LocalPlayer.Character
-            and v:FindFirstChild("Humanoid") then
-
-                local bossHum = v:FindFirstChild("Humanoid")
-                local root = v:FindFirstChild("HumanoidRootPart")
-
-                if bossHum and root and bossHum.Health > 0 and bossHum.MaxHealth >= 5000 then
-                    LocalPlayer.Character.HumanoidRootPart.CFrame =
-                        root.CFrame * CFrame.new(0, 0, 4)
-
-                    print("Đã tìm thấy boss, tấn công...")
-                    task.wait(5)
-                    break
-                end
-            end
-        end
-
-        Step = 2
-
-    -- Bước 3: Tìm đường lên Sea 2
-    elseif Step == 2 then
-        print("Đang lên Sea 2...")
-        teleport(Locations.Sea2Portal)
-        task.wait(2)
-
-        for _, v in ipairs(workspace:GetDescendants()) do
-            if v:IsA("ProximityPrompt") then
-                pcall(function()
-                    fireproximityprompt(v)
-                end)
-            end
-        end
-
-        print("Hoàn thành chu trình, bắt đầu lại...")
-        Step = 0
-        task.wait(5)
-    end
-end
--- Vòng lặp chạy auto liên tục
-RunService.Heartbeat:Connect(function()
-    if getgenv().AutoSea2Quest then
-        pcall(runStep)
     end
 end)
+end
+if would2 then
+Others:AddToggle('Toggle', {
+    Title = 'Auto Third World',
+    Default = false,
+}):OnChanged(function(p551)
+    _G.AutoThirdSea = p551
 
-print("[AutoSea2Quest] Đã bật Auto: Prison → Snow Boss → Sea 2")
+    StopTween(_G.AutoThirdSea)
+end)
+spawn(function()
+    while task.wait(0.1) do
+        if _G.AutoThirdSea and World2 then
+            pcall(function()
+                local _LocalPlayer19 = game:GetService('Players').LocalPlayer
+                local _ReplicatedStorage5 = game:GetService('ReplicatedStorage')
+                local _Enemies = game:GetService('Workspace').Enemies
+
+                if _LocalPlayer19.Data.Level.Value >= 1500 and World2 then
+                    getgenv().AutoFarm = false
+
+                    if _ReplicatedStorage5.Remotes.CommF_:InvokeServer('ZQuestProgress', 'General') == 0 then
+                        topos(CFrame.new(-1926.322, 12.82, 1738.309))
+
+                        if (CFrame.new(-1926.322, 12.82, 1738.309).Position - _LocalPlayer19.Character.HumanoidRootPart.Position).Magnitude <= 10 then
+                            task.wait(1.1)
+                            _ReplicatedStorage5.Remotes.CommF_:InvokeServer('ZQuestProgress', 'Begin')
+                        end
+
+                        task.wait(1.3)
+
+                        if _Enemies:FindFirstChild('rip_indra [Lv. 1500] [Boss]') then
+                            local v555, v556, v557 = pairs(_Enemies:GetChildren())
+
+                            while true do
+                                local v558
+
+                                v557, v558 = v555(v556, v557)
+
+                                if v557 == nil then
+                                    break
+                                end
+                                if v558.Name == 'rip_indra' and (v558:FindFirstChild('Humanoid') and (v558:FindFirstChild('HumanoidRootPart') and v558.Humanoid.Health > 0)) then
+                                    local _CFrame4 = v558.HumanoidRootPart.CFrame
+
+                                    repeat
+                                        task.wait(0.05)
+                                        AutoHaki()
+                                        EquipWeapon(getgenv().SelectWeapon)
+                                        topos(v558.HumanoidRootPart.CFrame * Pos)
+
+                                        v558.HumanoidRootPart.CFrame = _CFrame4
+                                        v558.HumanoidRootPart.CanCollide = false
+                                        v558.Humanoid.WalkSpeed = 0
+
+                                        _ReplicatedStorage5.Remotes.CommF_:InvokeServer('TravelZou')
+                                    until not _G.AutoThirdSea or (v558.Humanoid.Health <= 0 or not v558.Parent)
+                                end
+                            end
+                        elseif not _Enemies:FindFirstChild('rip_indra') and (CFrame.new(-26880.934, 22.849, 473.19).Position - _LocalPlayer19.Character.HumanoidRootPart.Position).Magnitude <= 1000 then
+                            topos(CFrame.new(-26880.934, 22.849, 473.19))
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
 end
 Others:AddSection({"Fishing"})
 -- =========================================================
