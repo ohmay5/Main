@@ -2354,14 +2354,14 @@ imageButton.Parent = screenGui
 
 -- Adicionar cantos arredondados
 local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0.5, 0)
+uiCorner.CornerRadius = UDim.new(0.1, 0)
 uiCorner.Parent = imageButton
 
 -- Adicionar borda AMARELA
 local uiStroke = Instance.new("UIStroke", imageButton)
 uiStroke.Thickness = 2
 uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-uiStroke.Color = Color3.fromRGB(0, 255, 0) -- Magenta/Rosa forte
+uiStroke.Color = Color3.fromRGB(0, 0, 255) -- Magenta/Rosa forte
 
 -- Variáveis para arrastar
 local dragging = false
@@ -12683,9 +12683,9 @@ local ShootGunEvent = Net:WaitForChild("RE/ShootGunEvent")
 -- CẤU HÌNH CÓ ĐỘ TRỄ RIÊNG CHO SÚNG
 local Config = {
     MaxDistance = 60,
-    MeleeDelay = 0.10,    -- Tốc độ chém
-    GunDelay = 0.2,       -- Tốc độ bắn súng (chỉnh cao lên để không bắn liên tục)
-    DragonDelay = 0.15
+    MeleeDelay = 0.08,    -- Tốc độ chém
+    GunDelay = 0.1,       -- Tốc độ bắn súng (chỉnh cao lên để không bắn liên tục)
+    DragonDelay = 0.15,
     MaxTargetsPerHit = 3,
 }
 
