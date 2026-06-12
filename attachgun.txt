@@ -1,0 +1,94 @@
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local player = Players.LocalPlayer
+local netFolder = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
+local shootEvent = netFolder:WaitForChild("RE/ShootGunEvent") 
+
+-- Biến theo dõi trạng thái quá nhiệt của Dragonstorm
+local dragonstormShots = 0
+local isOverheated = false
+
+-- Hàm tìm mục tiêu gần nhất với tầm bắn tùy chỉnh
+local function GetClosestTarget(maxDistance)
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return nil, nil end
+    
+    local rootPart = character.HumanoidRootPart
+    local closestTarget = nil
+    local closestModel = nil
+    local shortestDistance = maxDistance
+    
+    local function ScanFolder(folder)
+        if not folder then return end
+        for _, targetModel in pairs(folder:GetChildren()) do
+            if targetModel ~= character then
+                local targetRoot = targetModel:FindFirstChild("HumanoidRootPart")
+                local humanoid = targetModel:FindFirstChild("Humanoid")
+                
+                if targetRoot and humanoid and humanoid.Health > 0 then
+                    local distance = (targetRoot.Position - rootPart.Position).Magnitude
+                    if distance < shortestDistance then
+                        shortestDistance = distance
+                        closestTarget = targetRoot
+                        closestModel = targetModel
+                    end
+                end
+            end
+        end
+    end
+    
+    if workspace:FindFirstChild("Enemies") then
+        ScanFolder(workspace.Enemies)
+    end
+    if workspace:FindFirstChild("Characters") then
+        ScanFolder(workspace.Characters)
+    end
+    
+    return closestTarget, closestModel
+end
+
+-- Vòng lặp bắn tự động
+task.spawn(function()
+    while task.wait(0.2) do
+        local character = player.Character
+        if character then
+            local tool = character:FindFirstChildOfClass("Tool")
+            
+            if tool and tool.ToolTip == "Gun" then
+                -- Kiểm tra xem có phải súng Dragonstorm không
+                local isDragonstorm = (tool.Name == "Dragonstorm")
+                
+                -- Nếu là Dragonstorm và đang quá nhiệt, tạm dừng vòng lặp để hồi chiêu
+                if isDragonstorm and isOverheated then
+                    task.wait(3) -- Thời gian chờ hạ nhiệt (giây), có thể tinh chỉnh tùy game
+                    isOverheated = false
+                    dragonstormShots = 0
+                end
+                
+                -- Thiết lập tầm bắn: 350 studs cho Dragonstorm, 100 studs cho súng thường
+                local range = isDragonstorm and 350 or 100
+                local targetPart, targetModel = GetClosestTarget(range)
+                
+                if targetPart and targetModel then
+                    pcall(function()
+                        tool:Activate()
+                    end)
+                    
+                    pcall(function()
+                        shootEvent:FireServer(targetPart.Position, {targetModel})
+                    end)
+                    
+                    -- Cộng dồn số lần bắn nếu dùng Dragonstorm
+                    if isDragonstorm then
+                        dragonstormShots = dragonstormShots + 1
+                        if dragonstormShots >= 3 then
+                            isOverheated = true
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
