@@ -7548,6 +7548,63 @@ Maestry:AddToggle({
     end,
 })
 if would2 then
+Race:AddToggle({
+    Title = "Nâng Tộc V2",
+    Description = "",
+    Default = false
+}):OnChanged(function(v647)
+        _G.AutoEvoRace = v647;
+    end);
+    spawn(function()
+        pcall(function()
+            while wait(0.1) do
+                if _G.AutoEvoRace then
+                    if not game:GetService("Players").LocalPlayer.Data.Race:FindFirstChild("Evolved") then
+                        if (game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist", "1") == 0) then
+                            Tween(CFrame.new(- 2779.83521, 72.9661407, - 3574.02002, - 0.730484903, 6.390141e-8, - 0.68292886, 3.5996322e-8, 1, 5.5066703e-8, 0.68292886, 1.5642467e-8, - 0.730484903));
+                            if ((Vector3.new(- 2779.83521, 72.9661407, - 3574.02002) - game:GetService("Players").LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 4) then
+                                wait(1.3);
+                                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist", "2");
+                            end
+                        elseif (game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist", "1") == 1) then
+                            pcall(function()
+                                if (not game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Flower 1") and not game:GetService("Players").LocalPlayer.Character:FindFirstChild("Flower 1")) then
+                                    Tween(game:GetService("Workspace").Flower1.CFrame);
+                                elseif (not game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Flower 2") and not game:GetService("Players").LocalPlayer.Character:FindFirstChild("Flower 2")) then
+                                    Tween(game:GetService("Workspace").Flower2.CFrame);
+                                elseif (not game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Flower 3") and not game:GetService("Players").LocalPlayer.Character:FindFirstChild("Flower 3")) then
+                                    if game:GetService("Workspace").Enemies:FindFirstChild("Zombie") then
+                                        for v1834, v1835 in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                                            if (v1835.Name == "Zombie") then
+                                                repeat
+                                                    task.wait(_G.Fast_Delay);
+                                                    AutoHaki();
+                                                    EquipTool(SelectWeapon);
+                                                    Tween(v1835.HumanoidRootPart.CFrame * Pos);
+                                                    v1835.HumanoidRootPart.CanCollide = false;
+                                                    v1835.HumanoidRootPart.Size = Vector3.new(50, 50, 50);
+                                                    AttackNoCoolDown();
+                                                    FarmPos = v1835.HumanoidRootPart.CFrame;
+                                                    MonFarm = v1835.Name;
+                                                    bringmob = true;
+                                                until game:GetService("Players").LocalPlayer.Backpack:FindFirstChild("Flower 3") or not v1835.Parent or (v1835.Humanoid.Health <= 0) or (_G.AutoEvoRace == false)
+                                                bringmob = false;
+                                            end
+                                        end
+                                    else
+                                        Tween(CFrame.new(- 5685.9233398438, 48.480125427246, - 853.23724365234));
+                                    end
+                                end
+                            end);
+                        elseif (game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist", "1") == 2) then
+                            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist", "3");
+                        end
+                    end
+                end
+            end
+        end);
+    end);
+end
 Race:AddSection({"Race upgrade v4 only in Sea 3"});
 end
 if World1 then
