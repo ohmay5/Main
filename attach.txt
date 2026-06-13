@@ -3,51 +3,72 @@ local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Player = Players.LocalPlayer
+local LocalPlayer = Players.LocalPlayer
 local Net = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
 local RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
 local RegisterHit = Net:WaitForChild("RE/RegisterHit")
 
--- Cấu hình tốc độ "bình thường" hơn
 local Settings = {
     Enabled = true,
-    Cooldown = 0.4, -- Điều chỉnh thời gian giữa các lần đánh (giây) để tránh bị kick
+    FruitCooldown = 0.3,    -- Tốc độ cho trái ác quỷ
+    MeleeCooldown = 0.33,   -- Tốc độ cho kiếm/melee (thường nhanh hơn)
+    Radius = 60,
+    MaxTargets = 2
 }
 
 local LastAttack = 0
 
 local function GetTargets()
     local targets = {}
-    local char = Player.Character
+    local char = LocalPlayer.Character
     if not char or not char:FindFirstChild("HumanoidRootPart") then return targets end
-    
-    local pos = char.HumanoidRootPart.Position
-    local folder = workspace:FindFirstChild("Enemies") or workspace:FindFirstChild("Characters")
-    
-    if folder then
-        for _, v in pairs(folder:GetChildren()) do
-            if v ~= char and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") and v.Humanoid.Health > 0 then
-                if (v.HumanoidRootPart.Position - pos).Magnitude < 60 then
-                    table.insert(targets, v)
+    local myPos = char.HumanoidRootPart.Position
+
+    for _, folderName in pairs({"Enemies", "Characters"}) do
+        local folder = workspace:FindFirstChild(folderName)
+        if folder then
+            for _, v in pairs(folder:GetChildren()) do
+                if v ~= char and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
+                    if v.Humanoid.Health > 0 then
+                        local dist = (v.HumanoidRootPart.Position - myPos).Magnitude
+                        if dist <= Settings.Radius then
+                            table.insert(targets, {obj = v, dist = dist})
+                        end
+                    end
                 end
             end
         end
     end
+    table.sort(targets, function(a, b) return a.dist < b.dist end)
     return targets
 end
 
--- Chạy vòng lặp có kiểm soát thời gian
 RunService.RenderStepped:Connect(function()
     if not Settings.Enabled then return end
     
-    if tick() - LastAttack >= Settings.Cooldown then
-        local targets = GetTargets()
-        if #targets > 0 then
-            local target = targets[1] -- Chỉ tập trung vào mục tiêu gần nhất để giống người chơi
+    local char = LocalPlayer.Character
+    local tool = char and char:FindFirstChildOfClass("Tool")
+    
+    -- Xác định Cooldown dựa trên loại vũ khí
+    local isFruit = tool and tool:FindFirstChild("LeftClickRemote")
+    local currentCooldown = isFruit and Settings.FruitCooldown or Settings.MeleeCooldown
+
+    if tick() - LastAttack >= currentCooldown then
+        local foundTargets = GetTargets()
+        if #foundTargets > 0 then
+            local targetObj = foundTargets[1].obj
             
-            -- Gửi lệnh tấn công
-            RegisterAttack:FireServer(0.5)
-            RegisterHit:FireServer(target.Head, {{target, target.HumanoidRootPart}})
+            if isFruit then
+                local direction = (targetObj.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Unit
+                tool.LeftClickRemote:FireServer(direction, 1)
+            else
+                local targetsToHit = {}
+                for i = 1, math.min(#foundTargets, Settings.MaxTargets) do
+                    table.insert(targetsToHit, {foundTargets[i].obj, foundTargets[i].obj.HumanoidRootPart})
+                end
+                RegisterAttack:FireServer(0.5)
+                RegisterHit:FireServer(char.Head, targetsToHit)
+            end
             
             LastAttack = tick()
         end
