@@ -5907,7 +5907,6 @@ end
         SaveSettings()
     end,
 })
-
 Event:AddSection({"Sea Event / Setting Sail"})
 local z5 = {
         "Guardian",
@@ -5955,15 +5954,13 @@ Event:AddDropdown({
     Default = "Lv 1",
     Callback = function(I) _G.DangerSc = I end,
 });
-
+end
 Event:AddToggle({
     Name = "Auto Start farm",
     Description = "mua thuyền và chuyển đến khu vực biển",
     Default = false,
     Callback = function(I) _G.SailBoats = I end,
 });
-
--- 2. LOGIC CHÍNH
 spawn(function()
     while task.wait(2) do 
         if _G.SailBoats then
@@ -6018,7 +6015,6 @@ spawn(function()
         end
     end
 end)
-end
 
 -- // VARIÁVEL DE VELOCIDADE PADRÃO // --
 _G.SetSpeedBoat = 300
