@@ -57,7 +57,7 @@ local vu38 = {
 local vu39 = {
     'TAP',
 }
-local vu40 = 0.2
+local vu40 = 0.1
 local vu41 = 1500
 
 local function vu43(p42)
