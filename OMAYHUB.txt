@@ -6066,81 +6066,142 @@ task.spawn(function()
         end
     end)
 end)
+_G.FlyEnabled = false
+_G.BoatHeight = 60
+Event:AddToggle({
+    Name = "Fly Boat",
+    Description = "Bật/Tắt tính năng bay thuyền",
+    Default = GetSetting("FlyBoat_Save", false), -- Tải trạng thái cũ
+    Callback = function(I)
+        _G.FlyEnabled = I
+        _G.SaveData["FlyBoat_Save"] = I -- Lưu vào bộ nhớ
+        SaveSettings() -- Lưu vào file JSON
+    end,
+})
 
+-- 2. Thêm Slider "Boat Height" với SaveData
+Event:AddSlider({
+    Name = "Boat Height",
+    Description = "Điều chỉnh độ cao của thuyền",
+    Min = 0,
+    Max = 200,
+    Default = GetSetting("BoatHeight_Save", 60), -- Tải giá trị cũ
+    Callback = function(I)
+        _G.BoatHeight = I
+        _G.SaveData["BoatHeight_Save"] = I -- Lưu vào bộ nhớ
+        SaveSettings() -- Lưu vào file JSON
+    end,
+})
+
+-- 4. Logic Bay thuyền chạy ngầm (Sử dụng chung với vòng lặp của bạn)
+RunService.RenderStepped:Connect(function()
+    if not _G.FlyEnabled then return end -- Chỉ chạy khi bật Toggle
+
+    local char = LocalPlayer.Character
+    local seat = char and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.SeatPart
+    local boat = seat and seat:FindFirstAncestorOfClass("Model")
+
+    if boat and boat:FindFirstChild("PrimaryPart") then
+        local rootPart = boat.PrimaryPart
+        
+        -- Triệt tiêu trọng lực
+        rootPart.AssemblyLinearVelocity = Vector3.new(rootPart.AssemblyLinearVelocity.X, 0, rootPart.AssemblyLinearVelocity.Z)
+        
+        -- Giữ thuyền ở độ cao theo Slider
+        local targetPos = Vector3.new(rootPart.Position.X, _G.BoatHeight, rootPart.Position.Z)
+        rootPart.CFrame = rootPart.CFrame:Lerp(CFrame.new(targetPos) * (rootPart.CFrame - rootPart.CFrame.Position), 0.1)
+    end
+end)
+
+-- 1. Thêm Toggle "Make Boat Go to Sky" vào Menu UI
+Event:AddToggle({
+    Name = "Make Boat Go to Sky",
+    Description = "Tự động bay thuyền lên trời khi có kẻ địch xuất hiện",
+    Default = GetSetting("MakeBoatGoToSky_Save", false), -- Tải trạng thái cũ
+    Callback = function(I)
+        _G.MakeBoatGoToSky = I
+        _G.SaveData["MakeBoatGoToSky_Save"] = I -- Lưu vào bộ nhớ tạm
+        SaveSettings() -- Lưu vào file Settings.json
+    end,
+})
+
+-- 2. Khởi tạo biến khi bắt đầu chạy script (đặt phía trên vòng lặp)
+_G.MakeBoatGoToSky = GetSetting("MakeBoatGoToSky_Save", false)
+
+-- 3. Tích hợp vào vòng lặp RenderStepped kiểm tra thuyền bay
+RunService.RenderStepped:Connect(function()
+    -- Lấy danh sách quái (giả định bạn dùng hàm GetTargets)
+    local foundTargets = GetTargets() 
+    local hasTargets = #foundTargets > 0
+
+    -- Kiểm tra điều kiện bay: Hoặc là bật Fly Boat thủ công, Hoặc là Make Boat Go To Sky gặp quái
+    local shouldFly = _G.FlyEnabled or (_G.MakeBoatGoToSky and hasTargets)
+
+    if not shouldFly then return end
+
+    local char = LocalPlayer.Character
+    local seat = char and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.SeatPart
+    local boat = seat and seat:FindFirstAncestorOfClass("Model")
+
+    if boat and boat:FindFirstChild("PrimaryPart") then
+        local rootPart = boat.PrimaryPart
+        
+        -- Triệt tiêu trọng lực
+        rootPart.AssemblyLinearVelocity = Vector3.new(rootPart.AssemblyLinearVelocity.X, 0, rootPart.AssemblyLinearVelocity.Z)
+        
+        -- Giữ thuyền ở độ cao theo Slider (_G.BoatHeight)
+        local targetPos = Vector3.new(rootPart.Position.X, _G.BoatHeight or 60, rootPart.Position.Z)
+        rootPart.CFrame = rootPart.CFrame:Lerp(CFrame.new(targetPos) * (rootPart.CFrame - rootPart.CFrame.Position), 0.1)
+    end
+end)
+
+-- 1. Mục chọn chung cho cả Sea 2 và Sea 3
 Event:AddSection({"Select what you will farm."})
-    Event:AddToggle({
-        Name = "Auto Attack Sea Beast",
-        Description = "tự động đánh sea beast",
-        Default = false,
-        Callback = function(I)
-            _G.SeaBeast1 = I;
-        end,
-    });
+
+Event:AddToggle({
+    Name = "Auto Attack Sea Beast",
+    Description = "tự động đánh sea beast",
+    Default = _G.SeaBeast1,
+    Callback = function(I) _G.SeaBeast1 = I end,
+});
+
 Event:AddToggle({
     Name = "Auto Attack Pirate GrandBrigade",
     Description = "tự động tấn công thuyền cướp biển",
-    Default = false,
-    Callback = function(I)
-        _G.PGB = I;
-    end,
+    Default = _G.PGB,
+    Callback = function(I) _G.PGB = I end,
 });
 
+-- 2. Dropdown cho Sea 3 (World3)
+if World3 then
+    Event:AddSection({"Sea 3 Exclusive Farming"})
+    Event:AddDropdown({
+        Name = "Select Sea 3 Mob",
+        Options = {"Shark", "Piranha", "Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"},
+        Callback = function(Value)
+            -- Reset sạch các biến trước khi chọn
+            _G.Shark = false; _G.Piranha = false; _G.TerrorShark = false
+            _G.MobCrew = false; _G.HCM = false; _G.FishBoat = false
+            
+            -- Kích hoạt biến được chọn
+            if Value == "Shark" then _G.Shark = true
+            elseif Value == "Piranha" then _G.Piranha = true
+            elseif Value == "Terror Shark" then _G.TerrorShark = true
+            elseif Value == "Fish Crew Member" then _G.MobCrew = true
+            elseif Value == "Haunted Crew Member" then _G.HCM = true
+            elseif Value == "Fish Boat" then _G.FishBoat = true
+            end
+        end,
+    })
+end
+
+-- 3. Thông báo chỉ dẫn nếu chưa tới Sea 3
 if World2 then
-  Event:AddSection({"Go to Sea 3 for more options."})
+    Event:AddSection({"Go to Sea 3 for more options."})
+elseif not World2 and not World3 then
+    Event:AddSection({"Go to Sea 2 or Sea 3 for Farm maritime events"})
 end
-if World1 then
-  Event:AddSection({"Go to Sea 3 or Sea 2 for Farm maritime events"})
-end
-if game.PlaceId == 7449423635 or game.PlaceId == 100117331123089 then
-Event:AddToggle({
-    Name = "Auto Shark",
-    Description = "đánh cá mập",
-    Default = false,
-    Callback = function(I)
-        _G.Shark = I;
-    end,
-});
-Event:AddToggle({
-    Name = "Auto Piranha",
-    Description = "đánh cá piranha",
-    Default = false,
-    Callback = function(I)
-        _G.Piranha = I;
-    end,
-});
-Event:AddToggle({
-    Name = "Auto Terror Shark",
-    Description = "đánh cá mập khủng bố",
-    Default = false,
-    Callback = function(I)
-        _G.TerrorShark = I;
-    end,
-});
-Event:AddToggle({
-    Name = "Auto Fish Crew Member",
-    Description = "đánh đội đánh cá",
-    Default = false,
-    Callback = function(I)
-        _G.MobCrew = I;
-    end,
-});
-Event:AddToggle({
-    Name = "Auto Haunted Crew Member",
-    Description = "đánh phi hành đoàn bị ma ám",
-    Default = false,
-    Callback = function(I)
-        _G.HCM = I;
-    end,
-});
-Event:AddToggle({
-    Name = "Auto Attack Fish Boat",
-    Description = "đánh thuyền đánh cá",
-    Default = false,
-    Callback = function(I)
-        _G.FishBoat = I;
-    end,
-});
-end
+
 
 -- [[ CONFIGURAÇÕES DE SKILLS ]]
 _G.SelectedSkills = {
