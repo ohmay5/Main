@@ -9791,7 +9791,7 @@ Player:AddToggle({
 	end,
 });
 Player:AddSection({"Settings Combat / Aimbot Settings"});
-local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Aimbot-skill-config/refs/heads/main/Aimbot.lua"))()
+local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Aimbot.lua.txt"))()
 
 local AimbotEnabled = false
 local AimPlayers = false
@@ -9897,7 +9897,7 @@ Player:AddToggle({
 })
 
 Player:AddSection({"Aimbot skill V2"})
-local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Aimbot-skill-config/refs/heads/main/Aimbot.lua"))()
+local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Aimbot.lua.txt"))()
 
 local AimbotEnabled = false
 local AimPlayers = false
