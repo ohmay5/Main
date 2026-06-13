@@ -1150,8 +1150,8 @@ end);
 -- =======================
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
-getgenv().TweenSpeedFar = 320   -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 320  -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedFar = 255   -- Velocidade Padrão (Longe)
+getgenv().TweenSpeedNear = 255  -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -1177,7 +1177,7 @@ local dist = (I.Position - HRP.Position).Magnitude
 --  SE ESTIVER ATÉ 15 STUDS → USA A VELOCIDADE DE PERTO
 --  CASO CONTRÁRIO → USA A VELOCIDADE PADRÃO
 -- ===============================  
-local speed = dist <= 15 and (getgenv().TweenSpeedNear or 320) or (getgenv().TweenSpeedFar or 320)
+local speed = dist <= 15 and (getgenv().TweenSpeedNear or 320) or (getgenv().TweenSpeedFar or 255)
 
 local info = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)  
 local tween = game:GetService("TweenService"):Create(C, info, { CFrame = I })  
@@ -3113,14 +3113,17 @@ Farm:AddSection({"Local Main"})
 Farm:AddDropdown({
     Name = "Select Weapon",
     Description = "chọn vũ khí",
-    Options = {"Melee","Sword","Blox Fruit","Gun"},
-    Default = "Melee",
+    Default = GetSetting("SelectedWeapon_Save", "Melee"),
+    Options = {"Melee", "Sword", "Blox Fruit", "Gun"},
     Multi = false,
     Callback = function(I)
-        _G.ChooseWP = I
+        _G.ChooseWP = I -- Cập nhật biến để script sử dụng
+        
+        -- Cập nhật vào bảng lưu trữ và ghi file
+        _G.SaveData["SelectedWeapon_Save"] = I
+        SaveSettings()
     end,
 })
-
 spawn(function()
     while wait(Sec) do
         pcall(function()
@@ -4533,7 +4536,7 @@ Setting:AddSlider({
 Setting:AddSlider({
     Title = "Tween Speed",
     Description = "Điều chỉnh tốc độ tween",
-    Default = 320,
+    Default = 255,
     Min = 50,      -- Giá trị nhỏ nhất
     Max = 1000,    -- Giá trị lớn nhất
     Rounding = 0,  -- Số chữ số thập phân (0 là số nguyên)
