@@ -5962,38 +5962,45 @@ Event:AddToggle({
     Callback = function(I) _G.SailBoats = I end,
 });
 spawn(function()
-    while task.wait(2) do 
+    while task.wait(1) do 
         if _G.SailBoats then
             pcall(function()
-                local myBoat = CheckBoat()
+                local currentBoat = CheckBoat()
                 
-                -- Mua/Gọi thuyền tại chỗ
-                if not myBoat then
+                -- Mua/Gọi thuyền
+                if not currentBoat then
                     replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat)
                     task.wait(0.5)
                     replicated.Remotes.CommF_:InvokeServer("SpawnBoat", _G.SelectedBoat)
                     task.wait(1)
+                    currentBoat = CheckBoat()
                 end
 
-                local currentBoat = CheckBoat()
                 if currentBoat and currentBoat:FindFirstChild("VehicleSeat") then
+                    -- Tối ưu va chạm: Chỉ tắt va chạm các bộ phận không cần thiết (Tránh rơi thuyền)
+                    for _, v in pairs(currentBoat:GetDescendants()) do
+                        if v:IsA("BasePart") and v.Name ~= "Base" and v.Name ~= "Hull" then
+                            v.CanCollide = false 
+                        end
+                    end
+
                     -- Kiểm tra nguy hiểm
                     local isDanger = (CheckShark() and _G.Shark) or (CheckTerrorShark() and _G.TerrorShark) 
                                      or (CheckFishCrew() and _G.MobCrew) or (CheckPiranha() and _G.Piranha)
                                      or (CheckSeaBeast() and _G.SeaBeast1) or (CheckEnemiesBoat() and _G.FishBoat)
                                      or (_G.PGB and CheckPirateGrandBrigade()) or (_G.HCM and CheckHauntedCrew()) 
-                                     or (_G.Leviathan1 and CheckLeviathan())
 
                     if not isDanger then
-                        if plr.Character.Humanoid.Sit == false then
-                            local seatPos = currentBoat.VehicleSeat.CFrame * CFrame.new(0, 2, 0)
-                            TweenService:Create(plr.Character.HumanoidRootPart, TweenInfo.new(0.5), {CFrame = seatPos}):Play()
-                        else
-                            local targetZone = GetSelectedZoneCFrame(_G.DangerSc or "Lv 1")
-                            local boatSeat = currentBoat.VehicleSeat
-                            local distance = (boatSeat.Position - targetZone.Position).Magnitude
-                            -- Tốc độ 100 stud/giây, tùy chỉnh theo ý bạn
-                            TweenService:Create(boatSeat, TweenInfo.new(distance / 100, Enum.EasingStyle.Linear), {CFrame = targetZone}):Play()
+                        local char = plr.Character
+                        if char and char:FindFirstChild("Humanoid") then
+                            -- Nếu chưa ngồi ghế, teleport vào ghế
+                            if not char.Humanoid.Sit then
+                                char.HumanoidRootPart.CFrame = currentBoat.VehicleSeat.CFrame * CFrame.new(0, 2, 0)
+                            else
+                                -- Đã ngồi ghế: Di chuyển toàn bộ thuyền bằng PivotTo thay vì Tween
+                                local targetZone = GetSelectedZoneCFrame(_G.DangerSc or "Lv 1")
+                                currentBoat:PivotTo(targetZone) -- Dịch chuyển tức thời và an toàn hơn Tween
+                            end
                         end
                     end
                 end
@@ -6002,19 +6009,6 @@ spawn(function()
     end
 end)
 
--- 3. TỐI ƯU VA CHẠM
-spawn(function()
-    while task.wait(1) do
-        if _G.SailBoats then
-            local myBoat = CheckBoat()
-            if myBoat then
-                for _, part in pairs(myBoat:GetDescendants()) do
-                    if part:IsA("BasePart") then part.CanCollide = false end
-                end
-            end
-        end
-    end
-end)
 
 -- // VARIÁVEL DE VELOCIDADE PADRÃO // --
 _G.SetSpeedBoat = 300
@@ -6022,24 +6016,27 @@ _G.SetSpeedBoat = 300
 Event:AddToggle({
         Name = "Activate Boat Speed",
         Description = "Cho phép tùy chỉnh tốc độ thuyền",
-        Default = false,
+        Default = true,
         Callback = function(Value)
             _G.SpeedBoat = Value
         end
     })
 
     Event:AddTextBox({
-        Title = "Boat Speed Value",
-        Description = "tốc độ thuyền đi, nên dùng 300",
-        PlaceHolder = "300",
-        Default = "300",
-        Callback = function(Value)
-            local num = tonumber(Value)
-            if num and num > 0 then
-                _G.SetSpeedBoat = num
-            end
+    Title = "Boat Speed Value",
+    Description = "Tốc độ thuyền đi, nên dùng 300",
+    PlaceHolder = "300",
+    Default = GetSetting("BoatSpeed_Save", "300"), -- Tải giá trị cũ, mặc định là chuỗi "300"
+    Callback = function(Value)
+        local num = tonumber(Value)
+        if num and num > 0 then
+            _G.SetSpeedBoat = num
+            _G.SaveData["BoatSpeed_Save"] = Value -- Lưu vào bộ nhớ dưới dạng chuỗi nhập vào
+            SaveSettings() -- Lưu vào file JSON
         end
-    })
+    end
+})
+
 
 task.spawn(function()
     game:GetService("RunService").RenderStepped:Connect(function()
@@ -6092,83 +6089,74 @@ Event:AddSlider({
 RunService.RenderStepped:Connect(function()
     if not _G.FlyEnabled then return end
 
-    local char = LocalPlayer.Character
-    local seat = char and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.SeatPart
+    local char = game.Players.LocalPlayer.Character
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+    local seat = humanoid and humanoid.SeatPart
     local boat = seat and seat:FindFirstAncestorOfClass("Model")
 
-    if boat and boat.PrimaryPart then
-        local rootPart = boat.PrimaryPart
+    if boat then
+        -- Lấy vị trí và hướng hiện tại của thuyền
+        local currentCFrame = boat:GetPivot()
+        local currentPos = currentCFrame.Position
         
-        -- Kiểm tra xem thuyền đã có BodyVelocity chưa, nếu chưa thì tạo mới
-        local bv = rootPart:FindFirstChild("BoatFlyVelocity")
-        if not bv then
-            bv = Instance.new("BodyVelocity")
-            bv.Name = "BoatFlyVelocity"
-            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge) -- Lực cực đại
-            bv.Parent = rootPart
-        end
-
-        -- Giữ độ cao Y bằng cách điều chỉnh vận tốc
-        -- Nếu thuyền thấp hơn độ cao mong muốn thì đẩy lên, cao hơn thì đẩy xuống
-        local currentY = rootPart.Position.Y
-        local targetY = _G.BoatHeight
+        -- Tạo tọa độ mới giữ nguyên X và Z, thay đổi Y bằng độ cao của Slider
+        local targetY = _G.BoatHeight or 60
+        local newPosition = Vector3.new(currentPos.X, targetY, currentPos.Z)
         
-        -- Tốc độ phản hồi (càng cao càng nhanh)
-        local verticalSpeed = (targetY - currentY) * 10 
+        -- Tách ma trận hướng (rotation) để thuyền không bị xoay lung tung
+        local _, _, _, R00, R01, R02, R10, R11, R12, R20, R21, R22 = currentCFrame:components()
+        local newCFrame = CFrame.new(newPosition.X, newPosition.Y, newPosition.Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
         
-        bv.Velocity = Vector3.new(rootPart.AssemblyLinearVelocity.X, verticalSpeed, rootPart.AssemblyLinearVelocity.Z)
-    else
-        -- Khi không ngồi thuyền hoặc tắt, xóa BodyVelocity đi để thuyền rơi về bình thường
-        local char = LocalPlayer.Character
-        if char and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.SeatPart then
-            local boat = char.Humanoid.SeatPart:FindFirstAncestorOfClass("Model")
-            if boat and boat.PrimaryPart and boat.PrimaryPart:FindFirstChild("BoatFlyVelocity") then
-                boat.PrimaryPart.BoatFlyVelocity:Destroy()
-            end
+        -- Dịch chuyển thuyền lập tức
+        boat:PivotTo(newCFrame)
+        
+        -- Triệt tiêu bớt vận tốc thừa để tránh bị văng/lật
+        if boat.PrimaryPart then
+            boat.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
+            boat.PrimaryPart.AssemblyAngularVelocity = Vector3.zero
         end
     end
 end)
 
--- 1. Mục chọn chung cho cả Sea 2 và Sea 3
-Event:AddSection({"Select what you will farm."})
+if World2 or World3 then
+    Event:AddSection({"Select what you will farm."})
 
-Event:AddToggle({
-    Name = "Auto Attack Sea Beast",
-    Description = "tự động đánh sea beast",
-    Default = _G.SeaBeast1,
-    Callback = function(I) _G.SeaBeast1 = I end,
-});
-
-Event:AddToggle({
-    Name = "Auto Attack Pirate GrandBrigade",
-    Description = "tự động tấn công thuyền cướp biển",
-    Default = _G.PGB,
-    Callback = function(I) _G.PGB = I end,
-});
-
--- 2. Dropdown cho Sea 3 (World3)
-if World3 then
-    Event:AddSection({"Sea 3 Exclusive Farming"})
-    Event:AddDropdown({
-        Name = "Select Sea 3 Mob",
-        Options = {"Shark", "Piranha", "Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"},
-        Callback = function(Value)
-            -- Reset sạch các biến trước khi chọn
-            _G.Shark = false; _G.Piranha = false; _G.TerrorShark = false
-            _G.MobCrew = false; _G.HCM = false; _G.FishBoat = false
-            
-            -- Kích hoạt biến được chọn
-            if Value == "Shark" then _G.Shark = true
-            elseif Value == "Piranha" then _G.Piranha = true
-            elseif Value == "Terror Shark" then _G.TerrorShark = true
-            elseif Value == "Fish Crew Member" then _G.MobCrew = true
-            elseif Value == "Haunted Crew Member" then _G.HCM = true
-            elseif Value == "Fish Boat" then _G.FishBoat = true
-            end
-        end,
+    Event:AddToggle({
+        Name = "Auto Attack Sea Beast",
+        Description = "tự động đánh sea beast",
+        Default = _G.SeaBeast1,
+        Callback = function(I) _G.SeaBeast1 = I end,
     })
-end
 
+    Event:AddToggle({
+        Name = "Auto Attack Pirate GrandBrigade",
+        Description = "tự động tấn công thuyền cướp biển",
+        Default = _G.PGB,
+        Callback = function(I) _G.PGB = I end,
+    })
+end -- Đây là nơi đóng lại khối if
+
+if would3 then
+Event:AddDropdown({
+    Name = "Select Sea 3 Mobs",
+    Options = {"Shark", "Piranha", "Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"},
+    MultiSelect = true, 
+    Callback = function(Values)
+        -- Values sẽ trả về dạng: { ["Shark"] = true, ["Terror Shark"] = true, ... }
+        -- Chúng ta cập nhật trực tiếp vào biến _G
+        
+        _G.Shark = Values["Shark"] or false
+        _G.Piranha = Values["Piranha"] or false
+        _G.TerrorShark = Values["Terror Shark"] or false
+        _G.MobCrew = Values["Fish Crew Member"] or false
+        _G.HCM = Values["Haunted Crew Member"] or false
+        _G.FishBoat = Values["Fish Boat"] or false
+        
+        -- In ra console để kiểm tra (không bắt buộc)
+        print("Updated Mobs:", _G.Shark, _G.Piranha, _G.TerrorShark, _G.MobCrew, _G.HCM, _G.FishBoat)
+    end,
+})
+end
 -- 3. Thông báo chỉ dẫn nếu chưa tới Sea 3
 if World2 then
     Event:AddSection({"Go to Sea 3 for more options."})
