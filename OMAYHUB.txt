@@ -6096,6 +6096,8 @@ Event:AddSlider({
     end,
 })
 
+local RunService = game:GetService("RunService")
+
 RunService.RenderStepped:Connect(function()
     if not _G.FlyEnabled then return end
 
@@ -6106,17 +6108,28 @@ RunService.RenderStepped:Connect(function()
     local boat = seat and seat:FindFirstAncestorOfClass("Model")
 
     if boat then
-        -- ... (Giữ nguyên phần logic PivotTo của bạn) ...
+        -- Lấy vị trí và hướng hiện tại của thuyền
+        local currentCFrame = boat:GetPivot()
+        local currentPos = currentCFrame.Position
+        
+        -- Tạo tọa độ mới giữ nguyên X và Z, thay đổi Y bằng độ cao của Slider
+        local targetY = _G.BoatHeight or 60
+        local newPosition = Vector3.new(currentPos.X, targetY, currentPos.Z)
+        
+        -- Tách ma trận hướng (rotation) để thuyền không bị xoay lung tung
+        local _, _, _, R00, R01, R02, R10, R11, R12, R20, R21, R22 = currentCFrame:components()
+        local newCFrame = CFrame.new(newPosition.X, newPosition.Y, newPosition.Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
+        
+        -- Dịch chuyển thuyền lập tức
         boat:PivotTo(newCFrame)
         
-        -- SỬA LỖI CAMERA:
-        -- Ép camera tập trung vào nhân vật của bạn mỗi khung hình
+        -- SỬA LỖI CAMERA: Ép camera tập trung vào nhân vật
         local camera = workspace.CurrentCamera
         if camera.CameraSubject ~= humanoid then
             camera.CameraSubject = humanoid
         end
         
-        -- Triệt tiêu vận tốc
+        -- Triệt tiêu vận tốc để tránh văng/lật
         if boat.PrimaryPart then
             boat.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
             boat.PrimaryPart.AssemblyAngularVelocity = Vector3.zero
@@ -6143,27 +6156,31 @@ if World2 or World3 then
     })
 end -- Đây là nơi đóng lại khối if
 
-if would3 then
-Event:AddDropdown({
-    Name = "Select Sea 3 Mobs",
-    Options = {"Shark", "Piranha", "Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"},
-    MultiSelect = true, 
-    Callback = function(Values)
-        -- Values sẽ trả về dạng: { ["Shark"] = true, ["Terror Shark"] = true, ... }
-        -- Chúng ta cập nhật trực tiếp vào biến _G
-        
-        _G.Shark = Values["Shark"] or false
-        _G.Piranha = Values["Piranha"] or false
-        _G.TerrorShark = Values["Terror Shark"] or false
-        _G.MobCrew = Values["Fish Crew Member"] or false
-        _G.HCM = Values["Haunted Crew Member"] or false
-        _G.FishBoat = Values["Fish Boat"] or false
-        
-        -- In ra console để kiểm tra (không bắt buộc)
-        print("Updated Mobs:", _G.Shark, _G.Piranha, _G.TerrorShark, _G.MobCrew, _G.HCM, _G.FishBoat)
-    end,
-})
+if World3 then
+    Event:AddSection({"Select Sea 3 Mobs to Farm"})
+    
+    local mobs = {"Shark", "Piranha", "Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"}
+    
+    for _, mobName in ipairs(mobs) do
+        -- Tạo một biến _G tương ứng, ví dụ: _G["Farm_Shark"], v.v.
+        -- Hoặc dùng trực tiếp tên viết tắt của bạn đã định nghĩa
+        Event:AddToggle({
+            Name = "Farm " .. mobName,
+            Default = false,
+            Callback = function(state)
+                -- Gán trực tiếp vào biến _G tùy theo ý bạn
+                if mobName == "Shark" then _G.Shark = state
+                elseif mobName == "Piranha" then _G.Piranha = state
+                elseif mobName == "Terror Shark" then _G.TerrorShark = state
+                elseif mobName == "Fish Crew Member" then _G.MobCrew = state
+                elseif mobName == "Haunted Crew Member" then _G.HCM = state
+                elseif mobName == "Fish Boat" then _G.FishBoat = state
+                end
+            end,
+        })
+    end
 end
+
 -- 3. Thông báo chỉ dẫn nếu chưa tới Sea 3
 if World2 then
     Event:AddSection({"Go to Sea 3 for more options."})
