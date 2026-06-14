@@ -5931,84 +5931,94 @@ local z5 = {
     });
     -- Configuração de Nível de Perigo (SÓ SEA 3)
     if World3 then
-        -- 0. ĐỊNH NGHĨA TỌA ĐỘ (Cần có cái này để hàm GetSelectedZoneCFrame hoạt động)
-local function GetSelectedZoneCFrame(level)
-    local zones = {
-        ["Lv 1"] = CFrame.new(-21998.375, 30.0006084, -682.309143),
-        ["Lv 2"] = CFrame.new(-26779.5215, 30.0005474, -822.858032),
-        ["Lv 3"] = CFrame.new(-31171.957, 30.0001011, -2256.93774),
-        ["Lv 4"] = CFrame.new(-34054.6875, 30.2187767, -2560.12012),
-        ["Lv 5"] = CFrame.new(-38887.5547, 30.0004578, -2162.99023),
-        ["Lv 6"] = CFrame.new(-44541.7617, 30.0003204, -1244.8584),
-        ["Lv Infinite"] = CFrame.new(-10000000, 31, 37016.25)
-    }
-    return zones[level] or zones["Lv 1"]
-end
+        local H5 = {
+            "Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite",
+        };
+        Event:AddDropdown({
+            Name = "Select Level Sea",
+            Description = "chọn mức độ để di chuyển trên biển",
+            Options = H5,
+            Default = "Lv 1",
+            Multi = false,
+            Callback = function(I)
+                _G.DangerSc = I;
+            end,
+        });
+    end
 
--- 1. DROPDOWN & TOGGLE
-local H5 = {"Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite"}
-Event:AddDropdown({
-    Name = "Select Level Sea",
-    Description = "chọn mức độ để di chuyển trên biển",
-    Options = H5,
-    Default = "Lv 1",
-    Callback = function(I) _G.DangerSc = I end,
-});
-end
-Event:AddToggle({
-    Name = "Auto Start farm",
-    Description = "mua thuyền và chuyển đến khu vực biển",
-    Default = false,
-    Callback = function(I) _G.SailBoats = I end,
-});
+    Event:AddToggle({
+        Name = "Auto Start farm",
+        Description = "mua thuyền và chuyển đến khu vực biển",
+        Default = false,
+        Callback = function(I)
+            _G.SailBoats = I;
+        end,
+    });
 spawn(function()
-    while task.wait(1) do 
+    while wait() do
         if _G.SailBoats then
             pcall(function()
-                local currentBoat = CheckBoat()
-                
-                -- Mua/Gọi thuyền
-                if not currentBoat then
-                    replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat)
-                    task.wait(0.5)
-                    replicated.Remotes.CommF_:InvokeServer("SpawnBoat", _G.SelectedBoat)
-                    task.wait(1)
-                    currentBoat = CheckBoat()
-                end
-
-                if currentBoat and currentBoat:FindFirstChild("VehicleSeat") then
-                    -- Tối ưu va chạm: Chỉ tắt va chạm các bộ phận không cần thiết (Tránh rơi thuyền)
-                    for _, v in pairs(currentBoat:GetDescendants()) do
-                        if v:IsA("BasePart") and v.Name ~= "Base" and v.Name ~= "Hull" then
-                            v.CanCollide = false 
-                        end
-                    end
-
-                    -- Kiểm tra nguy hiểm
-                    local isDanger = (CheckShark() and _G.Shark) or (CheckTerrorShark() and _G.TerrorShark) 
-                                     or (CheckFishCrew() and _G.MobCrew) or (CheckPiranha() and _G.Piranha)
-                                     or (CheckSeaBeast() and _G.SeaBeast1) or (CheckEnemiesBoat() and _G.FishBoat)
-                                     or (_G.PGB and CheckPirateGrandBrigade()) or (_G.HCM and CheckHauntedCrew()) 
-
-                    if not isDanger then
-                        local char = plr.Character
-                        if char and char:FindFirstChild("Humanoid") then
-                            -- Nếu chưa ngồi ghế, teleport vào ghế
-                            if not char.Humanoid.Sit then
-                                char.HumanoidRootPart.CFrame = currentBoat.VehicleSeat.CFrame * CFrame.new(0, 2, 0)
+                local I = CheckBoat();
+                -- CORREÇÃO: Compra barco mesmo se houver inimigos, para não travar no spawn
+                if not I then
+                    local BoatDealerPos = CFrame.new(-16927.451, 9.086, 433.864);
+                    TeleportToTarget(BoatDealerPos);
+                    if (BoatDealerPos.Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 10 then
+                        replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat);
+                    end;
+                elseif I and (not (CheckShark() and _G.Shark or CheckTerrorShark() and _G.TerrorShark or CheckFishCrew() and _G.MobCrew or CheckPiranha() and _G.Piranha) and (not (CheckEnemiesBoat() and _G.FishBoat) and (not (CheckSeaBeast() and _G.SeaBeast1) and (not (_G.PGB and CheckPirateGrandBrigade()) and (not (_G.HCM and CheckHauntedCrew()) and not (_G.Leviathan1 and CheckLeviathan())))))) then
+                    if plr.Character.Humanoid.Sit == false then
+                        local e = I.VehicleSeat.CFrame * CFrame.new(0, 1, 0);
+                        _tp(e);
+                    else
+                        if _G.DangerSc == "Lv 1" then
+                            CFrameSelectedZone = CFrame.new(-21998.375, 30.0006084, -682.309143);
+                        elseif _G.DangerSc == "Lv 2" then
+                            CFrameSelectedZone = CFrame.new(-26779.5215, 30.0005474, -822.858032);
+                        elseif _G.DangerSc == "Lv 3" then
+                            CFrameSelectedZone = CFrame.new(-31171.957, 30.0001011, -2256.93774);
+                        elseif _G.DangerSc == "Lv 4" then
+                            CFrameSelectedZone = CFrame.new(-34054.6875, 30.2187767, -2560.12012);
+                        elseif _G.DangerSc == "Lv 5" then
+                            CFrameSelectedZone = CFrame.new(-38887.5547, 30.0004578, -2162.99023);
+                        elseif _G.DangerSc == "Lv 6" then
+                            CFrameSelectedZone = CFrame.new(-44541.7617, 30.0003204, -1244.8584);
+                        elseif _G.DangerSc == "Lv Infinite" then
+                            CFrameSelectedZone = CFrame.new(-10000000, 31, 37016.25);
+                        end;
+                        repeat
+                            wait();
+                            if not _G.FishBoat and CheckEnemiesBoat() or not _G.PGB and CheckPirateGrandBrigade() or not _G.TerrorShark and CheckTerrorShark() then
+                                _tp(CFrameSelectedZone * CFrame.new(0, 150, 0));
                             else
-                                -- Đã ngồi ghế: Di chuyển toàn bộ thuyền bằng PivotTo thay vì Tween
-                                local targetZone = GetSelectedZoneCFrame(_G.DangerSc or "Lv 1")
-                                currentBoat:PivotTo(targetZone) -- Dịch chuyển tức thời và an toàn hơn Tween
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
+                                _tp(CFrameSelectedZone);
+                            end;
+                        until _G.SailBoats == false or CheckShark() and _G.Shark or CheckTerrorShark() and _G.TerrorShark or CheckFishCrew() and _G.MobCrew or CheckPiranha() and _G.Piranha or CheckSeaBeast() and _G.SeaBeast1 or CheckEnemiesBoat() and _G.FishBoat or _G.Leviathan1 and CheckLeviathan() or _G.HCM and CheckHauntedCrew() or _G.PGB and CheckPirateGrandBrigade() or (plr.Character:WaitForChild("Humanoid")).Sit == false;
+                        plr.Character.Humanoid.Sit = false;
+                    end;
+                end;
+            end);
+        end;
+    end;
+end);
 
+spawn(function()
+    while wait(Sec) do
+        pcall(function()
+            for I, e in pairs(workspace.Boats:GetChildren()) do
+                for I, e in pairs(workspace.Boats[e.Name]:GetDescendants()) do
+                    if e:IsA("BasePart") then
+                        if _G.SailBoats or _G.Prehis_Find or _G.FindMirage or _G.SailBoat_Hydra or _G.AutofindKitIs then
+                            e.CanCollide = false;
+                        else
+                            e.CanCollide = true;
+                        end;
+                    end;
+                end;
+            end;
+        end);
+    end;
+end);
 
 -- // VARIÁVEL DE VELOCIDADE PADRÃO // --
 _G.SetSpeedBoat = 300
@@ -6089,34 +6099,31 @@ Event:AddSlider({
 RunService.RenderStepped:Connect(function()
     if not _G.FlyEnabled then return end
 
-    local char = game.Players.LocalPlayer.Character
+    local player = game.Players.LocalPlayer
+    local char = player.Character
     local humanoid = char and char:FindFirstChildOfClass("Humanoid")
     local seat = humanoid and humanoid.SeatPart
     local boat = seat and seat:FindFirstAncestorOfClass("Model")
 
     if boat then
-        -- Lấy vị trí và hướng hiện tại của thuyền
-        local currentCFrame = boat:GetPivot()
-        local currentPos = currentCFrame.Position
-        
-        -- Tạo tọa độ mới giữ nguyên X và Z, thay đổi Y bằng độ cao của Slider
-        local targetY = _G.BoatHeight or 60
-        local newPosition = Vector3.new(currentPos.X, targetY, currentPos.Z)
-        
-        -- Tách ma trận hướng (rotation) để thuyền không bị xoay lung tung
-        local _, _, _, R00, R01, R02, R10, R11, R12, R20, R21, R22 = currentCFrame:components()
-        local newCFrame = CFrame.new(newPosition.X, newPosition.Y, newPosition.Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
-        
-        -- Dịch chuyển thuyền lập tức
+        -- ... (Giữ nguyên phần logic PivotTo của bạn) ...
         boat:PivotTo(newCFrame)
         
-        -- Triệt tiêu bớt vận tốc thừa để tránh bị văng/lật
+        -- SỬA LỖI CAMERA:
+        -- Ép camera tập trung vào nhân vật của bạn mỗi khung hình
+        local camera = workspace.CurrentCamera
+        if camera.CameraSubject ~= humanoid then
+            camera.CameraSubject = humanoid
+        end
+        
+        -- Triệt tiêu vận tốc
         if boat.PrimaryPart then
             boat.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
             boat.PrimaryPart.AssemblyAngularVelocity = Vector3.zero
         end
     end
 end)
+
 
 if World2 or World3 then
     Event:AddSection({"Select what you will farm."})
