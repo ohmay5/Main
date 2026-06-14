@@ -6089,65 +6089,43 @@ Event:AddSlider({
     end,
 })
 
--- 4. Logic Bay thuyền chạy ngầm (Sử dụng chung với vòng lặp của bạn)
 RunService.RenderStepped:Connect(function()
-    if not _G.FlyEnabled then return end -- Chỉ chạy khi bật Toggle
+    if not _G.FlyEnabled then return end
 
     local char = LocalPlayer.Character
     local seat = char and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.SeatPart
     local boat = seat and seat:FindFirstAncestorOfClass("Model")
 
-    if boat and boat:FindFirstChild("PrimaryPart") then
+    if boat and boat.PrimaryPart then
         local rootPart = boat.PrimaryPart
         
-        -- Triệt tiêu trọng lực
-        rootPart.AssemblyLinearVelocity = Vector3.new(rootPart.AssemblyLinearVelocity.X, 0, rootPart.AssemblyLinearVelocity.Z)
+        -- Kiểm tra xem thuyền đã có BodyVelocity chưa, nếu chưa thì tạo mới
+        local bv = rootPart:FindFirstChild("BoatFlyVelocity")
+        if not bv then
+            bv = Instance.new("BodyVelocity")
+            bv.Name = "BoatFlyVelocity"
+            bv.MaxForce = Vector3.new(math.huge, math.huge, math.huge) -- Lực cực đại
+            bv.Parent = rootPart
+        end
+
+        -- Giữ độ cao Y bằng cách điều chỉnh vận tốc
+        -- Nếu thuyền thấp hơn độ cao mong muốn thì đẩy lên, cao hơn thì đẩy xuống
+        local currentY = rootPart.Position.Y
+        local targetY = _G.BoatHeight
         
-        -- Giữ thuyền ở độ cao theo Slider
-        local targetPos = Vector3.new(rootPart.Position.X, _G.BoatHeight, rootPart.Position.Z)
-        rootPart.CFrame = rootPart.CFrame:Lerp(CFrame.new(targetPos) * (rootPart.CFrame - rootPart.CFrame.Position), 0.1)
-    end
-end)
-
--- 1. Thêm Toggle "Make Boat Go to Sky" vào Menu UI
-Event:AddToggle({
-    Name = "Make Boat Go to Sky",
-    Description = "Tự động bay thuyền lên trời khi có kẻ địch xuất hiện",
-    Default = GetSetting("MakeBoatGoToSky_Save", false), -- Tải trạng thái cũ
-    Callback = function(I)
-        _G.MakeBoatGoToSky = I
-        _G.SaveData["MakeBoatGoToSky_Save"] = I -- Lưu vào bộ nhớ tạm
-        SaveSettings() -- Lưu vào file Settings.json
-    end,
-})
-
--- 2. Khởi tạo biến khi bắt đầu chạy script (đặt phía trên vòng lặp)
-_G.MakeBoatGoToSky = GetSetting("MakeBoatGoToSky_Save", false)
-
--- 3. Tích hợp vào vòng lặp RenderStepped kiểm tra thuyền bay
-RunService.RenderStepped:Connect(function()
-    -- Lấy danh sách quái (giả định bạn dùng hàm GetTargets)
-    local foundTargets = GetTargets() 
-    local hasTargets = #foundTargets > 0
-
-    -- Kiểm tra điều kiện bay: Hoặc là bật Fly Boat thủ công, Hoặc là Make Boat Go To Sky gặp quái
-    local shouldFly = _G.FlyEnabled or (_G.MakeBoatGoToSky and hasTargets)
-
-    if not shouldFly then return end
-
-    local char = LocalPlayer.Character
-    local seat = char and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.SeatPart
-    local boat = seat and seat:FindFirstAncestorOfClass("Model")
-
-    if boat and boat:FindFirstChild("PrimaryPart") then
-        local rootPart = boat.PrimaryPart
+        -- Tốc độ phản hồi (càng cao càng nhanh)
+        local verticalSpeed = (targetY - currentY) * 10 
         
-        -- Triệt tiêu trọng lực
-        rootPart.AssemblyLinearVelocity = Vector3.new(rootPart.AssemblyLinearVelocity.X, 0, rootPart.AssemblyLinearVelocity.Z)
-        
-        -- Giữ thuyền ở độ cao theo Slider (_G.BoatHeight)
-        local targetPos = Vector3.new(rootPart.Position.X, _G.BoatHeight or 60, rootPart.Position.Z)
-        rootPart.CFrame = rootPart.CFrame:Lerp(CFrame.new(targetPos) * (rootPart.CFrame - rootPart.CFrame.Position), 0.1)
+        bv.Velocity = Vector3.new(rootPart.AssemblyLinearVelocity.X, verticalSpeed, rootPart.AssemblyLinearVelocity.Z)
+    else
+        -- Khi không ngồi thuyền hoặc tắt, xóa BodyVelocity đi để thuyền rơi về bình thường
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChildOfClass("Humanoid") and char.Humanoid.SeatPart then
+            local boat = char.Humanoid.SeatPart:FindFirstAncestorOfClass("Model")
+            if boat and boat.PrimaryPart and boat.PrimaryPart:FindFirstChild("BoatFlyVelocity") then
+                boat.PrimaryPart.BoatFlyVelocity:Destroy()
+            end
+        end
     end
 end)
 
