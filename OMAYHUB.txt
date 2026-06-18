@@ -3077,13 +3077,7 @@ Status:AddButton({
         game:GetService("TeleportService"):Teleport(game.PlaceId,game:GetService("Players").LocalPlayer)
     end
 })
- Status:AddButton({
-    Name = "Hop Server",
-    Callback = function()
-        Hop()
-    end
-})
-
+ 
 Status:AddButton({
     Name = "Hop Server Less People",
     Callback = function()
@@ -8940,6 +8934,56 @@ DevEsp = function()
         end);
     end;
 end;
+QuestEsp = function()
+    local Number = "Quest" -- Đặt biến Number cố định cho 3 trái quest
+    for I, e in pairs(workspace:GetChildren()) do
+        pcall(function()
+            -- Kiểm tra đúng 3 trái cây nhiệm vụ và có Handle
+            if e:IsA("Tool") and (e.Name == "Banana" or e.Name == "Apple" or e.Name == "Pineapple") and e:FindFirstChild("Handle") then
+                if QuestFruitESP then
+                    local dist = G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Handle.Position).Magnitude / 3)
+                    
+                    if not e.Handle:FindFirstChild("NameEsp" .. Number) then
+                        local I = Instance.new("BillboardGui", e.Handle);
+                        I.Name = "NameEsp" .. Number; 
+                        I.ExtentsOffset = Vector3.new(0, 1, 0);
+                        I.Size = UDim2.new(1, 200, 1, 30);
+                        I.Adornee = e.Handle;
+                        I.AlwaysOnTop = true;
+                        
+                        local K = Instance.new("TextLabel", I);
+                        K.Font = Enum.Font.Code;
+                        K.FontSize = "Size14";
+                        K.TextWrapped = true;
+                        K.Size = UDim2.new(1, 0, 1, 0);
+                        K.TextYAlignment = "Top";
+                        K.BackgroundTransparency = 1;
+                        K.TextStrokeTransparency = .5;
+                        
+                        -- Cấu hình màu sắc riêng cho từng trái
+                        if e.Name == "Banana" then
+                            K.TextColor3 = Color3.fromRGB(255, 255, 0)   -- Chuối: Vàng
+                        elseif e.Name == "Apple" then
+                            K.TextColor3 = Color3.fromRGB(255, 0, 0)     -- Táo: Đỏ
+                        elseif e.Name == "Pineapple" then
+                            K.TextColor3 = Color3.fromRGB(255, 165, 0)  -- Thơm: Cam
+                        end
+                        
+                        K.Text = "[" .. e.Name .. "] \n" .. dist .. " M";
+                    else
+                        e.Handle["NameEsp" .. Number].TextLabel.Text = "[" .. e.Name .. "] \n" .. dist .. " M";
+                    end;
+                else
+                    if e.Handle:FindFirstChild("NameEsp" .. Number) then
+                        e.Handle["NameEsp" .. Number]:Destroy();
+                    end;
+                end;
+            end;
+        end);
+    end;
+end;
+
+
 flowerEsp = function()
     for I, e in pairs(workspace:GetChildren()) do
         pcall(function()
@@ -9318,6 +9362,19 @@ Esp:AddToggle({
         end
     end
 })
+Esp:AddToggle({
+    Name = "Esp Quest Fruits", 
+    Default = _G.SaveData["EspQuestFruits_Save"] or false, 
+    Callback = function(I)
+        QuestFruitESP = I
+        _G.SaveData["EspQuestFruits_Save"] = I
+        if SaveSettings then SaveSettings() end
+        if I then
+            task.spawn(function() while QuestFruitESP do task.wait(1); pcall(QuestEsp); end; end)
+        end
+    end
+})
+
 -- ESP Island
 Esp:AddToggle({
     Name = "Esp Island", 
