@@ -8948,20 +8948,21 @@ DevEsp = function()
     end;
 end;
 QuestEsp = function()
-    local Number = "Quest" -- Đặt biến Number cố định cho 3 trái quest
+    local Number = "Quest" -- Biến định danh cố định cho thẻ tên quest
     for I, e in pairs(workspace:GetChildren()) do
         pcall(function()
-            -- Kiểm tra đúng 3 trái cây nhiệm vụ và có Handle
-            if e:IsA("Tool") and (e.Name == "Banana" or e.Name == "Apple" or e.Name == "Pineapple") and e:FindFirstChild("Handle") then
+            -- Kiểm tra đúng tên 3 trái nhiệm vụ (Banana, Apple, Pineapple)
+            if e.Name == "Banana" or e.Name == "Apple" or e.Name == "Pineapple" then
                 if QuestFruitESP then
-                    local dist = G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Handle.Position).Magnitude / 3)
+                    -- Sử dụng e.Position trực tiếp để tránh lỗi không tìm thấy Handle
+                    local dist = G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Position).Magnitude / 3)
                     
-                    if not e.Handle:FindFirstChild("NameEsp" .. Number) then
-                        local I = Instance.new("BillboardGui", e.Handle);
+                    if not e:FindFirstChild("NameEsp" .. Number) then
+                        local I = Instance.new("BillboardGui", e);
                         I.Name = "NameEsp" .. Number; 
                         I.ExtentsOffset = Vector3.new(0, 1, 0);
                         I.Size = UDim2.new(1, 200, 1, 30);
-                        I.Adornee = e.Handle;
+                        I.Adornee = e;
                         I.AlwaysOnTop = true;
                         
                         local K = Instance.new("TextLabel", I);
@@ -8973,28 +8974,35 @@ QuestEsp = function()
                         K.BackgroundTransparency = 1;
                         K.TextStrokeTransparency = .5;
                         
-                        -- Cấu hình màu sắc riêng cho từng trái
-                        if e.Name == "Banana" then
-                            K.TextColor3 = Color3.fromRGB(255, 255, 0)   -- Chuối: Vàng
-                        elseif e.Name == "Apple" then
-                            K.TextColor3 = Color3.fromRGB(255, 0, 0)     -- Táo: Đỏ
-                        elseif e.Name == "Pineapple" then
-                            K.TextColor3 = Color3.fromRGB(255, 165, 0)  -- Thơm: Cam
-                        end
+                        -- Để chữ màu trắng cho dễ nhìn trên mọi nền game
+                        K.TextColor3 = Color3.fromRGB(255, 255, 255);
                         
-                        K.Text = "[" .. e.Name .. "] \n" .. dist .. " M";
+                        if e.Name == "Banana" then
+                            K.Text = "[Banana] \n" .. dist .. " M";
+                        elseif e.Name == "Apple" then
+                            K.Text = "[Apple] \n" .. dist .. " M";
+                        elseif e.Name == "Pineapple" then
+                            K.Text = "[Pineapple] \n" .. dist .. " M";
+                        end
                     else
-                        e.Handle["NameEsp" .. Number].TextLabel.Text = "[" .. e.Name .. "] \n" .. dist .. " M";
-                    end;
+                        if e.Name == "Banana" then
+                            e["NameEsp" .. Number].TextLabel.Text = "[Banana] \n" .. dist .. " M";
+                        elseif e.Name == "Apple" then
+                            e["NameEsp" .. Number].TextLabel.Text = "[Apple] \n" .. dist .. " M";
+                        elseif e.Name == "Pineapple" then
+                            e["NameEsp" .. Number].TextLabel.Text = "[Pineapple] \n" .. dist .. " M";
+                        end
+                    end
                 else
-                    if e.Handle:FindFirstChild("NameEsp" .. Number) then
-                        e.Handle["NameEsp" .. Number]:Destroy();
-                    end;
-                end;
-            end;
+                    if e:FindFirstChild("NameEsp" .. Number) then
+                        e["NameEsp" .. Number]:Destroy();
+                    end
+                end
+            end
         end);
     end;
 end;
+
 
 
 flowerEsp = function()
