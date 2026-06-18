@@ -3077,21 +3077,6 @@ Status:AddButton({
         game:GetService("TeleportService"):Teleport(game.PlaceId,game:GetService("Players").LocalPlayer)
     end
 })
-Local function Hop()
-    local TeleportService = game:GetService("TeleportService")
-    local Players = game:GetService("Players")
-    local player = Players.LocalPlayer
-    local placeId = game.PlaceId
-
-    -- Dịch chuyển trực tiếp qua PlaceId mà không cần thông qua API lọc server
-    local success, err = pcall(function()
-        TeleportService:Teleport(placeId, player)
-    end)
-
-    if not success then
-        warn("[HopServer] Lỗi dịch chuyển: " .. tostring(err))
-    end
-end
  Status:AddButton({
     Name = "Hop Server",
     Callback = function()
@@ -3122,74 +3107,6 @@ Status:AddButton({
         TPS:TeleportToPlaceInstance(_place, Server.id, plr)
     end
 })
-Status:AddButton({
-    Name = "Hop Server Less People số 2",
-    Callback = function()
-        local HttpService = game:GetService("HttpService")
-        local TeleportService = game:GetService("TeleportService")
-        local Players = game:GetService("Players")
-        
-        local player = Players.LocalPlayer
-        local placeId = game.PlaceId
-        local jobId = player.JobId -- Lấy JobId của server hiện tại để không tự nhảy vào lại
-        
-        -- Thông báo cho người chơi biết đang xử lý
-        print("[HopServer] Đang tìm server ít người hơn, vui lòng đợi...")
-
-        -- Hàm lấy danh sách server từ API Roblox
-        local function getServers(cursor)
-            local url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"
-            if cursor then
-                url = url .. "&cursor=" .. cursor
-            end
-            
-            local success, result = pcall(function()
-                return game:HttpGet(url)
-            end)
-            
-            if success and result then
-                return HttpService:JSONDecode(result)
-            end
-            return nil
-        end
-
-        local bestServerId = nil
-        local lowestPlayerCount = 999 -- Khởi tạo mức người chơi tối thiểu cực cao
-        local nextPageCursor = nil
-
-        -- Duyệt qua các trang server để tìm server vắng nhất
-        repeat
-            local serversData = getServers(nextPageCursor)
-            if not serversData or not serversData.data then break end
-
-            for _, server in ipairs(serversData.data) do
-                -- Kiểm tra nếu server có chỗ trống và không phải server đang đứng
-                if server.playing < lowestPlayerCount and server.id ~= jobId and server.playing < server.maxPlayers then
-                    lowestPlayerCount = server.playing
-                    bestServerId = server.id
-                end
-            end
-
-            nextPageCursor = serversData.nextPageCursor
-        until not nextPageCursor or lowestPlayerCount == 0 -- Dừng lại nếu tìm thấy server trống hoàn toàn hoặc hết trang
-
-        -- Tiến hành dịch chuyển (Teleport) sang server phù hợp nhất
-        if bestServerId then
-            print("[HopServer] Tìm thấy server với " .. lowestPlayerCount .. " người chơi. Đang chuyển...")
-            local success, err = pcall(function()
-                TeleportService:TeleportToPlaceInstance(placeId, bestServerId, player)
-            end)
-            
-            if not success then
-                warn("[HopServer] Lỗi dịch chuyển: " .. tostring(err))
-            end
-        else
-            warn("[HopServer] Không tìm thấy server nào khác hoặc tất cả server đều đầy!")
-        end
-    end
-})
-
-
 Farm:AddSection({"Local Main"})
 
 Farm:AddDropdown({
