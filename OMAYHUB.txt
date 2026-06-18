@@ -3077,12 +3077,29 @@ Status:AddButton({
         game:GetService("TeleportService"):Teleport(game.PlaceId,game:GetService("Players").LocalPlayer)
     end
 })
-Status:AddButton({
+Local function Hop()
+    local TeleportService = game:GetService("TeleportService")
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+    local placeId = game.PlaceId
+
+    -- Dịch chuyển trực tiếp qua PlaceId mà không cần thông qua API lọc server
+    local success, err = pcall(function()
+        TeleportService:Teleport(placeId, player)
+    end)
+
+    if not success then
+        warn("[HopServer] Lỗi dịch chuyển: " .. tostring(err))
+    end
+end
+ Status:AddButton({
     Name = "Hop Server",
     Callback = function()
         Hop()
     end
 })
+Như này
+
 Status:AddButton({
     Name = "Hop Server Less People",
     Callback = function()
@@ -3104,6 +3121,72 @@ Status:AddButton({
             Next = Servers.nextPageCursor
         until Server
         TPS:TeleportToPlaceInstance(_place, Server.id, plr)
+    end
+})
+Status:AddButton({
+    Name = "Hop Server Less People số 2",
+    Callback = function()
+        local HttpService = game:GetService("HttpService")
+        local TeleportService = game:GetService("TeleportService")
+        local Players = game:GetService("Players")
+        
+        local player = Players.LocalPlayer
+        local placeId = game.PlaceId
+        local jobId = player.JobId -- Lấy JobId của server hiện tại để không tự nhảy vào lại
+        
+        -- Thông báo cho người chơi biết đang xử lý
+        print("[HopServer] Đang tìm server ít người hơn, vui lòng đợi...")
+
+        -- Hàm lấy danh sách server từ API Roblox
+        local function getServers(cursor)
+            local url = "https://games.roblox.com/v1/games/" .. placeId .. "/servers/Public?sortOrder=Asc&limit=100"
+            if cursor then
+                url = url .. "&cursor=" .. cursor
+            end
+            
+            local success, result = pcall(function()
+                return game:HttpGet(url)
+            end)
+            
+            if success and result then
+                return HttpService:JSONDecode(result)
+            end
+            return nil
+        end
+
+        local bestServerId = nil
+        local lowestPlayerCount = 999 -- Khởi tạo mức người chơi tối thiểu cực cao
+        local nextPageCursor = nil
+
+        -- Duyệt qua các trang server để tìm server vắng nhất
+        repeat
+            local serversData = getServers(nextPageCursor)
+            if not serversData or not serversData.data then break end
+
+            for _, server in ipairs(serversData.data) do
+                -- Kiểm tra nếu server có chỗ trống và không phải server đang đứng
+                if server.playing < lowestPlayerCount and server.id ~= jobId and server.playing < server.maxPlayers then
+                    lowestPlayerCount = server.playing
+                    bestServerId = server.id
+                end
+            end
+
+            nextPageCursor = serversData.nextPageCursor
+        until not nextPageCursor or lowestPlayerCount == 0 -- Dừng lại nếu tìm thấy server trống hoàn toàn hoặc hết trang
+
+        -- Tiến hành dịch chuyển (Teleport) sang server phù hợp nhất
+        if bestServerId then
+            print("[HopServer] Tìm thấy server với " .. lowestPlayerCount .. " người chơi. Đang chuyển...")
+            local success, err = pcall(function()
+                TeleportService:TeleportToPlaceInstance(placeId, bestServerId, player)
+            end)
+            
+            if not success then
+                warn("[HopServer] Lỗi dịch chuyển: " .. tostring(err))
+            end
+        else
+            warn("[HopServer] Không tìm thấy server nào khác hoặc tất cả server đều đầy!")
+        end
     end
 })
 
@@ -3937,7 +4020,32 @@ Farm:AddToggle({
         SaveSettings()
     end,
 })
-
+Farm:AddToggle({
+    Name = "Stop when got God's Chalice",
+    Description = "dừng khi có vật phẩm",
+    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
+    Default = GetSetting("StopChalice_Save", true),
+    Callback = function(I)
+        _G.StopWhenChalice = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["StopChalice_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+spawn(function()
+	while wait(.2) do
+		if _G.StopWhenChalice and _G.FarmEliteHunt then
+			pcall(function()
+				if GetBP("God\'s Chalice") or GetBP("Sweet Chalice") or GetBP("Fist of Darkness") then
+					_G.FarmEliteHunt = false;
+				end;
+			end);
+		end;
+	end;
+end);
 -- Botão Auto Collect Berry
 Farm:AddToggle({
 	Name = "Auto Collect Berry",
@@ -4240,6 +4348,49 @@ spawn(function()
 end);
 end
 Setting:AddSection({"Manual Save"})
+-- Khởi tạo hoặc lấy giá trị từ SaveData
+if _G.SaveData["AutoExecute_Save"] == nil then
+    _G.SaveData["AutoExecute_Save"] = false
+end
+
+getgenv().AutoExecute = _G.SaveData["AutoExecute_Save"]
+
+Setting:AddToggle({
+    Title = "Auto Execute",
+    Default = _G.SaveData["AutoExecute_Save"],
+    Callback = function(Value)
+        getgenv().AutoExecute = Value
+        -- Cập nhật vào bảng SaveData và gọi hàm SaveSettings
+        _G.SaveData["AutoExecute_Save"] = Value
+        SaveSettings()
+    end
+})
+
+-- Code auto execute
+local function setupAutoExecute()
+    local player = game.Players.LocalPlayer
+    local queue = syn and syn.queue_on_teleport or queue_on_teleport or queueteleport
+    local executed = false
+
+    if not queue then 
+        return 
+    end
+
+    player.OnTeleport:Connect(function()
+        -- Kiểm tra lại giá trị từ biến lưu trữ
+        if _G.SaveData["AutoExecute_Save"] and not executed then
+            executed = true
+            queue([[
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/OMAYHUB.txt"))()
+            ]])
+        end
+    end)
+end
+
+spawn(function()
+    task.wait(1)
+    pcall(setupAutoExecute)
+end)
 
 Setting:AddToggle({
     Name = "Auto Save Settings",
@@ -5557,32 +5708,6 @@ spawn(function()
 				end;
 			end;
 		end);
-	end;
-end);
- Others:AddToggle({
-    Name = "Stop when got God's Chalice",
-    Description = "dừng khi có cúp",
-    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
-    Default = GetSetting("StopChalice_Save", true),
-    Callback = function(I)
-        _G.StopWhenChalice = I
-        
-        -- 2. Guarda na tabela de salvamento
-        _G.SaveData["StopChalice_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
-spawn(function()
-	while wait(.2) do
-		if _G.StopWhenChalice and _G.FarmEliteHunt then
-			pcall(function()
-				if GetBP("God\'s Chalice") or GetBP("Sweet Chalice") or GetBP("Fist of Darkness") then
-					_G.FarmEliteHunt = false;
-				end;
-			end);
-		end;
 	end;
 end);
 Others:AddToggle({
@@ -8900,6 +9025,52 @@ DevEsp = function()
     end;
 end;
 
+local function QuestEsp()
+    for _, e in next, workspace:GetChildren() do
+        pcall(function()
+            if e:IsA("Tool") and (e.Name == "Banana" or e.Name == "Apple" or e.Name == "Pineapple") and e:FindFirstChild("Handle") then
+                local TagName = "QuestNameEsp" -- Đặt tên tag cố định
+                
+                if QuestFruitESP then
+                    local dist = G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Handle.Position).Magnitude / 3)
+                    
+                    if not e.Handle:FindFirstChild(TagName) then
+                        local I = Instance.new("BillboardGui", e.Handle)
+                        I.Name = TagName
+                        I.ExtentsOffset = Vector3.new(0, 1, 0)
+                        I.Size = UDim2.new(1, 200, 1, 30)
+                        I.Adornee = e.Handle
+                        I.AlwaysOnTop = true
+                        
+                        local K = Instance.new("TextLabel", I)
+                        K.Font = Enum.Font.Code
+                        K.TextSize = 14
+                        K.TextWrapped = true
+                        K.Size = UDim2.new(1, 0, 1, 0)
+                        K.BackgroundTransparency = 1
+                        K.TextStrokeTransparency = 0.5
+                        
+                        -- Set màu
+                        if e.Name == "Banana" then K.TextColor3 = Color3.fromRGB(255, 255, 0)
+                        elseif e.Name == "Apple" then K.TextColor3 = Color3.fromRGB(255, 0, 0)
+                        elseif e.Name == "Pineapple" then K.TextColor3 = Color3.fromRGB(255, 165, 0) end
+                        
+                        K.Text = "[" .. e.Name .. "] \n" .. dist .. " M"
+                    else
+                        -- CẬP NHẬT KHOẢNG CÁCH LIÊN TỤC
+                        e.Handle[TagName].TextLabel.Text = "[" .. e.Name .. "] \n" .. dist .. " M"
+                    end
+                else
+                    if e.Handle:FindFirstChild(TagName) then
+                        e.Handle[TagName]:Destroy()
+                    end
+                end
+            end
+        end)
+    end
+end
+
+
 -- ESP DE FLORES
 flowerEsp = function()
     for I, e in pairs(workspace:GetChildren()) do
@@ -9276,6 +9447,23 @@ Esp:AddToggle({
         if SaveSettings then SaveSettings() end
         if I then
             task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp); end; end)
+        end
+    end
+})
+Esp:AddToggle({
+    Name = "Esp Quest Fruits", -- Tên nút cho trái Banana, Apple, Pineapple
+    Default = _G.SaveData["EspQuestFruits_Save"] or false, 
+    Callback = function(I)
+        QuestFruitESP = I
+        _G.SaveData["EspQuestFruits_Save"] = I
+        if SaveSettings then SaveSettings() end
+        if I then
+            task.spawn(function() while QuestFruitESP do task.wait(1); pcall(QuestEsp); end; end)
+        else
+            -- Xóa ESP khi tắt
+            for _, v in pairs(game.Workspace:GetDescendants()) do
+                if v.Name:find("QuestNameEsp") then v:Destroy() end
+            end
         end
     end
 })
