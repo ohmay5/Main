@@ -3098,7 +3098,6 @@ end
         Hop()
     end
 })
-Như này
 
 Status:AddButton({
     Name = "Hop Server Less People",
@@ -9024,54 +9023,6 @@ DevEsp = function()
         end);
     end;
 end;
-
-local function QuestEsp()
-    for _, e in next, workspace:GetChildren() do
-        pcall(function()
-            if e:IsA("Tool") and (e.Name == "Banana" or e.Name == "Apple" or e.Name == "Pineapple") and e:FindFirstChild("Handle") then
-                local TagName = "QuestNameEsp" -- Đặt tên tag cố định
-                
-                if QuestFruitESP then
-                    local dist = G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Handle.Position).Magnitude / 3)
-                    
-                    if not e.Handle:FindFirstChild(TagName) then
-                        local I = Instance.new("BillboardGui", e.Handle)
-                        I.Name = TagName
-                        I.ExtentsOffset = Vector3.new(0, 1, 0)
-                        I.Size = UDim2.new(1, 200, 1, 30)
-                        I.Adornee = e.Handle
-                        I.AlwaysOnTop = true
-                        
-                        local K = Instance.new("TextLabel", I)
-                        K.Font = Enum.Font.Code
-                        K.TextSize = 14
-                        K.TextWrapped = true
-                        K.Size = UDim2.new(1, 0, 1, 0)
-                        K.BackgroundTransparency = 1
-                        K.TextStrokeTransparency = 0.5
-                        
-                        -- Set màu
-                        if e.Name == "Banana" then K.TextColor3 = Color3.fromRGB(255, 255, 0)
-                        elseif e.Name == "Apple" then K.TextColor3 = Color3.fromRGB(255, 0, 0)
-                        elseif e.Name == "Pineapple" then K.TextColor3 = Color3.fromRGB(255, 165, 0) end
-                        
-                        K.Text = "[" .. e.Name .. "] \n" .. dist .. " M"
-                    else
-                        -- CẬP NHẬT KHOẢNG CÁCH LIÊN TỤC
-                        e.Handle[TagName].TextLabel.Text = "[" .. e.Name .. "] \n" .. dist .. " M"
-                    end
-                else
-                    if e.Handle:FindFirstChild(TagName) then
-                        e.Handle[TagName]:Destroy()
-                    end
-                end
-            end
-        end)
-    end
-end
-
-
--- ESP DE FLORES
 flowerEsp = function()
     for I, e in pairs(workspace:GetChildren()) do
         pcall(function()
@@ -9450,24 +9401,6 @@ Esp:AddToggle({
         end
     end
 })
-Esp:AddToggle({
-    Name = "Esp Quest Fruits", -- Tên nút cho trái Banana, Apple, Pineapple
-    Default = _G.SaveData["EspQuestFruits_Save"] or false, 
-    Callback = function(I)
-        QuestFruitESP = I
-        _G.SaveData["EspQuestFruits_Save"] = I
-        if SaveSettings then SaveSettings() end
-        if I then
-            task.spawn(function() while QuestFruitESP do task.wait(1); pcall(QuestEsp); end; end)
-        else
-            -- Xóa ESP khi tắt
-            for _, v in pairs(game.Workspace:GetDescendants()) do
-                if v.Name:find("QuestNameEsp") then v:Destroy() end
-            end
-        end
-    end
-})
-
 -- ESP Island
 Esp:AddToggle({
     Name = "Esp Island", 
