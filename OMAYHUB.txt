@@ -8933,7 +8933,7 @@ DevEsp = function()
                         K.TextYAlignment = "Top";
                         K.BackgroundTransparency = 1;
                         K.TextStrokeTransparency = .5;
-                        K.TextColor3 = Color3.fromRGB(255, 255, 255);
+                        K.TextColor3 = Color3.fromRGB(255, 0, 0);
                         K.Text = e.Name .. (" \n" .. (G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Handle.Position).Magnitude / 3) .. " M"));
                     else
                         e.Handle["NameEsp" .. Number].TextLabel.Text = "[" .. (e.Name .. ("]" .. ("   \n" .. (G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Handle.Position).Magnitude / 3) .. " M"))));
@@ -8947,64 +8947,6 @@ DevEsp = function()
         end);
     end;
 end;
-QuestEsp = function()
-    local Number = "Quest" -- Biến định danh cố định cho thẻ tên quest
-    for I, e in pairs(workspace:GetChildren()) do
-        pcall(function()
-            -- Kiểm tra đúng tên 3 trái nhiệm vụ (Banana, Apple, Pineapple)
-            if e.Name == "Banana" or e.Name == "Apple" or e.Name == "Pineapple" then
-                if QuestFruitESP then
-                    -- Sử dụng e.Position trực tiếp để tránh lỗi không tìm thấy Handle
-                    local dist = G5(((game:GetService("Players")).LocalPlayer.Character.Head.Position - e.Position).Magnitude / 3)
-                    
-                    if not e:FindFirstChild("NameEsp" .. Number) then
-                        local I = Instance.new("BillboardGui", e);
-                        I.Name = "NameEsp" .. Number; 
-                        I.ExtentsOffset = Vector3.new(0, 1, 0);
-                        I.Size = UDim2.new(1, 200, 1, 30);
-                        I.Adornee = e;
-                        I.AlwaysOnTop = true;
-                        
-                        local K = Instance.new("TextLabel", I);
-                        K.Font = Enum.Font.Code;
-                        K.FontSize = "Size14";
-                        K.TextWrapped = true;
-                        K.Size = UDim2.new(1, 0, 1, 0);
-                        K.TextYAlignment = "Top";
-                        K.BackgroundTransparency = 1;
-                        K.TextStrokeTransparency = .5;
-                        
-                        -- Để chữ màu trắng cho dễ nhìn trên mọi nền game
-                        K.TextColor3 = Color3.fromRGB(255, 255, 255);
-                        
-                        if e.Name == "Banana" then
-                            K.Text = "[Banana] \n" .. dist .. " M";
-                        elseif e.Name == "Apple" then
-                            K.Text = "[Apple] \n" .. dist .. " M";
-                        elseif e.Name == "Pineapple" then
-                            K.Text = "[Pineapple] \n" .. dist .. " M";
-                        end
-                    else
-                        if e.Name == "Banana" then
-                            e["NameEsp" .. Number].TextLabel.Text = "[Banana] \n" .. dist .. " M";
-                        elseif e.Name == "Apple" then
-                            e["NameEsp" .. Number].TextLabel.Text = "[Apple] \n" .. dist .. " M";
-                        elseif e.Name == "Pineapple" then
-                            e["NameEsp" .. Number].TextLabel.Text = "[Pineapple] \n" .. dist .. " M";
-                        end
-                    end
-                else
-                    if e:FindFirstChild("NameEsp" .. Number) then
-                        e["NameEsp" .. Number]:Destroy();
-                    end
-                end
-            end
-        end);
-    end;
-end;
-
-
-
 flowerEsp = function()
     for I, e in pairs(workspace:GetChildren()) do
         pcall(function()
@@ -9383,32 +9325,40 @@ Esp:AddToggle({
         end
     end
 })
-Esp:AddToggle({
-    Name = "Esp Quest Fruits", 
-    Default = _G.SaveData["EspQuestFruits_Save"] or false, 
-    Callback = function(I)
-        QuestFruitESP = I
-        _G.SaveData["EspQuestFruits_Save"] = I
-        if SaveSettings then SaveSettings() end
-        if I then
-            task.spawn(function() while QuestFruitESP do task.wait(1); pcall(QuestEsp); end; end)
-        end
-    end
-})
+local IslandESP_Objects = {}
 
--- ESP Island
 Esp:AddToggle({
     Name = "Esp Island", 
     Default = _G.SaveData["EspIsland_Save"] or false, 
     Callback = function(I)
         _G.IslandESP = I
         _G.SaveData["EspIsland_Save"] = I
+        
         if SaveSettings then SaveSettings() end
+        
         if I then
-            task.spawn(function() while _G.IslandESP do IslandESP_Func(); task.wait(2); end; end)
+            -- Bật ESP Đảo
+            task.spawn(function() 
+                while _G.IslandESP do 
+                    -- Đảm bảo trong hàm IslandESP_Func(), các đối tượng tạo ra 
+                    -- phải được chèn vào bảng IslandESP_Objects bằng table.insert()
+                    IslandESP_Func() 
+                    task.wait(2) 
+                end 
+            end)
+        else
+            -- Tắt ESP Đảo: Xóa toàn bộ các đối tượng vẽ trên màn hình
+            for _, obj in pairs(IslandESP_Objects) do
+                if obj then 
+                    obj:Remove() -- Dùng obj:Remove() nếu bạn dùng Drawing.new()
+                    -- Hoặc obj:Destroy() nếu bạn tạo Instance (như Highlight, BillboardGui)
+                end
+            end
+            IslandESP_Objects = {} -- Làm rỗng lại bảng
         end
     end
 })
+
 
 -- ESP World 2 & 3
 if World2 then
