@@ -9325,39 +9325,10 @@ Esp:AddToggle({
         end
     end
 })
-local IslandESP_Objects = {}
-
-Esp:AddToggle({
-    Title = "ESP Island",
-    Default = false,
-    Callback = function()
-        _G.IslandESP = I
-
-        if not _G.IslandESP then
-            -- Tắt ESP
-            for _, obj in pairs(IslandESP_Objects) do
-                if obj then
-                    if obj.Remove then
-                        obj:Remove()
-                    elseif obj.Destroy then
-                        obj:Destroy()
-                    end
-                end
-            end
-            table.clear(IslandESP_Objects)
-        else
-            -- Bật ESP
-            task.spawn(function()
-                while _G.IslandESP do
-                    IslandESP_Func()
-                    task.wait(2)
-                end
-            end)
-        end
-    end
-})
-
-
+Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
+    _G.IslandESP = I;
+    task.spawn(function() while _G.IslandESP do IslandESP_Func(); task.wait(2) end; IslandESP_Func() end)
+end});
 -- ESP World 2 & 3
 if World2 then
     Esp:AddToggle({
@@ -9904,40 +9875,6 @@ Player:AddToggle({
 		end;
 	end,
 });
-  Player:AddButton({
-        'Meteor Rain',
-        function()
-            require(game:GetService('ReplicatedStorage').Effect.Container.UzothSpec)({
-                Position = _LocalPlayer.Character.PrimaryPart.Position,
-            })
-        end,
-    })
-    Player:AddButton({
-        'Remove Portal Dash Cooldown',
-        function()
-            local v800 = _LocalPlayer.Backpack:FindFirstChild('Portal-Portal') or _LocalPlayer.Character:FindFirstChild('Portal-Portal')
-
-            if v800 then
-                local v801 = next
-                local v802, v803 = getconnections(v800.Activated)
-
-                while true do
-                    local v804
-
-                    v803, v804 = v801(v802, v803)
-
-                    if v803 == nil then
-                        break
-                    end
-                    if #debug.getupvalues(v804.Function) == 9 then
-                        while task.wait() and v800 and v800:IsDescendantOf(game) do
-                            debug.setupvalue(v804.Function, 2, 0)
-                        end
-                    end
-                end
-            end
-        end,
-    })
 Player:AddSection({"Settings Combat / Aimbot Settings"});
 local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Aimbot.lua.txt"))()
 
