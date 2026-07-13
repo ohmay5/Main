@@ -2234,7 +2234,7 @@ spawn(function()
 	end);
 end);
 
-local RelzUILib = loadstring(game:HttpGet("https://storage.relzhub.com/ui/v1.lua"))()
+local RelzUILib = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua.txt"))()
 local RelzhubModule = loadstring(game:HttpGet("https://storage.relzhub.com/modules/main.lua"))()
 local Window = RelzUILib:Window({
 	Title = "不是 script hub",
@@ -2375,7 +2375,7 @@ task.wait(0.1)
 Tabs.CreditsTab:DiscordInfo({
     Name = "不是 script",
     Banner = "rbxassetid://114476175638281",
-    Icon = "rbxassetid://102268449481061",
+    Icon = "rbxassetid://114476175638281",
     Subtitle = "Relz Hub Script keeps things simple and smooth, with a clean interface and well-organized code that feels good to use.",
     Online = 283,
     Members = 6400,
