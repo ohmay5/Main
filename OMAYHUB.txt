@@ -8949,6 +8949,101 @@ DevEsp = function()
         end);
     end;
 end;
+function InitEspRealFruit()
+	for i, v in pairs(Workspace.AppleSpawner:GetChildren()) do
+		if v:IsA("Tool") then
+			if _G.EspRealFruit then
+				if not v.Handle:FindFirstChild(("EspRealFruit")) then
+					local bill = Instance.new("BillboardGui", v.Handle);
+					bill.Name = "EspRealFruit";
+					bill.ExtentsOffset = Vector3.new(0, 1, 0);
+					bill.Size = UDim2.new(1, 200, 1, 30);
+					bill.Adornee = v.Handle;
+					bill.AlwaysOnTop = true;
+					local name = Instance.new("TextLabel", bill);
+					name.Font = Enum.Font.GothamSemibold;
+					name.FontSize = "Size14";
+					name.TextWrapped = true;
+					name.Size = UDim2.new(1, 0, 1, 0);
+					name.TextYAlignment = "Top";
+					name.BackgroundTransparency = 1;
+					name.TextStrokeTransparency = 0.5;
+					name.TextColor3 = Color3.fromRGB(200, 70, 70);
+					name.Text = v.Name .. " \n" .. round(((Character.Head.Position - v.Handle.Position)).Magnitude / 3) .. " Distance";
+				else
+					v.Handle["EspRealFruit"].TextLabel.Text = v.Name .. " " .. round(((Character.Head.Position - v.Handle.Position)).Magnitude / 3) .. " Distance";
+				end;
+			elseif v.Handle:FindFirstChild("EspRealFruit") then
+				(v.Handle:FindFirstChild("EspRealFruit")):Destroy();
+			end;
+		end;
+	end;
+	for i, v in pairs(Workspace.PineappleSpawner:GetChildren()) do
+		if v:IsA("Tool") then
+			if _G.EspRealFruit then
+				if not v.Handle:FindFirstChild(("EspRealFruit")) then
+					local bill = Instance.new("BillboardGui", v.Handle);
+					bill.Name = "EspRealFruit";
+					bill.ExtentsOffset = Vector3.new(0, 1, 0);
+					bill.Size = UDim2.new(1, 200, 1, 30);
+					bill.Adornee = v.Handle;
+					bill.AlwaysOnTop = true;
+					local name = Instance.new("TextLabel", bill);
+					name.Font = Enum.Font.GothamSemibold;
+					name.FontSize = "Size14";
+					name.TextWrapped = true;
+					name.Size = UDim2.new(1, 0, 1, 0);
+					name.TextYAlignment = "Top";
+					name.BackgroundTransparency = 1;
+					name.TextStrokeTransparency = 0.5;
+					name.TextColor3 = Color3.fromRGB(255, 170, 0);
+					name.Text = v.Name .. " \n" .. round(((Character.Head.Position - v.Handle.Position)).Magnitude / 3) .. " Distance";
+				else
+					v.Handle["EspRealFruit"].TextLabel.Text = v.Name .. " " .. round(((Character.Head.Position - v.Handle.Position)).Magnitude / 3) .. " Distance";
+				end;
+			elseif v.Handle:FindFirstChild("EspRealFruit") then
+				(v.Handle:FindFirstChild("EspRealFruit")):Destroy();
+			end;
+		end;
+	end;
+	for i, v in pairs(Workspace.BananaSpawner:GetChildren()) do
+		if v:IsA("Tool") then
+			if _G.EspRealFruit then
+				if not v.Handle:FindFirstChild(("EspRealFruit")) then
+					local bill = Instance.new("BillboardGui", v.Handle);
+					bill.Name = "EspRealFruit";
+					bill.ExtentsOffset = Vector3.new(0, 1, 0);
+					bill.Size = UDim2.new(1, 200, 1, 30);
+					bill.Adornee = v.Handle;
+					bill.AlwaysOnTop = true;
+					local name = Instance.new("TextLabel", bill);
+					name.Font = Enum.Font.GothamSemibold;
+					name.FontSize = "Size14";
+					name.TextWrapped = true;
+					name.Size = UDim2.new(1, 0, 1, 0);
+					name.TextYAlignment = "Top";
+					name.BackgroundTransparency = 1;
+					name.TextStrokeTransparency = 0.5;
+					name.TextColor3 = Color3.fromRGB(240, 255, 10);
+					name.Text = v.Name .. " \n" .. round(((Character.Head.Position - v.Handle.Position)).Magnitude / 3) .. " Distance";
+				else
+					v.Handle["EspRealFruit"].TextLabel.Text = v.Name .. " " .. round(((Character.Head.Position - v.Handle.Position)).Magnitude / 3) .. " Distance";
+				end;
+			elseif v.Handle:FindFirstChild("EspRealFruit") then
+				(v.Handle:FindFirstChild("EspRealFruit")):Destroy();
+			end;
+		end;
+	end;
+end
+spawn(function()
+	while wait() do
+		task.wait(1)
+		if _G.EspRealFruit then
+			InitEspRealFruit()
+		end
+	end;
+end);
+
 flowerEsp = function()
     for I, e in pairs(workspace:GetChildren()) do
         pcall(function()
@@ -9325,6 +9420,21 @@ Esp:AddToggle({
         if I then
             task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp); end; end)
         end
+    end
+})
+Esp:AddToggle({
+    Name = "Esp Real Fruit",
+    Desc = "Highlight Real Fruit",
+    Default = _G.SaveData["EspRealFruit_Save"] or false,
+    Callback = function(state)
+        _G.EspRealFruit = state
+        _G.SaveData["EspRealFruit_Save"] = state
+
+        if SaveSettings then
+            SaveSettings()
+        end
+
+        InitEspRealFruit()
     end
 })
 Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
