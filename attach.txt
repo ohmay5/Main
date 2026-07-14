@@ -10,10 +10,10 @@ local RegisterHit = Net:WaitForChild("RE/RegisterHit")
 
 local Settings = {
     Enabled = true,
-    FruitCooldown = 0.5,    -- Tốc độ cho trái ác quỷ
+    FruitCooldown = 0.30,    -- Tốc độ cho trái ác quỷ
     MeleeCooldown = 0.33,   -- Tốc độ cho kiếm/melee (thường nhanh hơn)
     Radius = 60,
-    MaxTargets = 2
+    MaxTargets = 3
 }
 
 local LastAttack = 0
@@ -66,7 +66,7 @@ RunService.RenderStepped:Connect(function()
                 for i = 1, math.min(#foundTargets, Settings.MaxTargets) do
                     table.insert(targetsToHit, {foundTargets[i].obj, foundTargets[i].obj.HumanoidRootPart})
                 end
-                RegisterAttack:FireServer(0.2)
+                RegisterAttack:FireServer(0.1)
                 RegisterHit:FireServer(char.Head, targetsToHit)
             end
             
