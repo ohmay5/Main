@@ -4403,7 +4403,7 @@ Setting:AddToggle({
         SaveSettings()
 	end,
 })
-Settings:Toggle({
+Setting:AddToggle({
 	Title = "Spin Position",
 	Desc = "Spin Position When Farm",
 	Default = false,
