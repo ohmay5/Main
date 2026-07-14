@@ -1,4 +1,4 @@
-
+local CurrentTween = nil
 -- Cache all services at start for better performance
 local Services = setmetatable({}, {
     __index = function(self, serviceName)
@@ -681,28 +681,26 @@ BringEnemy = function()
                 count += 2  
                 root:SetAttribute("Tweening", true)  
 
-                local tween = TweenService:Create(  
-                    root,  
-                    TweenInfoBring,  
-                    { CFrame = CFrame.new(targetPos) }  
-                )  
+                CurrentTween = TweenService:Create(
+    root,
+    TweenInfoBring,
+    { CFrame = CFrame.new(targetPos) }
+)
 
-                tween:Play()  
-                tween.Completed:Once(function()  
-                    if root then  
-                        root:SetAttribute("Tweening", false)  
-                    end  
-                end)  
-            end  
-        end  
+CurrentTween:Play()
+
+CurrentTween.Completed:Once(function()
+    if root then
+        root:SetAttribute("Tweening", false)
     end
-end
+    CurrentTween = nil
+end)
 
 --==================================================
 -- LOOP CONTROLADOR
 --==================================================
 task.spawn(function()
-    while task.wait(1) do
+    while task.wait(1) do>
         if FarmAtivo() then
             _B = true
             BringEnemy()
@@ -3718,7 +3716,7 @@ Farm:AddSection({"Other"})
 
 -- Configuração da Distância Máxima (em studs)
 -- Aumente se quiser pegar mobs um pouco mais longe, diminua se quiser bem perto.
-_G.MaxFarmDistance = 325
+_G.MaxFarmDistance = 500
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -4314,26 +4312,32 @@ spawn(function()
     pcall(setupAutoExecute)
 end)
 
+local Loaded = false
+
 Setting:AddToggle({
     Name = "Auto Save Settings",
     Description = "Tự động lưu khi thay đổi",
-    Default = true, -- Mặc định là bật khi vừa mở script
+    Default = true,
     Callback = function(I)
-        _G.SaveData["AutoSave_Save"] = I -- Lưu trạng thái (true hoặc false) vào biến
-        
+        _G.SaveData["AutoSave_Save"] = I
+
+        if not Loaded then
+            Loaded = true
+            return
+        end
+
         if I then
-            -- Khi người chơi bật (hoặc mặc định lúc đầu là true)
             if SaveSettings then
                 SaveSettings()
-                game.StarterGui:SetCore("SendNotification", {
-                    Title = "OMAY Hub",
-                    Text = "Đã bật tự động lưu!",
-                    Duration = 5,
-                    Icon = "rbxassetid://114476175638281"
-                })
             end
+
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "OMAY Hub",
+                Text = "Đã bật tự động lưu!",
+                Duration = 5,
+                Icon = "rbxassetid://114476175638281"
+            })
         else
-            -- Khi người chơi chủ động gạt tắt
             game.StarterGui:SetCore("SendNotification", {
                 Title = "OMAY Hub",
                 Text = "Đã tắt tự động lưu.",
@@ -4343,7 +4347,6 @@ Setting:AddToggle({
         end
     end
 })
-
 Setting:AddButton({
     Name = "Resetar Config UI",
     Description = "Xoá các chức năng đã lưu",
@@ -4398,8 +4401,17 @@ local function y5(I)
 end
 Setting:AddButton({
     Name = "Stop Tween",
-    Description = "dừng bay tween",
+    Description = "Dừng bay Tween",
     Callback = function()
+
+        -- Dừng TweenService
+        if CurrentTween then
+            CurrentTween:Cancel()
+            CurrentTween = nil
+        end
+
+        shouldTween = false
+
         local plr = game.Players.LocalPlayer
         local char = plr.Character
         if not char then return end
@@ -4407,15 +4419,10 @@ Setting:AddButton({
         local hrp = char:FindFirstChild("HumanoidRootPart")
         local hum = char:FindFirstChild("Humanoid")
 
-        -- 🔴 PARA O TWEEN (usa a variável que JÁ EXISTE)
-        shouldTween = false
-
-        -- 🔓 Solta o player
         if hrp then
             hrp.Anchored = false
 
-            -- Remove coisas que costumam travar
-            for _, v in pairs(hrp:GetChildren()) do
+            for _, v in ipairs(hrp:GetChildren()) do
                 if v:IsA("BodyVelocity")
                 or v:IsA("BodyPosition")
                 or v:IsA("BodyGyro") then
@@ -4433,26 +4440,8 @@ Setting:AddButton({
             hum:ChangeState(Enum.HumanoidStateType.Running)
         end
 
-        -- Libera o farm de novo
-        getgenv().OnFarm = true
-
-        -- Permite novos tweens depois
-        task.wait()
-        shouldTween = true
+        getgenv().OnFarm = false
     end
-})
-
-Setting:AddToggle({
-	Name = "Safe Mode",
-	Description = "bật lên để bảo vệ máu của bạn nếu mức thấp",
-	-- 1. Carrega o estado salvo
-	Default = GetSetting("SafeMode_Save", false),
-	Callback = function(I)
-		_G.Safemode = I
-        -- 2. Salva
-        _G.SaveData["SafeMode_Save"] = I
-        SaveSettings()
-	end,
 })
 
 Setting:AddToggle({
@@ -4536,19 +4525,29 @@ spawn(function()
 		end);
 	end;
 end);
+local Players = game:GetService("Players")
+local VirtualUser = game:GetService("VirtualUser")
+
+local plr = Players.LocalPlayer
+
 Setting:AddToggle({
 	Name = "Anti AFK",
-	Description = "chống bị kích sau 20p",
+	Description = "Chống bị kick sau 20 phút",
 	Default = true,
-	Callback = function(I)
-		_G.AntiAFK = I;
-	end,
-});
-plr.Idled:connect(function()
-	vim2:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame);
-	wait(1);
-	vim2:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame);
-end);
+	Callback = function(state)
+		_G.AntiAFK = state
+	end
+})
+
+plr.Idled:Connect(function()
+	if not _G.AntiAFK then
+		return
+	end
+
+	VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+	task.wait(1)
+	VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+end)
 Setting:AddToggle({
 	Name = "Disable Notify",
 	Description = "tắt thông báo",
@@ -4580,22 +4579,27 @@ spawn(function()
 end);
 Setting:AddToggle({
 	Title = "Black Screen",
-	Desc = "Reduce Lag ( Black Screen )",
+	Desc = "Reduce Lag (Black Screen)",
 	Default = false,
 	Callback = function(state)
-		_G.BlackScreen = state;
-	end
-});
-spawn(function()
-	while wait() do
-		wait(_G.GlobalDelay)
-		if _G.BlackScreen then
-			LocalPlayer.PlayerGui.Main.Blackscreen.Size = UDim2.new(500, 0, 500, 500);
+		_G.BlackScreen = state
+
+		local PlayerGui = LocalPlayer:FindFirstChild("PlayerGui")
+		if not PlayerGui then return end
+
+		local Main = PlayerGui:FindFirstChild("Main")
+		if not Main then return end
+
+		local Blackscreen = Main:FindFirstChild("Blackscreen")
+		if not Blackscreen then return end
+
+		if state then
+			Blackscreen.Size = UDim2.new(1, 0, 1, 0)
 		else
-			LocalPlayer.PlayerGui.Main.Blackscreen.Size = UDim2.new(1, 0, 500, 500);
-		end;
-	end;
-end);
+			Blackscreen.Size = UDim2.new(0, 0, 0, 0)
+		end
+	end
+})
 Setting:AddSection({"Select"})
 Setting:AddSlider({
     Title = "Bring Mobs Range",
