@@ -4374,6 +4374,23 @@ Setting:AddButton({
 })
 
 Setting:AddSection({"Setting Farm"})
+spawn(function()
+	local angle = 0;
+	while wait() do
+		if _G.SpinPosition then
+			local radius = 20;
+			local farmDistance = _G.MobHeight;
+			local radian = math.rad(angle);
+			local x = math.cos(radian) * radius;
+			local z = math.sin(radian) * radius;
+			Pos = CFrame.new(x, farmDistance, z);
+			angle = (angle + 30) % 360;
+		else
+			Pos = CFrame.new(0, _G.MobHeight, 0);
+		end;
+		wait(0);
+	end;
+end);
 Setting:AddToggle({
 	Name = "Bring Mob",
 	Description = "gom quái",
@@ -4386,7 +4403,14 @@ Setting:AddToggle({
         SaveSettings()
 	end,
 })
-
+Settings:Toggle({
+	Title = "Spin Position",
+	Desc = "Spin Position When Farm",
+	Default = false,
+	Callback = function(state)
+		_G.SpinPosition = state;
+	end
+})
 Setting:AddButton({ Name = "Fps Fix Lag", Description = "giảm lag", Callback = function()
 		LowCpu();
 	end });
@@ -9678,8 +9702,6 @@ for _, p in pairs(Players:GetPlayers()) do
         table.insert(O5, p.Name)
     end
 end
-
--- DROPDOWN
 local PlayerDropdown = Player:AddDropdown({ 
     Name = "Select Players",
     Description = "",
