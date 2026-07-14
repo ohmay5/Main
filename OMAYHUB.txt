@@ -699,7 +699,7 @@ end)
 -- LOOP CONTROLADOR
 --==================================================
 task.spawn(function()
-    while task.wait(1) do>
+    while task.wait(1) do
         if FarmAtivo() then
             _B = true
             BringEnemy()
@@ -4311,41 +4311,36 @@ spawn(function()
     pcall(setupAutoExecute)
 end)
 
-local Loaded = false
-
 Setting:AddToggle({
-    Name = "Auto Save Settings",
-    Description = "Tự động lưu khi thay đổi",
-    Default = true,
-    Callback = function(I)
-        _G.SaveData["AutoSave_Save"] = I
+Name = "Auto Save Settings",
+Description = "Tự động lưu khi thay đổi",
+Default = true, -- Mặc định là bật khi vừa mở script
+Callback = function(I)
+_G.SaveData["AutoSave_Save"] = I -- Lưu trạng thái (true hoặc false) vào biến
 
-        if not Loaded then
-            Loaded = true
-            return
-        end
+if I then  
+        -- Khi người chơi bật (hoặc mặc định lúc đầu là true)  
+        if SaveSettings then  
+            SaveSettings()  
+            game.StarterGui:SetCore("SendNotification", {  
+                Title = "OMAY Hub",  
+                Text = "Đã bật tự động lưu!",  
+                Duration = 5,  
+                Icon = "rbxassetid://114476175638281"  
+            })  
+        end  
+    else  
+        -- Khi người chơi chủ động gạt tắt  
+        game.StarterGui:SetCore("SendNotification", {  
+            Title = "OMAY Hub",  
+            Text = "Đã tắt tự động lưu.",  
+            Duration = 5,  
+            Icon = "rbxassetid://114476175638281"  
+        })  
+    end  
+end
 
-        if I then
-            if SaveSettings then
-                SaveSettings()
-            end
-
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "OMAY Hub",
-                Text = "Đã bật tự động lưu!",
-                Duration = 5,
-                Icon = "rbxassetid://114476175638281"
-            })
-        else
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "OMAY Hub",
-                Text = "Đã tắt tự động lưu.",
-                Duration = 5,
-                Icon = "rbxassetid://114476175638281"
-            })
-        end
-    end
-})
+}) 
 Setting:AddButton({
     Name = "Resetar Config UI",
     Description = "Xoá các chức năng đã lưu",
