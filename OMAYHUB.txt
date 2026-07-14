@@ -9336,21 +9336,6 @@ Esp:AddToggle({
         end
     end
 })
-Esp:AddToggle({
-    Name = "Esp Real Fruit",
-    Desc = "Highlight Real Fruit",
-    Default = _G.SaveData["EspRealFruit_Save"] or false,
-    Callback = function(state)
-        _G.EspRealFruit = state
-        _G.SaveData["EspRealFruit_Save"] = state
-
-        if SaveSettings then
-            SaveSettings()
-        end
-
-        InitEspRealFruit()
-    end
-})
 Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
     _G.IslandESP = I;
     task.spawn(function() while _G.IslandESP do IslandESP_Func(); task.wait(2) end; IslandESP_Func() end)
