@@ -10,7 +10,7 @@ local RegisterHit = Net:WaitForChild("RE/RegisterHit")
 
 local Settings = {
     Enabled = true,
-    FruitCooldown = 0.30,    -- Tốc độ cho trái ác quỷ
+    FruitCooldown = 0.20,    -- Tốc độ cho trái ác quỷ
     MeleeCooldown = 0.33,   -- Tốc độ cho kiếm/melee (thường nhanh hơn)
     Radius = 60,
     MaxTargets = 3
