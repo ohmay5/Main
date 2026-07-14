@@ -4475,29 +4475,6 @@ spawn(function()
 		end);
 	end;
 end);
-local Players = game:GetService("Players")
-local VirtualUser = game:GetService("VirtualUser")
-
-local plr = Players.LocalPlayer
-
-Setting:AddToggle({
-	Name = "Anti AFK",
-	Description = "Chống bị kick sau 20 phút",
-	Default = true,
-	Callback = function(state)
-		_G.AntiAFK = state
-	end
-})
-
-plr.Idled:Connect(function()
-	if not _G.AntiAFK then
-		return
-	end
-
-	VirtualUser:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-	task.wait(1)
-	VirtualUser:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
-end)
 Setting:AddToggle({
 	Name = "Disable Notify",
 	Description = "tắt thông báo",
