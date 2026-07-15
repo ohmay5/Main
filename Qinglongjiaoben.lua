@@ -7816,7 +7816,37 @@ spawn(function()
 		end);
 	end;
 end);
+Race:AddButton({
+    Name = "Teleport & Load Temple",
+    Description = "TP đến Temple và load map nếu bị ẩn",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        local char = player.Character
+        local hrp = char and char:FindFirstChild("HumanoidRootPart")
+        
+        if not hrp then return end
 
+        -- 1. Dịch chuyển trước
+        hrp.CFrame = CFrame.new(28286.355, 14895.301, 102.624)
+
+        -- 2. Xử lý load map với pcall để tránh crash
+        task.spawn(function()
+            pcall(function()
+                local map = workspace:FindFirstChild("Map")
+                local mapStash = game:GetService("ReplicatedStorage"):FindFirstChild("MapStash")
+                
+                if map and mapStash then
+                    if not map:FindFirstChild("Temple of Time") and mapStash:FindFirstChild("Temple of Time") then
+                        -- Clone để tránh lỗi mất map của Server
+                        local temple = mapStash["Temple of Time"]:Clone()
+                        temple.Parent = map
+                        print("Temple đã được load thành công!")
+                    end
+                end
+            end)
+        end)
+    end
+})
 Race:AddButton({
     Name = "Teleport to Temple of Time",
     Description = "",
