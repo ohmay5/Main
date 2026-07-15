@@ -4300,7 +4300,7 @@ local function setupAutoExecute()
         if _G.SaveData["AutoExecute_Save"] and not executed then
             executed = true
             queue([[
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/OMAYHUB.txt"))()
+                loadstring(game:HttpGet("httpshttps://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/HUB.lua"))()
             ]])
         end
     end)
@@ -9198,59 +9198,111 @@ end
 -- UI E TOGGLES
 Esp:AddSection({"Esp Items / Entity / Island"});
 
-Esp:AddToggle({Name = "Esp Berries", Default = false, Callback = function(I) 
-    BerryEsp = I; 
-    spawn(function() while BerryEsp do wait(1); berriesEsp(); end; end); 
-end});
+Esp:AddToggle({
+    Name = "Esp Berries",
+    Default = GetSetting("Esp_Berries", false),
+    Callback = function(I)
+        BerryEsp = I
+        _G.SaveData["Esp_Berries"] = I
+        SaveSettings()
 
-Esp:AddToggle({Name = "Esp Players", Default = false, Callback = function(I) 
-    PlayerEsp = I; 
-    spawn(function() while PlayerEsp do wait(0.1); EspPly(); end; end); 
-end});
+        task.spawn(function()
+            while BerryEsp do
+                task.wait(1)
+                berriesEsp()
+            end
+        end)
+    end
+})
 
-Esp:AddToggle({Name = "Esp Chests", Default = false, Callback = function(I) 
-    ChestESP = I; 
-    spawn(function() while ChestESP do wait(1); ChestEsp(); end; end); 
-end});
+Esp:AddToggle({
+    Name = "Esp_Players",
+    Default = GetSetting("Esp_Players", false),
+    Callback = function(I)
+        PlayerEsp = I
+        _G.SaveData["Esp_Players"] = I
+        SaveSettings()
 
-Esp:AddToggle({Name = "Esp Fruits", Default = false, Callback = function(I)
+        task.spawn(function()
+            while PlayerEsp do
+                task.wait(1)
+                PlayerEsp()
+            end
+        end)
+    end
+})
+
+Esp:AddToggle({
+    Name = "Esp Chests",
+    -- Sử dụng GetSetting để tải trạng thái đã lưu
+    Default = GetSetting("Esp_Chests", false), 
+    Callback = function(I)
+        ChestESP = I
+        
+        -- Lưu trạng thái vào biến Global để SaveSettings hoạt động
+        _G.SaveData["Esp_Chests"] = I
+        SaveSettings()
+        
+        if ChestESP then
+            spawn(function()
+                while ChestESP do
+                    wait(1)
+                    ChestEsp()
+                end
+            end)
+        end
+    end
+})
+
+
+-- Helper function để rút gọn code nếu cần, hoặc bạn cứ chèn trực tiếp như dưới đây:
+
+Esp:AddToggle({Name = "Esp Fruits", Default = GetSetting("Esp_Fruits", false), Callback = function(I)
     DevilFruitESP = I
+    _G.SaveData["Esp_Fruits"] = I; SaveSettings()
     task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp) end end)
 end})
 
-Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
-    _G.IslandESP = I;
+Esp:AddToggle({Name = "Esp Island", Default = GetSetting("Esp_Island", false), Callback = function(I)
+    _G.IslandESP = I
+    _G.SaveData["Esp_Island"] = I; SaveSettings()
     task.spawn(function() while _G.IslandESP do IslandESP_Func(); task.wait(2) end; IslandESP_Func() end)
-end});
+end})
 
 if World2 then
-    Esp:AddToggle({Name = "Esp Flower", Default = false, Callback = function(I)
+    Esp:AddToggle({Name = "Esp Flower", Default = GetSetting("Esp_Flower", false), Callback = function(I)
         FlowerESP = I
+        _G.SaveData["Esp_Flower"] = I; SaveSettings()
         task.spawn(function() while FlowerESP do pcall(flowerEsp); task.wait(1) end end)
     end})
-    Esp:AddToggle({Name = "Esp Legendary Sword", Default = false, Callback = function(I)
+    Esp:AddToggle({Name = "Esp Legendary Sword", Default = GetSetting("Esp_LegendarySword", false), Callback = function(I)
         LegenS = I
+        _G.SaveData["Esp_LegendarySword"] = I; SaveSettings()
         task.spawn(function() while LegenS do pcall(LegenSword); task.wait(1) end end)
     end})
 end
 
 if World2 or World3 then
-    Esp:AddToggle({Name = "Esp Aura Colour Dealers", Default = false, Callback = function(I)
+    Esp:AddToggle({Name = "Esp Aura Colour Dealers", Default = GetSetting("Esp_AuraColor", false), Callback = function(I)
         ColorEsp = I
+        _G.SaveData["Esp_AuraColor"] = I; SaveSettings()
         task.spawn(function() while ColorEsp do pcall(HakiClorEsp); task.wait(1) end; pcall(HakiClorEsp) end)
     end})
 end
 
 if World3 then
-    Esp:AddToggle({Name = "Esp Gears", Default = false, Callback = function(I)
+    Esp:AddToggle({Name = "Esp Gears", Default = GetSetting("Esp_Gears", false), Callback = function(I)
         ESPGear = I
+        _G.SaveData["Esp_Gears"] = I; SaveSettings()
         task.spawn(function() while ESPGear do pcall(gearEsp); task.wait(1) end end)
     end})
-    Esp:AddToggle({Name = "Esp Advanced Fruits Dealer", Default = false, Callback = function(I)
+    Esp:AddToggle({Name = "Esp Advanced Fruits Dealer", Default = GetSetting("Esp_AdvFruitDealer", false), Callback = function(I)
         advanEsp = I
+        _G.SaveData["Esp_AdvFruitDealer"] = I; SaveSettings()
         task.spawn(function() while advanEsp do pcall(AdvanFruitEsp); task.wait(1) end; pcall(AdvanFruitEsp) end)
     end})
 end
+
 
 
 Esp:AddSection({"Fontes"});
@@ -10009,6 +10061,7 @@ elseif World3 then
 			"Hydra Teleport",
 			"Canvendish Room",
 			"Temple of Time",
+			"Tiki Outpost",
 		};
 end;
 Teleport:AddDropdown({
@@ -10040,7 +10093,9 @@ Teleport:AddButton({ Name = "requestEntrance", Description = "", Callback = func
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(5314.5463867188, 22.562219619751, -127.06755065918));
 		elseif _G.Island_PT == "Temple of Time" then
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28310.0234, 14895.1123, 109.456741, -0.469690144, -2.85620132e-08, -0.882831335, -3.23509219e-08, 1, -1.51411736e-08, .882831335, 2.14487486e-08, -0.469690144));
-		end;
+	    elseif _G.Island_PT == "Tiki Outpost" then
+    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-29046.216796875, 305.41909790039, -5573.7153320313))
+    	end;
 	end });
 Teleport:AddSection("Travel - NPCs");
 for I, e in pairs(replicated.NPCs:GetChildren()) do
