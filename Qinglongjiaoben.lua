@@ -11401,94 +11401,65 @@ Fruit:AddToggle({
 })
 
 -- Detectar ilha correta
-function IsIslandRaid(cu)
-    local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
-    if locs:FindFirstChild("Island " .. cu) then
-        local min = 4500
-
-        for _, v in ipairs(locs:GetChildren()) do
-            if v.Name == "Island " .. cu then
-                local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist < min then
-                    min = dist
+-- Loop điều khiển chính
+task.spawn(function()
+    while task.wait(Sec) do
+        pcall(function()
+            if _G.Raiding and plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible then
+                
+                local nextIsland = getNextIsland()
+                
+                if nextIsland then
+                    -- Teleport tới đảo
+                    _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+                    
+                    -- Lấy ID đảo từ tên (ví dụ: "Island 4" -> 4)
+                    local islandName = nextIsland.Name -- Giả sử tên là "Island 4"
+                    local islandID = tonumber(islandName:match("%d+")) 
+                    
+                    -- LOGIC: Nếu là đảo 4 hoặc 5, bật Kill Aura và dừng đánh thường
+                    if islandID and (islandID == 4 or islandID == 5) then
+                        _G.KillH = true -- Bật Kill Aura
+                        -- Không gọi attackNearbyEnemies() để tránh xung đột
+                    else
+                        _G.KillH = false -- Tắt Kill Aura khi ở đảo khác
+                        attackNearbyEnemies() -- Dùng đánh thường cho các đảo 1, 2, 3
+                    end
+                    
+                    NextIs = true
+                else
+                    _G.KillH = false
+                    NextIs = false
                 end
-            end
-        end
-
-        for _, v in ipairs(locs:GetChildren()) do
-            if v.Name == "Island " .. cu then
-                local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist <= min then
-                    return v
-                end
-            end
-        end
-    end
-end
-
--- Ordem das ilhas (5 → 1)
-function getNextIsland()
-    local order = {5,4,3,2,1}
-    for _, id in ipairs(order) do
-        local island = IsIslandRaid(id)
-        if island then
-            local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-            if dist <= 4500 then
-                return island
-            end
-        end
-    end
-end
-
--- Atacar inimigos usando SEU G.Kill
-function attackNearbyEnemies()
-    for _, mob in pairs(workspace.Enemies:GetChildren()) do
-        if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
-            if mob.Humanoid.Health > 0 then
-                local dist = (mob.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist <= 1000 then
-                    repeat
-                        G.Kill(mob, _G.Raiding)
-                        task.wait()
-                    until not _G.Raiding or not mob.Parent or mob.Humanoid.Health <= 0
-                end
-            end
-        end
-    end
-end
-
--- Loop principal (igual ao seu)
-spawn(function()
-pcall(function()
-while wait(Sec) do
-    if _G.Raiding then
-
-        if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
-
-            -- Matar próximos
-            attackNearbyEnemies()
-
-            -- Pegar ilha certa
-            local nextIsland = getNextIsland()
-            if nextIsland then
-                -- USA SEU TELEPORTE REAL
-                _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-
-                NextIs = true
             else
+                _G.KillH = false
                 NextIs = false
             end
-
-        else
-            NextIs = false
-        end
-
-    else
-        NextIs = false
+        end)
     end
-end
 end)
+
+-- Vòng lặp chạy Kill Aura (Giữ nguyên như của bạn)
+task.spawn(function()
+    while true do 
+        task.wait(0.1) -- Tốc độ quét nhanh cho Kill Aura
+        if _G.KillH then
+            pcall(function()
+                sethiddenproperty(plr, "SimulationRadius", math.huge)
+                for _, v in pairs(workspace.Enemies:GetChildren()) do
+                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                        if v.Humanoid.Health > 0 and v.Parent then
+                            v.HumanoidRootPart.CanCollide = false
+                            v:BreakJoints()
+                            v.Humanoid.Health = 0
+                        end
+                    end
+                end
+            end)
+        end
+    end
 end)
+
 Fruit:AddToggle({
     Name = "Kill aura",
     Default = false,
