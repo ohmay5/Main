@@ -6088,7 +6088,7 @@ if World3 then
             Callback = function(state)
                 -- Gán trực tiếp vào biến _G tùy theo ý bạn
                 if mobName == "Shark" then _G.Shark = state
-                elseif mobName == "Sea bBest" then _G.SeaBeast1 = state
+                elseif mobName == "Sea Beest" then _G.SeaBeast1 = state
                 elseif mobName == "Pirate GrandBrigade" then _G.PGB = state
                 elseif mobName == "Piranha" then _G.Piranha = state
                 elseif mobName == "Terror Shark" then _G.TerrorShark = state
