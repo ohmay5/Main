@@ -1,4 +1,5 @@
 
+-- Cache all services at start for better performance
 local Services = setmetatable({}, {
     __index = function(self, serviceName)
         local service = game:GetService(serviceName)
@@ -11,7 +12,7 @@ local Services = setmetatable({}, {
 -- SAVE SYSTEM (Optimized)
 -- ========================================
 local HttpService = Services.HttpService
-local FolderName = "OMAY Hub"
+local FolderName = "青龙脚本 Hub"
 local FileName = "Settings.json"
 local FullPath = FolderName .. "/" .. FileName
 
@@ -571,7 +572,6 @@ statsSetings = function(I, e)
 
 
 
-
 --==================================================
 -- VARIÁVEIS DE CONTROLE NECESSÁRIAS
 --==================================================
@@ -580,7 +580,7 @@ _G = _G or {}
 _B = false
 PosMon = nil
 
-_G.BringRange = _G.BringRange or 200
+_G.BringRange = _G.BringRange or 250
 _G.MaxBringMobs = _G.MaxBringMobs or 15 -- LIMITE DE MOBS
 
 _G.FarmPriorityElf = _G.FarmPriorityElf or false
@@ -681,19 +681,22 @@ BringEnemy = function()
                 count += 2  
                 root:SetAttribute("Tweening", true)  
 
-                local tween = TweenService:Create(
-                    root,
-                      TweenInfoBring,
-                  { CFrame = CFrame.new(targetPos) }
-         )
+                local tween = TweenService:Create(  
+                    root,  
+                    TweenInfoBring,  
+                    { CFrame = CFrame.new(targetPos) }  
+                )  
 
-              tween:Play()
-
-                  tween.Completed:Once(function()
-             if root then
-        root:SetAttribute("Tweening", false)
+                tween:Play()  
+                tween.Completed:Once(function()  
+                    if root then  
+                        root:SetAttribute("Tweening", false)  
+                    end  
+                end)  
+            end  
+        end  
     end
-end)
+end
 
 --==================================================
 -- LOOP CONTROLADOR
@@ -915,52 +918,23 @@ CheckLeviathan = function()
 		return false;
 	end;
 UpdStFruit = function()
-    -- Gộp danh sách vật phẩm từ cả Backpack và Character (nếu đang cầm trên tay)
-    local allItems = {}
-    
-    -- Lấy trong Backpack
-    for _, item in pairs(plr.Backpack:GetChildren()) do
-        table.insert(allItems, item)
-    end
-    
-    -- Lấy trong tay nhân vật
-    if plr.Character then
-        for _, item in pairs(plr.Character:GetChildren()) do
-            table.insert(allItems, item)
-        end
-    end
-
-    -- Quét qua từng vật phẩm
-    for _, item in next, allItems do
-        -- Kiểm tra xem vật phẩm có phải là trái ác quỷ không (thường dựa vào EatRemote)
-        local isFruit = item:FindFirstChild("EatRemote", true)
-        
-        if isFruit then
-            -- CHIẾN LƯỢC LẤY TÊN:
-            -- 1. Thử lấy từ Attribute "OriginalName"
-            -- 2. Nếu không có, lấy từ thuộc tính "Name" của vật phẩm
-            -- 3. Nếu vẫn không được, lấy từ chính tên đối tượng
-            local fruitName = item:GetAttribute("OriginalName") or item:GetAttribute("Name") or item.Name
-            
-            pcall(function()
-                -- Gửi lệnh lưu (Sử dụng 'item' trực tiếp làm tham số thứ 3 là cách chuẩn nhất)
-                replicated.Remotes.CommF_:InvokeServer("StoreFruit", fruitName, item)
-                print("Đã thực hiện lưu trái: " .. tostring(fruitName))
-            end)
-        end
-    end
-end
-
-collectFruits = function(enabled)
-	if enabled then
-		local char = plr.Character
-		for _, fruit in pairs(workspace:GetChildren()) do
-			if string.find(fruit.Name, "Fruit") and fruit:FindFirstChild("Handle") then
-				fruit.Handle.CFrame = char.HumanoidRootPart.CFrame * CFrame.new(0, 0, -3)
-			end
-		end
-	end
-end
+		for I, e in next, plr.Backpack:GetChildren() do
+			StoreFruit = e:FindFirstChild("EatRemote", true);
+			if StoreFruit then
+				replicated.Remotes.CommF_:InvokeServer("StoreFruit", StoreFruit.Parent:GetAttribute("OriginalName"), plr.Backpack:FindFirstChild(e.Name));
+			end;
+		end;
+	end;
+collectFruits = function(I)
+		if I then
+			local I = plr.Character;
+			for e, K in pairs(workspace:GetChildren()) do
+				if string.find(K.Name, "Fruit") then
+					K.Handle.CFrame = I.HumanoidRootPart.CFrame;
+				end;
+			end;
+		end;
+	end;
 Getmoon = function()
 		if World1 then
 			return Lighting.FantasySky.MoonTextureId;
@@ -1147,7 +1121,7 @@ end);
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
 getgenv().TweenSpeedFar = 255   -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 255  -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedNear = 255 -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -1173,7 +1147,7 @@ local dist = (I.Position - HRP.Position).Magnitude
 --  SE ESTIVER ATÉ 15 STUDS → USA A VELOCIDADE DE PERTO
 --  CASO CONTRÁRIO → USA A VELOCIDADE PADRÃO
 -- ===============================  
-local speed = dist <= 15 and (getgenv().TweenSpeedNear or 320) or (getgenv().TweenSpeedFar or 255)
+local speed = dist <= 15 and (getgenv().TweenSpeedNear or 255) or (getgenv().TweenSpeedFar or 255)
 
 local info = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)  
 local tween = game:GetService("TweenService"):Create(C, info, { CFrame = I })  
@@ -2415,7 +2389,6 @@ imageButton.MouseButton1Click:Connect(function()
         Library:Minimize(true)
     end
 end)
-
 local Status = Library:MakeTab({
     Title = "Info & Server",
     Icon = "rbxassetid://7040410130"
@@ -2486,29 +2459,19 @@ local Setting = Library:MakeTab({
     Icon = "rbxassetid://7734053495"
 })
 Status:AddDiscordInvite({
-    Name = "OMAY 5 Hub",
-    Description = "",
-    Logo = "rbxassetid://114476175638281",
-    Invite = ""
+    Name = "Server Discord Turbo Lite Hub",
+    Description = "join for support and update <3",
+    Logo = "rbxassetid://18919385586",
+    Invite = "https://turbolite.xyz/discord"
 })
 
 Shop:AddSection("Fighting Shop")
 Shop:AddButton({
-    Name = "Buy Black Leg (Direct)",
+    Name = "Black Leg",
     Callback = function()
-        pcall(function()
-            -- Giả lập tương tác với NPC (Cần tìm đúng tên NPC trong Workspace)
-            -- Thay "Mad Scientist" bằng tên NPC chính xác trong game
-            local npc = workspace.NPCs:FindFirstChild("Mad Scientist") 
-            if npc then
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartConversation", npc)
-                task.wait(0.3)
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyBlackLeg")
-            end
-        end)
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyBlackLeg")
     end
 })
-
 Shop:AddButton({
     Name = "Fishman Karate",
     Callback = function()
@@ -3032,7 +2995,6 @@ spawn(function()
         end
     end)
 end)
-
 Status:AddTextBox({
     Name = "Input Job Id",
     Placeholder = "Job ID",
@@ -3073,42 +3035,36 @@ Status:AddButton({
         game:GetService("TeleportService"):Teleport(game.PlaceId,game:GetService("Players").LocalPlayer)
     end
 })
- 
+Status:AddButton({
+    Name = "Hop Server",
+    Callback = function()
+        Hop()
+    end
+})
 Status:AddButton({
     Name = "Hop Server Less People",
     Callback = function()
-        local HttpService = game:GetService("HttpService")
-        local TeleportService = game:GetService("TeleportService")
-        local Player = game:GetService("Players").LocalPlayer
-        
-        -- Lọc và lấy danh sách server công khai của tựa game hiện tại
-        local url = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
-        local success, result = pcall(function()
-            return HttpService:JSONDecode(game:HttpGet(url))
-        end)
-        
-        if success and result and result.data then
-            local foundServer = false
-            for _, server in ipairs(result.data) do
-                -- Kiểm tra nếu server có người chơi nhưng chưa đầy (tránh lỗi server private hoặc full)
-                if server.playing < server.maxPlayers and server.id ~= game.JobId then
-                    foundServer = true
-                    -- Thực hiện lệnh dịch chuyển an toàn
-                    TeleportService:TeleportToPlaceInstance(game.PlaceId, server.id, Player)
-                    break
-                end
-            end
-            
-            -- Nếu không tìm thấy server trống phù hợp, dùng tính năng Rejoin dự phòng
-            if not foundServer then
-                TeleportService:Teleport(game.PlaceId, Player)
-            end
-        else
-            -- Dự phòng trường hợp lỗi kết nối API, tự động rejoin lại server mới ngẫu nhiên
-            TeleportService:Teleport(game.PlaceId, Player)
+        local Http = game:GetService("HttpService")
+        local TPS = game:GetService("TeleportService")
+        local Players = game:GetService("Players")
+        local plr = Players.LocalPlayer
+        local Api = "https://games.roblox.com/v1/games/"
+        local _place = game.PlaceId
+        local _servers = Api .. _place .. "/servers/Public?sortOrder=Asc&limit=100"
+        local function ListServers(cursor)
+            local Raw = game:HttpGet(_servers .. ((cursor and "&cursor=" .. cursor) or ""))
+            return Http:JSONDecode(Raw)
         end
+        local Server, Next
+        repeat
+            local Servers = ListServers(Next)
+            Server = Servers.data[1]
+            Next = Servers.nextPageCursor
+        until Server
+        TPS:TeleportToPlaceInstance(_place, Server.id, plr)
     end
 })
+
 
 Farm:AddSection({"Local Main"})
 
@@ -3164,9 +3120,13 @@ local function TeleportConditional(hrp, targetCFrame, threshold)
         _tp(targetCFrame)  
     end
 end
+
+---
+
 ----------------------------------------------------------------------------
 -- 1. UI: DROPDOWN + TOGGLES (Coloque isso na seção da sua UI)
----------------------------------------------------------------------------
+----------------------------------------------------------------------------
+
 Farm:AddSection({"Auto Farm"})
 Farm:AddDropdown({
     Name = "Select Farm Mode",
@@ -3179,6 +3139,7 @@ Farm:AddDropdown({
         SaveSettings()
     end
 })
+
 Farm:AddToggle({
     Name = "Start Farm",
     Description = "bắt đầu farm",
@@ -3715,7 +3676,7 @@ Farm:AddSection({"Other"})
 
 -- Configuração da Distância Máxima (em studs)
 -- Aumente se quiser pegar mobs um pouco mais longe, diminua se quiser bem perto.
-_G.MaxFarmDistance = 500
+_G.MaxFarmDistance = 325
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -3920,7 +3881,6 @@ spawn(function()
         end
     end
 end)
-
 end
 Farm:AddSection({"Collect"})
 -- Botão Auto Collect Chest
@@ -4037,7 +3997,6 @@ spawn(function()
         end
     end
 end)
-
 if World3 then
 Farm:AddSection({"Bone"})
 -- AUTO RANDOM BONES
@@ -4267,7 +4226,6 @@ spawn(function()
 end);
 end
 Setting:AddSection({"Manual Save"})
--- Khởi tạo hoặc lấy giá trị từ SaveData
 if _G.SaveData["AutoExecute_Save"] == nil then
     _G.SaveData["AutoExecute_Save"] = false
 end
@@ -4310,67 +4268,52 @@ spawn(function()
     task.wait(1)
     pcall(setupAutoExecute)
 end)
-
-Setting:AddToggle({
-Name = "Auto Save Settings",
-Description = "Tự động lưu khi thay đổi",
-Default = true, -- Mặc định là bật khi vừa mở script
-Callback = function(I)
-_G.SaveData["AutoSave_Save"] = I -- Lưu trạng thái (true hoặc false) vào biến
-
-if I then  
-        -- Khi người chơi bật (hoặc mặc định lúc đầu là true)  
-        if SaveSettings then  
-            SaveSettings()  
-            game.StarterGui:SetCore("SendNotification", {  
-                Title = "OMAY Hub",  
-                Text = "Đã bật tự động lưu!",  
-                Duration = 5,  
-                Icon = "rbxassetid://114476175638281"  
-            })  
-        end  
-    else  
-        -- Khi người chơi chủ động gạt tắt  
-        game.StarterGui:SetCore("SendNotification", {  
-            Title = "OMAY Hub",  
-            Text = "Đã tắt tự động lưu.",  
-            Duration = 5,  
-            Icon = "rbxassetid://114476175638281"  
-        })  
-    end  
-end
-
-}) 
 Setting:AddButton({
-    Name = "Resetar Config UI",
-    Description = "Xoá các chức năng đã lưu",
+    Name = "Save Config UI",
+    Description = "Lưu chức năng UI",
     Callback = function()
-        -- Dùng biến FullPath để xóa file
-        if isfile and isfile(FullPath) then
-            delfile(FullPath)
-            _G.SaveData = {} -- Xóa dữ liệu trong bộ nhớ
+        -- Verifica se a função existe antes de chamar
+        if SaveSettings then
+            SaveSettings()
             
-            -- Thông báo khi xóa thành công
+            -- Notificação Universal (Funciona sem a lib Fluent)
             game.StarterGui:SetCore("SendNotification", {
-                Title = "OMAY Hub",
-                Text = "Đã reset cấu hình!",
-                Duration = 5,
-                Icon = "rbxassetid://114476175638281" -- ID Logo của bạn
+                Title = "青龙脚本 Hub",
+                Text = "Done",
+                Duration = 5
             })
         else
-            -- Thông báo nếu không tìm thấy file
-            game.StarterGui:SetCore("SendNotification", {
-                Title = "OMAY Hub",
-                Text = "Không có dữ liệu để reset.",
-                Duration = 3,
-                Icon = "rbxassetid://114476175638281" -- ID Logo của bạn
-            })
+            warn("Erro!")
         end
     end
 })
 
+Setting:AddButton({
+    Name = "Resetar Config UI",
+    Description = "Đặt lại cài đặt",
+    Callback = function()
+        -- Usa a variável FullPath que foi definida lá no topo do script
+        if isfile and isfile(FullPath) then
+            delfile(FullPath)
+            _G.SaveData = {} -- Limpa a tabela na memória ram
+            
+            -- Notificação Universal
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "青龙脚本 Hub",
+                Text = "Done",
+                Duration = 5
+            })
+        else
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "青龙脚本 Hub",
+                Text = "Done",
+                Duration = 3
+            })
+        end
+    end
+})
 Setting:AddSection({"Setting Farm"})
-Setting:AddToggle({
+Farm:AddToggle({
 	Name = "Bring Mob",
 	Description = "gom quái",
 	-- 1. Carrega o estado salvo ou inicia como true
@@ -4382,7 +4325,8 @@ Setting:AddToggle({
         SaveSettings()
 	end,
 })
-Setting:AddButton({ Name = "Fps Fix Lag", Description = "giảm lag", Callback = function()
+
+Farm:AddButton({ Name = "Fps Fix Lag", Description = "giảm lag", Callback = function()
 		LowCpu();
 	end });
 local V5 = game.Players.LocalPlayer;
@@ -4393,6 +4337,18 @@ local function y5(I)
 	local e = I:FindFirstChild("Humanoid");
 	return e and e.Health > 0;
 end
+Setting:AddToggle({
+	Name = "Safe Mode",
+	Description = "bật lên để bảo vệ máu của bạn nếu mức thấp",
+	-- 1. Carrega o estado salvo
+	Default = GetSetting("SafeMode_Save", false),
+	Callback = function(I)
+		_G.Safemode = I
+        -- 2. Salva
+        _G.SaveData["SafeMode_Save"] = I
+        SaveSettings()
+	end,
+})
 
 Setting:AddToggle({
 	Name = "Auto Active Haki",
@@ -4476,6 +4432,19 @@ spawn(function()
 	end;
 end);
 Setting:AddToggle({
+	Name = "Anti AFK",
+	Description = "chống bị kích sau 20p",
+	Default = true,
+	Callback = function(I)
+		_G.AntiAFK = I;
+	end,
+});
+plr.Idled:connect(function()
+	vim2:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame);
+	wait(1);
+	vim2:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame);
+end);
+Setting:AddToggle({
 	Name = "Disable Notify",
 	Description = "tắt thông báo",
 	-- 1. Carrega o estado salvo ou false por padrão
@@ -4504,6 +4473,7 @@ spawn(function()
 		end);
 	end;
 end);
+
 Setting:AddSection({"Select"})
 Setting:AddSlider({
     Title = "Bring Mobs Range",
@@ -4543,8 +4513,6 @@ Setting:AddSlider({
         SaveSettings()
     end
 });
-
-
 Setting:AddToggle({
     Name = "Nhảy cao vô hạn",
     Default = true,
@@ -5388,71 +5356,6 @@ spawn(function()
 		end;
 	end;
 end);
--- Kiểm tra World 2 trước khi chạy
-if game.Workspace.Map.Name == "Second Sea" then 
-
-    -- 1. Cấu hình ban đầu
-    local TweenService = game:GetService("TweenService")
-    local replicated = game:GetService("ReplicatedStorage")
-    local plr = game:GetService("Players").LocalPlayer
-
-    _G.Auto_BartiloQuest = false;
-
-    -- 2. Hàm Tween (Bay mượt mà)
-    local function Tween(targetCFrame)
-        if not plr.Character or not plr.Character:FindFirstChild("HumanoidRootPart") then return end
-        local dist = (targetCFrame.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-        local speed = 300 
-        local tween = TweenService:Create(plr.Character.HumanoidRootPart, TweenInfo.new(dist / speed, Enum.EasingStyle.Linear), {CFrame = targetCFrame})
-        tween:Play()
-        tween.Completed:Wait()
-    end
-
-    -- 3. Logic nhiệm vụ Bartilo
-    spawn(function()
-        while true do
-            task.wait(2)
-            if _G.Auto_BartiloQuest then
-                pcall(function()
-                    local questGui = plr.PlayerGui.Main.Quest.Container
-                    local questTitle = questGui.Title.Text
-                    
-                    -- Trường hợp 1: Chưa có nhiệm vụ -> Đi nhận
-                    if questTitle == "Quest" then 
-                        Tween(CFrame.new(-457.6, 75.9, 137.6)) -- Tọa độ Bartilo
-                        task.wait(1)
-                        if workspace.NPCs:FindFirstChild("Bartilo") then
-                            fireclickdetector(workspace.NPCs.Bartilo.ClickDetector)
-                            replicated.Remotes.CommF_:InvokeServer("StartQuest", "BartiloQuest")
-                        end
-
-                    -- Trường hợp 2: Đang làm Swan Pirates
-                    elseif string.find(questTitle, "Swan") then
-                        Tween(CFrame.new(-1200, 50, -1500)) -- Tọa độ Swan Pirates
-                        
-                    -- Trường hợp 3: Đang làm Boss Jeremy
-                    elseif string.find(questTitle, "Jeremy") then
-                        Tween(CFrame.new(900, 350, -800)) -- Tọa độ Jeremy
-                    end
-                end)
-            end
-        end
-    end)
-
-    -- 4. Thêm vào bảng Others
-    Others:AddToggle({
-        Name = "Auto Bartilo Quest (World 2 Only)",
-        Description = "Tự động bay làm nhiệm vụ Bartilo",
-        Default = false,
-        Callback = function(I)
-            _G.Auto_BartiloQuest = I;
-        end,
-    });
-
-else
-    warn("Script Auto Bartilo Quest chỉ hoạt động ở World 2!")
-end
-
 Others:AddToggle({
 	Name = "Auto Citizen Quest",
 	Description = "nhiệm vụ của công dân",
@@ -5620,67 +5523,6 @@ spawn(function()
 		end);
 	end;
 end);
-
-local isTorchDone = false -- Biến đánh dấu trạng thái
-
-Others:AddToggle({
-    Name = "Auto Tushita Sword 2",
-    Description = "Đứng yên cắm đuốc xong mới đánh Boss",
-    Default = false,
-    Callback = function(I)
-        _G.Auto_Tushita = I;
-        if not I then isTorchDone = false end -- Reset khi tắt
-    end,
-});
-
-spawn(function()
-    while wait(Sec or 1) do
-        pcall(function()
-            if _G.Auto_Tushita then
-                -- Kiểm tra nếu cổng Tushita còn tồn tại
-                if workspace.Map.Turtle:FindFirstChild("TushitaGate") then
-                    
-                    -- Nếu chưa lấy đuốc thì đi lấy (chỉ bước này mới bay/di chuyển)
-                    if not GetBP("Holy Torch") then
-                        Tween(CFrame.new(5148.03613, 162.352493, 910.548218));
-                    else
-                        -- ĐÃ CÓ ĐUỐC -> ĐỨNG YÊN TẠI CHỖ
-                        -- Script sẽ không di chuyển nữa, chỉ đợi game tự hoàn thành
-                        EquipWeapon("Holy Torch");
-                        
-                        -- Chỉ kiểm tra xem đã mất cái cổng chưa (tức là đã thắp xong)
-                        if not workspace.Map.Turtle:FindFirstChild("TushitaGate") then
-                            isTorchDone = true
-                        end
-                    end
-                
-                -- NẾU KHÔNG CÒN CỔNG (Đã thắp xong đuốc) HOẶC ĐÃ ĐÁNH BOSS
-                else
-                    isTorchDone = true
-                end
-
-                -- LOGIC ĐÁNH BOSS: Chỉ chạy khi isTorchDone là true
-                if isTorchDone then
-                    local I = GetConnectionEnemies("Longma");
-                    if I then
-                        repeat
-                            task.wait();
-                            G.Kill(I, _G.Auto_Tushita);
-                        until I.Humanoid.Health <= 0 or not _G.Auto_Tushita or not I.Parent;
-                    else
-                        -- Tìm Boss Longma để bay đến
-                        local Longma = replicated:FindFirstChild("Longma")
-                        if Longma and Longma:FindFirstChild("HumanoidRootPart") then
-                            Tween(Longma.HumanoidRootPart.CFrame * CFrame.new(0, 40, 0));
-                        end
-                    end
-                end
-            end
-        end);
-    end;
-end);
-
-
 -- AUTO YAMA (EXATAMENTE COMO VOCÊ ENVIou)
  Others:AddToggle({
     Name = "Auto Yama Sword",
@@ -5881,6 +5723,7 @@ end
         SaveSettings()
     end,
 })
+
 Event:AddSection({"Sea Event / Setting Sail"})
 local z5 = {
         "Guardian",
@@ -5908,17 +5751,23 @@ local z5 = {
         local H5 = {
             "Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite",
         };
-        Event:AddDropdown({
-            Name = "Select Level Sea",
-            Description = "chọn mức độ để di chuyển trên biển",
-            Options = H5,
-            Default = "Lv 1",
-            Multi = false,
-            Callback = function(I)
-                _G.DangerSc = I;
-            end,
-        });
-    end
+  Event:AddDropdown({
+    Name = "Select Level Sea",
+    Description = "chọn mức độ để di chuyển trên biển",
+    Options = H5,
+    Default = GetSetting("DangerLevel_Save", "Lv 1"), 
+    Multi = false,
+    Callback = function(I)
+        _G.DangerSc = I
+        
+        -- 2. Lưu giá trị mới vào biến SaveData
+        _G.SaveData["DangerLevel_Save"] = I
+        
+        -- 3. Cập nhật vào file Settings.json
+        SaveSettings()
+    end,
+});
+
 
     Event:AddToggle({
         Name = "Auto Start farm",
@@ -6070,9 +5919,7 @@ Event:AddSlider({
     end,
 })
 
-local RunService = game:GetService("RunService")
-
-RunService.RenderStepped:Connect(function()
+RunService.RenderStepped:Connect(function(deltaTime)
     if not _G.FlyEnabled then return end
 
     local player = game.Players.LocalPlayer
@@ -6081,38 +5928,37 @@ RunService.RenderStepped:Connect(function()
     local seat = humanoid and humanoid.SeatPart
     local boat = seat and seat:FindFirstAncestorOfClass("Model")
 
-    if boat then
-        -- Lấy vị trí và hướng hiện tại của thuyền
+    if boat and boat.PrimaryPart then
         local currentCFrame = boat:GetPivot()
         local currentPos = currentCFrame.Position
         
-        -- Tạo tọa độ mới giữ nguyên X và Z, thay đổi Y bằng độ cao của Slider
-        local targetY = _G.BoatHeight or 60
-        local newPosition = Vector3.new(currentPos.X, targetY, currentPos.Z)
+        -- 1. Tính toán độ cao mục tiêu
+        local targetY = _G.BoatHeight
         
-        -- Tách ma trận hướng (rotation) để thuyền không bị xoay lung tung
-        local _, _, _, R00, R01, R02, R10, R11, R12, R20, R21, R22 = currentCFrame:components()
-        local newCFrame = CFrame.new(newPosition.X, newPosition.Y, newPosition.Z, R00, R01, R02, R10, R11, R12, R20, R21, R22)
+        -- 2. Tốc độ bay (Điều chỉnh con số 5 để bay nhanh/chậm hơn)
+        -- Sử dụng lerp hoặc cộng trực tiếp để tạo hiệu ứng bay dần
+        local speed = 5 
+        local newY = currentPos.Y
         
-        -- Dịch chuyển thuyền lập tức
-        boat:PivotTo(newCFrame)
-        
-        -- SỬA LỖI CAMERA: Ép camera tập trung vào nhân vật
-        local camera = workspace.CurrentCamera
-        if camera.CameraSubject ~= humanoid then
-            camera.CameraSubject = humanoid
+        if math.abs(currentPos.Y - targetY) > 0.5 then
+            newY = currentPos.Y + (targetY - currentPos.Y) * math.min(deltaTime * speed, 1)
         end
         
-        -- Triệt tiêu vận tốc để tránh văng/lật
-        if boat.PrimaryPart then
-            boat.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
-            boat.PrimaryPart.AssemblyAngularVelocity = Vector3.zero
+        -- 3. Cập nhật vị trí mới (Giữ nguyên rotation)
+        local newCFrame = CFrame.new(currentPos.X, newY, currentPos.Z) * (currentCFrame - currentPos)
+        boat:PivotTo(newCFrame)
+        
+        -- 4. Ép Camera theo thuyền
+        local camera = workspace.CurrentCamera
+        if camera.CameraSubject ~= boat.PrimaryPart then
+            camera.CameraSubject = boat.PrimaryPart
         end
     end
 end)
 
 
-if World2 or World3 then
+
+if World2 then
     Event:AddSection({"Select what you will farm."})
 
     Event:AddToggle({
@@ -6133,7 +5979,7 @@ end -- Đây là nơi đóng lại khối if
 if World3 then
     Event:AddSection({"Select Sea 3 Mobs to Farm"})
     
-    local mobs = {"Shark", "Piranha", "Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"}
+    local mobs = {"Shark", "Piranha","Sea Beast"," Pirate GrandBrigade","Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"}
     
     for _, mobName in ipairs(mobs) do
         -- Tạo một biến _G tương ứng, ví dụ: _G["Farm_Shark"], v.v.
@@ -6144,6 +5990,8 @@ if World3 then
             Callback = function(state)
                 -- Gán trực tiếp vào biến _G tùy theo ý bạn
                 if mobName == "Shark" then _G.Shark = state
+                elseif mobName == "Sea bBest" then _G.SeaBeast1 = state
+                elseif mobName == "Pirate GrandBrigade" then _G.PGB = state
                 elseif mobName == "Piranha" then _G.Piranha = state
                 elseif mobName == "Terror Shark" then _G.TerrorShark = state
                 elseif mobName == "Fish Crew Member" then _G.MobCrew = state
@@ -6161,7 +6009,6 @@ if World2 then
 elseif not World2 and not World3 then
     Event:AddSection({"Go to Sea 2 or Sea 3 for Farm maritime events"})
 end
-
 
 -- [[ CONFIGURAÇÕES DE SKILLS ]]
 _G.SelectedSkills = {
@@ -7873,39 +7720,15 @@ spawn(function()
 		end);
 	end;
 end);
-Race:AddButton({
-    Name = "Teleport & Load Temple",
-    Description = "TP đến Temple và load map nếu bị ẩn",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local char = player.Character
-        local hrp = char and char:FindFirstChild("HumanoidRootPart")
-        
-        if not hrp then return end
-
-        -- 1. Dịch chuyển trước
-        hrp.CFrame = CFrame.new(28286.355, 14895.301, 102.624)
-
-        -- 2. Xử lý load map với pcall để tránh crash
-        task.spawn(function()
-            pcall(function()
-                local map = workspace:FindFirstChild("Map")
-                local mapStash = game:GetService("ReplicatedStorage"):FindFirstChild("MapStash")
-                
-                if map and mapStash then
-                    if not map:FindFirstChild("Temple of Time") and mapStash:FindFirstChild("Temple of Time") then
-                        -- Clone để tránh lỗi mất map của Server
-                        local temple = mapStash["Temple of Time"]:Clone()
-                        temple.Parent = map
-                        print("Temple đã được load thành công!")
-                    end
-                end
-            end)
-        end)
-    end
-})
-
-	
+Race:AddButton({ Name = "Teleport to Temple of Time", Description = "", Callback = function()
+		replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28286.35546875, 14895.301757812, 102.62469482422));
+	end });
+Race:AddButton({ Name = "Teleport to Ancient One", Description = "", Callback = function()
+		notween(CFrame.new(28981.552734375, 14888.426757812, -120.24584960938));
+	end });
+Race:AddButton({ Name = "Teleport to Ancient Clock", Description = "", Callback = function()
+		notween(CFrame.new(29549, 15069, -88));
+	end });
 Race:AddToggle({
 	Name = "Auto Teleport to Race Doors",
 	Description = "",
@@ -8044,43 +7867,6 @@ spawn(function()
 	end;
 end);
 Race:AddToggle({
-	Name = "Auto Complete Trial Race 2",
-	Description = "",
-	Default = false,
-	Callback = function(I)
-		_G.Complete_Trials = I;
-	end,
-});
-spawn(function()
-    while task.wait(Sec) do
-        if _G.Complete_Trials then
-            local currentRace = tostring(plr.Data.Race.Value)
-            
-            if currentRace == "Mink" then
-                notween(workspace.Map.MinkTrial.Ceiling.CFrame * CFrame.new(0, -20, 0))
-            
-            elseif currentRace == "Fishman" then
-                local sb = GetSeaBeastTrial()
-                if sb then
-                    _tp(CFrame.new(sb.HumanoidRootPart.Position.X, workspace.Map["WaterBase-Plane"].Position.Y + 300, sb.HumanoidRootPart.Position.Z))
-                    -- Gọi hàm Skill của bạn ở đây...
-                end
-            
-            elseif currentRace == "Cyborg" then
-                _tp(workspace.Map.CyborgTrial.Floor.CFrame * CFrame.new(0, 500, 0))
-            
-            elseif currentRace == "Skypiea" then
-                notween(workspace.Map.SkyTrial.Model.FinishPart.CFrame)
-            
-            elseif currentRace == "Human" or currentRace == "Ghoul" then
-                local enemies = GetConnectionEnemies({"Ancient Vampire", "Ancient Zombie"})
-                if enemies then G.Kill(enemies, _G.Complete_Trials) end
-            end
-        end
-    end
-end)
-
-Race:AddToggle({
 	Name = "Auto Kill Player After Trial",
 	Description = "turn on for kill player after the race trials",
 	Default = false,
@@ -8098,7 +7884,7 @@ spawn(function()
 							repeat
 								task.wait();
 								EquipWeapon(_G.SelectWeapon);
-								_tp(e.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0));
+								_tp(e.HumanoidRootPart.CFrame * CFrame.new(0, 0, 15));
 								sethiddenproperty(plr, "SimulationRadius", math.huge);
 							until _G.Defeating == false or e.Humanoid.Health <= 0 or not e.Parent or not e:FindFirstChild("HumanoidRootPart") or not e:FindFirstChild("Humanoid");
 						end;
@@ -8517,80 +8303,6 @@ spawn(function()
 		end;
 	end;
 end);
---================================================--
--- TÍCH HỢP TWEEN SERVICE
---================================================--
-local TweenService = game:GetService("TweenService")
-local player = game:GetService("Players").LocalPlayer
-
-local function TweenTo(targetCFrame)
-    local char = player.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    
-    local root = char.HumanoidRootPart
-    local distance = (root.Position - targetCFrame.Position).Magnitude
-    local speed = 300 -- Tốc độ bay (càng cao càng nhanh)
-    
-    local tweenInfo = TweenInfo.new(distance / speed, Enum.EasingStyle.Linear)
-    local tween = TweenService:Create(root, tweenInfo, {CFrame = targetCFrame})
-    tween:Play()
-    tween.Completed:Wait()
-end
-
---================================================--
--- TOGGLE NÚT BẤM (GUI)
---================================================--
-Dojo:AddToggle({
-    Name = "Auto Relic Draco Trial [VIP]",
-    Description = "Tự động lắp lồng đèn bằng Tween mượt",
-    Default = false,
-    Callback = function(I)
-        _G.Relic123 = I;
-    end,
-});
-
---================================================--
--- VÒNG LẶP XỬ LÝ
---================================================--
-spawn(function()
-    while task.wait(0.5) do -- Dùng task.wait() để tối ưu hơn wait()
-        if _G.Relic123 then
-            pcall(function()
-                local Map = workspace:FindFirstChild("Map")
-                if Map and Map:FindFirstChild("DracoTrial") then
-                    -- Kích hoạt Trial
-                    replicated.Remotes.DracoTrial:InvokeServer();
-                    task.wait(0.5);
-                    
-                    -- Danh sách các điểm cần đến (Dùng Tween để bay mượt)
-                    local Points = {
-                        CFrame.new(-39934.9765625, 10685.359375, 22999.34375),
-                        CFrame.new(-40511.25390625, 9376.4013671875, 23458.37890625),
-                        CFrame.new(-39914.65625, 10685.384765625, 23000.177734375),
-                        CFrame.new(-40045.83203125, 9376.3984375, 22791.287109375),
-                        CFrame.new(-39908.5, 10685.405273438, 22990.04296875),
-                        CFrame.new(-39609.5, 9376.400390625, 23472.94335975)
-                    }
-
-                    for _, point in pairs(Points) do
-                        if not _G.Relic123 then break end
-                        TweenTo(point)
-                        task.wait(0.5) -- Đợi một chút tại mỗi điểm để server xác nhận
-                    end
-                else
-                    -- Tìm đến đảo Trial
-                    local Island = Map and Map:FindFirstChild("PrehistoricIsland")
-                    local Teleport = Island and Island:FindFirstChild("TrialTeleport")
-                    if Teleport and Teleport:IsA("Part") then
-                        TweenTo(CFrame.new(Teleport.Position))
-                    end
-                end
-            end);
-        end;
-    end;
-end);
-
-
 Dojo:AddToggle({
 	Name = "Auto to train race draco",
 	Description = "turn on for training Drago race v4 + auto upgrade tier",
@@ -9582,6 +9294,8 @@ for _, p in pairs(Players:GetPlayers()) do
         table.insert(O5, p.Name)
     end
 end
+
+-- DROPDOWN
 local PlayerDropdown = Player:AddDropdown({ 
     Name = "Select Players",
     Description = "",
@@ -9643,6 +9357,9 @@ Player:AddToggle({
 		end);
 	end,
 });
+
+Player:AddSection({"Aimbot"});
+
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 
@@ -10327,101 +10044,11 @@ spawn(function()
 		end);
 	end;
 end);
-
-Get:AddToggle({
-    Name = "Auto Skull Guitar 2",
-    Description = "Tự động làm nhiệm vụ lấy đàn Soul Guitar",
-    Default = _G.SaveData["AutoSoulGuitar_Save"] or false,
-    Callback = function(I)
-        _G.Auto_Soul_Guitar = I
-        _G.SaveData["AutoSoulGuitar_Save"] = I -- Lưu trạng thái
-        
-        -- Thông báo với Logo
-        game.StarterGui:SetCore("SendNotification", {
-            Title = "OMAY Hub",
-            Text = I and "Đã bật Auto Soul Guitar!" or "Đã tắt Auto Soul Guitar.",
-            Duration = 5,
-            Icon = "rbxassetid://114476175638281" -- ID Logo của bạn
-        })
-        
-        if SaveSettings then SaveSettings() end
-    end
-})
-
--- Logic xử lý Zombie cũ
-task.spawn(function()
-	while wait() do
-		if _G.Auto_Soul_Guitar then
-			pcall(function()
-				local I = GetConnectionEnemies("Living Zombie");
-				if I then
-					I.HumanoidRootPart.CFrame = CFrame.new(-10138.397460938, 138.65246582031, 5902.8920898438);
-					I.Head.CanCollide = false;
-					I.Humanoid.Sit = false;
-					I.HumanoidRootPart.CanCollide = false;
-					I.Humanoid.JumpPower = 0;
-					I.Humanoid.WalkSpeed = 0;
-					if I.Humanoid:FindFirstChild("Animator") then
-						(I.Humanoid:FindFirstChild("Animator")):Destroy();
-					end;
-				end;
-			end);
-		end;
-	end;
-end);
-
--- Các hàm phụ trợ cũ
-function getT(I)
-	local e;
-	if I == 1 then e = workspace.Map["Haunted Castle"].Tablet.Segment1.Line.Rotation;
-	elseif I == 3 then e = workspace.Map["Haunted Castle"].Tablet.Segment3.Line.Rotation;
-	elseif I == 4 then e = workspace.Map["Haunted Castle"].Tablet.Segment4.Line.Rotation;
-	elseif I == 7 then e = workspace.Map["Haunted Castle"].Tablet.Segment7.Line.Rotation;
-	elseif I == 10 then e = workspace.Map["Haunted Castle"].Tablet.Segment10.Line.Rotation;
-	end;
-	if e then return e.Z; end;
-end;
-
-function getRT(I)
-	local e = workspace.Map["Haunted Castle"].Trophies.Quest;
-	local K;
-	for _, n in pairs(e:GetChildren()) do
-		if I == 1 and (n.Name == "Trophy1" and n:FindFirstChild("Handle")) then K = n.Handle.Rotation;
-		elseif I == 2 and (n.Name == "Trophy2" and n:FindFirstChild("Handle")) then K = n.Handle.Rotation;
-		elseif I == 3 and (n.Name == "Trophy3" and n:FindFirstChild("Handle")) then K = n.Handle.Rotation;
-		elseif I == 4 and (n.Name == "Trophy4" and n:FindFirstChild("Handle")) then K = n.Handle.Rotation;
-		elseif I == 5 and (n.Name == "Trophy5" and n:FindFirstChild("Handle")) then K = n.Handle.Rotation;
-		end;
-		if K then return K.Z; end;
-	end;
-end;
-
-GetFirePlacard = function(I, e)
-	if tostring(workspace.Map["Haunted Castle"]["Placard" .. I][e].Indicator.BrickColor) ~= "Pearl" then
-		fireclickdetector(workspace.Map["Haunted Castle"]["Placard" .. I][e].ClickDetector);
-	end;
-end;
-
--- Logic nhiệm vụ chính cũ
-spawn(function()
-	repeat task.wait() until _G.Auto_Soul_Guitar;
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Soul_Guitar then
-				-- [Toàn bộ logic nhiệm vụ của bạn vẫn giữ nguyên ở đây]
-				if World3 then
-                    -- ... (Các lệnh cũ của bạn)
-				end;
-			end;
-		end);
-	end;
-end);
-
 end
 if World2 or World3 then
 Get:AddToggle({
 	Name = "Auto Farm Material Skull Guitar",
-	Description = "Tự động farm nguyên liệu khi mua skull guitar",
+	Description = "",
 	Default = false,
 	Callback = function(I)
 		_G.AutoMatSoul = I;
@@ -11157,53 +10784,90 @@ Get:AddToggle({
 	end,
 });
 spawn(function()
-    while wait(.2) do
-        pcall(function()
-            if _G.AutoSaber and (plr.Data.Level.Value >= 200 and (not plr.Backpack:FindFirstChild("Saber") and not plr.Character:FindFirstChild("Saber"))) then
-                
-                -- Bước 1: Kiểm tra Plate ở Đảo Khỉ
-                if workspace.Map.Jungle.Final.Part.Transparency == 0 then
-                    if workspace.Map.Jungle.QuestPlates.Door.Transparency == 0 then
-                        -- [Giữ nguyên logic nhảy Plate của bạn...]
-                        -- ...
-                    else
-                        -- Bước 2: Kiểm tra Đuốc (Đã sửa theo logic mới)
-                        if workspace.Map.Desert.Burn.Part.Transparency == 0 then
-                            if plr.Backpack:FindFirstChild("Torch") or plr.Character:FindFirstChild("Torch") then
-                                _tp(CFrame.new(1114.61, 5.04, 4350.22));
-                                EquipWeapon("Torch");
-                                firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 0);
-                                firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 1);
-                            else
-                                _tp(CFrame.new(-1610.00, 11.50, 164.00));
-                            end;
-                        else
-                            -- Bước 3: Làm nhiệm vụ SickMan/RichSon
-                            if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
-                                -- ... (Logic Cup của bạn)
-                            else
-                                -- ... (Logic Mob Leader của bạn)
-                            end;
-                        end;
-                    end;
-                else
-                    -- Bước 4: Đánh Saber Expert
-                    if workspace.Enemies:FindFirstChild("Saber Expert") or replicated:FindFirstChild("Saber Expert") then
-                        for I, e in pairs(workspace.Enemies:GetChildren()) do
-                            if e.Name == "Saber Expert" and G.Alive(e) then
-                                repeat task.wait(); G.Kill(e, _G.AutoSaber); until e.Humanoid.Health <= 0 or not _G.AutoSaber;
-                                if e.Humanoid.Health <= 0 then replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "PlaceRelic"); end;
-                            end;
-                        end;
-                    else
-                        _tp(CFrame.new(-1401.85, 29.97, 8.81));
-                    end;
-                end;
-            end;
-        end);
-    end;
+	while wait(.2) do
+		pcall(function()
+			if _G.AutoSaber and (plr.Data.Level.Value >= 200 and (not plr.Backpack:FindFirstChild("Saber") and not plr.Character:FindFirstChild("Saber"))) then
+				if workspace.Map.Jungle.Final.Part.Transparency == 0 then
+					if workspace.Map.Jungle.QuestPlates.Door.Transparency == 0 then
+						if ((CFrame.new(-1612.55884, 36.9774132, 148.719543, .37091279, 3.0717151e-09, -0.928667724, 3.97099491e-08, 1, 1.91679348e-08, .928667724, -4.39869794e-08, .37091279)).Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 100 then
+							_tp(plr.Character.HumanoidRootPart.CFrame);
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate1.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate2.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate3.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate4.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate5.Button.CFrame;
+							wait(.5);
+						else
+							_tp(CFrame.new(-1612.55884, 36.9774132, 148.719543, .37091279, 3.0717151e-09, -0.928667724, 3.97099491e-08, 1, 1.91679348e-08, .928667724, -4.39869794e-08, .37091279));
+						end;
+					else
+						if workspace.Map.Desert.Burn.Part.Transparency == 0 then
+							if plr.Backpack:FindFirstChild("Torch") or plr.Character:FindFirstChild("Torch") then
+								EquipWeapon("Torch");
+								firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 0);
+								firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 1);
+								_tp(CFrame.new(1114.61475, 5.04679728, 4350.22803, -0.648466587, -1.28799094e-09, .761243105, -5.70652914e-10, 1, 1.20584542e-09, -0.761243105, 3.47544882e-10, -0.648466587));
+							else
+								_tp(CFrame.new(-1610.00757, 11.5049858, 164.001587, .984807551, -0.167722285, -0.0449818149, .17364943, .951244235, .254912198, 3.42372805e-05, -0.258850515, .965917408));
+							end;
+						else
+							if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
+								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "GetCup");
+								wait(.5);
+								EquipWeapon("Cup");
+								wait(.5);
+								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "FillCup", plr.Character.Cup);
+								wait(Sec);
+								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan");
+							else
+								if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon") == nil then
+									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon");
+								elseif replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon") == 0 then
+									if workspace.Enemies:FindFirstChild("Mob Leader") or replicated:FindFirstChild("Mob Leader") then
+										_tp(CFrame.new(-2967.59521, -4.91089821, 5328.70703, .342208564, -0.0227849055, .939347804, .0251603816, .999569714, .0150796166, -0.939287126, .0184739735, .342634559));
+										for I, e in pairs(workspace.Enemies:GetChildren()) do
+											if e.Name == "Mob Leader" and G.Alive(e) then
+												repeat
+													task.wait();
+													G.Kill(e, _G.AutoSaber);
+												until e.Humanoid.Health <= 0 or _G.AutoSaber == false;
+											end;
+										end;
+									end;
+								elseif replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon") == 1 then
+									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon");
+									EquipWeapon("Relic");
+									_tp(CFrame.new(-1404.91504, 29.9773273, 3.80598116, .876514494, 5.66906877e-09, .481375456, 2.53851997e-08, 1, -5.79995607e-08, -0.481375456, 6.30572643e-08, .876514494));
+								end;
+							end;
+						end;
+					end;
+				else
+					if workspace.Enemies:FindFirstChild("Saber Expert") or replicated:FindFirstChild("Saber Expert") then
+						for I, e in pairs(workspace.Enemies:GetChildren()) do
+							if e.Name == "Saber Expert" and G.Alive(e) then
+								repeat
+									task.wait();
+									G.Kill(e, _G.AutoSaber);
+								until e.Humanoid.Health <= 0 or _G.AutoSaber == false;
+								if e.Humanoid.Health <= 0 then
+									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "PlaceRelic");
+								end;
+							end;
+						end;
+					else
+						_tp(CFrame.new(-1401.85046, 29.9773273, 8.81916237, .85820812, 8.76083845e-08, .513301849, -8.55007443e-08, 1, -2.77243419e-08, -0.513301849, -2.00944328e-08, .85820812));
+					end;
+				end;
+			end;
+		end);
+	end;
 end);
-
 Get:AddToggle({
  Name = "Auto Usoap\'s Hat",
 	Description = "",
@@ -11802,8 +11466,6 @@ Fruit:AddToggle({
 })
 
 Fruit:AddSection({"Raid Farming"});
-
--- 1. Khai báo biến toàn cục
 Fruit:AddToggle({
 	Name  = "Auto Start Raid",
     Description = "",
@@ -12106,30 +11768,7 @@ spawn(function()
 		end;
 	end;
 end);
-Fruit:AddToggle({
-	Name  = "Auto Store Fruit",
-    Description = "Automatic store devil fruit",
-    -- 1. Carrega se o armazenamento automático estava ligado
-    Default = GetSetting("AutoStoreFruit_Save", false),
-    Callback = function(I)
-        _G.StoreF = I
-        
-        -- 2. Guarda na memória de salvamento
-        _G.SaveData["AutoStoreFruit_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
-spawn(function()
-	while wait(Sec) do
-		if _G.StoreF then
-			pcall(function()
-				UpdStFruit();
-			end);
-		end;
-	end;
-end);
+
 Fruit:AddToggle({
 	Name  = "Auto Tween to Fruit",
     Description = "Automatic tween to get devil fruit",
@@ -12161,29 +11800,38 @@ end);
 Fruit:AddToggle({
 	Name  = "Auto Collect Fruit",
     Description = "Automatic bring devil fruit",
-    -- 1. Carrega o estado salvo ou false por padrão
     Default = GetSetting("AutoCollectFruit_Save", false),
     Callback = function(I)
         _G.InstanceF = I
-        
-        -- 2. Guarda na memória de salvamento
         _G.SaveData["AutoCollectFruit_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
         SaveSettings()
     end,
 })
 spawn(function()
-	while wait(Sec) do
-		if _G.InstanceF then
-			pcall(function()
-				collectFruits(_G.InstanceF);
-			end);
-		end;
-	end;
-end);
+    while task.wait(2) do -- Dùng task.wait thay vì wait() cho mượt
+        if _G.InstanceF then
+            pcall(function()
+                -- 1. Load lại dữ liệu trái cây (Quét mới hoàn toàn)
+                if type(LoadFruitData) == "function" then
+                    LoadFruitData()
+                end
 
-Setting:AddSection({"Codes"});
+                -- 2. Kiểm tra xem trái cây có thực sự tồn tại trong Workspace không
+                -- Thay "Fruits" bằng tên folder chứa trái cây của game đó
+                local fruitFolder = workspace:FindFirstChild("Fruits") 
+                
+                if fruitFolder and #fruitFolder:GetChildren() > 0 then
+                    -- 3. Gọi hàm thu thập
+                    collectFruits(true) 
+                    
+                    -- 4. BỔ SUNG QUAN TRỌNG: Đợi một chút sau khi thu thập 
+                    -- để tránh bị server hiểu lầm là di chuyển quá nhanh (Anti-cheat)
+                    task.wait(1) 
+                end
+            end)
+        end
+    end
+end)
 Setting:AddButton({
     Name = "Redeem All Codes",
     Description = "Tự động nhập các code còn hiệu lực",
@@ -12253,11 +11901,6 @@ Setting:AddButton({ Name = "Change Haki", Description = "", Callback = function(
 			replicated.Remotes.CommF_:InvokeServer("ChangeBusoStage", 5);
 		end;
 	end });
-	
-	
-local Lighting = game:GetService("Lighting")
-
--- Bảng lưu trữ các đối tượng ánh sáng để khôi phục khi tắt Toggle
 local storedEffects = {}
 
 Setting:AddToggle({
@@ -12403,4 +12046,5 @@ Setting:AddToggle({
 		end
 	end
 })
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
