@@ -11345,22 +11345,15 @@ Fruit:AddToggle({
 })
 
 Fruit:AddSection({"Raid Farming"});
+-- // TỔNG ĐIỀU KHIỂN: AUTO START RAID (GỘP TẤT CẢ) //
+-- // 1. Auto Start Raid (Tích hợp logic tự động vào)
 Fruit:AddToggle({
-	Name  = "Auto Start Raid",
+    Name  = "Auto Start Raid",
     Description = "",
     Default = false,
     Callback = function(I)
-        _G.Auto_StartRaid = I;
-    end,
-});
--- // TỔNG ĐIỀU KHIỂN: AUTO START RAID (GỘP TẤT CẢ) //
-Fruit:AddToggle({
-    Name  = "Auto Start Raid",
-    Description = "Tự vào Raid, tự dùng G.Kill & Kill Aura",
-    Default = false,
-    Callback = function(I)
         _G.Auto_StartRaid = I
-        if not I then -- Nếu tắt công tắc, tắt luôn mọi thứ
+        if not I then
             _G.Raiding = false
             _G.KillH = false
         end
@@ -11368,75 +11361,142 @@ Fruit:AddToggle({
 });
 
 task.spawn(function()
-    while task.wait(0.5) do
-        pcall(function()
-            if not _G.Auto_StartRaid then return end
-
-            local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
-            
-            -- 1. XỬ LÝ VÀO RAID
-            if not raidTimer.Visible and GetBP("Special Microchip") then
-                local oldPos = plr.Character:GetPivot()
-                if World2 then
-                    _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
-                    task.wait(0.5)
-                    fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
-                elseif World3 then
-                    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
-                    task.wait(0.8)
-                    _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
-                    task.wait(0.5)
-                    fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
-                end
-                task.wait(0.5)
-                _tp(oldPos)
-                return -- Chờ vào raid
-            end
-
-            -- 2. ĐANG TRONG RAID
-            if raidTimer.Visible then
-                _G.Raiding = true
-                local nextIsland = getNextIsland()
+    while task.wait(5) do
+        if _G.Auto_StartRaid then
+            pcall(function()
+                local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
                 
-                if nextIsland then
-                    -- Kiểm tra ID đảo để quyết định cách đánh
-                    local islandId = tonumber(nextIsland.Name:match("%d+"))
-                    
-                    if islandId and islandId >= 4 then
-                        -- Đảo 4 & 5: Dùng Kill Aura
-                        _G.KillH = true
-                    else
-                        -- Đảo 1, 2, 3: Dùng G.Kill
-                        _G.KillH = false
-                        attackNearbyEnemies()
+                -- Logic vào Raid
+                if not raidTimer.Visible and GetBP("Special Microchip") then
+                    local oldPos = plr.Character:GetPivot()
+                    if World2 then
+                        _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
+                        task.wait(0.5)
+                        fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
+                    elseif World3 then
+                        replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
+                        task.wait(0.8)
+                        _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
+                        task.wait(0.5)
+                        fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
                     end
-                    
-                    -- Luôn luôn Tween sang đảo
-                    _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+                    task.wait(0.5)
+                    _tp(oldPos)
                 end
-            else
-                -- Raid kết thúc
-                _G.Raiding = false
-                _G.KillH = false
-            end
-        end)
+
+                -- Logic tự động chuyển chế độ đánh
+                if raidTimer.Visible then
+                    local nextIsland = getNextIsland()
+                    if nextIsland then
+                        local islandName = nextIsland.Name -- Thường là "Island 1", "Island 2"...
+                        if string.find(islandName, "4") or string.find(islandName, "5") then
+                            _G.KillH = true
+                            _G.Raiding = false
+                        else
+                            _G.KillH = false
+                            _G.Raiding = true
+                        end
+                    end
+                else
+                    _G.Raiding = false
+                    _G.KillH = false
+                end
+            end)
+        end
     end
 end)
 
--- // KILL AURA (LUÔN CHẠY NGẦM) //
+-- // 2. Các hàm chức năng cũ (Giữ nguyên không thiếu 1 dòng)
+function IsIslandRaid(cu)
+    local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
+    if locs:FindFirstChild("Island " .. cu) then
+        local min = 4500
+        for _, v in ipairs(locs:GetChildren()) do
+            if v.Name == "Island " .. cu then
+                local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                if dist < min then min = dist end
+            end
+        end
+        for _, v in ipairs(locs:GetChildren()) do
+            if v.Name == "Island " .. cu then
+                local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                if dist <= min then return v end
+            end
+        end
+    end
+end
+
+function getNextIsland()
+    local order = {5,4,3,2,1}
+    for _, id in ipairs(order) do
+        local island = IsIslandRaid(id)
+        if island then
+            local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+            if dist <= 4500 then return island end
+        end
+    end
+end
+
+function attackNearbyEnemies()
+    for _, mob in pairs(workspace.Enemies:GetChildren()) do
+        if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
+            if mob.Humanoid.Health > 0 then
+                local dist = (mob.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                if dist <= 1000 then
+                    repeat
+                        G.Kill(mob, _G.Raiding)
+                        task.wait()
+                    until not _G.Raiding or not mob.Parent or mob.Humanoid.Health <= 0
+                end
+            end
+        end
+    end
+end
+
+-- // 3. Loop G.Kill (Giữ nguyên)
+spawn(function()
+    pcall(function()
+        while wait(Sec) do
+            if _G.Raiding then
+                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
+                    attackNearbyEnemies()
+                    local nextIsland = getNextIsland()
+                    if nextIsland then
+                        _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+                        NextIs = true
+                    else
+                        NextIs = false
+                    end
+                else
+                    NextIs = false
+                end
+            else
+                NextIs = false
+            end
+        end
+    end)
+end)
+
+-- // 4. Loop Kill Aura (Giữ nguyên)
 task.spawn(function()
-    while task.wait(0.1) do
+    while true do 
+        task.wait(Sec)
         if _G.KillH then
             pcall(function()
                 sethiddenproperty(plr, "SimulationRadius", math.huge)
-                for _, v in pairs(workspace.Enemies:GetChildren()) do
-                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-                        v.HumanoidRootPart.CanCollide = false
-                        v:BreakJoints()
-                        v.Humanoid.Health = 0
+            end)
+            for _, v in pairs(workspace.Enemies:GetChildren()) do
+                if not _G.KillH then break end 
+                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                    if v.Humanoid.Health > 0 and v.Parent then
+                        pcall(function()
+                            v.HumanoidRootPart.CanCollide = false
+                            v:BreakJoints()
+                            v.Humanoid.Health = 0
+                        end)
                     end
                 end
-            end)
+            end
         end
     end
 end)
@@ -11459,85 +11519,6 @@ spawn(function()
 		end);
 	end;
 end);
-Fruit:AddToggle({
-	Name  = "Auto Start Raid",
-    Description = "",
-    Default = false,
-    Callback = function(I)
-        _G.Auto_StartRaid = I;
-    end,
-});
--- // LOGIC GỘP: RAID FARMING & AUTO COMPLETE //
-task.spawn(function()
-    while task.wait(0.5) do
-        pcall(function()
-            -- 1. Xử lý Auto Start Raid (nếu bạn muốn giữ phần này)
-            if _G.Auto_StartRaid then
-                local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
-                if not raidTimer.Visible and GetBP("Special Microchip") then
-                    local oldPos = plr.Character:GetPivot()
-                    if World2 then
-                        _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
-                        task.wait(0.5)
-                        fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
-                    elseif World3 then
-                        replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
-                        task.wait(0.8)
-                        _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
-                        task.wait(0.5)
-                        fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
-                    end
-                    task.wait(0.5)
-                    _tp(oldPos)
-                end
-            end
-
-            -- 2. Xử lý Auto Complete & Kill Aura theo Đảo
-            if _G.Raiding and plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible then
-                local nextIsland = getNextIsland()
-                if nextIsland then
-                    _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-                    
-                    -- Xác định ID đảo
-                    local id = tonumber(nextIsland.Name:match("%d+"))
-                    
-                    if id and id >= 4 then
-                        -- Đảo 4, 5: Bật Kill Aura, Tắt đánh thường
-                        _G.KillH = true
-                    else
-                        -- Đảo 1, 2, 3: Tắt Kill Aura, Bật đánh thường
-                        _G.KillH = false
-                        attackNearbyEnemies()
-                    end
-                    NextIs = true
-                end
-            else
-                NextIs = false
-            end
-        end)
-    end
-end)
-
--- // LOGIC KILL AURA (LUÔN CHẠY NGẦM) //
-task.spawn(function()
-    while task.wait(0.1) do
-        if _G.KillH then
-            pcall(function()
-                sethiddenproperty(plr, "SimulationRadius", math.huge)
-                for _, v in pairs(workspace.Enemies:GetChildren()) do
-                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-                        v.HumanoidRootPart.CanCollide = false
-                        v:BreakJoints()
-                        v.Humanoid.Health = 0
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-
-
 
 Fruit:AddSection({"Fruits Options"});
 local J5 = {};
