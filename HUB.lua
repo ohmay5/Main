@@ -188,7 +188,7 @@ elseif World2 then
 	Boss = {
 			"Diamond",
 			"Jeremy",
-			"Orbitus",
+			"Fajita",
 			"Don Swan",
 			"Smoke Admiral",
 			"Awakened Ice Admiral",
@@ -272,7 +272,7 @@ local d = {
 	};
 local z = { "Swan Pirate", "Jeremy" };
 local H = { "Forest Pirate", "Captain Elephant" };
-local F = { "Orbitus", "Jeremy", "Diamond" };
+local F = { "Fajita", "Jeremy", "Diamond" };
 local Q = {
 		"Beast Hunter",
 		"Lantern",
@@ -381,7 +381,7 @@ G.DistH = function(I, e)
 		return (Root.Position - (I:FindFirstChild("HumanoidRootPart")).Position).Magnitude > e;
 	end;
 -- ALTURA ÚNICA AJUSTÁVEL DO MOB
-_G.MobHeight = _G.MobHeight or 20
+_G.MobHeight = _G.MobHeight or 30
 
 G.Kill = function(I, e)
 	if not (I and e) then return end
@@ -1120,8 +1120,8 @@ end);
 -- =======================
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
-getgenv().TweenSpeedFar = 255   -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 255 -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedFar = 370   -- Velocidade Padrão (Longe)
+getgenv().TweenSpeedNear = 370  -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -1147,7 +1147,7 @@ local dist = (I.Position - HRP.Position).Magnitude
 --  SE ESTIVER ATÉ 15 STUDS → USA A VELOCIDADE DE PERTO
 --  CASO CONTRÁRIO → USA A VELOCIDADE PADRÃO
 -- ===============================  
-local speed = dist <= 15 and (getgenv().TweenSpeedNear or 255) or (getgenv().TweenSpeedFar or 255)
+local speed = dist <= 15 and (getgenv().TweenSpeedNear or 370) or (getgenv().TweenSpeedFar or 370)
 
 local info = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)  
 local tween = game:GetService("TweenService"):Create(C, info, { CFrame = I })  
@@ -1341,8 +1341,8 @@ QuestB = function()
 				Qdata = 3;
 				PosQBoss = CFrame.new(636.79943847656, 73.413787841797, 918.00415039063);
 				PosB = CFrame.new(2006.9261474609, 448.95666503906, 853.98284912109);
-			elseif _G.FindBoss == "Orbitus" then
-				bMon = "Orbitus";
+			elseif _G.FindBoss == "Fajita" then
+				bMon = "Fajita";
 				Qname = "MarineQuest3";
 				Qdata = 3;
 				PosQBoss = CFrame.new(-2441.986328125, 73.359344482422, -3217.5324707031);
@@ -2305,9 +2305,9 @@ QuestNeta = function()
 		};
 	end;
 	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/xRedzLib.lua"))():MakeWindow({
-    Title = "OMAY Hub",
+    Title = "青龙脚本 | Hub",
     SubTitle = "Blox Fruit",
-    SaveFolder = ""
+    SaveFolder = "turbolite.json"
 })
 -- Criar ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -2324,14 +2324,14 @@ imageButton.Parent = screenGui
 
 -- Adicionar cantos arredondados
 local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0.1, 0)
+uiCorner.CornerRadius = UDim.new(0.5, 0)
 uiCorner.Parent = imageButton
 
 -- Adicionar borda AMARELA
 local uiStroke = Instance.new("UIStroke", imageButton)
 uiStroke.Thickness = 2
 uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-uiStroke.Color = Color3.fromRGB(0, 0, 255) -- Magenta/Rosa forte
+uiStroke.Color = Color3.fromRGB(0, 255, 0) -- Magenta/Rosa forte
 
 -- Variáveis para arrastar
 local dragging = false
@@ -3072,17 +3072,14 @@ Farm:AddSection({"Local Main"})
 Farm:AddDropdown({
     Name = "Select Weapon",
     Description = "chọn vũ khí",
-    Default = GetSetting("SelectedWeapon_Save", "Melee"),
-    Options = {"Melee", "Sword", "Blox Fruit", "Gun"},
+    Options = {"Melee","Sword","Blox Fruit","Gun"},
+    Default = "Melee",
     Multi = false,
     Callback = function(I)
-        _G.ChooseWP = I -- Cập nhật biến để script sử dụng
-        
-        -- Cập nhật vào bảng lưu trữ và ghi file
-        _G.SaveData["SelectedWeapon_Save"] = I
-        SaveSettings()
+        _G.ChooseWP = I
     end,
 })
+
 spawn(function()
     while wait(Sec) do
         pcall(function()
@@ -3121,12 +3118,6 @@ local function TeleportConditional(hrp, targetCFrame, threshold)
         _tp(targetCFrame)  
     end
 end
-
----
-
-----------------------------------------------------------------------------
--- 1. UI: DROPDOWN + TOGGLES (Coloque isso na seção da sua UI)
-----------------------------------------------------------------------------
 
 Farm:AddSection({"Auto Farm"})
 Farm:AddDropdown({
@@ -3900,32 +3891,7 @@ Farm:AddToggle({
         SaveSettings()
     end,
 })
-Farm:AddToggle({
-    Name = "Stop when got God's Chalice",
-    Description = "dừng khi có vật phẩm",
-    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
-    Default = GetSetting("StopChalice_Save", true),
-    Callback = function(I)
-        _G.StopWhenChalice = I
-        
-        -- 2. Guarda na tabela de salvamento
-        _G.SaveData["StopChalice_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
-spawn(function()
-	while wait(.2) do
-		if _G.StopWhenChalice and _G.FarmEliteHunt then
-			pcall(function()
-				if GetBP("God\'s Chalice") or GetBP("Sweet Chalice") or GetBP("Fist of Darkness") then
-					_G.FarmEliteHunt = false;
-				end;
-			end);
-		end;
-	end;
-end);
+
 -- Botão Auto Collect Berry
 Farm:AddToggle({
 	Name = "Auto Collect Berry",
@@ -3998,6 +3964,7 @@ spawn(function()
         end
     end
 end)
+
 if World3 then
 Farm:AddSection({"Bone"})
 -- AUTO RANDOM BONES
@@ -4227,51 +4194,10 @@ spawn(function()
 end);
 end
 Setting:AddSection({"Manual Save"})
-if _G.SaveData["AutoExecute_Save"] == nil then
-    _G.SaveData["AutoExecute_Save"] = false
-end
 
-getgenv().AutoExecute = _G.SaveData["AutoExecute_Save"]
-
-Setting:AddToggle({
-    Title = "Auto Execute",
-    Default = _G.SaveData["AutoExecute_Save"],
-    Callback = function(Value)
-        getgenv().AutoExecute = Value
-        -- Cập nhật vào bảng SaveData và gọi hàm SaveSettings
-        _G.SaveData["AutoExecute_Save"] = Value
-        SaveSettings()
-    end
-})
-
--- Code auto execute
-local function setupAutoExecute()
-    local player = game.Players.LocalPlayer
-    local queue = syn and syn.queue_on_teleport or queue_on_teleport or queueteleport
-    local executed = false
-
-    if not queue then 
-        return 
-    end
-
-    player.OnTeleport:Connect(function()
-        -- Kiểm tra lại giá trị từ biến lưu trữ
-        if _G.SaveData["AutoExecute_Save"] and not executed then
-            executed = true
-            queue([[
-                loadstring(game:HttpGet("httpshttps://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/HUB.lua"))()
-            ]])
-        end
-    end)
-end
-
-spawn(function()
-    task.wait(1)
-    pcall(setupAutoExecute)
-end)
 Setting:AddButton({
-    Name = "Save Config UI",
-    Description = "Lưu chức năng UI",
+    Name = "Salvar Config UI",
+    Description = "",
     Callback = function()
         -- Verifica se a função existe antes de chamar
         if SaveSettings then
@@ -4279,7 +4205,7 @@ Setting:AddButton({
             
             -- Notificação Universal (Funciona sem a lib Fluent)
             game.StarterGui:SetCore("SendNotification", {
-                Title = "青龙脚本 Hub",
+                Title = "Turbo Lite Hub",
                 Text = "Done",
                 Duration = 5
             })
@@ -4291,7 +4217,7 @@ Setting:AddButton({
 
 Setting:AddButton({
     Name = "Resetar Config UI",
-    Description = "Đặt lại cài đặt",
+    Description = "",
     Callback = function()
         -- Usa a variável FullPath que foi definida lá no topo do script
         if isfile and isfile(FullPath) then
@@ -4300,13 +4226,13 @@ Setting:AddButton({
             
             -- Notificação Universal
             game.StarterGui:SetCore("SendNotification", {
-                Title = "青龙脚本 Hub",
+                Title = "Turbo Lite Hub",
                 Text = "Done",
                 Duration = 5
             })
         else
             game.StarterGui:SetCore("SendNotification", {
-                Title = "青龙脚本 Hub",
+                Title = "Turbo Lite Hub",
                 Text = "Done",
                 Duration = 3
             })
@@ -4338,6 +4264,52 @@ local function y5(I)
 	local e = I:FindFirstChild("Humanoid");
 	return e and e.Health > 0;
 end
+Setting:AddButton({
+    Name = "Stop Tween",
+    Description = "dừng bay tween",
+    Callback = function()
+        local plr = game.Players.LocalPlayer
+        local char = plr.Character
+        if not char then return end
+
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChild("Humanoid")
+
+        -- 🔴 PARA O TWEEN (usa a variável que JÁ EXISTE)
+        shouldTween = false
+
+        -- 🔓 Solta o player
+        if hrp then
+            hrp.Anchored = false
+
+            -- Remove coisas que costumam travar
+            for _, v in pairs(hrp:GetChildren()) do
+                if v:IsA("BodyVelocity")
+                or v:IsA("BodyPosition")
+                or v:IsA("BodyGyro") then
+                    v:Destroy()
+                end
+            end
+        end
+
+        if hum then
+            hum.PlatformStand = false
+            hum.Sit = false
+            hum.WalkSpeed = 16
+            hum.JumpPower = 50
+            hum.AutoRotate = true
+            hum:ChangeState(Enum.HumanoidStateType.Running)
+        end
+
+        -- Libera o farm de novo
+        getgenv().OnFarm = true
+
+        -- Permite novos tweens depois
+        task.wait()
+        shouldTween = true
+    end
+})
+
 Setting:AddToggle({
 	Name = "Safe Mode",
 	Description = "bật lên để bảo vệ máu của bạn nếu mức thấp",
@@ -4474,58 +4446,44 @@ spawn(function()
 		end);
 	end;
 end);
-
 Setting:AddSection({"Select"})
-Setting:AddSlider({
+Setting:AddTextBox({
     Title = "Bring Mobs Range",
-    Description = "Điều chỉnh độ xa để gom quái",
-    Default = _G.BringRange or 250,
-    Min = 0,
-    Max = 1000, -- Bạn có thể chỉnh lại Max tùy theo nhu cầu
-    Rounding = 0, -- 0 nếu muốn số nguyên, 1 nếu muốn số thập phân
+    Description = "độ xa gom quái",
+    PlaceHolder = "250",
+    Default = tostring(_G.BringRange),
     Callback = function(Value)
-        _G.BringRange = Value
+        local num = tonumber(Value)
+        if num and num > 0 then
+            _G.BringRange = num
+        end
     end
 })
 
-
-Setting:AddSlider({
-    Title = "Farm Height",
-    Description = "Độ cao farm quái",
-    Default = _G.MobHeight or 20,
-    Min = 0,
-    Max = 100, -- Adjust this to your desired limit
-    Rounding = 1,
+Setting:AddTextBox({
+    Title = "Select Farm Height",
+    Description = "độ cao đứng trên đầu",
+    PlaceHolder = "30",
+    Default = tostring(_G.MobHeight),
     Callback = function(Value)
-        _G.MobHeight = Value
+        local num = tonumber(Value)
+        if num and num > 0 then
+            _G.MobHeight = num
+        end
     end
 })
 
-Setting:AddSlider({
+Setting:AddTextBox({
     Title = "Tween Speed",
-    Description = "Điều chỉnh tốc độ tween",
-    Default = _G.SaveData["TweenSpeed_Save"] or 255, -- Lấy giá trị đã lưu, nếu chưa có thì mặc định là 255
-    Min = 50,      -- Giá trị nhỏ nhất
-    Max = 500,    -- Giá trị lớn nhất
-    Rounding = 0,  -- Số chữ số thập phân (0 là số nguyên)
+    Description = "tốc độ tween",
+    PlaceHolder = "370",
+    Default = "370",
     Callback = function(I)
-        getgenv().TweenSpeedFar = I
-        _G.SaveData["TweenSpeed_Save"] = I
-        SaveSettings()
-    end
+        if tonumber(I) then
+            getgenv().TweenSpeedFar = tonumber(I)
+        end
+    end,
 });
-Setting:AddToggle({
-    Name = "Nhảy cao vô hạn",
-    Default = true,
-    Callback = function(Value)
-        _G.InfiniteJump = Value
-    end
-})
-game:GetService("UserInputService").JumpRequest:Connect(function()
-    if _G.InfiniteJump then
-        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-    end
-end)
 Others:AddSection({"Fishing"})
 -- =========================================================
 -- NOVO SISTEMA DE PESCA (COM SAVE SYSTEM INTEGRADO)
@@ -5463,6 +5421,32 @@ spawn(function()
 		end);
 	end;
 end);
+ Others:AddToggle({
+    Name = "Stop when got God's Chalice",
+    Description = "dừng khi có cúp",
+    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
+    Default = GetSetting("StopChalice_Save", true),
+    Callback = function(I)
+        _G.StopWhenChalice = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["StopChalice_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+spawn(function()
+	while wait(.2) do
+		if _G.StopWhenChalice and _G.FarmEliteHunt then
+			pcall(function()
+				if GetBP("God\'s Chalice") or GetBP("Sweet Chalice") or GetBP("Fist of Darkness") then
+					_G.FarmEliteHunt = false;
+				end;
+			end);
+		end;
+	end;
+end);
 Others:AddToggle({
 	Name = "Auto Tushita Sword",
 	Description = "tự động lấy kiếm tushita",
@@ -5752,23 +5736,17 @@ local z5 = {
         local H5 = {
             "Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite",
         };
-  Event:AddDropdown({
-    Name = "Select Level Sea",
-    Description = "chọn mức độ để di chuyển trên biển",
-    Options = H5,
-    Default = GetSetting("DangerLevel_Save", "Lv 1"), 
-    Multi = false,
-    Callback = function(I)
-        _G.DangerSc = I
-        
-        -- 2. Lưu giá trị mới vào biến SaveData
-        _G.SaveData["DangerLevel_Save"] = I
-        
-        -- 3. Cập nhật vào file Settings.json
-        SaveSettings()
-    end,
-});
-
+        Event:AddDropdown({
+            Name = "Select Level Sea",
+            Description = "chọn mức độ để di chuyển trên biển",
+            Options = H5,
+            Default = "Lv 1",
+            Multi = false,
+            Callback = function(I)
+                _G.DangerSc = I;
+            end,
+        });
+    end
 
     Event:AddToggle({
         Name = "Auto Start farm",
@@ -5850,27 +5828,24 @@ _G.SetSpeedBoat = 300
 Event:AddToggle({
         Name = "Activate Boat Speed",
         Description = "Cho phép tùy chỉnh tốc độ thuyền",
-        Default = true,
+        Default = false,
         Callback = function(Value)
             _G.SpeedBoat = Value
         end
     })
 
     Event:AddTextBox({
-    Title = "Boat Speed Value",
-    Description = "Tốc độ thuyền đi, nên dùng 300",
-    PlaceHolder = "300",
-    Default = GetSetting("BoatSpeed_Save", "300"), -- Tải giá trị cũ, mặc định là chuỗi "300"
-    Callback = function(Value)
-        local num = tonumber(Value)
-        if num and num > 0 then
-            _G.SetSpeedBoat = num
-            _G.SaveData["BoatSpeed_Save"] = Value -- Lưu vào bộ nhớ dưới dạng chuỗi nhập vào
-            SaveSettings() -- Lưu vào file JSON
+        Title = "Boat Speed Value",
+        Description = "tốc độ thuyền đi, nên dùng 300",
+        PlaceHolder = "300",
+        Default = "300",
+        Callback = function(Value)
+            local num = tonumber(Value)
+            if num and num > 0 then
+                _G.SetSpeedBoat = num
+            end
         end
-    end
-})
-
+    })
 
 task.spawn(function()
     game:GetService("RunService").RenderStepped:Connect(function()
@@ -5893,56 +5868,80 @@ task.spawn(function()
         end
     end)
 end)
-if World2 then
-    Event:AddSection({"Select what you will farm."})
 
+Event:AddSection({"Select what you will farm."})
     Event:AddToggle({
         Name = "Auto Attack Sea Beast",
         Description = "tự động đánh sea beast",
-        Default = _G.SeaBeast1,
-        Callback = function(I) _G.SeaBeast1 = I end,
-    })
+        Default = false,
+        Callback = function(I)
+            _G.SeaBeast1 = I;
+        end,
+    });
+Event:AddToggle({
+    Name = "Auto Attack Pirate GrandBrigade",
+    Description = "tự động tấn công thuyền cướp biển",
+    Default = false,
+    Callback = function(I)
+        _G.PGB = I;
+    end,
+});
 
-    Event:AddToggle({
-        Name = "Auto Attack Pirate GrandBrigade",
-        Description = "tự động tấn công thuyền cướp biển",
-        Default = _G.PGB,
-        Callback = function(I) _G.PGB = I end,
-    })
-end -- Đây là nơi đóng lại khối if
-
-if World3 then
-    Event:AddSection({"Select Sea 3 Mobs to Farm"})
-    
-    local mobs = {"Shark", "Piranha","Sea Beast"," Pirate GrandBrigade","Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"}
-    
-    for _, mobName in ipairs(mobs) do
-        -- Tạo một biến _G tương ứng, ví dụ: _G["Farm_Shark"], v.v.
-        -- Hoặc dùng trực tiếp tên viết tắt của bạn đã định nghĩa
-        Event:AddToggle({
-            Name = "Farm " .. mobName,
-            Default = false,
-            Callback = function(state)
-                -- Gán trực tiếp vào biến _G tùy theo ý bạn
-                if mobName == "Shark" then _G.Shark = state
-                elseif mobName == "Sea bBest" then _G.SeaBeast1 = state
-                elseif mobName == "Pirate GrandBrigade" then _G.PGB = state
-                elseif mobName == "Piranha" then _G.Piranha = state
-                elseif mobName == "Terror Shark" then _G.TerrorShark = state
-                elseif mobName == "Fish Crew Member" then _G.MobCrew = state
-                elseif mobName == "Haunted Crew Member" then _G.HCM = state
-                elseif mobName == "Fish Boat" then _G.FishBoat = state
-                end
-            end,
-        })
-    end
-end
-
--- 3. Thông báo chỉ dẫn nếu chưa tới Sea 3
 if World2 then
-    Event:AddSection({"Go to Sea 3 for more options."})
-elseif not World2 and not World3 then
-    Event:AddSection({"Go to Sea 2 or Sea 3 for Farm maritime events"})
+  Event:AddSection({"Go to Sea 3 for more options."})
+end
+if World1 then
+  Event:AddSection({"Go to Sea 3 or Sea 2 for Farm maritime events"})
+end
+if game.PlaceId == 7449423635 or game.PlaceId == 100117331123089 then
+Event:AddToggle({
+    Name = "Auto Shark",
+    Description = "đánh cá mập",
+    Default = false,
+    Callback = function(I)
+        _G.Shark = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Piranha",
+    Description = "đánh cá piranha",
+    Default = false,
+    Callback = function(I)
+        _G.Piranha = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Terror Shark",
+    Description = "đánh cá mập khủng bố",
+    Default = false,
+    Callback = function(I)
+        _G.TerrorShark = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Fish Crew Member",
+    Description = "đánh đội đánh cá",
+    Default = false,
+    Callback = function(I)
+        _G.MobCrew = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Haunted Crew Member",
+    Description = "đánh phi hành đoàn bị ma ám",
+    Default = false,
+    Callback = function(I)
+        _G.HCM = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Attack Fish Boat",
+    Description = "đánh thuyền đánh cá",
+    Default = false,
+    Callback = function(I)
+        _G.FishBoat = I;
+    end,
+});
 end
 
 -- [[ CONFIGURAÇÕES DE SKILLS ]]
@@ -8845,111 +8844,59 @@ end
 -- UI E TOGGLES
 Esp:AddSection({"Esp Items / Entity / Island"});
 
-Esp:AddToggle({
-    Name = "Esp Berries",
-    Default = GetSetting("Esp_Berries", false),
-    Callback = function(I)
-        BerryEsp = I
-        _G.SaveData["Esp_Berries"] = I
-        SaveSettings()
+Esp:AddToggle({Name = "Esp Berries", Default = false, Callback = function(I) 
+    BerryEsp = I; 
+    spawn(function() while BerryEsp do wait(1); berriesEsp(); end; end); 
+end});
 
-        task.spawn(function()
-            while BerryEsp do
-                task.wait(1)
-                berriesEsp()
-            end
-        end)
-    end
-})
+Esp:AddToggle({Name = "Esp Players", Default = false, Callback = function(I) 
+    PlayerEsp = I; 
+    spawn(function() while PlayerEsp do wait(0.1); EspPly(); end; end); 
+end});
 
-Esp:AddToggle({
-    Name = "Esp_Players",
-    Default = GetSetting("Esp_Players", false),
-    Callback = function(I)
-        PlayerEsp = I
-        _G.SaveData["Esp_Players"] = I
-        SaveSettings()
+Esp:AddToggle({Name = "Esp Chests", Default = false, Callback = function(I) 
+    ChestESP = I; 
+    spawn(function() while ChestESP do wait(1); ChestEsp(); end; end); 
+end});
 
-        task.spawn(function()
-            while PlayerEsp do
-                task.wait(1)
-                PlayerEsp()
-            end
-        end)
-    end
-})
-
-Esp:AddToggle({
-    Name = "Esp Chests",
-    -- Sử dụng GetSetting để tải trạng thái đã lưu
-    Default = GetSetting("Esp_Chests", false), 
-    Callback = function(I)
-        ChestESP = I
-        
-        -- Lưu trạng thái vào biến Global để SaveSettings hoạt động
-        _G.SaveData["Esp_Chests"] = I
-        SaveSettings()
-        
-        if ChestESP then
-            spawn(function()
-                while ChestESP do
-                    wait(1)
-                    ChestEsp()
-                end
-            end)
-        end
-    end
-})
-
-
--- Helper function để rút gọn code nếu cần, hoặc bạn cứ chèn trực tiếp như dưới đây:
-
-Esp:AddToggle({Name = "Esp Fruits", Default = GetSetting("Esp_Fruits", false), Callback = function(I)
+Esp:AddToggle({Name = "Esp Fruits", Default = false, Callback = function(I)
     DevilFruitESP = I
-    _G.SaveData["Esp_Fruits"] = I; SaveSettings()
     task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp) end end)
 end})
 
-Esp:AddToggle({Name = "Esp Island", Default = GetSetting("Esp_Island", false), Callback = function(I)
-    _G.IslandESP = I
-    _G.SaveData["Esp_Island"] = I; SaveSettings()
+Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
+    _G.IslandESP = I;
     task.spawn(function() while _G.IslandESP do IslandESP_Func(); task.wait(2) end; IslandESP_Func() end)
-end})
+end});
 
 if World2 then
-    Esp:AddToggle({Name = "Esp Flower", Default = GetSetting("Esp_Flower", false), Callback = function(I)
+    Esp:AddToggle({Name = "Esp Flower", Default = false, Callback = function(I)
         FlowerESP = I
-        _G.SaveData["Esp_Flower"] = I; SaveSettings()
         task.spawn(function() while FlowerESP do pcall(flowerEsp); task.wait(1) end end)
     end})
-    Esp:AddToggle({Name = "Esp Legendary Sword", Default = GetSetting("Esp_LegendarySword", false), Callback = function(I)
+    Esp:AddToggle({Name = "Esp Legendary Sword", Default = false, Callback = function(I)
         LegenS = I
-        _G.SaveData["Esp_LegendarySword"] = I; SaveSettings()
         task.spawn(function() while LegenS do pcall(LegenSword); task.wait(1) end end)
     end})
 end
 
 if World2 or World3 then
-    Esp:AddToggle({Name = "Esp Aura Colour Dealers", Default = GetSetting("Esp_AuraColor", false), Callback = function(I)
+    Esp:AddToggle({Name = "Esp Aura Colour Dealers", Default = false, Callback = function(I)
         ColorEsp = I
-        _G.SaveData["Esp_AuraColor"] = I; SaveSettings()
         task.spawn(function() while ColorEsp do pcall(HakiClorEsp); task.wait(1) end; pcall(HakiClorEsp) end)
     end})
 end
 
 if World3 then
-    Esp:AddToggle({Name = "Esp Gears", Default = GetSetting("Esp_Gears", false), Callback = function(I)
+    Esp:AddToggle({Name = "Esp Gears", Default = false, Callback = function(I)
         ESPGear = I
-        _G.SaveData["Esp_Gears"] = I; SaveSettings()
         task.spawn(function() while ESPGear do pcall(gearEsp); task.wait(1) end end)
     end})
-    Esp:AddToggle({Name = "Esp Advanced Fruits Dealer", Default = GetSetting("Esp_AdvFruitDealer", false), Callback = function(I)
+    Esp:AddToggle({Name = "Esp Advanced Fruits Dealer", Default = false, Callback = function(I)
         advanEsp = I
-        _G.SaveData["Esp_AdvFruitDealer"] = I; SaveSettings()
         task.spawn(function() while advanEsp do pcall(AdvanFruitEsp); task.wait(1) end; pcall(AdvanFruitEsp) end)
     end})
 end
-
 
 
 Esp:AddSection({"Fontes"});
@@ -9713,7 +9660,6 @@ elseif World3 then
 			"Hydra Teleport",
 			"Canvendish Room",
 			"Temple of Time",
-			"Tiki Outpost",
 		};
 end;
 Teleport:AddDropdown({
@@ -9745,9 +9691,7 @@ Teleport:AddButton({ Name = "requestEntrance", Description = "", Callback = func
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(5314.5463867188, 22.562219619751, -127.06755065918));
 		elseif _G.Island_PT == "Temple of Time" then
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28310.0234, 14895.1123, 109.456741, -0.469690144, -2.85620132e-08, -0.882831335, -3.23509219e-08, 1, -1.51411736e-08, .882831335, 2.14487486e-08, -0.469690144));
-	    elseif _G.Island_PT == "Tiki Outpost" then
-    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-29046.216796875, 305.41909790039, -5573.7153320313))
-    	end;
+		end;
 	end });
 Teleport:AddSection("Travel - NPCs");
 for I, e in pairs(replicated.NPCs:GetChildren()) do
@@ -11686,7 +11630,7 @@ spawn(function()
 		end);
 	end;
 end);
-Fruit:AddToggle({
+Get:AddToggle({
 	Name = "Auto Drop Fruit",
 	Description = "Automatic drop devil fruit",
 	Default = false,
@@ -11703,7 +11647,30 @@ spawn(function()
 		end;
 	end;
 end);
-
+Fruit:AddToggle({
+	Name  = "Auto Store Fruit",
+    Description = "Automatic store devil fruit",
+    -- 1. Carrega se o armazenamento automático estava ligado
+    Default = GetSetting("AutoStoreFruit_Save", false),
+    Callback = function(I)
+        _G.StoreF = I
+        
+        -- 2. Guarda na memória de salvamento
+        _G.SaveData["AutoStoreFruit_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+spawn(function()
+	while wait(Sec) do
+		if _G.StoreF then
+			pcall(function()
+				UpdStFruit();
+			end);
+		end;
+	end;
+end);
 Fruit:AddToggle({
 	Name  = "Auto Tween to Fruit",
     Description = "Automatic tween to get devil fruit",
@@ -11735,64 +11702,48 @@ end);
 Fruit:AddToggle({
 	Name  = "Auto Collect Fruit",
     Description = "Automatic bring devil fruit",
+    -- 1. Carrega o estado salvo ou false por padrão
     Default = GetSetting("AutoCollectFruit_Save", false),
     Callback = function(I)
         _G.InstanceF = I
+        
+        -- 2. Guarda na memória de salvamento
         _G.SaveData["AutoCollectFruit_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
         SaveSettings()
     end,
 })
 spawn(function()
-    while task.wait(2) do -- Dùng task.wait thay vì wait() cho mượt
-        if _G.InstanceF then
-            pcall(function()
-                -- 1. Load lại dữ liệu trái cây (Quét mới hoàn toàn)
-                if type(LoadFruitData) == "function" then
-                    LoadFruitData()
-                end
-
-                -- 2. Kiểm tra xem trái cây có thực sự tồn tại trong Workspace không
-                -- Thay "Fruits" bằng tên folder chứa trái cây của game đó
-                local fruitFolder = workspace:FindFirstChild("Fruits") 
-                
-                if fruitFolder and #fruitFolder:GetChildren() > 0 then
-                    -- 3. Gọi hàm thu thập
-                    collectFruits(true) 
-                    
-                    -- 4. BỔ SUNG QUAN TRỌNG: Đợi một chút sau khi thu thập 
-                    -- để tránh bị server hiểu lầm là di chuyển quá nhanh (Anti-cheat)
-                    task.wait(1) 
-                end
-            end)
-        end
-    end
-end)
+	while wait(Sec) do
+		if _G.InstanceF then
+			pcall(function()
+				collectFruits(_G.InstanceF);
+			end);
+		end;
+	end;
+end);
+Setting:AddSection({"Codes"});
 Setting:AddButton({
-    Name = "Redeem All Codes",
-    Description = "Tự động nhập các code còn hiệu lực",
-    Callback = function()
-        -- Danh sách code đã lọc các mã "rác" và code lỗi
-        local Codes = {
-            "SUB2GAMERROBOT_RESET1", "KITTRST_RELOAD", "Sub2GamerRobot_EXP1", 
-            "KittGaming", "Sub2OfficialNoobie", "TheGreatAce", "Sub2NoobMaster123", 
-            "Sub2Daigrock", "Axiore", "TantaiGaming", "StrawHatMaine", "Bluxxy", 
-            "Enyu_is_Pro", "MagicBus", "StarcodeHEO", "JCWK", "Sub2CaptainMaui", 
-            "Sub2Fer999", "Sub2UncleKizaru", "Fudd10", "Bignews"
-        };
+	Name = "Redeem All Codes",
+	Description = "",
+	Callback = function()
+		local Codes = {
+			"KITT_RESET", "Sub2UncleKizaru", "SUB2GAMERROBOT_RESET1", "Sub2Fer999", "Enyu_is_Pro", "JCWK",
+			"StarcodeHEO", "MagicBus", "KittGaming", "Sub2CaptainMaui", "Sub2OfficalNoobie", "TheGreatAce",
+			"Sub2NoobMaster123", "Sub2Daigrock", "Axiore", "StrawHatMaine", "TantaiGaming", "Bluxxy",
+			"SUB2GAMERROBOT_EXP1", "Chandler", "NOMOREHACK", "BANEXPLOIT", "WildDares", "BossBuild",
+			"GetPranked", "EARN_FRUITS", "FIGHT4FRUIT", "NOEXPLOITER", "NOOB2ADMIN", "CODESLIDE", "ADMINHACKED",
+			"ADMINDARES", "fruitconcepts", "krazydares", "TRIPLEABUSE", "SEATROLLING", "24NOADMIN", "REWARDFUN",
+			"NEWTROLL", "fudd10_v2", "Fudd10", "Bignews", "SECRET_ADMIN"
+		};
 
-        for _, code in ipairs(Codes) do
-            pcall(function()
-                -- Gửi yêu cầu lên server
-                game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code)
-                print("Đã thử nhập code: " .. code)
-            end)
-            
-            -- Chờ 0.5s giữa các lần nhập để tránh bị server chặn (Rate Limit)
-            task.wait(0.5)
-        end
-        
-        print("Đã hoàn tất quá trình nhập code!")
-    end,
+		for _, code in ipairs(Codes) do
+			pcall(function()
+				game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code);
+			end);
+		end;
+	end,
 });
 
 Setting:AddSection({"Team"});
@@ -11836,58 +11787,7 @@ Setting:AddButton({ Name = "Change Haki", Description = "", Callback = function(
 			replicated.Remotes.CommF_:InvokeServer("ChangeBusoStage", 5);
 		end;
 	end });
-local storedEffects = {}
-
-Setting:AddToggle({
-    Name = "Nofog",
-    -- 1. Tải trạng thái đã lưu (mặc định là false nếu chưa có)
-    Default = GetSetting("NoFog_Save", false),
-    Callback = function(state)
-        if state then
-            -- Khi bật Toggle (Bật chế độ không sương mù)
-            storedEffects = {}
-            
-            -- Kiểm tra và lưu/xóa LightingLayers
-            local layers = Lighting:FindFirstChild("LightingLayers")
-            if layers then
-                storedEffects["LightingLayers"] = layers:Clone()
-                layers:Destroy()
-            end
-            
-            -- Kiểm tra và lưu/xóa SeaTerrorCC
-            local cc = Lighting:FindFirstChild("SeaTerrorCC")
-            if cc then
-                storedEffects["SeaTerrorCC"] = cc:Clone()
-                cc:Destroy()
-            end
-            
-            -- Kiểm tra và lưu/xóa FantasySky
-            local sky = Lighting:FindFirstChild("FantasySky")
-            if sky then
-                storedEffects["FantasySky"] = sky:Clone()
-                sky:Destroy()
-            end
-        else
-            -- Khi tắt Toggle (Khôi phục lại các hiệu ứng như ban đầu)
-            for name, effect in pairs(storedEffects) do
-                if not Lighting:FindFirstChild(name) then
-                    effect.Parent = Lighting
-                end
-            end
-        end
-        
-        -- 2. Lưu trạng thái vào bảng dữ liệu
-        _G.SaveData["NoFog_Save"] = state
-        
-        -- 3. Lưu vào file Settings.json
-        SaveSettings()
-    end
-})
-
-Setting:AddButton({ 
-      Name = "Nofog", 
-      Description = "", 
-      Callback = function()
+Setting:AddButton({ Name = "Nofog", Description = "", Callback = function()
 		if Lighting:FindFirstChild("LightingLayers") then
 			Lighting.LightingLayers:Destroy();
 		end;
@@ -11912,9 +11812,3 @@ Setting:AddToggle({
 		end;
 	end,
 });
-
--- =========================
--- TOGGLE UI
--- =========================
-
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
