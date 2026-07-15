@@ -7847,24 +7847,6 @@ Race:AddButton({
         end)
     end
 })
-Race:AddButton({
-    Name = "Teleport to Temple of Time",
-    Description = "",
-    Callback = function()
-        local Players = game:GetService("Players")
-        local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-        local Character = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
-        Character:WaitForChild("HumanoidRootPart")
-
-        task.wait(2) -- chờ map load
-
-        ReplicatedStorage.Remotes.CommF_:InvokeServer(
-            "requestEntrance",
-            Vector3.new(28286.35546875, 14895.301757812, 102.62469482422)
-        )
-    end
-})
 Race:AddButton({ Name = "Teleport to Ancient One", Description = "", Callback = function()
 		notween(CFrame.new(28981.552734375, 14888.426757812, -120.24584960938));
 	end });
@@ -9863,12 +9845,13 @@ elseif World2 then
 	Location_Portal = { "SwanRoom", "Cursed Ship" };
 elseif World3 then
 	Location_Portal = {
-			"Castle On The Sea",
-			"Mansion Cafe",
-			"Hydra Teleport",
-			"Canvendish Room",
-			"Temple of Time",
-		};
+    "Castle On The Sea",
+    "Mansion Cafe",
+    "Hydra Teleport",
+    "Canvendish Room",
+    "Temple of Time",
+    "Tiki Outpost",
+};
 end;
 Teleport:AddDropdown({
 	Title = "Select Portal",
@@ -9899,6 +9882,8 @@ Teleport:AddButton({ Name = "requestEntrance", Description = "", Callback = func
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(5314.5463867188, 22.562219619751, -127.06755065918));
 		elseif _G.Island_PT == "Temple of Time" then
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28310.0234, 14895.1123, 109.456741, -0.469690144, -2.85620132e-08, -0.882831335, -3.23509219e-08, 1, -1.51411736e-08, .882831335, 2.14487486e-08, -0.469690144));
+		elseif _G.Island_PT == "Tiki Outpost" then
+    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-29046.216796875, 305.41909790039, -5573.7153320313));
 		end;
 	end });
 Teleport:AddSection("Travel - NPCs");
