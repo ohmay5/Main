@@ -6055,50 +6055,79 @@ task.spawn(function()
         end
     end)
 end)
-
-if World2 then
-    Event:AddSection({"Select what you will farm."})
-
+Event:AddSection({"Select what you will farm."})
     Event:AddToggle({
         Name = "Auto Attack Sea Beast",
         Description = "tự động đánh sea beast",
-        Default = _G.SeaBeast1,
-        Callback = function(I) _G.SeaBeast1 = I end,
-    })
+        Default = false,
+        Callback = function(I)
+            _G.SeaBeast1 = I;
+        end,
+    });
+Event:AddToggle({
+    Name = "Auto Attack Pirate GrandBrigade",
+    Description = "tự động tấn công thuyền cướp biển",
+    Default = false,
+    Callback = function(I)
+        _G.PGB = I;
+    end,
+});
 
-    Event:AddToggle({
-        Name = "Auto Attack Pirate GrandBrigade",
-        Description = "tự động tấn công thuyền cướp biển",
-        Default = _G.PGB,
-        Callback = function(I) _G.PGB = I end,
-    })
-end -- Đây là nơi đóng lại khối if
-
-if World3 then
-    Event:AddSection({"Select Sea 3 Mobs to Farm"})
-    
-    local mobs = {"Shark", "Piranha","Sea Beast"," Pirate GrandBrigade","Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"}
-    
-    for _, mobName in ipairs(mobs) do
-        -- Tạo một biến _G tương ứng, ví dụ: _G["Farm_Shark"], v.v.
-        -- Hoặc dùng trực tiếp tên viết tắt của bạn đã định nghĩa
-        Event:AddToggle({
-            Name = "Farm " .. mobName,
-            Default = false,
-            Callback = function(state)
-                -- Gán trực tiếp vào biến _G tùy theo ý bạn
-                if mobName == "Shark" then _G.Shark = state
-                elseif mobName == "Sea Beest" then _G.SeaBeast1 = state
-                elseif mobName == "Pirate GrandBrigade" then _G.PGB = state
-                elseif mobName == "Piranha" then _G.Piranha = state
-                elseif mobName == "Terror Shark" then _G.TerrorShark = state
-                elseif mobName == "Fish Crew Member" then _G.MobCrew = state
-                elseif mobName == "Haunted Crew Member" then _G.HCM = state
-                elseif mobName == "Fish Boat" then _G.FishBoat = state
-                end
-            end,
-        })
-    end
+if World2 then
+  Event:AddSection({"Go to Sea 3 for more options."})
+end
+if World1 then
+  Event:AddSection({"Go to Sea 3 or Sea 2 for Farm maritime events"})
+end
+if game.PlaceId == 7449423635 or game.PlaceId == 100117331123089 then
+Event:AddToggle({
+    Name = "Auto Shark",
+    Description = "đánh cá mập",
+    Default = false,
+    Callback = function(I)
+        _G.Shark = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Piranha",
+    Description = "đánh cá piranha",
+    Default = false,
+    Callback = function(I)
+        _G.Piranha = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Terror Shark",
+    Description = "đánh cá mập khủng bố",
+    Default = false,
+    Callback = function(I)
+        _G.TerrorShark = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Fish Crew Member",
+    Description = "đánh đội đánh cá",
+    Default = false,
+    Callback = function(I)
+        _G.MobCrew = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Haunted Crew Member",
+    Description = "đánh phi hành đoàn bị ma ám",
+    Default = false,
+    Callback = function(I)
+        _G.HCM = I;
+    end,
+});
+Event:AddToggle({
+    Name = "Auto Attack Fish Boat",
+    Description = "đánh thuyền đánh cá",
+    Default = false,
+    Callback = function(I)
+        _G.FishBoat = I;
+    end,
+});
 end
 
 -- 3. Thông báo chỉ dẫn nếu chưa tới Sea 3
