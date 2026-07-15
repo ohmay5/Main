@@ -65,7 +65,7 @@ protectSpeed()
 
 -- Toggle para WalkSpeed
 Player:AddToggle({
-	Name  = "Set WalkSpeed",
+    Name = "Set WalkSpeed",
     Description = "Bật tốc độ chạy của bạn",
     Default = true,
     Callback = function(Value)
@@ -73,21 +73,19 @@ Player:AddToggle({
         applyStats()
     end
 })
--- Input para definir valor da WalkSpeed 
 Player:AddSlider({
     Name = "WalkSpeed Value",
     Description = "Kéo để chọn tốc độ",
-    Default = _G.SaveData["WalkSpeed_Save"] or 16, -- Đọc giá trị lưu, mặc định 16
+    Default = 16,
     Min = 20,
-    Max = 500, -- Bạn có thể chỉnh Max tùy ý
-    Rounding = 0, -- Làm tròn số
+    Max = 500,
+    Rounding = 0,
     Callback = function(Value)
         desiredSpeed = Value
-        _G.SaveData["WalkSpeed_Save"] = Value -- Lưu trạng thái
-        if SaveSettings then SaveSettings() end -- Tự động lưu
-        applyStats() -- Áp dụng tốc độ
+        applyStats()
     end
 })
+-- Input para definir valor da WalkSpeed
 
 -- Toggle para JumpPower
 Player:AddToggle({
@@ -102,30 +100,17 @@ Player:AddToggle({
 Player:AddSlider({
     Name = "JumpPower Value",
     Description = "Kéo để chọn độ cao nhảy",
-    Default = _G.SaveData["JumpPower_Save"] or 50, -- Đọc giá trị lưu, mặc định 50
+    Default = 50,
     Min = 50,
-    Max = 900, -- Bạn có thể điều chỉnh mức tối đa tùy ý
+    Max = 900,
     Rounding = 0,
     Callback = function(Value)
         desiredJump = Value
-        _G.SaveData["JumpPower_Save"] = Value -- Lưu trạng thái
-        if SaveSettings then SaveSettings() end -- Tự động lưu
-        applyStats() -- Áp dụng thay đổi
+        applyStats()
     end
 })
 
 Player:AddSection({"LocalPlayer Settings / Misc"});
-Player:AddToggle({
-	Name = "Instance Energy [ INF ]",
-	Description = "Bật năng lượng vô hạn",
-	Default = false,
-	Callback = function(I)
-		infEnergy = I;
-		if I then
-			getInfinity_Ability("Energy", infEnergy);
-		end;
-	end,
-});
 Player:AddToggle({
 	Name = "Instance Soru [ INF ]",
 	Description = "Bật soru vô hạn",
@@ -137,17 +122,7 @@ Player:AddToggle({
 		end;
 	end,
 });
-Player:AddToggle({
-	Name = "Instance Observation Range [ INF ]",
-	Description = "Bật haki vô hạn",
-	Default = false,
-	Callback = function(I)
-		_G.InfiniteObRange = I;
-		if I then
-			getInfinity_Ability("Observation", _G.InfiniteObRange);
-		end;
-	end,
-});
+
 Player:AddSection({"Settings Combat / Aimbot Settings"});
 local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Aimbot.lua.txt"))()
 
