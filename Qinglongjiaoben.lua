@@ -9883,12 +9883,20 @@ Teleport:AddButton({ Name = "requestEntrance", Description = "", Callback = func
 		elseif _G.Island_PT == "Temple of Time" then
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28310.0234, 14895.1123, 109.456741, -0.469690144, -2.85620132e-08, -0.882831335, -3.23509219e-08, 1, -1.51411736e-08, .882831335, 2.14487486e-08, -0.469690144));
 		elseif _G.Island_PT == "Tiki Outpost" then
-    -- Toạ độ chuẩn của cổng dịch chuyển tại Tiki Outpost (Sea 3)
-    -- Sử dụng CFrame để đảm bảo hướng nhìn khớp với hướng cổng
-    local tikiPortalCFrame = CFrame.new(-16523.5, 105.1, -173.2, 0, 0, 1, 0, 1, 0, -1, 0, 0)
-    
-    replicated.Remotes.CommF_:InvokeServer("requestEntrance", tikiPortalCFrame)
+    local TweenService = game:GetService("TweenService")
+    local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 
+    hrp.CFrame = CFrame.new(-5093.88, 316.07, -3159.98)
+    task.wait(0.2)
+
+    TweenService:Create(
+        hrp,
+        TweenInfo.new(0.3, Enum.EasingStyle.Linear),
+        {
+            CFrame = CFrame.new(-5093.88, 316.07, -3148.5)
+        }
+    ):Play()
+end
 		end;
 	end });
 Teleport:AddSection("Travel - NPCs");
