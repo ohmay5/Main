@@ -1,9 +1,12 @@
-local RelzUILib = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/UIREDZ.LUA"))()
-local Window = RelzUILib:Window({
-	Title = "Aim pvp Hub",
+local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/UIREDZ.LUA"))()
+
+local Window = redzlib:MakeWindow({
+    Title = "Aim pvp Hub",
+    SubTitle = "By You",
+    SaveFolder = "AimHub.json"
 })
 
-local Player = Library:MakeTab({
+  local Player = Library:MakeTab({
     Title = "Local Player",
     Icon = "rbxassetid://13075651575"
 })
