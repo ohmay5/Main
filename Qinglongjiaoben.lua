@@ -7817,50 +7817,32 @@ spawn(function()
 	end;
 end);
 
-local function LoadTemple()
-    pcall(function()
-        -- Gửi yêu cầu mở cổng/tải map đến Temple of Time
-        -- Dùng InvokeServer để ép server phản hồi dữ liệu map cho client
-        if replicated:FindFirstChild("Remotes") and replicated.Remotes:FindFirstChild("CommF_") then
-            replicated.Remotes.CommF_:InvokeServer("requestEntrance")
-            task.wait(0.5) -- Đợi server phản hồi load map
+Race:AddButton({
+    Name = "Teleport to Temple of Time",
+    Description = "",
+    Callback = function()
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+
+        -- Nếu chưa ở gần Temple thì dịch chuyển trước
+        if (player.Character.HumanoidRootPart.Position - Vector3.new(28286.35546875, 14895.301757812, 102.62469482422)).Magnitude > 3000 then
+            toTarget(CFrame.new(28286.35546875, 14895.301757812, 102.62469482422))
+            repeat
+                task.wait(0.5)
+            until (player.Character.HumanoidRootPart.Position - Vector3.new(28286.35546875, 14895.301757812, 102.62469482422)).Magnitude < 100
         end
-    end)
-end
 
--- // Sửa lại Button Teleport to Temple of Time // --
-Race:AddButton({ Name = "Teleport e", Description = "", Callback = function()
-    LoadTemple() -- Tải map trước
-    task.wait(0.5)
-    _tp(CFrame.new(28286.35546875, 14895.301757812, 102.62469482422));
-end });
+        -- Chờ map load
+        task.wait(2)
 
--- // Nếu bạn muốn tự động load map khi bật Auto TP // --
-spawn(function()
-    while wait(Sec) do
-        pcall(function()
-            if _G.TPDoor then
-                -- Kiểm tra nếu chưa ở trong khu vực đền thờ thì Load trước
-                if not workspace:FindFirstChild("TempleOfTime") then -- Tên khu vực có thể thay đổi tùy cấu trúc
-                    LoadTemple()
-                end
-                
-                -- Sau đó mới chạy logic Teleport cũ của bạn
-                if tostring(plr.Data.Race.Value) == "Mink" then
-                    _tp(CFrame.new(29020.66015625, 14889.426757812, -379.2682800293));
-                -- ... (Các race khác giữ nguyên)
-                end
-            end
-        end);
-    end;
-end);
-
-
-
-
-Race:AddButton({ Name = "Teleport to Temple of Time", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28286.35546875, 14895.301757812, 102.62469482422));
-	end });
+        -- Vào Temple of Time
+        ReplicatedStorage.Remotes.CommF_:InvokeServer(
+            "requestEntrance",
+            Vector3.new(28286.35546875, 14895.301757812, 102.62469482422)
+        )
+    end
+})
 Race:AddButton({ Name = "Teleport to Ancient One", Description = "", Callback = function()
 		notween(CFrame.new(28981.552734375, 14888.426757812, -120.24584960938));
 	end });
