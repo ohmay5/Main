@@ -7821,22 +7821,14 @@ Race:AddButton({
     Name = "Teleport to Temple of Time",
     Description = "",
     Callback = function()
-        local ReplicatedStorage = game:GetService("ReplicatedStorage")
         local Players = game:GetService("Players")
-        local player = Players.LocalPlayer
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-        -- Nếu chưa ở gần Temple thì dịch chuyển trước
-        if (player.Character.HumanoidRootPart.Position - Vector3.new(28286.35546875, 14895.301757812, 102.62469482422)).Magnitude > 3000 then
-            toTarget(CFrame.new(28286.35546875, 14895.301757812, 102.62469482422))
-            repeat
-                task.wait(0.5)
-            until (player.Character.HumanoidRootPart.Position - Vector3.new(28286.35546875, 14895.301757812, 102.62469482422)).Magnitude < 100
-        end
+        local Character = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
+        Character:WaitForChild("HumanoidRootPart")
 
-        -- Chờ map load
-        task.wait(2)
+        task.wait(2) -- chờ map load
 
-        -- Vào Temple of Time
         ReplicatedStorage.Remotes.CommF_:InvokeServer(
             "requestEntrance",
             Vector3.new(28286.35546875, 14895.301757812, 102.62469482422)
