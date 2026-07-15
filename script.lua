@@ -6,7 +6,7 @@ local Window = redzlib:MakeWindow({
     SaveFolder = "AimHub.json"
 })
 
-  local Player = Library:MakeTab({
+  local Player = Window:MakeTab({
     Title = "Local Player",
     Icon = "rbxassetid://13075651575"
 })
