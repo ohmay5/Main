@@ -2304,11 +2304,92 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/UIREDZ.LUA"))():MakeWindow({
-    Title = "青龙脚本 Hub",
+	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/xRedzLib.lua"))():MakeWindow({
+    Title = "OMAY Hub",
     SubTitle = "Blox Fruit",
     SaveFolder = ""
 })
+-- Criar ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ControlGUI"
+screenGui.Parent = game.CoreGui
+
+-- Criar ImageButton
+local imageButton = Instance.new("ImageButton")
+imageButton.Size = UDim2.new(0, 35, 0, 35)
+imageButton.Position = UDim2.new(0.15, 0, 0.15, 0)
+imageButton.Image = "rbxassetid://114476175638281"
+imageButton.BackgroundTransparency = 1
+imageButton.Parent = screenGui
+
+-- Adicionar cantos arredondados
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0.1, 0)
+uiCorner.Parent = imageButton
+
+-- Adicionar borda AMARELA
+local uiStroke = Instance.new("UIStroke", imageButton)
+uiStroke.Thickness = 2
+uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+uiStroke.Color = Color3.fromRGB(0, 0, 255) -- Magenta/Rosa forte
+
+-- Variáveis para arrastar
+local dragging = false
+local dragInput
+local dragStart
+local startPos
+
+-- Função para atualizar posição
+local function update(input)
+    local delta = input.Position - dragStart
+    imageButton.Position = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
+end
+
+-- Detectar início do arrasto
+imageButton.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = imageButton.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+-- Detectar movimento do mouse
+imageButton.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+-- Atualizar posição durante arrasto
+game:GetService("UserInputService").InputChanged:Connect(function(input)
+    if dragging and input == dragInput then
+        update(input)
+    end
+end)
+
+-- Abrir/Fechar GUI (Minimize)
+local isOpen = true
+imageButton.MouseButton1Click:Connect(function()
+    isOpen = not isOpen
+    if isOpen then
+        Library:Minimize(false)
+    else
+        Library:Minimize(true)
+    end
+end)
+
 local Status = Library:MakeTab({
     Title = "Info & Server",
     Icon = "rbxassetid://7040410130"
