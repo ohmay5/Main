@@ -4194,7 +4194,48 @@ spawn(function()
 end);
 end
 Setting:AddSection({"Manual Save"})
+if _G.SaveData["AutoExecute_Save"] == nil then
+    _G.SaveData["AutoExecute_Save"] = false
+end
 
+getgenv().AutoExecute = _G.SaveData["AutoExecute_Save"]
+
+Setting:AddToggle({
+    Title = "Auto Execute",
+    Default = _G.SaveData["AutoExecute_Save"],
+    Callback = function(Value)
+        getgenv().AutoExecute = Value
+        -- Cập nhật vào bảng SaveData và gọi hàm SaveSettings
+        _G.SaveData["AutoExecute_Save"] = Value
+        SaveSettings()
+    end
+})
+
+-- Code auto execute
+local function setupAutoExecute()
+    local player = game.Players.LocalPlayer
+    local queue = syn and syn.queue_on_teleport or queue_on_teleport or queueteleport
+    local executed = false
+
+    if not queue then 
+        return 
+    end
+
+    player.OnTeleport:Connect(function()
+        -- Kiểm tra lại giá trị từ biến lưu trữ
+        if _G.SaveData["AutoExecute_Save"] and not executed then
+            executed = true
+            queue([[
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Qinglongjiaoben.lua"))()
+            ]])
+        end
+    end)
+end
+
+spawn(function()
+    task.wait(1)
+    pcall(setupAutoExecute)
+end)
 Setting:AddButton({
     Name = "Salvar Config UI",
     Description = "",
@@ -11347,6 +11388,7 @@ Fruit:AddToggle({
 Fruit:AddSection({"Raid Farming"});
 -- // TỔNG ĐIỀU KHIỂN: AUTO START RAID (GỘP TẤT CẢ) //
 -- // 1. Auto Start Raid (Tích hợp logic tự động vào)
+-- // 1. Auto Start Raid (Đã sửa logic)
 Fruit:AddToggle({
     Name  = "Auto Start Raid",
     Description = "",
@@ -11361,7 +11403,7 @@ Fruit:AddToggle({
 });
 
 task.spawn(function()
-    while task.wait(5) do
+    while task.wait(3) do -- Giảm xuống 3s để kiểm tra nhanh hơn
         if _G.Auto_StartRaid then
             pcall(function()
                 local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
@@ -11388,13 +11430,14 @@ task.spawn(function()
                 if raidTimer.Visible then
                     local nextIsland = getNextIsland()
                     if nextIsland then
-                        local islandName = nextIsland.Name -- Thường là "Island 1", "Island 2"...
+                        local islandName = nextIsland.Name
+                        _G.Raiding = true -- LUÔN BẬT ĐỂ TELEPORT HOẠT ĐỘNG
+                        
+                        -- Nếu là đảo 4 hoặc 5, bật Kill Aura và dùng biến để ưu tiên
                         if string.find(islandName, "4") or string.find(islandName, "5") then
                             _G.KillH = true
-                            _G.Raiding = false
                         else
                             _G.KillH = false
-                            _G.Raiding = true
                         end
                     end
                 else
@@ -11406,7 +11449,7 @@ task.spawn(function()
     end
 end)
 
--- // 2. Các hàm chức năng cũ (Giữ nguyên không thiếu 1 dòng)
+-- // Các hàm chức năng (Giữ nguyên)
 function IsIslandRaid(cu)
     local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
     if locs:FindFirstChild("Island " .. cu) then
@@ -11438,6 +11481,9 @@ function getNextIsland()
 end
 
 function attackNearbyEnemies()
+    -- Nếu đang dùng Kill Aura ở đảo 4-5 thì KHÔNG chạy G.Kill để tránh xung đột/lag
+    if _G.KillH then return end 
+    
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
             if mob.Humanoid.Health > 0 then
@@ -11453,7 +11499,7 @@ function attackNearbyEnemies()
     end
 end
 
--- // 3. Loop G.Kill (Giữ nguyên)
+-- // 3. Loop G.Kill (Giữ nguyên - Giờ đã có cơ chế tự né nếu KillH bật)
 spawn(function()
     pcall(function()
         while wait(Sec) do
@@ -11484,19 +11530,19 @@ task.spawn(function()
         if _G.KillH then
             pcall(function()
                 sethiddenproperty(plr, "SimulationRadius", math.huge)
-            end)
-            for _, v in pairs(workspace.Enemies:GetChildren()) do
-                if not _G.KillH then break end 
-                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-                    if v.Humanoid.Health > 0 and v.Parent then
-                        pcall(function()
-                            v.HumanoidRootPart.CanCollide = false
-                            v:BreakJoints()
-                            v.Humanoid.Health = 0
-                        end)
+                for _, v in pairs(workspace.Enemies:GetChildren()) do
+                    if not _G.KillH then break end 
+                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                        if v.Humanoid.Health > 0 and v.Parent then
+                            pcall(function()
+                                v.HumanoidRootPart.CanCollide = false
+                                v:BreakJoints()
+                                v.Humanoid.Health = 0
+                            end)
+                        end
                     end
                 end
-            end
+            end)
         end
     end
 end)
