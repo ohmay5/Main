@@ -2,21 +2,22 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/head
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
 local LocalPlayer = Players.LocalPlayer
+
 local Net = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
 local RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
 local RegisterHit = Net:WaitForChild("RE/RegisterHit")
 
 local Settings = {
     Enabled = true,
-    FruitCooldown = 0.2,    -- Tốc độ cho trái ác quỷ
-    MeleeCooldown = 0.33,   -- Tốc độ cho kiếm/melee (thường nhanh hơn)
-    Radius = 60,
+    MinCooldown = 0.28,
+    MaxCooldown = 0.60,
+    Radius = 55,
     MaxTargets = 3
 }
 
 local LastAttack = 0
+local CurrentCooldown = Settings.MinCooldown
 
 local function GetTargets()
     local targets = {}
@@ -43,33 +44,37 @@ local function GetTargets()
     return targets
 end
 
-RunService.RenderStepped:Connect(function()
+RunService.Heartbeat:Connect(function()
     if not Settings.Enabled then return end
     
-    local char = LocalPlayer.Character
-    local tool = char and char:FindFirstChildOfClass("Tool")
-    
-    -- Xác định Cooldown dựa trên loại vũ khí
-    local isFruit = tool and tool:FindFirstChild("LeftClickRemote")
-    local currentCooldown = isFruit and Settings.FruitCooldown or Settings.MeleeCooldown
-
-    if tick() - LastAttack >= currentCooldown then
-        local foundTargets = GetTargets()
-        if #foundTargets > 0 then
-            local targetObj = foundTargets[1].obj
-            
-            if isFruit then
-                local direction = (targetObj.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Unit
-                tool.LeftClickRemote:FireServer(direction, 1)
-            else
-                local targetsToHit = {}
-                for i = 1, math.min(#foundTargets, Settings.MaxTargets) do
-                    table.insert(targetsToHit, {foundTargets[i].obj, foundTargets[i].obj.HumanoidRootPart})
+    if tick() - LastAttack >= CurrentCooldown then
+        local char = LocalPlayer.Character
+        if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+        
+        local tool = char:FindFirstChildOfClass("Tool")
+        local targets = GetTargets()
+        
+        if #targets > 0 then
+            pcall(function()
+                -- Tìm Remote M1 của trái (Ưu tiên LeftClickRemote)
+                local fruitRemote = tool and tool:FindFirstChild("LeftClickRemote")
+                
+                if fruitRemote then
+                    -- FIX: Bắt buộc phải có tham số (dir, 1) cho Blox Fruits
+                    local dir = (targets[1].obj.HumanoidRootPart.Position - char.HumanoidRootPart.Position).Unit
+                    fruitRemote:FireServer(dir, 1) 
+                else
+                    -- Dùng cho Kiếm/Fighting Style
+                    local hits = {}
+                    for i = 1, math.min(#targets, Settings.MaxTargets) do
+                        table.insert(hits, {targets[i].obj, targets[i].obj.HumanoidRootPart})
+                    end
+                    RegisterAttack:FireServer(0.1) 
+                    RegisterHit:FireServer(char.Head, hits)
                 end
-                RegisterAttack:FireServer(0.1)
-                RegisterHit:FireServer(char.Head, targetsToHit)
-            end
+            end)
             
+            CurrentCooldown = math.random() * (Settings.MaxCooldown - Settings.MinCooldown) + Settings.MinCooldown
             LastAttack = tick()
         end
     end

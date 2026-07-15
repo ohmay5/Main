@@ -58,7 +58,7 @@ local vu39 = {
     'TAP',
 }
 local vu40 = 0.1
-local vu41 = 1300
+local vu41 = 1000
 
 local function vu43(p42)
     if p42 and p42:FindFirstChild('HumanoidRootPart') then

@@ -381,7 +381,7 @@ G.DistH = function(I, e)
 		return (Root.Position - (I:FindFirstChild("HumanoidRootPart")).Position).Magnitude > e;
 	end;
 -- ALTURA ÚNICA AJUSTÁVEL DO MOB
-_G.MobHeight = _G.MobHeight or 30
+_G.MobHeight = _G.MobHeight or 20
 
 G.Kill = function(I, e)
 	if not (I and e) then return end
@@ -416,7 +416,7 @@ G.Kill2 = function(I, e)
 				I:SetAttribute("Locked", I.HumanoidRootPart.CFrame);
 			end;
 			PosMon = (I:GetAttribute("Locked")).Position;
-			BringEnemy();
+			BringEnemy(); 
 			EquipWeapon(_G.SelectWeapon);
 			local e = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool");
 			local K = e.ToolTip;
@@ -1120,8 +1120,8 @@ end);
 -- =======================
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
-getgenv().TweenSpeedFar = 370   -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 370  -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedFar = 255   -- Velocidade Padrão (Longe)
+getgenv().TweenSpeedNear = 255 -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -1147,7 +1147,7 @@ local dist = (I.Position - HRP.Position).Magnitude
 --  SE ESTIVER ATÉ 15 STUDS → USA A VELOCIDADE DE PERTO
 --  CASO CONTRÁRIO → USA A VELOCIDADE PADRÃO
 -- ===============================  
-local speed = dist <= 15 and (getgenv().TweenSpeedNear or 370) or (getgenv().TweenSpeedFar or 370)
+local speed = dist <= 15 and (getgenv().TweenSpeedNear or 255) or (getgenv().TweenSpeedFar or 255)
 
 local info = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)  
 local tween = game:GetService("TweenService"):Create(C, info, { CFrame = I })  
@@ -2304,10 +2304,10 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/TurboLite/Script/refs/heads/main/xRedzLib.lua"))():MakeWindow({
+	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua.txt"))():MakeWindow({
     Title = "青龙脚本 | Hub",
     SubTitle = "Blox Fruit",
-    SaveFolder = "turbolite.json"
+    SaveFolder = "青龙脚本.json"
 })
 -- Criar ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -2324,14 +2324,14 @@ imageButton.Parent = screenGui
 
 -- Adicionar cantos arredondados
 local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0.5, 0)
+uiCorner.CornerRadius = UDim.new(0, 8)
 uiCorner.Parent = imageButton
 
 -- Adicionar borda AMARELA
 local uiStroke = Instance.new("UIStroke", imageButton)
 uiStroke.Thickness = 2
 uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-uiStroke.Color = Color3.fromRGB(0, 255, 0) -- Magenta/Rosa forte
+uiStroke.Color = Color3.fromRGB(255, 0, 0) -- Magenta/Rosa forte
 
 -- Variáveis para arrastar
 local dragging = false
@@ -2460,10 +2460,10 @@ local Setting = Library:MakeTab({
     Icon = "rbxassetid://7734053495"
 })
 Status:AddDiscordInvite({
-    Name = "Server Discord Turbo Lite Hub",
-    Description = "join for support and update <3",
-    Logo = "rbxassetid://18919385586",
-    Invite = "https://turbolite.xyz/discord"
+    Name = "青龙脚本 Hub",
+    Description = "",
+    Logo = "rbxassetid://114476175638281",
+    Invite = ""
 })
 
 Shop:AddSection("Fighting Shop")
@@ -2964,6 +2964,64 @@ spawn(function()
         end)
     end
 end)
+
+-- // Toggle
+Status:AddToggle({
+    Name = "Auto Hop Full Moon (Quét Server)",
+    Default = false,
+    Callback = function(I)
+        _G.AutoHopFullMoon = I
+    end
+})
+
+-- // Hàm Hop Server thông minh
+local function HopToBestServer()
+    local Http = game:GetService("HttpService")
+    local TPS = game:GetService("TeleportService")
+    local Api = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+    
+    local success, result = pcall(function() return Http:JSONDecode(game:HttpGet(Api)) end)
+    
+    if success and result.data then
+        -- Lọc danh sách server: Chỉ lấy server < 4 người
+        local eligibleServers = {}
+        for _, v in pairs(result.data) do
+            if v.playing >= 1 and v.playing < 4 and v.id ~= game.JobId then
+                table.insert(eligibleServers, v.id)
+            end
+        end
+        
+        -- Thực hiện hop
+        if #eligibleServers > 0 then
+            local targetServer = eligibleServers[math.random(1, #eligibleServers)]
+            TPS:TeleportToPlaceInstance(game.PlaceId, targetServer, plr)
+        end
+    end
+end
+
+-- // Vòng lặp kiểm tra Full Moon
+task.spawn(function()
+    while task.wait(15) do -- Kiểm tra mỗi 15 giây
+        if _G.AutoHopFullMoon then
+            -- Logic: Nếu game.Lighting.ClockTime > 6 (Ban ngày) hoặc không phải trăng -> Hop
+            -- Nếu ClockTime < 6 (Ban đêm) -> Giữ lại ở server này
+            local currentTime = game.Lighting.ClockTime
+            
+            -- Trăng tròn thường xuất hiện khi thời gian là ban đêm (0-5)
+            local isNight = (currentTime >= 0 and currentTime <= 6)
+            
+            if not isNight then
+                print("Đang ban ngày, chuyển server tìm trăng...")
+                HopToBestServer()
+            else
+                print("Đang là ban đêm, giữ server để kiểm tra trăng!")
+                -- Ở đây bạn có thể thêm check thêm biến FullMoon nếu cần
+                -- Nếu thấy trăng thì tắt luôn AutoHop để không bị nhảy server nữa
+            end
+        end
+    end
+end)
+
 local LegendarySword = Status:AddParagraph({
     Title = "Legendary Sword",
     Desc = "Status: "
@@ -2984,6 +3042,57 @@ spawn(function()
         end
     end)
 end)
+
+Status:AddToggle({
+    Name = "Auto Hop Legendary Dealer",
+    Default = false,
+    Callback = function(I)
+        _G.AutoHopDealer = I
+    end
+})
+-- Hàm kiểm tra NPC
+function FindDealer()
+    -- Thay "Legendary Sword Dealer" bằng tên chính xác của NPC trong game của bạn
+    for _, v in pairs(workspace:GetChildren()) do
+        if v.Name == "Legendary Sword Dealer" or v.Name == "Manager" then
+            return true
+        end
+    end
+    return false
+end
+
+-- Vòng lặp kiểm tra
+task.spawn(function()
+    while task.wait(10) do
+        if _G.AutoHopDealer then
+            -- Nếu KHÔNG thấy NPC thì hop
+            if not FindDealer() then
+                print("Không thấy Legendary Dealer, đang hop...")
+                
+                -- Gọi lại hàm Hop (sử dụng hàm Hop ở trên)
+                local Http = game:GetService("HttpService")
+                local TPS = game:GetService("TeleportService")
+                local Api = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+                
+                local success, result = pcall(function() return Http:JSONDecode(game:HttpGet(Api)) end)
+                if success and result.data then
+                    for _, v in pairs(result.data) do
+                        if v.playing < 4 and v.id ~= game.JobId then
+                            TPS:TeleportToPlaceInstance(game.PlaceId, v.id, plr)
+                            break
+                        end
+                    end
+                end
+            else
+                print("Đã thấy Legendary Dealer!")
+                -- Có thể thêm thông báo hoặc dừng script ở đây
+            end
+        end
+    end
+end)
+
+
+
 local Bone = Status:AddParagraph({
     Title = "Bone",
     Desc = ""
@@ -3030,41 +3139,61 @@ Status:AddButton({
         setclipboard(tostring(game.JobId))
     end
 })
-Status:AddButton({
-    Name = "Rejoin Server",
-    Callback = function()
-        game:GetService("TeleportService"):Teleport(game.PlaceId,game:GetService("Players").LocalPlayer)
+Status:AddToggle({
+    Name = "Auto Hop Server",
+    Description = "Tự động chuyển server",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoHopServer = Value
     end
 })
-Status:AddButton({
-    Name = "Hop Server",
-    Callback = function()
-        Hop()
-    end
-})
-Status:AddButton({
-    Name = "Hop Server Less People",
-    Callback = function()
-        local Http = game:GetService("HttpService")
-        local TPS = game:GetService("TeleportService")
-        local Players = game:GetService("Players")
-        local plr = Players.LocalPlayer
-        local Api = "https://games.roblox.com/v1/games/"
-        local _place = game.PlaceId
-        local _servers = Api .. _place .. "/servers/Public?sortOrder=Asc&limit=100"
-        local function ListServers(cursor)
-            local Raw = game:HttpGet(_servers .. ((cursor and "&cursor=" .. cursor) or ""))
-            return Http:JSONDecode(Raw)
+task.spawn(function()
+    while task.wait(2) do
+        if _G.AutoHopServer then
+            -- Code Hop Server đặt ở đây
         end
-        local Server, Next
-        repeat
-            local Servers = ListServers(Next)
-            Server = Servers.data[1]
-            Next = Servers.nextPageCursor
-        until Server
-        TPS:TeleportToPlaceInstance(_place, Server.id, plr)
+    end
+end)
+Status:AddToggle({
+    Name = "Auto Hop Server",
+    Default = false,
+    Callback = function(I)
+        _G.AutoHop = I
     end
 })
+-- Hàm Hop Server
+local function Hop()
+    local Http = game:GetService("HttpService")
+    local TPS = game:GetService("TeleportService")
+    local Api = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
+    
+    local success, result = pcall(function()
+        return Http:JSONDecode(game:HttpGet(Api))
+    end)
+    
+    if success and result.data then
+        for _, v in pairs(result.data) do
+            -- Tìm server có từ 1 đến 4 người
+            if v.playing >= 1 and v.playing < 4 and v.id ~= game.JobId then
+                TPS:TeleportToPlaceInstance(game.PlaceId, v.id, plr)
+                return -- Nhảy xong thì dừng
+            end
+        end
+    end
+end
+
+-- Vòng lặp kiểm tra
+task.spawn(function()
+    while task.wait(10) do -- Kiểm tra mỗi 10 giây
+        if _G.AutoHop then
+            local playerCount = #game:GetService("Players"):GetPlayers()
+            -- Nếu server hiện tại đông hơn 4 người thì hop
+            if playerCount > 4 then
+                Hop()
+            end
+        end
+    end
+end)
 
 
 Farm:AddSection({"Local Main"})
@@ -4239,6 +4368,7 @@ end)
 Setting:AddButton({
     Name = "Salvar Config UI",
     Description = "",
+    Default= true, 
     Callback = function()
         -- Verifica se a função existe antes de chamar
         if SaveSettings then
@@ -4246,7 +4376,7 @@ Setting:AddButton({
             
             -- Notificação Universal (Funciona sem a lib Fluent)
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Turbo Lite Hub",
+                Title = "青龙脚本Hub",
                 Text = "Done",
                 Duration = 5
             })
@@ -4267,13 +4397,13 @@ Setting:AddButton({
             
             -- Notificação Universal
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Turbo Lite Hub",
+                Title = "青龙脚本 Hub",
                 Text = "Done",
                 Duration = 5
             })
         else
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Turbo Lite Hub",
+                Title = "青龙脚本 Hub",
                 Text = "Done",
                 Duration = 3
             })
@@ -4488,43 +4618,56 @@ spawn(function()
 	end;
 end);
 Setting:AddSection({"Select"})
-Setting:AddTextBox({
+Setting:AddSlider({
     Title = "Bring Mobs Range",
-    Description = "độ xa gom quái",
-    PlaceHolder = "250",
-    Default = tostring(_G.BringRange),
+    Description = "Điều chỉnh độ xa để gom quái",
+    Default = _G.BringRange or 250,
+    Min = 0,
+    Max = 1000, -- Bạn có thể chỉnh lại Max tùy theo nhu cầu
+    Rounding = 0, -- 0 nếu muốn số nguyên, 1 nếu muốn số thập phân
     Callback = function(Value)
-        local num = tonumber(Value)
-        if num and num > 0 then
-            _G.BringRange = num
-        end
+        _G.BringRange = Value
     end
 })
 
-Setting:AddTextBox({
-    Title = "Select Farm Height",
-    Description = "độ cao đứng trên đầu",
-    PlaceHolder = "30",
-    Default = tostring(_G.MobHeight),
+
+Setting:AddSlider({
+    Title = "Farm Height",
+    Description = "Độ cao farm quái",
+    Default = _G.MobHeight or 20,
+    Min = 0,
+    Max = 100, -- Adjust this to your desired limit
+    Rounding = 1,
     Callback = function(Value)
-        local num = tonumber(Value)
-        if num and num > 0 then
-            _G.MobHeight = num
-        end
+        _G.MobHeight = Value
     end
 })
 
-Setting:AddTextBox({
+Setting:AddSlider({
     Title = "Tween Speed",
-    Description = "tốc độ tween",
-    PlaceHolder = "370",
-    Default = "370",
+    Description = "Điều chỉnh tốc độ tween",
+    Default = _G.SaveData["TweenSpeed_Save"] or 255, -- Lấy giá trị đã lưu, nếu chưa có thì mặc định là 255
+    Min = 50,      -- Giá trị nhỏ nhất
+    Max = 500,    -- Giá trị lớn nhất
+    Rounding = 0,  -- Số chữ số thập phân (0 là số nguyên)
     Callback = function(I)
-        if tonumber(I) then
-            getgenv().TweenSpeedFar = tonumber(I)
-        end
-    end,
+        getgenv().TweenSpeedFar = I
+        _G.SaveData["TweenSpeed_Save"] = I
+        SaveSettings()
+    end
 });
+Setting:AddToggle({
+    Name = "Nhảy cao vô hạn",
+    Default = true,
+    Callback = function(Value)
+        _G.InfiniteJump = Value
+    end
+})
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if _G.InfiniteJump then
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
 Others:AddSection({"Fishing"})
 -- =========================================================
 -- NOVO SISTEMA DE PESCA (COM SAVE SYSTEM INTEGRADO)
