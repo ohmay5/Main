@@ -151,11 +151,13 @@ elseif placeId == 4442272183 or placeId == 79091703265657 then
     World2 = true
 elseif placeId == 7449423635 or placeId == 100117331123089 then
     World3 = true
+elseif placeId == 73902483975735 then
+    World4 = true
 else
     plr:Kick("❌ Error Blox Fruits - World not recognized")
 end
 
-Sea = World1 or World2 or World3
+Sea = World1 or World2 or World3 or World4
 
 Marines = function()
     replicated.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
@@ -167,7 +169,7 @@ end
 if World1 then
 	Boss = {
 			"The Gorilla King",
-			"Bobby",
+			"Chef",
 			"The Saw",
 			"Yeti",
 			"Mob Leader",
@@ -1241,8 +1243,8 @@ QuestB = function()
 				Qdata = 3;
 				PosQBoss = CFrame.new(-1601.6553955078, 36.85213470459, 153.38809204102);
 				PosB = CFrame.new(-1088.75977, 8.13463783, -488.559906, -0.707134247, 0, .707079291, 0, 1, 0, -0.707079291, 0, -0.707134247);
-			elseif _G.FindBoss == "Bobby" then
-				bMon = "Bobby";
+			elseif _G.FindBoss == "Chef" then
+				bMon = "Chef";
 				Qname = "BuggyQuest1";
 				Qdata = 3;
 				PosQBoss = CFrame.new(-1140.1761474609, 4.752049446106, 3827.4057617188);
@@ -11723,6 +11725,80 @@ spawn(function()
 		end);
 	end;
 end);
+Fruit:AddSection({"Dungeon raid"});
+DungeonPlaceId = 73902483975735
+
+local function IsDungeonGame()
+    return game.PlaceId == DungeonPlaceId
+end
+
+local function ClickButtonOnce(Button, AttributeName)
+    if not Button or not Button.Parent then return false end
+    AttributeName = AttributeName or "ClickedOnce"
+    if Button:GetAttribute(AttributeName) then return false end
+    Button:SetAttribute(AttributeName, true)
+    pcall(function() Button:Activate() end)
+    pcall(function() if firesignal and Button.Activated then firesignal(Button.Activated) end end)
+    return true
+end
+
+local function ClickButton(Button)
+    if not Button or not Button.Parent then return false end
+    pcall(function() Button:Activate() end)
+    pcall(function() if firesignal and Button.Activated then firesignal(Button.Activated) end end)
+    return true
+end
+
+-- Auto Join Dungeon Server
+AutoJoinDungeonServer = false
+Fruit:AddToggle({
+    Name = "Auto Join Dungeon Server",
+    Description = "Join Dungeon server automatically",
+    Default = false,
+    Callback = function(Value)
+        AutoJoinDungeonServer = Value
+    end
+})
+
+task.spawn(function()
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+    local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+    
+    while task.wait(0.5) do
+        if IsDungeonGame() then
+            if AutoJoinDungeonServer then AutoJoinDungeonServer = false end
+            task.wait(1)
+        end
+        
+        if not AutoJoinDungeonServer then
+            local ServerBrowserButton = PlayerGui:FindFirstChild("Topbar") and PlayerGui.Topbar:FindFirstChild("Frame") and PlayerGui.Topbar.Frame:FindFirstChild("ServerBrowserButton")
+            if ServerBrowserButton then pcall(function() ServerBrowserButton:SetAttribute("Clicked_ServerBrowserButton", nil) end) end
+            task.wait(1)
+        else
+            local ServerBrowserButton = PlayerGui:WaitForChild("Topbar"):WaitForChild("Frame"):WaitForChild("ServerBrowserButton")
+            ClickButtonOnce(ServerBrowserButton, "Clicked_ServerBrowserButton")
+            
+            local ServerBrowserGui = PlayerGui:WaitForChild("ServerBrowser")
+            task.wait(0.5)
+            
+            local DungeonButton = ServerBrowserGui:WaitForChild("Frame"):WaitForChild("TeleportButtons"):WaitForChild("Dungeon")
+            task.wait(0.5)
+            
+            for i = 1, 3 do
+                if not AutoJoinDungeonServer then break end
+                ClickButton(DungeonButton)
+                task.wait(0.25)
+            end
+            
+            AutoJoinDungeonServer = false
+        end
+    end
+end)
+
+
+
+
 
 Fruit:AddSection({"Fruits Options"});
 local J5 = {};
