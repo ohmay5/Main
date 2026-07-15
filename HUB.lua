@@ -4314,7 +4314,7 @@ Setting:AddButton({
     end
 })
 Setting:AddSection({"Setting Farm"})
-Farm:AddToggle({
+Setting:AddToggle({
 	Name = "Bring Mob",
 	Description = "gom quái",
 	-- 1. Carrega o estado salvo ou inicia como true
@@ -4327,7 +4327,7 @@ Farm:AddToggle({
 	end,
 })
 
-Farm:AddButton({ Name = "Fps Fix Lag", Description = "giảm lag", Callback = function()
+Setting:AddButton({ Name = "Fps Fix Lag", Description = "giảm lag", Callback = function()
 		LowCpu();
 	end });
 local V5 = game.Players.LocalPlayer;
@@ -5893,72 +5893,6 @@ task.spawn(function()
         end
     end)
 end)
-_G.FlyEnabled = false
-_G.BoatHeight = 60
-Event:AddToggle({
-    Name = "Fly Boat",
-    Description = "Bật/Tắt tính năng bay thuyền",
-    Default = GetSetting("FlyBoat_Save", false), -- Tải trạng thái cũ
-    Callback = function(I)
-        _G.FlyEnabled = I
-        _G.SaveData["FlyBoat_Save"] = I -- Lưu vào bộ nhớ
-        SaveSettings() -- Lưu vào file JSON
-    end,
-})
-
--- 2. Thêm Slider "Boat Height" với SaveData
-Event:AddSlider({
-    Name = "Boat Height",
-    Description = "Điều chỉnh độ cao của thuyền",
-    Min = 0,
-    Max = 200,
-    Default = GetSetting("BoatHeight_Save", 60), -- Tải giá trị cũ
-    Callback = function(I)
-        _G.BoatHeight = I
-        _G.SaveData["BoatHeight_Save"] = I -- Lưu vào bộ nhớ
-        SaveSettings() -- Lưu vào file JSON
-    end,
-})
-
-RunService.RenderStepped:Connect(function(deltaTime)
-    if not _G.FlyEnabled then return end
-
-    local player = game.Players.LocalPlayer
-    local char = player.Character
-    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-    local seat = humanoid and humanoid.SeatPart
-    local boat = seat and seat:FindFirstAncestorOfClass("Model")
-
-    if boat and boat.PrimaryPart then
-        local currentCFrame = boat:GetPivot()
-        local currentPos = currentCFrame.Position
-        
-        -- 1. Tính toán độ cao mục tiêu
-        local targetY = _G.BoatHeight
-        
-        -- 2. Tốc độ bay (Điều chỉnh con số 5 để bay nhanh/chậm hơn)
-        -- Sử dụng lerp hoặc cộng trực tiếp để tạo hiệu ứng bay dần
-        local speed = 5 
-        local newY = currentPos.Y
-        
-        if math.abs(currentPos.Y - targetY) > 0.5 then
-            newY = currentPos.Y + (targetY - currentPos.Y) * math.min(deltaTime * speed, 1)
-        end
-        
-        -- 3. Cập nhật vị trí mới (Giữ nguyên rotation)
-        local newCFrame = CFrame.new(currentPos.X, newY, currentPos.Z) * (currentCFrame - currentPos)
-        boat:PivotTo(newCFrame)
-        
-        -- 4. Ép Camera theo thuyền
-        local camera = workspace.CurrentCamera
-        if camera.CameraSubject ~= boat.PrimaryPart then
-            camera.CameraSubject = boat.PrimaryPart
-        end
-    end
-end)
-
-
-
 if World2 then
     Event:AddSection({"Select what you will farm."})
 
@@ -11978,74 +11912,9 @@ Setting:AddToggle({
 		end;
 	end,
 });
-Setting:AddSection({"Fps"});
-
--- =========================
--- NO ANIMATION LOGIC
--- =========================
-
-_G.NoAni = _G.NoAni or false
-local player = game.Players.LocalPlayer
-local AnimConnection
-
-local function EnableNoAni(char)
-	local humanoid = char:WaitForChild("Humanoid")
-
-	-- stop animation đang chạy
-	for _,track in pairs(humanoid:GetPlayingAnimationTracks()) do
-		track:Stop()
-	end
-
-	-- chặn animation mới
-	AnimConnection = humanoid.AnimationPlayed:Connect(function(track)
-		if _G.NoAni then
-			track:Stop()
-		end
-	end)
-end
-
-local function DisableNoAni()
-	if AnimConnection then
-		AnimConnection:Disconnect()
-		AnimConnection = nil
-	end
-end
-
--- Theo dõi nhân vật
-local function SetupChar(char)
-	if _G.NoAni then
-		EnableNoAni(char)
-	end
-end
-
-if player.Character then
-	SetupChar(player.Character)
-end
-
-player.CharacterAdded:Connect(SetupChar)
 
 -- =========================
 -- TOGGLE UI
 -- =========================
-
-Setting:AddToggle({
-	Name = "No Animation",
-	Description = "",
-	Default = GetSetting("NoAni_Save", false),
-
-	Callback = function(I)
-		_G.NoAni = I
-		_G.SaveData["NoAni_Save"] = I
-		SaveSettings()
-
-		if I then
-			if player.Character then
-				EnableNoAni(player.Character)
-			end
-		else
-			DisableNoAni()
-		end
-	end
-})
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
