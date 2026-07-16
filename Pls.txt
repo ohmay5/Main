@@ -1,0 +1,1490 @@
+repeat task.wait() until game:IsLoaded()
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+
+local plr = Players.LocalPlayer
+
+
+--========================
+-- Save System
+--========================
+
+local FolderName = "青龙脚本 Hub"
+local FileName = "Dungeon_Settings.json"
+local Path = FolderName.."/"..FileName
+
+if makefolder and not isfolder(FolderName) then
+    makefolder(FolderName)
+end
+
+_G.SaveData = _G.SaveData or {}
+
+
+local function SaveSettings()
+    if not writefile then return end
+
+    pcall(function()
+        writefile(
+            Path,
+            HttpService:JSONEncode(_G.SaveData)
+        )
+    end)
+end
+
+
+local function LoadSettings()
+
+    if isfile and isfile(Path) then
+
+        pcall(function()
+            _G.SaveData =
+            HttpService:JSONDecode(
+                readfile(Path)
+            )
+        end)
+
+    end
+
+end
+
+
+local function GetSetting(name,default)
+
+    return _G.SaveData[name] ~= nil
+    and _G.SaveData[name]
+    or default
+
+end
+
+
+LoadSettings()
+
+
+
+--========================
+-- Character
+--========================
+
+local HumanoidRootPart
+local Humanoid
+
+
+local function UpdateCharacter()
+
+    local Char =
+    plr.Character or plr.CharacterAdded:Wait()
+
+    HumanoidRootPart =
+    Char:WaitForChild("HumanoidRootPart")
+
+    Humanoid =
+    Char:WaitForChild("Humanoid")
+
+end
+
+
+UpdateCharacter()
+
+
+plr.CharacterAdded:Connect(function()
+
+    task.wait(1)
+    UpdateCharacter()
+
+end)
+
+
+
+--========================
+-- Dungeon Check
+--========================
+
+local DungeonID = 73902483975735
+
+
+if game.PlaceId ~= DungeonID then
+
+    warn("Wrong Place:",game.PlaceId)
+    return
+
+end
+
+
+print("Dungeon Loaded")
+
+
+
+--========================
+-- UI
+--========================
+
+
+local Library =
+loadstring(game:HttpGet(
+"https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua.txt"
+))():MakeWindow({
+
+Title="青龙脚本 | Dungeon Hub",
+
+SubTitle="Dungeon",
+
+SaveFolder="Dungeon_Settings.json"
+
+})
+
+
+
+local Dungeon =
+Library:MakeTab({
+
+Name="Dungeon",
+
+Icon="rbxassetid://7040410130"
+
+})
+
+
+local Setting =
+Library:MakeTab({
+
+Name="Setting & UI",
+
+Icon="rbxassetid://7734053495"
+
+})
+
+
+
+--========================
+-- Floating Button
+--========================
+
+
+pcall(function()
+game.CoreGui.DungeonControlGUI:Destroy()
+end)
+
+
+local Gui=Instance.new("ScreenGui")
+Gui.Name="DungeonControlGUI"
+Gui.ResetOnSpawn=false
+Gui.Parent=game.CoreGui
+
+
+local Btn=Instance.new("ImageButton")
+
+Btn.Size=UDim2.new(0,35,0,35)
+
+Btn.Position=
+UDim2.new(.15,0,.15,0)
+
+Btn.Image=
+"rbxassetid://114476175638281"
+
+Btn.BackgroundTransparency=1
+
+Btn.Parent=Gui
+
+
+local Corner=Instance.new("UICorner")
+Corner.Parent=Btn
+
+
+
+local Open=true
+
+Btn.MouseButton1Click:Connect(function()
+
+Open=not Open
+
+pcall(function()
+
+Library:Minimize(not Open)
+
+end)
+
+end)
+
+
+
+--========================
+-- Dungeon Info
+--========================
+
+
+Dungeon:AddSection({
+"Dungeon Info"
+})
+
+
+Dungeon:AddParagraph({
+
+"Dungeon",
+
+"PlaceID : "..game.PlaceId
+
+})
+
+
+
+--========================
+-- Auto Farm
+--========================
+
+
+_G.AutoFarmNear =
+GetSetting(
+"AutoFarmNear_Save",
+false
+)
+
+
+local FarmDistance = 325
+local TweenSpeed = 250
+
+
+
+local function TweenToEnemy(Mob)
+
+    local Char=plr.Character
+    if not Char then return end
+
+    local Root =
+    Char:FindFirstChild("HumanoidRootPart")
+
+    local MobRoot =
+    Mob:FindFirstChild("HumanoidRootPart")
+
+
+    if not Root or not MobRoot then
+        return
+    end
+
+
+    local Distance =
+    (Root.Position-MobRoot.Position).Magnitude
+
+
+    local Tween =
+    TweenService:Create(
+
+        Root,
+
+        TweenInfo.new(
+            Distance/TweenSpeed,
+            Enum.EasingStyle.Linear
+        ),
+
+        {
+        CFrame =
+        MobRoot.CFrame*
+        CFrame.new(0,15,0)
+        }
+
+    )
+
+
+    Tween:Play()
+    Tween.Completed:Wait()
+
+end
+
+
+
+Dungeon:AddToggle({
+
+Name="Kill Mobs Nearest",
+
+Description="Auto farm quái gần nhất",
+
+Default=
+GetSetting(
+"AutoFarmNear_Save",
+false
+),
+
+
+Callback=function(v)
+
+_G.AutoFarmNear=v
+
+_G.SaveData.AutoFarmNear_Save=v
+
+SaveSettings()
+
+end
+
+})
+--========================
+-- Auto Farm Loop
+--========================
+
+task.spawn(function()
+
+while task.wait(0.3) do
+
+    if _G.AutoFarmNear then
+
+        pcall(function()
+
+            local Char =
+            plr.Character
+
+            if not Char then return end
+
+
+            local Root =
+            Char:FindFirstChild(
+            "HumanoidRootPart"
+            )
+
+            if not Root then return end
+
+
+            local Folder =
+            workspace:FindFirstChild(
+            "Enemies"
+            )
+
+
+            local Target=nil
+            local Distance=math.huge
+
+
+            if Folder then
+
+                for _,Mob in pairs(
+                    Folder:GetChildren()
+                ) do
+
+
+                    local Hum =
+                    Mob:FindFirstChild(
+                    "Humanoid"
+                    )
+
+
+                    local MobRoot =
+                    Mob:FindFirstChild(
+                    "HumanoidRootPart"
+                    )
+
+
+                    if Hum
+                    and MobRoot
+                    and Hum.Health > 0 then
+
+
+                        local Dis =
+                        (
+                        Root.Position -
+                        MobRoot.Position
+                        ).Magnitude
+
+
+                        if Dis < Distance then
+
+                            Distance=Dis
+                            Target=Mob
+
+                        end
+
+                    end
+
+                end
+
+            end
+
+
+
+            if Target
+            and Distance <= FarmDistance then
+
+
+                TweenToEnemy(Target)
+
+
+                -- chờ đánh bằng hệ thống attack phần 3
+
+
+                repeat task.wait(.2)
+
+                until not _G.AutoFarmNear
+                or not Target.Parent
+                or (
+                Target:FindFirstChild("Humanoid")
+                and Target.Humanoid.Health<=0
+                )
+
+
+            end
+
+
+        end)
+
+    end
+
+end
+
+end)
+
+
+
+--========================
+-- Auto Next Floor
+--========================
+
+
+_G.AutoNextFloor=false
+
+
+Dungeon:AddToggle({
+
+Name="Auto Next Floor",
+
+Description="Tự đi tầng tiếp theo",
+
+Default=false,
+
+
+Callback=function(v)
+
+_G.AutoNextFloor=v
+
+end
+
+})
+
+
+
+local function GetCurrentFloor()
+
+local Map =
+workspace:FindFirstChild("Map")
+
+if not Map then return end
+
+
+local DungeonFolder =
+Map:FindFirstChild("Dungeon")
+
+
+if not DungeonFolder then return end
+
+
+local Root =
+HumanoidRootPart
+
+
+local Closest=nil
+local Dist=math.huge
+
+
+for _,Floor in pairs(
+DungeonFolder:GetChildren()
+) do
+
+
+local FloorRoot =
+Floor:FindFirstChild("Root")
+
+
+local Exit =
+Floor:FindFirstChild(
+"ExitTeleporter"
+)
+
+
+if FloorRoot and Exit then
+
+local d =
+(Root.Position-FloorRoot.Position)
+.Magnitude
+
+
+if d<Dist then
+
+Dist=d
+Closest=Floor
+
+end
+
+
+end
+
+
+end
+
+
+return Closest
+
+end
+
+
+
+task.spawn(function()
+
+while task.wait(1) do
+
+
+if _G.AutoNextFloor then
+
+
+pcall(function()
+
+
+local Floor =
+GetCurrentFloor()
+
+
+if Floor then
+
+
+local Exit =
+Floor.ExitTeleporter
+:FindFirstChild("Root")
+
+
+if Exit then
+
+
+RootPart =
+HumanoidRootPart
+
+
+firetouchinterest(
+Exit,
+RootPart,
+0
+)
+
+
+firetouchinterest(
+Exit,
+RootPart,
+1
+)
+
+
+end
+
+end
+
+
+end)
+
+end
+
+
+end
+
+end)
+
+
+
+--========================
+-- Return Hub
+--========================
+
+
+_G.AutoReturnToHub=false
+
+
+Dungeon:AddToggle({
+
+Name="Auto Return Hub",
+
+Description="Tự về sảnh",
+
+Default=false,
+
+
+Callback=function(v)
+
+_G.AutoReturnToHub=v
+
+end
+
+})
+
+
+
+task.spawn(function()
+
+while task.wait(3) do
+
+
+if _G.AutoReturnToHub then
+
+
+pcall(function()
+
+
+local Shared =
+ReplicatedStorage:
+FindFirstChild(
+"DungeonShared"
+)
+
+
+if Shared then
+
+
+local Remote =
+Shared:
+FindFirstChild(
+"ReturnToHub"
+)
+
+
+if Remote then
+
+Remote:FireServer()
+
+end
+
+
+end
+
+
+end)
+
+
+end
+
+
+end
+
+end)
+
+
+
+--========================
+-- Bring Mob
+--========================
+
+
+_G.BringMobs=false
+
+
+local BringDistance=60
+local BringOffset=15
+
+
+
+Dungeon:AddToggle({
+
+Name="Bring Mobs",
+
+Description="Kéo quái gần để farm",
+
+Default=false,
+
+
+Callback=function(v)
+
+_G.BringMobs=v
+
+end
+
+})
+
+
+
+local function BringMob(Mob)
+
+local Root =
+Mob:FindFirstChild(
+"HumanoidRootPart"
+)
+
+
+local Hum =
+Mob:FindFirstChild(
+"Humanoid"
+)
+
+
+if not Root or not Hum then
+return
+end
+
+
+
+local PlayerRoot =
+HumanoidRootPart
+
+
+if not PlayerRoot then return end
+
+
+
+local Pos =
+PlayerRoot.Position
++
+PlayerRoot.CFrame.LookVector
+*
+BringOffset
+
+
+
+Root.CFrame =
+CFrame.new(Pos)
+
+
+Root.CanCollide=false
+
+
+Root.AssemblyLinearVelocity =
+Vector3.zero
+
+
+end
+
+
+
+
+task.spawn(function()
+
+while task.wait(.5) do
+
+
+if _G.BringMobs then
+
+
+pcall(function()
+
+
+local Folder =
+workspace:FindFirstChild(
+"Enemies"
+)
+
+
+if Folder then
+
+
+for _,Mob in pairs(
+Folder:GetChildren()
+) do
+
+
+local Root =
+Mob:FindFirstChild(
+"HumanoidRootPart"
+)
+
+
+local Hum =
+Mob:FindFirstChild(
+"Humanoid"
+)
+
+
+
+if Root
+and Hum
+and Hum.Health>0 then
+
+
+local Dis =
+(
+Root.Position -
+HumanoidRootPart.Position
+).Magnitude
+
+
+
+if Dis <= BringDistance then
+
+BringMob(Mob)
+
+end
+
+
+end
+
+
+end
+
+
+end
+
+
+end)
+
+
+end
+
+
+end
+
+
+end)
+--========================
+-- Weapon Select
+--========================
+
+_G.ChooseWP = "Melee"
+_G.AutoAttack = false
+
+
+Setting:AddDropdown({
+
+Name="Select Weapon",
+
+Options={
+"Melee",
+"Sword",
+"Blox Fruit",
+"Gun"
+},
+
+Default="Melee",
+
+Callback=function(v)
+
+_G.ChooseWP=v
+
+end
+
+})
+
+
+
+local function EquipWeapon()
+
+pcall(function()
+
+for _,tool in pairs(
+plr.Backpack:GetChildren()
+) do
+
+
+if tool.ToolTip ==
+_G.ChooseWP then
+
+
+plr.Character.Humanoid:
+EquipTool(tool)
+
+end
+
+
+end
+
+end)
+
+end
+
+
+
+--========================
+-- Auto Attack
+--========================
+
+
+Setting:AddToggle({
+
+Name="Auto Attack",
+
+Description="Tự đánh quái",
+
+Default=false,
+
+
+Callback=function(v)
+
+_G.AutoAttack=v
+
+end
+
+})
+
+
+
+local Net =
+ReplicatedStorage:
+FindFirstChild("Modules")
+
+
+if Net then
+
+Net=Net:FindFirstChild("Net")
+
+end
+
+
+local RegisterAttack
+local RegisterHit
+
+
+if Net then
+
+RegisterAttack =
+Net:FindFirstChild(
+"RE/RegisterAttack"
+)
+
+
+RegisterHit =
+Net:FindFirstChild(
+"RE/RegisterHit"
+)
+
+end
+
+
+
+
+task.spawn(function()
+
+while task.wait(.15) do
+
+
+if _G.AutoAttack then
+
+
+pcall(function()
+
+
+local Char =
+plr.Character
+
+
+local Root =
+Char and Char:
+FindFirstChild(
+"HumanoidRootPart"
+)
+
+
+if not Root then return end
+
+
+
+local List={}
+local Target
+
+
+
+for _,Mob in pairs(
+workspace.Enemies:GetChildren()
+) do
+
+
+local Hum =
+Mob:FindFirstChild(
+"Humanoid"
+)
+
+
+local Head =
+Mob:FindFirstChild(
+"Head"
+)
+
+
+
+if Hum
+and Head
+and Hum.Health>0 then
+
+
+if
+(Head.Position-Root.Position)
+.Magnitude <=60 then
+
+
+table.insert(
+List,
+{
+Mob,
+Head
+}
+)
+
+
+Target=Head
+
+
+end
+
+
+end
+
+
+end
+
+
+
+
+if Target then
+
+
+EquipWeapon()
+
+
+
+if RegisterAttack
+and RegisterHit then
+
+
+RegisterAttack:FireServer(0)
+
+
+RegisterHit:FireServer(
+Target,
+List
+)
+
+
+end
+
+
+end
+
+
+
+end)
+
+
+end
+
+
+end
+
+
+end)
+
+
+
+--========================
+-- Auto Haki
+--========================
+
+
+_G.AutoHaki=false
+
+
+Setting:AddToggle({
+
+Name="Auto Haki",
+
+Default=false,
+
+
+Callback=function(v)
+
+_G.AutoHaki=v
+
+end
+
+})
+
+
+
+task.spawn(function()
+
+while task.wait(1) do
+
+
+if _G.AutoHaki then
+
+
+pcall(function()
+
+
+local Char =
+plr.Character
+
+
+if Char
+and not Char:FindFirstChild(
+"HasBuso"
+) then
+
+
+local Remote =
+ReplicatedStorage:
+FindFirstChild(
+"Remotes"
+)
+
+
+if Remote
+and Remote:FindFirstChild(
+"CommF_"
+) then
+
+
+Remote.CommF_:
+InvokeServer(
+"Buso"
+)
+
+
+end
+
+
+end
+
+
+end)
+
+
+end
+
+
+end
+
+end)
+
+
+
+--========================
+-- Race V3
+--========================
+
+
+_G.RaceClickAutov3=false
+
+
+Setting:AddToggle({
+
+Name="Auto Race V3",
+
+Default=false,
+
+
+Callback=function(v)
+
+_G.RaceClickAutov3=v
+
+end
+
+})
+
+
+
+task.spawn(function()
+
+while task.wait(1) do
+
+
+if _G.RaceClickAutov3 then
+
+
+pcall(function()
+
+
+local Remote =
+ReplicatedStorage:
+FindFirstChild(
+"Remotes"
+)
+
+
+if Remote
+and Remote:FindFirstChild(
+"CommE"
+) then
+
+
+Remote.CommE:
+FireServer(
+"ActivateAbility"
+)
+
+
+end
+
+
+end)
+
+
+end
+
+
+end
+
+end)
+
+
+
+--========================
+-- Race V4
+--========================
+
+
+_G.RaceClickAutov4=false
+
+
+Setting:AddToggle({
+
+Name="Auto Race V4",
+
+Default=false,
+
+
+Callback=function(v)
+
+_G.RaceClickAutov4=v
+
+end
+
+})
+
+
+
+task.spawn(function()
+
+while task.wait(.5) do
+
+
+if _G.RaceClickAutov4 then
+
+
+pcall(function()
+
+
+local Char =
+plr.Character
+
+
+local Energy =
+Char and Char:
+FindFirstChild(
+"RaceEnergy"
+)
+
+
+if Energy
+and Energy.Value>=1 then
+
+
+-- nhấn Y
+local VIM =
+game:GetService(
+"VirtualInputManager"
+)
+
+
+VIM:
+SendKeyEvent(
+true,
+Enum.KeyCode.Y,
+false,
+game
+)
+
+
+task.wait(.1)
+
+
+VIM:
+SendKeyEvent(
+false,
+Enum.KeyCode.Y,
+false,
+game
+)
+
+
+end
+
+
+end)
+
+
+end
+
+
+end
+
+end)
+
+
+
+--========================
+-- WalkSpeed
+--========================
+
+
+local SpeedEnabled=false
+local JumpEnabled=false
+
+local Speed=16
+local Jump=50
+
+
+
+Setting:AddToggle({
+
+Name="Set WalkSpeed",
+
+Default=false,
+
+Callback=function(v)
+
+SpeedEnabled=v
+
+end
+
+})
+
+
+
+Setting:AddSlider({
+
+Name="WalkSpeed Value",
+
+Default=16,
+
+Min=16,
+
+Max=300,
+
+Rounding=0,
+
+
+Callback=function(v)
+
+Speed=v
+
+end
+
+})
+
+
+
+
+Setting:AddToggle({
+
+Name="Set JumpPower",
+
+Default=false,
+
+Callback=function(v)
+
+JumpEnabled=v
+
+end
+
+})
+
+
+
+Setting:AddSlider({
+
+Name="JumpPower Value",
+
+Default=50,
+
+Min=50,
+
+Max=500,
+
+Rounding=0,
+
+
+Callback=function(v)
+
+Jump=v
+
+end
+
+})
+
+
+
+
+RunService.Heartbeat:Connect(function()
+
+pcall(function()
+
+if Humanoid then
+
+
+if SpeedEnabled then
+
+Humanoid.WalkSpeed=
+Speed
+
+end
+
+
+
+if JumpEnabled then
+
+Humanoid.JumpPower=
+Jump
+
+end
+
+
+end
+
+end)
+
+end)
+
+
+
+--========================
+-- Infinite Jump
+--========================
+
+
+_G.InfiniteJump=false
+
+
+Setting:AddToggle({
+
+Name="Infinite Jump",
+
+Default=false,
+
+
+Callback=function(v)
+
+_G.InfiniteJump=v
+
+end
+
+})
+
+
+
+UserInputService.JumpRequest:
+Connect(function()
+
+
+if _G.InfiniteJump then
+
+
+pcall(function()
+
+
+Humanoid:
+ChangeState(
+Enum.HumanoidStateType.Jumping
+)
+
+
+end)
+
+
+end
+
+
+end)
+
+
+
+print("Dungeon Hub Complete")
