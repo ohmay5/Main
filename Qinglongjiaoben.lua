@@ -74,6 +74,8 @@ TweenService:Create(Frame, TweenInfo.new(0.35), {
 
 task.wait(0.4)
 Gui:Destroy()
+-- Ví dụ:
+-- loadstring(game:HttpGet("LINK_CUA_BAN"))()
 local HttpService = Services.HttpService
 local FolderName = "青龙脚本 Hub"
 local FileName = "Settings.json"
@@ -238,7 +240,6 @@ else
     Sea = World1 or World2 or World3
 end
 
-    -- đặt toàn bộ phần script Blox Fruits ở đâ
 Marines = function()
     replicated.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
 end
@@ -498,7 +499,7 @@ G.Kill2 = function(I, e)
 				I:SetAttribute("Locked", I.HumanoidRootPart.CFrame);
 			end;
 			PosMon = (I:GetAttribute("Locked")).Position;
-			BringEnemy(); 
+			BringEnemy();
 			EquipWeapon(_G.SelectWeapon);
 			local e = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool");
 			local K = e.ToolTip;
@@ -627,8 +628,7 @@ G.Masgun = function(I, e)
 			end;
 		end;
 	end;
-	
-	statsSetings = function(I, e)
+statsSetings = function(I, e)
 		if I == "Melee" then
 			if plr.Data.Points.Value ~= 0 then
 				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Melee", e);
@@ -651,9 +651,11 @@ G.Masgun = function(I, e)
 			end;
 		end;
 	end;
-	 
-	 
-	===================================
+
+
+
+
+--==================================================
 -- VARIÁVEIS DE CONTROLE NECESSÁRIAS
 --==================================================
 _G = _G or {}
@@ -1202,7 +1204,7 @@ end);
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
 getgenv().TweenSpeedFar = 255   -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 255 -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedNear = 255  -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -2385,7 +2387,6 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	
 	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua.txt"))():MakeWindow({
     Title = "青龙脚本 | Hub",
     SubTitle = "Blox Fruit",
@@ -3046,64 +3047,6 @@ spawn(function()
         end)
     end
 end)
-
--- // Toggle
-Status:AddToggle({
-    Name = "Auto Hop Full Moon (Quét Server)",
-    Default = false,
-    Callback = function(I)
-        _G.AutoHopFullMoon = I
-    end
-})
-
--- // Hàm Hop Server thông minh
-local function HopToBestServer()
-    local Http = game:GetService("HttpService")
-    local TPS = game:GetService("TeleportService")
-    local Api = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
-    
-    local success, result = pcall(function() return Http:JSONDecode(game:HttpGet(Api)) end)
-    
-    if success and result.data then
-        -- Lọc danh sách server: Chỉ lấy server < 4 người
-        local eligibleServers = {}
-        for _, v in pairs(result.data) do
-            if v.playing >= 1 and v.playing < 4 and v.id ~= game.JobId then
-                table.insert(eligibleServers, v.id)
-            end
-        end
-        
-        -- Thực hiện hop
-        if #eligibleServers > 0 then
-            local targetServer = eligibleServers[math.random(1, #eligibleServers)]
-            TPS:TeleportToPlaceInstance(game.PlaceId, targetServer, plr)
-        end
-    end
-end
-
--- // Vòng lặp kiểm tra Full Moon
-task.spawn(function()
-    while task.wait(15) do -- Kiểm tra mỗi 15 giây
-        if _G.AutoHopFullMoon then
-            -- Logic: Nếu game.Lighting.ClockTime > 6 (Ban ngày) hoặc không phải trăng -> Hop
-            -- Nếu ClockTime < 6 (Ban đêm) -> Giữ lại ở server này
-            local currentTime = game.Lighting.ClockTime
-            
-            -- Trăng tròn thường xuất hiện khi thời gian là ban đêm (0-5)
-            local isNight = (currentTime >= 0 and currentTime <= 6)
-            
-            if not isNight then
-                print("Đang ban ngày, chuyển server tìm trăng...")
-                HopToBestServer()
-            else
-                print("Đang là ban đêm, giữ server để kiểm tra trăng!")
-                -- Ở đây bạn có thể thêm check thêm biến FullMoon nếu cần
-                -- Nếu thấy trăng thì tắt luôn AutoHop để không bị nhảy server nữa
-            end
-        end
-    end
-end)
-
 local LegendarySword = Status:AddParagraph({
     Title = "Legendary Sword",
     Desc = "Status: "
@@ -3124,57 +3067,6 @@ spawn(function()
         end
     end)
 end)
-
-Status:AddToggle({
-    Name = "Auto Hop Legendary Dealer",
-    Default = false,
-    Callback = function(I)
-        _G.AutoHopDealer = I
-    end
-})
--- Hàm kiểm tra NPC
-function FindDealer()
-    -- Thay "Legendary Sword Dealer" bằng tên chính xác của NPC trong game của bạn
-    for _, v in pairs(workspace:GetChildren()) do
-        if v.Name == "Legendary Sword Dealer" or v.Name == "Manager" then
-            return true
-        end
-    end
-    return false
-end
-
--- Vòng lặp kiểm tra
-task.spawn(function()
-    while task.wait(10) do
-        if _G.AutoHopDealer then
-            -- Nếu KHÔNG thấy NPC thì hop
-            if not FindDealer() then
-                print("Không thấy Legendary Dealer, đang hop...")
-                
-                -- Gọi lại hàm Hop (sử dụng hàm Hop ở trên)
-                local Http = game:GetService("HttpService")
-                local TPS = game:GetService("TeleportService")
-                local Api = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
-                
-                local success, result = pcall(function() return Http:JSONDecode(game:HttpGet(Api)) end)
-                if success and result.data then
-                    for _, v in pairs(result.data) do
-                        if v.playing < 4 and v.id ~= game.JobId then
-                            TPS:TeleportToPlaceInstance(game.PlaceId, v.id, plr)
-                            break
-                        end
-                    end
-                end
-            else
-                print("Đã thấy Legendary Dealer!")
-                -- Có thể thêm thông báo hoặc dừng script ở đây
-            end
-        end
-    end
-end)
-
-
-
 local Bone = Status:AddParagraph({
     Title = "Bone",
     Desc = ""
@@ -3221,87 +3113,64 @@ Status:AddButton({
         setclipboard(tostring(game.JobId))
     end
 })
-Status:AddToggle({
-    Name = "Auto Hop Server",
-    Description = "Tự động chuyển server",
-    Default = false,
-    Callback = function(Value)
-        _G.AutoHopServer = Value
+Status:AddButton({
+    Name = "Rejoin Server",
+    Callback = function()
+        game:GetService("TeleportService"):Teleport(game.PlaceId,game:GetService("Players").LocalPlayer)
     end
 })
-task.spawn(function()
-    while task.wait(2) do
-        if _G.AutoHopServer then
-            -- Code Hop Server đặt ở đây
-        end
-    end
-end)
-Status:AddToggle({
-    Name = "Auto Hop Server",
-    Default = false,
-    Callback = function(I)
-        _G.AutoHop = I
+Status:AddButton({
+    Name = "Hop Server",
+    Callback = function()
+        Hop()
     end
 })
--- Hàm Hop Server
-local function Hop()
-    local Http = game:GetService("HttpService")
-    local TPS = game:GetService("TeleportService")
-    local Api = "https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"
-    
-    local success, result = pcall(function()
-        return Http:JSONDecode(game:HttpGet(Api))
-    end)
-    
-    if success and result.data then
-        for _, v in pairs(result.data) do
-            -- Tìm server có từ 1 đến 4 người
-            if v.playing >= 1 and v.playing < 4 and v.id ~= game.JobId then
-                TPS:TeleportToPlaceInstance(game.PlaceId, v.id, plr)
-                return -- Nhảy xong thì dừng
-            end
+Status:AddButton({
+    Name = "Hop Server Less People",
+    Callback = function()
+        local Http = game:GetService("HttpService")
+        local TPS = game:GetService("TeleportService")
+        local Players = game:GetService("Players")
+        local plr = Players.LocalPlayer
+        local Api = "https://games.roblox.com/v1/games/"
+        local _place = game.PlaceId
+        local _servers = Api .. _place .. "/servers/Public?sortOrder=Asc&limit=100"
+        local function ListServers(cursor)
+            local Raw = game:HttpGet(_servers .. ((cursor and "&cursor=" .. cursor) or ""))
+            return Http:JSONDecode(Raw)
         end
+        local Server, Next
+        repeat
+            local Servers = ListServers(Next)
+            Server = Servers.data[1]
+            Next = Servers.nextPageCursor
+        until Server
+        TPS:TeleportToPlaceInstance(_place, Server.id, plr)
     end
-end
-
--- Vòng lặp kiểm tra
-task.spawn(function()
-    while task.wait(10) do -- Kiểm tra mỗi 10 giây
-        if _G.AutoHop then
-            local playerCount = #game:GetService("Players"):GetPlayers()
-            -- Nếu server hiện tại đông hơn 4 người thì hop
-            if playerCount > 4 then
-                Hop()
-            end
-        end
-    end
-end)
+})
 
 
 Farm:AddSection({"Local Main"})
 
 Farm:AddDropdown({
     Name = "Select Weapon",
-    Description = "Chọn vũ khí",
-    Options = {"Melee", "Sword", "Blox Fruit", "Gun"},
-    Default = _G.SaveData["ChooseWeapon_Save"] or "Melee",
+    Description = "chọn vũ khí",
+    Options = {"Melee","Sword","Blox Fruit","Gun"},
+    Default = "Melee",
     Multi = false,
     Callback = function(I)
         _G.ChooseWP = I
-        _G.SaveData["ChooseWeapon_Save"] = I
-        SaveSettings()
     end,
 })
 
-_G.ChooseWP = _G.SaveData["ChooseWeapon_Save"] or "Melee"
-
 spawn(function()
-    while task.wait(Sec) do
+    while wait(Sec) do
         pcall(function()
             for _, e in pairs(plr.Backpack:GetChildren()) do
                 if e.ToolTip == _G.ChooseWP then
-                    _G.SelectWeapon = e.Name
-                    break
+                    if plr.Backpack:FindFirstChild(e.Name) then
+                        _G.SelectWeapon = e.Name
+                    end
                 end
             end
         end)
@@ -3332,6 +3201,12 @@ local function TeleportConditional(hrp, targetCFrame, threshold)
         _tp(targetCFrame)  
     end
 end
+
+---
+
+----------------------------------------------------------------------------
+-- 1. UI: DROPDOWN + TOGGLES (Coloque isso na seção da sua UI)
+----------------------------------------------------------------------------
 
 Farm:AddSection({"Auto Farm"})
 Farm:AddDropdown({
@@ -4089,8 +3964,7 @@ spawn(function()
 end)
 end
 Farm:AddSection({"Collect"})
-
-AutoFarmChestToggle = Farm:AddToggle({
+-AutoFarmChestToggle = Farm:AddToggle({
     Name = "Auto Collect Chest",
     Description = "tự động nhặt rương",
     Default = GetSetting("AutoFarmChest_Save", false),
@@ -4130,6 +4004,7 @@ spawn(function()
         end
     end
 end)
+
 -- Botão Auto Collect Berry
 Farm:AddToggle({
 	Name = "Auto Collect Berry",
@@ -4432,6 +4307,7 @@ spawn(function()
 end);
 end
 Setting:AddSection({"Manual Save"})
+
 if _G.SaveData["AutoExecute_Save"] == nil then
     _G.SaveData["AutoExecute_Save"] = false
 end
@@ -5702,7 +5578,32 @@ spawn(function()
 		end);
 	end;
 end);
- 
+ Others:AddToggle({
+    Name = "Stop when got God's Chalice",
+    Description = "dừng khi có cúp",
+    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
+    Default = GetSetting("StopChalice_Save", true),
+    Callback = function(I)
+        _G.StopWhenChalice = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["StopChalice_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+spawn(function()
+	while wait(.2) do
+		if _G.StopWhenChalice and _G.FarmEliteHunt then
+			pcall(function()
+				if GetBP("God\'s Chalice") or GetBP("Sweet Chalice") or GetBP("Fist of Darkness") then
+					_G.FarmEliteHunt = false;
+				end;
+			end);
+		end;
+	end;
+end);
 Others:AddToggle({
 	Name = "Auto Tushita Sword",
 	Description = "tự động lấy kiếm tushita",
@@ -7888,37 +7789,9 @@ spawn(function()
 		end);
 	end;
 end);
-Race:AddButton({
-    Name = "Teleport & Load Temple",
-    Description = "TP đến Temple và load map nếu bị ẩn",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local char = player.Character
-        local hrp = char and char:FindFirstChild("HumanoidRootPart")
-        
-        if not hrp then return end
-
-        -- 1. Dịch chuyển trước
-        hrp.CFrame = CFrame.new(28286.355, 14895.301, 102.624)
-
-        -- 2. Xử lý load map với pcall để tránh crash
-        task.spawn(function()
-            pcall(function()
-                local map = workspace:FindFirstChild("Map")
-                local mapStash = game:GetService("ReplicatedStorage"):FindFirstChild("MapStash")
-                
-                if map and mapStash then
-                    if not map:FindFirstChild("Temple of Time") and mapStash:FindFirstChild("Temple of Time") then
-                        -- Clone để tránh lỗi mất map của Server
-                        local temple = mapStash["Temple of Time"]:Clone()
-                        temple.Parent = map
-                        print("Temple đã được load thành công!")
-                    end
-                end
-            end)
-        end)
-    end
-})
+Race:AddButton({ Name = "Teleport to Temple of Time", Description = "", Callback = function()
+		replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28286.35546875, 14895.301757812, 102.62469482422));
+	end });
 Race:AddButton({ Name = "Teleport to Ancient One", Description = "", Callback = function()
 		notween(CFrame.new(28981.552734375, 14888.426757812, -120.24584960938));
 	end });
@@ -9121,24 +8994,10 @@ Esp:AddToggle({Name = "Esp Chests", Default = false, Callback = function(I)
     spawn(function() while ChestESP do wait(1); ChestEsp(); end; end); 
 end});
 
-Esp:AddToggle({
-    Name = "Esp Fruits",
-    Default = _G.SaveData["ESP_Fruit"] or false,
-    Callback = function(Value)
-        DevilFruitESP = Value
-        _G.SaveData["ESP_Fruit"] = Value
-        if SaveSettings then
-            SaveSettings()
-        end
-
-        task.spawn(function()
-            while DevilFruitESP do
-                task.wait(1)
-                pcall(DevEsp)
-            end
-        end)
-    end
-})
+Esp:AddToggle({Name = "Esp Fruits", Default = false, Callback = function(I)
+    DevilFruitESP = I
+    task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp) end end)
+end})
 
 Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
     _G.IslandESP = I;
@@ -9173,127 +9032,7 @@ if World3 then
         task.spawn(function() while advanEsp do pcall(AdvanFruitEsp); task.wait(1) end; pcall(AdvanFruitEsp) end)
     end})
 end
-Esp:AddSection({"Stats"});
 
-Esp:AddToggle({
-    Name = "Add Points Melee",
-    Description = "Gasta pontos automaticamente em Melee",
-    Default = GetSetting("AutoMelee_Save", false),
-    Callback = function(I)
-        _G.Auto_Melee = I
-        _G.SaveData["AutoMelee_Save"] = I
-        SaveSettings()
-    end,
-})
-
-Esp:AddToggle({
-    Name = "Add Points Sword",
-    Description = "Gasta pontos automaticamente em Sword",
-    Default = GetSetting("AutoSword_Save", false),
-    Callback = function(I)
-        _G.Auto_Sword = I
-        _G.SaveData["AutoSword_Save"] = I
-        SaveSettings()
-    end,
-})
-
-Esp:AddToggle({
-    Name = "Add Points Gun",
-    Description = "Gasta pontos automaticamente em Gun",
-    Default = GetSetting("AutoGun_Save", false),
-    Callback = function(I)
-        _G.Auto_Gun = I
-        _G.SaveData["AutoGun_Save"] = I
-        SaveSettings()
-    end,
-})
-
-Esp:AddToggle({
-    Name = "Add Points Fruit",
-    Description = "Gasta pontos automaticamente em Fruit",
-    Default = GetSetting("AutoFruit_Save", false),
-    Callback = function(I)
-        _G.Auto_Blox = I
-        _G.SaveData["AutoFruit_Save"] = I
-        SaveSettings()
-    end,
-})
-
-Esp:AddToggle({
-    Name = "Add Points Defense",
-    Description = "Gasta pontos automaticamente em Defense",
-    Default = GetSetting("AutoDefense_Save", false),
-    Callback = function(I)
-        _G.Auto_Defense = I
-        _G.SaveData["AutoDefense_Save"] = I
-        SaveSettings()
-    end,
-})
-
--- // LOOP DOS STATS (Execute isso uma vez no seu script) // --
-task.spawn(function()
-    while task.wait(1) do
-        pcall(function()
-            local remote = game:GetService("ReplicatedStorage").Remotes.CommF_
-            if _G.Auto_Melee then remote:InvokeServer("AddPoint", "Melee", 3) end
-            if _G.Auto_Sword then remote:InvokeServer("AddPoint", "Sword", 3) end
-            if _G.Auto_Gun then remote:InvokeServer("AddPoint", "Gun", 3) end
-            if _G.Auto_Blox then remote:InvokeServer("AddPoint", "Demon Fruit", 3) end
-            if _G.Auto_Defense then remote:InvokeServer("AddPoint", "Defense", 3) end
-        end)
-    end
-end)
-
--- Usamos um valor grande (como 9999999) para simular o gasto de 'todos' os pontos disponíveis.
--- Assumimos que a função 'statsSetings' irá apenas gastar o máximo de pontos que o jogador realmente tem.
-local AllAvailablePoints = 9999999; 
-
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Melee then
-				statsSetings("Melee", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Sword then
-				statsSetings("Sword", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Gun then
-				statsSetings("Gun", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			-- Note: No seu código original era 'Auto_DevilFruit', mas no menu era 'Fruit'. Corrigi para usar a mesma variável do menu.
-			if _G.Auto_Blox then 
-				statsSetings("Devil", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Defense then
-				statsSetings("Defense", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
 
 Esp:AddSection({"Fontes"});
 
@@ -9436,6 +9175,129 @@ Esp:AddButton({
         ApplyGlobalFont(Enum.Font.Gotham)
     end
 })
+Esp:AddSection({"Stats"});
+
+-- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
+
+Esp:AddToggle({
+    Name = "Add Points Melee",
+    Description = "Gasta pontos automaticamente em Melee",
+    Default = GetSetting("AutoMelee_Save", false),
+    Callback = function(I)
+        _G.Auto_Melee = I
+        _G.SaveData["AutoMelee_Save"] = I
+        SaveSettings()
+    end,
+})
+
+Esp:AddToggle({
+    Name = "Add Points Sword",
+    Description = "Gasta pontos automaticamente em Sword",
+    Default = GetSetting("AutoSword_Save", false),
+    Callback = function(I)
+        _G.Auto_Sword = I
+        _G.SaveData["AutoSword_Save"] = I
+        SaveSettings()
+    end,
+})
+
+Esp:AddToggle({
+    Name = "Add Points Gun",
+    Description = "Gasta pontos automaticamente em Gun",
+    Default = GetSetting("AutoGun_Save", false),
+    Callback = function(I)
+        _G.Auto_Gun = I
+        _G.SaveData["AutoGun_Save"] = I
+        SaveSettings()
+    end,
+})
+
+Esp:AddToggle({
+    Name = "Add Points Fruit",
+    Description = "Gasta pontos automaticamente em Fruit",
+    Default = GetSetting("AutoFruit_Save", false),
+    Callback = function(I)
+        _G.Auto_Blox = I
+        _G.SaveData["AutoFruit_Save"] = I
+        SaveSettings()
+    end,
+})
+
+Esp:AddToggle({
+    Name = "Add Points Defense",
+    Description = "Gasta pontos automaticamente em Defense",
+    Default = GetSetting("AutoDefense_Save", false),
+    Callback = function(I)
+        _G.Auto_Defense = I
+        _G.SaveData["AutoDefense_Save"] = I
+        SaveSettings()
+    end,
+})
+
+-- // LOOP DOS STATS (Execute isso uma vez no seu script) // --
+task.spawn(function()
+    while task.wait(1) do
+        pcall(function()
+            local remote = game:GetService("ReplicatedStorage").Remotes.CommF_
+            if _G.Auto_Melee then remote:InvokeServer("AddPoint", "Melee", 3) end
+            if _G.Auto_Sword then remote:InvokeServer("AddPoint", "Sword", 3) end
+            if _G.Auto_Gun then remote:InvokeServer("AddPoint", "Gun", 3) end
+            if _G.Auto_Blox then remote:InvokeServer("AddPoint", "Demon Fruit", 3) end
+            if _G.Auto_Defense then remote:InvokeServer("AddPoint", "Defense", 3) end
+        end)
+    end
+end)
+
+-- Usamos um valor grande (como 9999999) para simular o gasto de 'todos' os pontos disponíveis.
+-- Assumimos que a função 'statsSetings' irá apenas gastar o máximo de pontos que o jogador realmente tem.
+local AllAvailablePoints = 9999999; 
+
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Melee then
+				statsSetings("Melee", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Sword then
+				statsSetings("Sword", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Gun then
+				statsSetings("Gun", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			-- Note: No seu código original era 'Auto_DevilFruit', mas no menu era 'Fruit'. Corrigi para usar a mesma variável do menu.
+			if _G.Auto_Blox then 
+				statsSetings("Devil", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Defense then
+				statsSetings("Defense", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
 Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
 local Players = game:GetService("Players")
@@ -9802,9 +9664,12 @@ Player:AddToggle({
 
 Player:AddToggle({
     Name = "Aimbot on Players(Ghim người chơi)",
-    Default = false,
+    Default = GetSetting("AimPlayers_Save", false),
     Callback = function(v)
         AimPlayers = v
+
+        _G.SaveData["AimPlayers_Save"] = v
+        SaveSettings()
 
         if v then
             AimMobs = false
@@ -9821,9 +9686,12 @@ Player:AddToggle({
 
 Player:AddToggle({
     Name = "Aimbot on Mobs(Ghim quái)",
-    Default = false,
+    Default = GetSetting("AimMobs_Save", false),
     Callback = function(v)
         AimMobs = v
+
+        _G.SaveData["AimMobs_Save"] = v
+        SaveSettings()
 
         if v then
             AimPlayers = false
@@ -9869,8 +9737,6 @@ Teleport:AddButton({ Name = "Teleport Sea 2", Description = "", Callback = funct
 Teleport:AddButton({ Name = "Teleport Sea 3", Description = "", Callback = function()
 		replicated.Remotes.CommF_:InvokeServer("TravelZou");
 	end });
-
-	
 Teleport:AddSection({"Travel - Island"})
 
 -- Lista de Ilhas
@@ -9944,13 +9810,12 @@ elseif World2 then
 	Location_Portal = { "SwanRoom", "Cursed Ship" };
 elseif World3 then
 	Location_Portal = {
-    "Castle On The Sea",
-    "Mansion Cafe",
-    "Hydra Teleport",
-    "Canvendish Room",
-    "Temple of Time",
-
-};
+			"Castle On The Sea",
+			"Mansion Cafe",
+			"Hydra Teleport",
+			"Canvendish Room",
+			"Temple of Time",
+		};
 end;
 Teleport:AddDropdown({
 	Title = "Select Portal",
@@ -10018,7 +9883,6 @@ spawn(function()
 		end;
 	end;
 end);
-
 if World3 then
 Get:AddSection({"Skull Guitar"});
 Get:AddToggle({
@@ -11533,7 +11397,6 @@ spawn(function()
 	end;
 end);
 end
-
 Fruit:AddSection({"Raiding"});
 e = {
 		"Flame",
@@ -11637,9 +11500,7 @@ Fruit:AddToggle({
 })
 
 Fruit:AddSection({"Raid Farming"});
--- // TỔNG ĐIỀU KHIỂN: AUTO START RAID (GỘP TẤT CẢ) //
--- // 1. Auto Start Raid (Tích hợp logic tự động vào)
--- // 1. Auto Start Raid (Đã sửa logic)
+
 Fruit:AddToggle({
     Name  = "Auto Start Raid",
     Description = "",
@@ -11816,7 +11677,6 @@ spawn(function()
 		end);
 	end;
 end);
-
 Fruit:AddSection({"Fruits Options"});
 local J5 = {};
 local function i5(I)
@@ -12070,7 +11930,6 @@ Setting:AddButton({ Name = "Nofog", Description = "", Callback = function()
 			Lighting.FantasySky:Destroy();
 		end;
 	end });
-	
 Setting:AddToggle({
 	Name = "Walk on Water",
 	Description = "walk on water",
@@ -12085,4 +11944,5 @@ Setting:AddToggle({
 		end;
 	end,
 });
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
