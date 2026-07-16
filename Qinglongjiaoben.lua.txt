@@ -11576,7 +11576,7 @@ spawn(function()
 				elseif GetBP("String-String") then
 					_G.SelectChip = "String";
 				elseif GetBP("Rumble-Rumble") then
-				    _G.SelectChip = "Rumble";
+					_G.SelectChip = "Rumble";
 				elseif GetBP("Magma-Magma") then
 					_G.SelectChip = "Magma";
 				elseif GetBP("Human-Human: Buddha Fruit") then
