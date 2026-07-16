@@ -9331,238 +9331,6 @@ Player:AddToggle({
 
 Player:AddSection({"Aimbot"});
 
-Player:AddToggle({
-	Name = "Aimbot Cam Lock",
-	Description = "",
-	Default = false,
-	Callback = function(I)
-		_G.AimCam = I;
-	end,
-});
-task.spawn(function()
-	while task.wait(Sec) do
-		pcall(function()
-			if _G.AimCam then
-				local I = workspace.CurrentCamera;
-				closestplayer = function()
-						local I = math.huge;
-						local e = nil;
-						for K, n in next, ply:GetPlayers() do
-							if n ~= plr then
-								if n.Character and (n.Character:FindFirstChild("Head") and (_G.AimCam and n.Character.Humanoid.Health > 0)) then
-									local K = (n.Character.Head.Position - plr.Character.Head.Position).Magnitude;
-									if K < I then
-										I = K;
-										e = n;
-									end;
-								end;
-							end;
-						end;
-						return e;
-					end;
-				repeat
-					task.wait();
-					I.CFrame = CFrame.new(I.CFrame.Position, (closestplayer()).Character.HumanoidRootPart.Position);
-				until _G.AimCam == false or Mag > dist;
-			end;
-		end);
-	end;
-end);
-
---==================================================
--- TOGGLE ÚNICO (PRIMEIRO NO CÓDIGO)
---==================================================
-local SilentAim_Enabled = false
-
-Player:AddToggle({
-	Name = "Aimbot Skills",
-	Description = "",
-	Default = false,
-	Callback = function(state)
-		SilentAim_Enabled = state
-	end
-})
-
---==================================================
--- SISTEMA SILENT AIM (LOGO DEPOIS DO TOGGLE)
---==================================================
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local RS = game:GetService("ReplicatedStorage")
-
-local player = Players.LocalPlayer
-local camera = workspace.CurrentCamera
-
-local PredictionEnabled = true
-local PredictionAmount = 0.1
-local maxRange = 1000
-
-local renderConnection = nil
-local currentTool = nil
-local PlayersPosition = nil
-local Selectedplayer = nil
-local characterConnections = {}
-
--- ================= HRP =================
-local function getHRP(model)
-	return model and model:FindFirstChild("HumanoidRootPart")
-end
-
--- ================= CLEAR =================
-local function clearConnections()
-	for _, c in ipairs(characterConnections) do
-		pcall(function() c:Disconnect() end)
-	end
-	characterConnections = {}
-end
-
--- ================= TEAM CHECK =================
-local function isEnemy(plr)
-	if not plr or plr == player then return false end
-	if not player.Team or not plr.Team then return true end
-	return player.Team ~= plr.Team
-end
-
--- ================= PREDICTION =================
-local function getPredictedPosition(hrp)
-	if not hrp then return nil end
-	local hum = hrp.Parent:FindFirstChildWhichIsA("Humanoid")
-	if not hum or not PredictionEnabled or hum.WalkSpeed < 5 then
-		return hrp.Position
-	end
-	return hrp.Position + (hrp.Velocity * PredictionAmount)
-end
-
--- ================= CLOSEST PLAYER =================
-local function getClosestPlayer(lpHRP)
-	local closest, dist = nil, math.huge
-	for _, plr in ipairs(Players:GetPlayers()) do
-		if isEnemy(plr) and plr.Character then
-			local hum = plr.Character:FindFirstChildWhichIsA("Humanoid")
-			local hrp = getHRP(plr.Character)
-			if hum and hum.Health > 0 and hrp then
-				local d = (hrp.Position - lpHRP.Position).Magnitude
-				if d < dist and d <= maxRange then
-					dist = d
-					closest = plr
-				end
-			end
-		end
-	end
-	return closest
-end
-
--- ================= SKILL READY =================
-local function isSkillReadyForTool(toolName)
-	if not toolName then return false end
-	local gui = player:FindFirstChild("PlayerGui")
-	if not gui then return false end
-
-	local skills = gui:FindFirstChild("Main") and gui.Main:FindFirstChild("Skills")
-	if not skills then return false end
-
-	local tool = skills:FindFirstChild(toolName)
-	if not tool then return false end
-
-	for _, key in ipairs({"Z","X","C","V"}) do
-		local skill = tool:FindFirstChild(key)
-		if skill and skill:FindFirstChild("Cooldown") then
-			if skill.Cooldown.Size.X.Scale == 1 then
-				return true
-			end
-		end
-	end
-	return false
-end
-
--- ================= RENDER LOOP =================
-local function startRender()
-	if renderConnection then return end
-
-	renderConnection = RunService.RenderStepped:Connect(function()
-		if not SilentAim_Enabled then return end
-
-		local char = player.Character
-		local hrp = char and getHRP(char)
-		if not hrp then return end
-
-		local target = Selectedplayer or getClosestPlayer(hrp)
-		if not (target and target.Character) then
-			PlayersPosition = nil
-			return
-		end
-
-		local thrp = getHRP(target.Character)
-		if not thrp then return end
-
-		PlayersPosition = getPredictedPosition(thrp)
-
-		if currentTool and isSkillReadyForTool(currentTool.Name) then
-			local look = (Vector3.new(
-				PlayersPosition.X,
-				hrp.Position.Y,
-				PlayersPosition.Z
-			) - hrp.Position).Unit
-
-			hrp.CFrame = CFrame.new(hrp.Position, hrp.Position + look)
-		end
-	end)
-end
-
-local function stopRender()
-	if renderConnection then
-		renderConnection:Disconnect()
-		renderConnection = nil
-	end
-end
-
--- ================= TOOL TRACK =================
-player.CharacterAdded:Connect(function(char)
-	clearConnections()
-	table.insert(characterConnections,
-		char.ChildAdded:Connect(function(obj)
-			if obj:IsA("Tool") then
-				currentTool = obj
-			end
-		end)
-	)
-end)
-
--- ================= METAMETHOD =================
-pcall(function()
-	local mt = getrawmetatable(game)
-	setreadonly(mt, false)
-
-	local old = mt.__namecall
-	mt.__namecall = newcclosure(function(self, ...)
-		local method = getnamecallmethod()
-		local args = {...}
-
-		if (method == "FireServer" or method == "InvokeServer")
-			and SilentAim_Enabled
-			and PlayersPosition
-			and typeof(args[1]) == "Vector3" then
-
-			args[1] = PlayersPosition
-			return old(self, unpack(args))
-		end
-
-		return old(self, ...)
-	end)
-
-	setreadonly(mt, true)
-end)
-
--- ================= AUTO START / STOP =================
-RunService.RenderStepped:Connect(function()
-	if SilentAim_Enabled then
-		startRender()
-	else
-		stopRender()
-	end
-end)
-
-Player:AddSection({"Speed/Jump"});
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 
@@ -9617,77 +9385,71 @@ protectSpeed()
 -- Toggle para WalkSpeed
 Player:AddToggle({
 	Name  = "Set WalkSpeed",
-    Description = "Enable custom WalkSpeed",
-    Default = false,
+    Description = "Bật tốc độ chạy của bạn",
+    Default = true,
     Callback = function(Value)
         SpeedEnabled = Value
         applyStats()
     end
 })
 -- Input para definir valor da WalkSpeed 
-Player:AddTextBox({
+Player:AddSlider({
     Name = "WalkSpeed Value",
-    Description = "Digite a velocidade desejada",
-    PlaceHolder = "16",
-    Default = tostring(desiredSpeed),
+    Description = "Kéo để chọn tốc độ",
+    Default = _G.SaveData["WalkSpeed_Save"] or 16, -- Đọc giá trị lưu, mặc định 16
+    Min = 20,
+    Max = 500, -- Bạn có thể chỉnh Max tùy ý
+    Rounding = 0, -- Làm tròn số
     Callback = function(Value)
-        local num = tonumber(Value)
-        if num then
-            desiredSpeed = num
-            applyStats()
-        end
+        desiredSpeed = Value
+        _G.SaveData["WalkSpeed_Save"] = Value -- Lưu trạng thái
+        if SaveSettings then SaveSettings() end -- Tự động lưu
+        applyStats() -- Áp dụng tốc độ
     end
 })
+
 -- Toggle para JumpPower
 Player:AddToggle({
 	Name  = "Set JumpPower",
-    Description = "Enable custom JumpPower",
-    Default = false,
+    Description = "Bật độ nhảy cao của bạn",
+    Default = true,
     Callback = function(Value)
         JumpEnabled = Value
         applyStats()
     end
 })
-Player:AddTextBox({
+Player:AddSlider({
     Name = "JumpPower Value",
-    Description = "Digite o JumpPower desejado",
-    PlaceHolder = "50",
-    Default = tostring(desiredJump),
+    Description = "Kéo để chọn độ cao nhảy",
+    Default = _G.SaveData["JumpPower_Save"] or 50, -- Đọc giá trị lưu, mặc định 50
+    Min = 50,
+    Max = 900, -- Bạn có thể điều chỉnh mức tối đa tùy ý
+    Rounding = 0,
     Callback = function(Value)
-        local num = tonumber(Value)
-        if num then
-            desiredJump = num
-            applyStats()
-        end
+        desiredJump = Value
+        _G.SaveData["JumpPower_Save"] = Value -- Lưu trạng thái
+        if SaveSettings then SaveSettings() end -- Tự động lưu
+        applyStats() -- Áp dụng thay đổi
     end
 })
+
+Player:AddToggle({
+    Name = "Nhảy cao vô hạn",
+    Default = true,
+    Callback = function(Value)
+        _G.InfiniteJump = Value
+    end
+})
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if _G.InfiniteJump then
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
+
 Player:AddSection({"LocalPlayer Settings / Misc"});
 Player:AddToggle({
-	Name = "Instance Mink V3 [ INF ]",
-	Description = "turn on for make mink v3 infinity",
-	Default = false,
-	Callback = function(I)
-		InfAblities = I;
-	end,
-});
-spawn(function()
-	while wait(.2) do
-		pcall(function()
-			if InfAblities then
-				if not plr.Character.HumanoidRootPart:FindFirstChild("Agility") then
-					local I = replicated.FX.Agility:Clone();
-					I.Name = "Agility";
-					I.Parent = plr.Character.HumanoidRootPart;
-				end;
-			else
-				plr.Character.HumanoidRootPart.Agility:Destroy();
-			end;
-		end);
-	end;
-end);
-Player:AddToggle({
 	Name = "Instance Energy [ INF ]",
-	Description = "turn on for make energy infinity",
+	Description = "Bật năng lượng vô hạn",
 	Default = false,
 	Callback = function(I)
 		infEnergy = I;
@@ -9698,8 +9460,8 @@ Player:AddToggle({
 });
 Player:AddToggle({
 	Name = "Instance Soru [ INF ]",
-	Description = "turn on for make soru infinity",
-	Default = false,
+	Description = "Bật soru vô hạn",
+	Default = true,
 	Callback = function(I)
 		_G.InfSoru = I;
 		if I then
@@ -9709,7 +9471,7 @@ Player:AddToggle({
 });
 Player:AddToggle({
 	Name = "Instance Observation Range [ INF ]",
-	Description = "turn on for make observation range infinity",
+	Description = "Bật haki vô hạn",
 	Default = false,
 	Callback = function(I)
 		_G.InfiniteObRange = I;
@@ -9718,18 +9480,183 @@ Player:AddToggle({
 		end;
 	end,
 });
+
 Player:AddSection({"Settings Combat / Aimbot Settings"});
+local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Aimbot.lua.txt"))()
+
+local AimbotEnabled = false
+local AimPlayers = false
+local AimMobs = false
+local IgnoreMobs = true
+
+-- ===============================
+-- FUNÇÃO DE ATUALIZAÇÃO (COMPATÍVEL COM SUA LÓGICA)
+-- ===============================
+local function UpdateAimbot()
+    if not AimbotEnabled then
+        v1:SetPlayerSilentAim(false)
+        v1:SetNPCSilentAim(false)
+        return
+    end
+
+    -- Se estiver mirando players
+    if AimPlayers then
+        v1:SetPlayerSilentAim(true)
+        v1:SetNPCSilentAim(false)
+        return
+    end
+
+    -- Se estiver mirando mobs
+    if AimMobs then
+        if IgnoreMobs then
+            v1:SetNPCSilentAim(false)
+        else
+            v1:SetNPCSilentAim(true)
+        end
+        v1:SetPlayerSilentAim(false)
+        return
+    end
+
+    -- fallback de segurança
+    v1:SetPlayerSilentAim(false)
+    v1:SetNPCSilentAim(false)
+end
+
+-- ===============================
+-- TOGGLE PRINCIPAL
+-- ===============================
 Player:AddToggle({
-	Name = "Ignore Same Teams",
-	Description = "turn on for ignore not aimbot same team",
-	Default = false,
-	Callback = function(I)
-		_G.NoAimTeam = I;
-	end,
-});
+    Name = "Aimbot Gun",
+    Default = true,
+    Callback = function(v)
+        AimbotEnabled = v
+
+        if not v then
+            v1:Pause()
+        else
+            v1:Restore()
+        end
+
+        UpdateAimbot()
+    end
+})
+
+-- ===============================
+-- AIM PLAYERS
+-- ===============================
+Player:AddToggle({
+    Name = "Aimbot Tap",
+    Default = true,
+    Callback = function(v)
+        AimPlayers = v
+
+        if v then
+            AimMobs = false
+        end
+
+        UpdateAimbot()
+    end
+})
+
+-- ===============================
+-- AIM MOBS
+-- ===============================
+Player:AddToggle({
+    Name = "Aimbot Skills",
+    Default = true,
+    Callback = function(v)
+        AimMobs = v
+
+        if v then
+            AimPlayers = false
+        end
+
+        UpdateAimbot()
+    end
+})
+
+-- ===============================
+-- IGNORE MOBS (AGORA FUNCIONAL)
+-- ===============================
+Player:AddToggle({
+    Name = "Ignore Mobs",
+    Default = true,
+    Callback = function(v)
+        IgnoreMobs = v
+        UpdateAimbot()
+    end
+})
+
+Player:AddSection({"Aimbot skill V2"})
+local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Aimbot.lua.txt"))()
+
+local AimbotEnabled = false
+local AimPlayers = false
+local AimMobs = false
+
+Player:AddToggle({
+    Name = "Enable Aimbot Skill",
+    Default = true,
+    Callback = function(v)
+        AimbotEnabled = v
+
+        if not v then
+            v1:Pause()
+            v1:SetPlayerSilentAim(false)
+            v1:SetNPCSilentAim(false)
+        else
+            if AimPlayers then
+                v1:SetPlayerSilentAim(true)
+            end
+            if AimMobs then
+                v1:SetNPCSilentAim(true)
+            end
+            v1:Restore()
+        end
+    end
+})
+
+Player:AddToggle({
+    Name = "Aimbot on Players(Ghim người chơi)",
+    Default = false,
+    Callback = function(v)
+        AimPlayers = v
+
+        if v then
+            AimMobs = false
+            v1:SetNPCSilentAim(false)
+        end
+
+        if AimbotEnabled then
+            v1:SetPlayerSilentAim(v)
+        else
+            v1:SetPlayerSilentAim(false)
+        end
+    end
+})
+
+Player:AddToggle({
+    Name = "Aimbot on Mobs(Ghim quái)",
+    Default = false,
+    Callback = function(v)
+        AimMobs = v
+
+        if v then
+            AimPlayers = false
+            v1:SetPlayerSilentAim(false)
+        end
+
+        if AimbotEnabled then
+            v1:SetNPCSilentAim(v)
+        else
+            v1:SetNPCSilentAim(false)
+        end
+    end
+})
+
 Player:AddToggle({
 	Name = "Accept Allies",
-	Description = "turn on for auto accept ally",
+	Description = "Tự chấp nhận kết đòng minh",
 	Default = false,
 	Callback = function(I)
 		_G.AcceptAlly = I;
