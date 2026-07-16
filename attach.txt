@@ -11,7 +11,7 @@ local RegisterHit = Net:WaitForChild("RE/RegisterHit")
 local Settings = {
     Enabled = true,
     MinCooldown = 0.28,
-    MaxCooldown = 0.60,
+    MaxCooldown = 0.45,
     Radius = 55,
     MaxTargets = 3
 }
