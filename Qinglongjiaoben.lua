@@ -168,17 +168,12 @@ elseif placeId == 73902483975735 then
 end
 
 if Dungeon then
-    print("Dungeon Detected:", placeId)
-
     loadstring(game:HttpGet(
         "https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/HUB.lua"
     ))()
-
 else
     Sea = World1 or World2 or World3
-    print("Sea Detected:", Sea)
 end
-
 
     -- đặt toàn bộ phần script Blox Fruits ở đâ
 Marines = function()
@@ -11748,7 +11743,7 @@ spawn(function()
 		end);
 	end;
 end);
-if World2 or World3 then
+
 Fruit:AddSection({"Dungeon raid"});
 DungeonPlaceId = 73902483975735
 
@@ -11819,8 +11814,6 @@ task.spawn(function()
         end
     end
 end)
-end 
-
 Fruit:AddSection({"Fruits Options"});
 local J5 = {};
 local function i5(I)

@@ -204,14 +204,14 @@ local Main = Library:MakeTab({
 })
 
 
-Status:AddSection({"Dungeon Info"})
-Status:AddLabel("PlaceID: "..tostring(placeId))
-Status:AddLabel("Dungeon Hub Loaded")
+Main:AddSection({"Dungeon Info"});
+Main:AddLabel("PlaceID: "..tostring(placeId))
+Main:AddLabel("Dungeon Hub Loaded")
 -- ========================================
 -- Bring Mobs Dungeon
 -- ========================================
 
-Main:AddSection({"Bring Mobs"})
+Main:AddSection({"Bring Mobs"});
 
 
 local ScanRadius = 1000
@@ -406,9 +406,7 @@ Main:AddToggle({
 -- ========================================
 
 
-Main:AddSection({"Auto Farm"})
-
-
+Main:AddSection({"Auto Farm"});
 
 local function GetBestTarget()
 
