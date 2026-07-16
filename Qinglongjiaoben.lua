@@ -139,6 +139,8 @@ end
 
 -- Wait for game to load
 -- Wait for game load
+local plr = game.Players.LocalPlayer
+
 repeat
     local loading = plr.PlayerGui:FindFirstChild("Main")
     loading = loading and loading:FindFirstChild("Loading")
@@ -154,10 +156,13 @@ local placeId = game.PlaceId
 
 if placeId == 2753915549 or placeId == 85211729168715 then
     World1 = true
+
 elseif placeId == 4442272183 or placeId == 79091703265657 then
     World2 = true
+
 elseif placeId == 7449423635 or placeId == 100117331123089 then
     World3 = true
+
 elseif placeId == 73902483975735 then
     Dungeon = true
 end
@@ -165,10 +170,14 @@ end
 if Dungeon then
     print("Dungeon Detected:", placeId)
 
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/HUB.lua"))()
+    loadstring(game:HttpGet(
+        "https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/HUB.lua"
+    ))()
 
 else
     Sea = World1 or World2 or World3
+    print("Sea Detected:", Sea)
+end
 
 
     -- đặt toàn bộ phần script Blox Fruits ở đâ
