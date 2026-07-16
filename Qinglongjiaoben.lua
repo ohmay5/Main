@@ -11798,7 +11798,7 @@ task.spawn(function()
         end
     end
 end)
-Fruit:AddSection("Bring Mobs")
+Fruit:AddSection({"Bring Mobs"});
 
 local BringRadius = 350
 local ScanRadius = 1000
@@ -11899,7 +11899,7 @@ Fruit:AddToggle({
 })
 
 -- Auto Farm Dungeon
-Fruit:AddSection("Auto Farm")
+Fruit:AddSection({"Auto Farm"});
 
 local function GetLocalRootPart()
     return plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
