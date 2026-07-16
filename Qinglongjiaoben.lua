@@ -1,16 +1,7 @@
 repeat task.wait() until game:IsLoaded()
 
--- Cache Services
-local Services = setmetatable({}, {
-    __index = function(self, serviceName)
-        local service = game:GetService(serviceName)
-        rawset(self, serviceName, service)
-        return service
-    end
-})
-
-local Players = Services.Players
-local TweenService = Services.TweenService
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
@@ -18,63 +9,109 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 local Gui = Instance.new("ScreenGui")
 Gui.Name = "LoadingGui"
 Gui.ResetOnSpawn = false
+Gui.IgnoreGuiInset = true
+Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 Gui.Parent = PlayerGui
 
 local Frame = Instance.new("Frame")
 Frame.AnchorPoint = Vector2.new(1,1)
 Frame.Position = UDim2.new(1,-15,1,-15)
-Frame.Size = UDim2.new(0,180,0,45)
-Frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
-Frame.BackgroundTransparency = 0.15
+Frame.Size = UDim2.new(0,180,0,55)
+Frame.BackgroundColor3 = Color3.fromRGB(18,18,18)
 Frame.BorderSizePixel = 0
 Frame.Parent = Gui
 
-Instance.new("UICorner", Frame).CornerRadius = UDim.new(0,8)
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0,8)
+Corner.Parent = Frame
 
 local Dot = Instance.new("Frame")
-Dot.Size = UDim2.new(0,12,0,12)
-Dot.Position = UDim2.new(0,12,0.5,-6)
-Dot.BackgroundColor3 = Color3.fromRGB(139,0,0)
+Dot.Size = UDim2.new(0,10,0,10)
+Dot.Position = UDim2.new(0,10,0,10)
+Dot.BackgroundColor3 = Color3.fromRGB(0,120,255)
 Dot.BorderSizePixel = 0
 Dot.Parent = Frame
 
-Instance.new("UICorner", Dot).CornerRadius = UDim.new(1,0)
+local DotCorner = Instance.new("UICorner")
+DotCorner.CornerRadius = UDim.new(1,0)
+DotCorner.Parent = Dot
 
-local Text = Instance.new("TextLabel")
-Text.BackgroundTransparency = 1
-Text.Position = UDim2.new(0,32,0,0)
-Text.Size = UDim2.new(1,-40,1,0)
-Text.Font = Enum.Font.GothamBold
-Text.Text = "Loading..."
-Text.TextSize = 18
-Text.TextColor3 = Color3.fromRGB(240,240,240)
-Text.TextXAlignment = Enum.TextXAlignment.Left
-Text.Parent = Frame
+local Title = Instance.new("TextLabel")
+Title.BackgroundTransparency = 1
+Title.Position = UDim2.new(0,28,0,4)
+Title.Size = UDim2.new(1,-65,0,18)
+Title.Font = Enum.Font.GothamBold
+Title.Text = "ĐĂNGTẢI(青龙脚本)..."
+Title.TextSize = 15
+Title.TextColor3 = Color3.fromRGB(240,240,240)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = Frame
+
+local Percent = Instance.new("TextLabel")
+Percent.BackgroundTransparency = 1
+Percent.Position = UDim2.new(1,-42,0,4)
+Percent.Size = UDim2.new(0,35,0,18)
+Percent.Font = Enum.Font.GothamBold
+Percent.Text = "0%"
+Percent.TextSize = 14
+Percent.TextColor3 = Color3.fromRGB(170,170,170)
+Percent.Parent = Frame
+
+local BarBG = Instance.new("Frame")
+BarBG.Position = UDim2.new(0,10,1,-15)
+BarBG.Size = UDim2.new(1,-20,0,5)
+BarBG.BackgroundColor3 = Color3.fromRGB(45,45,45)
+BarBG.BorderSizePixel = 0
+BarBG.Parent = Frame
+
+local BGCorner = Instance.new("UICorner")
+BGCorner.CornerRadius = UDim.new(1,0)
+BGCorner.Parent = BarBG
+
+local Bar = Instance.new("Frame")
+Bar.Size = UDim2.new(0,0,1,0)
+Bar.BackgroundColor3 = Color3.fromRGB(0,120,255)
+Bar.BorderSizePixel = 0
+Bar.Parent = BarBG
+
+local BarCorner = Instance.new("UICorner")
+BarCorner.CornerRadius = UDim.new(1,0)
+BarCorner.Parent = Bar
 
 task.spawn(function()
-    while Gui.Parent do
-        TweenService:Create(Dot, TweenInfo.new(0.5), {
-            BackgroundTransparency = 0.7
-        }):Play()
-        task.wait(0.5)
-
-        TweenService:Create(Dot, TweenInfo.new(0.5), {
-            BackgroundTransparency = 0
-        }):Play()
-        task.wait(0.5)
-    end
+	while Gui.Parent do
+		TweenService:Create(Dot,TweenInfo.new(0.5),{BackgroundTransparency=0.7}):Play()
+		task.wait(0.5)
+		TweenService:Create(Dot,TweenInfo.new(0.5),{BackgroundTransparency=0}):Play()
+		task.wait(0.5)
+	end
 end)
 
-task.wait(3)
+for i = 0,100 do
+	Percent.Text = i.."%"
+	TweenService:Create(
+		Bar,
+		TweenInfo.new(0.02, Enum.EasingStyle.Linear),
+		{Size = UDim2.new(i/100,0,1,0)}
+	):Play()
+	task.wait(0.02)
+end
 
-TweenService:Create(Frame, TweenInfo.new(0.35), {
-    BackgroundTransparency = 1,
-    Position = UDim2.new(1,180,1,-15)
-}):Play()
+task.wait(0.2)
 
-task.wait(0.4)
+local CloseTween = TweenService:Create(
+	Frame,
+	TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+	{
+		Position = UDim2.new(1,200,1,-15),
+		BackgroundTransparency = 1
+	}
+)
+
+CloseTween:Play()
+CloseTween.Completed:Wait()
+
 Gui:Destroy()
-
 -- ========================================
 -- SAVE SYSTEM (Optimized)
 -- ========================================
@@ -9977,6 +10014,7 @@ spawn(function()
 		end;
 	end;
 end);
+
 if World3 then
 Get:AddSection({"Skull Guitar"});
 Get:AddToggle({
