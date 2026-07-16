@@ -463,7 +463,7 @@ G.DistH = function(I, e)
 		return (Root.Position - (I:FindFirstChild("HumanoidRootPart")).Position).Magnitude > e;
 	end;
 -- ALTURA ÚNICA AJUSTÁVEL DO MOB
-_G.MobHeight = _G.MobHeight or 30
+_G.MobHeight = _G.MobHeight or 20
 
 G.Kill = function(I, e)
 	if not (I and e) then return end
@@ -1202,8 +1202,8 @@ end);
 -- =======================
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
-getgenv().TweenSpeedFar = 370   -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 370  -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedFar = 255 -- Velocidade Padrão (Longe)
+getgenv().TweenSpeedNear = 255  -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -1229,7 +1229,7 @@ local dist = (I.Position - HRP.Position).Magnitude
 --  SE ESTIVER ATÉ 15 STUDS → USA A VELOCIDADE DE PERTO
 --  CASO CONTRÁRIO → USA A VELOCIDADE PADRÃO
 -- ===============================  
-local speed = dist <= 15 and (getgenv().TweenSpeedNear or 370) or (getgenv().TweenSpeedFar or 370)
+local speed = dist <= 15 and (getgenv().TweenSpeedNear or 255) or (getgenv().TweenSpeedFar or 255)
 
 local info = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)  
 local tween = game:GetService("TweenService"):Create(C, info, { CFrame = I })  
@@ -2543,10 +2543,10 @@ local Setting = Library:MakeTab({
     Icon = "rbxassetid://7734053495"
 })
 Status:AddDiscordInvite({
-    Name = "Server Discord Turbo Lite Hub",
-    Description = "join for support and update <3",
-    Logo = "rbxassetid://18919385586",
-    Invite = "https://turbolite.xyz/discord"
+    Name = "青龙 Hub",
+    Description = "",
+    Logo = "rbxassetid://114476175638281",
+    Invite = ""
 })
 
 Shop:AddSection("Fighting Shop")
@@ -3156,12 +3156,17 @@ Farm:AddDropdown({
     Name = "Select Weapon",
     Description = "chọn vũ khí",
     Options = {"Melee","Sword","Blox Fruit","Gun"},
-    Default = "Melee",
+    Default = GetSetting("SelectWeapon_Save", "Melee"),
     Multi = false,
     Callback = function(I)
         _G.ChooseWP = I
+
+        _G.SaveData["SelectWeapon_Save"] = I
+        SaveSettings()
     end,
 })
+
+_G.ChooseWP = GetSetting("SelectWeapon_Save", "Melee")
 
 spawn(function()
     while wait(Sec) do
@@ -3200,49 +3205,6 @@ local function TeleportConditional(hrp, targetCFrame, threshold)
     if dist > threshold then  
         _tp(targetCFrame)  
     end
-end
-
----
-
-----------------------------------------------------------------------------
--- 1. UI: DROPDOWN + TOGGLES (Coloque isso na seção da sua UI)
-----------------------------------------------------------------------------
-Farm:AddToggle({
-	Name = "Super Attack",
-	Description = "đánh siêu nhanh",
-	-- 1. Carrega o estado salvo ou inicia como true (padrão original)
-	Default = GetSetting("AutoAttack_Save", true),
-	Callback = function(I)
-		_G.Seriality = I
-        -- 2. Salva
-        _G.SaveData["AutoAttack_Save"] = I
-        SaveSettings()
-	end,
-})
-
-Farm:AddToggle({
-	Name = "Bring Mob",
-	Description = "gom quái",
-	-- 1. Carrega o estado salvo ou inicia como true
-	Default = GetSetting("BringMobs_Save", true),
-	Callback = function(I)
-		_B = I
-        -- 2. Salva
-        _G.SaveData["BringMobs_Save"] = I
-        SaveSettings()
-	end,
-})
-
-Farm:AddButton({ Name = "Fps Fix Lag", Description = "giảm lag", Callback = function()
-		LowCpu();
-	end });
-local V5 = game.Players.LocalPlayer;
-local function y5(I)
-	if not I then
-		return false;
-	end;
-	local e = I:FindFirstChild("Humanoid");
-	return e and e.Health > 0;
 end
 
 Farm:AddSection({"Auto Farm"})
@@ -4366,6 +4328,30 @@ Setting:AddButton({
     end
 })
 Setting:AddSection({"Setting Farm"})
+Setting:AddToggle({
+	Name = "Bring Mob",
+	Description = "gom quái",
+	-- 1. Carrega o estado salvo ou inicia como true
+	Default = GetSetting("BringMobs_Save", true),
+	Callback = function(I)
+		_B = I
+        -- 2. Salva
+        _G.SaveData["BringMobs_Save"] = I
+        SaveSettings()
+	end,
+})
+
+Setting:AddButton({ Name = "Fps Fix Lag", Description = "giảm lag", Callback = function()
+		LowCpu();
+	end });
+local V5 = game.Players.LocalPlayer;
+local function y5(I)
+	if not I then
+		return false;
+	end;
+	local e = I:FindFirstChild("Humanoid");
+	return e and e.Health > 0;
+end
 Setting:AddButton({
     Name = "Stop Tween",
     Description = "dừng bay tween",
@@ -4549,42 +4535,43 @@ spawn(function()
 	end;
 end);
 Setting:AddSection({"Select"})
-Setting:AddTextBox({
+Setting:AddSlider({
     Title = "Bring Mobs Range",
-    Description = "độ xa gom quái",
-    PlaceHolder = "250",
-    Default = tostring(_G.BringRange),
+    Description = "Điều chỉnh độ xa để gom quái",
+    Default = _G.BringRange or 250,
+    Min = 0,
+    Max = 1000, -- Bạn có thể chỉnh lại Max tùy theo nhu cầu
+    Rounding = 0, -- 0 nếu muốn số nguyên, 1 nếu muốn số thập phân
     Callback = function(Value)
-        local num = tonumber(Value)
-        if num and num > 0 then
-            _G.BringRange = num
-        end
+        _G.BringRange = Value
     end
 })
 
-Setting:AddTextBox({
-    Title = "Select Farm Height",
-    Description = "độ cao đứng trên đầu",
-    PlaceHolder = "30",
-    Default = tostring(_G.MobHeight),
+
+Setting:AddSlider({
+    Title = "Farm Height",
+    Description = "Độ cao farm quái",
+    Default = _G.MobHeight or 20,
+    Min = 0,
+    Max = 100, -- Adjust this to your desired limit
+    Rounding = 1,
     Callback = function(Value)
-        local num = tonumber(Value)
-        if num and num > 0 then
-            _G.MobHeight = num
-        end
+        _G.MobHeight = Value
     end
 })
 
-Setting:AddTextBox({
+Setting:AddSlider({
     Title = "Tween Speed",
-    Description = "tốc độ tween",
-    PlaceHolder = "370",
-    Default = "370",
+    Description = "Điều chỉnh tốc độ tween",
+    Default = _G.SaveData["TweenSpeed_Save"] or 255, -- Lấy giá trị đã lưu, nếu chưa có thì mặc định là 255
+    Min = 50,      -- Giá trị nhỏ nhất
+    Max = 500,    -- Giá trị lớn nhất
+    Rounding = 0,  -- Số chữ số thập phân (0 là số nguyên)
     Callback = function(I)
-        if tonumber(I) then
-            getgenv().TweenSpeedFar = tonumber(I)
-        end
-    end,
+        getgenv().TweenSpeedFar = I
+        _G.SaveData["TweenSpeed_Save"] = I
+        SaveSettings()
+    end
 });
 Others:AddSection({"Fishing"})
 -- =========================================================
