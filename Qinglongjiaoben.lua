@@ -12002,6 +12002,7 @@ Setting:AddButton({ Name = "Nofog", Description = "", Callback = function()
 			Lighting.FantasySky:Destroy();
 		end;
 	end });
+	
 Setting:AddToggle({
 	Name = "Walk on Water",
 	Description = "walk on water",
