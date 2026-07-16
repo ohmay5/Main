@@ -75,11 +75,8 @@ TweenService:Create(Frame, TweenInfo.new(0.35), {
 task.wait(0.4)
 Gui:Destroy()
 
--- ========================================
--- SAVE SYSTEM (Optimized)
--- ========================================
 local HttpService = Services.HttpService
-local FolderName = "Turbo Lite Hub"
+local FolderName = "青龙脚本 Hub"
 local FileName = "Settings.json"
 local FullPath = FolderName .. "/" .. FileName
 
@@ -205,24 +202,42 @@ do
 end
 
 -- Wait for game to load
+-- Wait for game load
+local plr = game.Players.LocalPlayer
+
 repeat
     local loading = plr.PlayerGui:FindFirstChild("Main")
     loading = loading and loading:FindFirstChild("Loading")
     task.wait()
 until game:IsLoaded() and not (loading and loading.Visible)
--- World Detection (Optimized)
+
+World1 = false
+World2 = false
+World3 = false
+Dungeon = false
+
 local placeId = game.PlaceId
+
 if placeId == 2753915549 or placeId == 85211729168715 then
     World1 = true
+
 elseif placeId == 4442272183 or placeId == 79091703265657 then
     World2 = true
+
 elseif placeId == 7449423635 or placeId == 100117331123089 then
     World3 = true
-else
-    plr:Kick("❌ Error Blox Fruits - World not recognized")
+
+elseif placeId == 73902483975735 then
+    Dungeon = true
 end
 
-Sea = World1 or World2 or World3
+if Dungeon then
+    loadstring(game:HttpGet(
+        "https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/HUB.lua"
+    ))()
+else
+    Sea = World1 or World2 or World3
+end
 
 Marines = function()
     replicated.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
