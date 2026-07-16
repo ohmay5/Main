@@ -8939,58 +8939,183 @@ end
 -- UI E TOGGLES
 Esp:AddSection({"Esp Items / Entity / Island"});
 
-Esp:AddToggle({Name = "Esp Berries", Default = false, Callback = function(I) 
-    BerryEsp = I; 
-    spawn(function() while BerryEsp do wait(1); berriesEsp(); end; end); 
-end});
 
-Esp:AddToggle({Name = "Esp Players", Default = false, Callback = function(I) 
-    PlayerEsp = I; 
-    spawn(function() while PlayerEsp do wait(0.1); EspPly(); end; end); 
-end});
+Esp:AddToggle({
+    Name = "Esp Berries",
+    Default = GetSetting("EspBerries_Save", false),
+    Callback = function(I)
+        BerryEsp = I
+        _G.SaveData["EspBerries_Save"] = I
+        SaveSettings()
 
-Esp:AddToggle({Name = "Esp Chests", Default = false, Callback = function(I) 
-    ChestESP = I; 
-    spawn(function() while ChestESP do wait(1); ChestEsp(); end; end); 
-end});
+        task.spawn(function()
+            while BerryEsp do
+                task.wait(1)
+                berriesEsp()
+            end
+        end)
+    end
+})
 
-Esp:AddToggle({Name = "Esp Fruits", Default = false, Callback = function(I)
-    DevilFruitESP = I
-    task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp) end end)
-end})
+Esp:AddToggle({
+    Name = "Esp Players",
+    Default = GetSetting("EspPlayers_Save", false),
+    Callback = function(I)
+        PlayerEsp = I
+        _G.SaveData["EspPlayers_Save"] = I
+        SaveSettings()
 
-Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
-    _G.IslandESP = I;
-    task.spawn(function() while _G.IslandESP do IslandESP_Func(); task.wait(2) end; IslandESP_Func() end)
-end});
+        task.spawn(function()
+            while PlayerEsp do
+                task.wait(0.1)
+                EspPly()
+            end
+        end)
+    end
+})
+
+Esp:AddToggle({
+    Name = "Esp Chests",
+    Default = GetSetting("EspChests_Save", false),
+    Callback = function(I)
+        ChestESP = I
+        _G.SaveData["EspChests_Save"] = I
+        SaveSettings()
+
+        task.spawn(function()
+            while ChestESP do
+                task.wait(1)
+                ChestEsp()
+            end
+        end)
+    end
+})
+
+Esp:AddToggle({
+    Name = "Esp Fruits",
+    Default = GetSetting("EspFruits_Save", false),
+    Callback = function(I)
+        DevilFruitESP = I
+        _G.SaveData["EspFruits_Save"] = I
+        SaveSettings()
+
+        task.spawn(function()
+            while DevilFruitESP do
+                task.wait(1)
+                pcall(DevEsp)
+            end
+        end)
+    end
+})
+Esp:AddToggle({
+    Name = "Esp Island",
+    Default = GetSetting("EspIsland_Save", false),
+    Callback = function(I)
+        _G.IslandESP = I
+        _G.SaveData["EspIsland_Save"] = I
+        SaveSettings()
+
+        task.spawn(function()
+            while _G.IslandESP do
+                IslandESP_Func()
+                task.wait(2)
+            end
+            IslandESP_Func()
+        end)
+    end
+})
 
 if World2 then
-    Esp:AddToggle({Name = "Esp Flower", Default = false, Callback = function(I)
-        FlowerESP = I
-        task.spawn(function() while FlowerESP do pcall(flowerEsp); task.wait(1) end end)
-    end})
-    Esp:AddToggle({Name = "Esp Legendary Sword", Default = false, Callback = function(I)
-        LegenS = I
-        task.spawn(function() while LegenS do pcall(LegenSword); task.wait(1) end end)
-    end})
+    Esp:AddToggle({
+        Name = "Esp Flower",
+        Default = GetSetting("EspFlower_Save", false),
+        Callback = function(I)
+            FlowerESP = I
+            _G.SaveData["EspFlower_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while FlowerESP do
+                    pcall(flowerEsp)
+                    task.wait(1)
+                end
+            end)
+        end
+    })
+
+    Esp:AddToggle({
+        Name = "Esp Legendary Sword",
+        Default = GetSetting("EspLegendarySword_Save", false),
+        Callback = function(I)
+            LegenS = I
+            _G.SaveData["EspLegendarySword_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while LegenS do
+                    pcall(LegenSword)
+                    task.wait(1)
+                end
+            end)
+        end
+    })
 end
 
 if World2 or World3 then
-    Esp:AddToggle({Name = "Esp Aura Colour Dealers", Default = false, Callback = function(I)
-        ColorEsp = I
-        task.spawn(function() while ColorEsp do pcall(HakiClorEsp); task.wait(1) end; pcall(HakiClorEsp) end)
-    end})
+    Esp:AddToggle({
+        Name = "Esp Aura Colour Dealers",
+        Default = GetSetting("EspAuraColour_Save", false),
+        Callback = function(I)
+            ColorEsp = I
+            _G.SaveData["EspAuraColour_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while ColorEsp do
+                    pcall(HakiClorEsp)
+                    task.wait(1)
+                end
+                pcall(HakiClorEsp)
+            end)
+        end
+    })
 end
 
 if World3 then
-    Esp:AddToggle({Name = "Esp Gears", Default = false, Callback = function(I)
-        ESPGear = I
-        task.spawn(function() while ESPGear do pcall(gearEsp); task.wait(1) end end)
-    end})
-    Esp:AddToggle({Name = "Esp Advanced Fruits Dealer", Default = false, Callback = function(I)
-        advanEsp = I
-        task.spawn(function() while advanEsp do pcall(AdvanFruitEsp); task.wait(1) end; pcall(AdvanFruitEsp) end)
-    end})
+    Esp:AddToggle({
+        Name = "Esp Gears",
+        Default = GetSetting("EspGears_Save", false),
+        Callback = function(I)
+            ESPGear = I
+            _G.SaveData["EspGears_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while ESPGear do
+                    pcall(gearEsp)
+                    task.wait(1)
+                end
+            end)
+        end
+    })
+
+    Esp:AddToggle({
+        Name = "Esp Advanced Fruits Dealer",
+        Default = GetSetting("EspAdvancedFruitDealer_Save", false),
+        Callback = function(I)
+            advanEsp = I
+            _G.SaveData["EspAdvancedFruitDealer_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while advanEsp do
+                    pcall(AdvanFruitEsp)
+                    task.wait(1)
+                end
+                pcall(AdvanFruitEsp)
+            end)
+        end
+    })
 end
 
 
@@ -9210,7 +9335,7 @@ end)
 
 -- Usamos um valor grande (como 9999999) para simular o gasto de 'todos' os pontos disponíveis.
 -- Assumimos que a função 'statsSetings' irá apenas gastar o máximo de pontos que o jogador realmente tem.
-local AllAvailablePoints = 9999999; 
+local AllAvailablePoints = 3; 
 
 spawn(function()
 	while wait(Sec) do
