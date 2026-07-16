@@ -1,4 +1,41 @@
--- ========================================
+local HttpService = Services.HttpService
+local FolderName = "青龙脚本 Hub"
+local FileName = "Settings.json"
+local FullPath = FolderName .. "/" .. FileName
+
+if makefolder and not isfolder(FolderName) then 
+    makefolder(FolderName) 
+end
+
+_G.SaveData = _G.SaveData or {}
+
+function SaveSettings()
+    if not writefile then return false end
+    local success = pcall(function()
+        local json = HttpService:JSONEncode(_G.SaveData)
+        writefile(FullPath, json)
+    end)
+    return success
+end
+
+function LoadSettings()
+    if not (isfile and isfile(FullPath)) then return false end
+    local success, result = pcall(function()
+        local content = readfile(FullPath)
+        return HttpService:JSONDecode(content)
+    end)
+    if success and result then 
+        _G.SaveData = result
+        return true
+    end
+    return false
+end
+
+function GetSetting(name, default)
+    return _G.SaveData[name] ~= nil and _G.SaveData[name] or default
+end
+
+LoadSettings()
 -- Dungeon Hub
 -- PlaceId: 73902483975735
 -- ========================================
@@ -209,13 +246,17 @@ local Main = Library:MakeTab({
 
 })
 
+local Setting = Library:MakeTab({
+    Title = "Setting & UI",
+    Icon = "rbxassetid://7734053495"
+})
 
 
 -- ========================================
 -- Dungeon Info
 -- ========================================
 
-Main:AddSection({"Dungeon Info"})
+Main:AddSection({"Dungeon Info"});
 
 
 Main:AddParagraph({
@@ -587,3 +628,221 @@ Main:AddToggle({
     end
 
 })
+
+
+Setting:AddSection({"Cài đặt"});
+Setting:AddButton({
+    Name = "Salvar Config UI",
+    Description = "",
+    Default= true, 
+    Callback = function()
+        -- Verifica se a função existe antes de chamar
+        if SaveSettings then
+            SaveSettings()
+            
+            -- Notificação Universal (Funciona sem a lib Fluent)
+            game.StarterGui:SetCore("SendNotification", {
+                Title = "青龙脚本Hub",
+                Text = "Done",
+                Duration = 5
+            })
+        else
+            warn("Erro!")
+        end
+    end
+})
+
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+local plr = Players.LocalPlayer
+local humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid") or nil
+
+plr.CharacterAdded:Connect(function(char)
+    humanoid = char:WaitForChild("Humanoid")
+end)
+
+local SpeedEnabled = false
+local JumpEnabled = false
+
+local desiredSpeed = 16
+local desiredJump = 50
+
+local function protectSpeed()
+    if humanoid then
+        humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+            if SpeedEnabled and humanoid.WalkSpeed ~= desiredSpeed then
+                humanoid.WalkSpeed = desiredSpeed
+            end
+        end)
+    end
+end
+
+local function applyStats()
+    if humanoid then
+        if SpeedEnabled then humanoid.WalkSpeed = desiredSpeed end
+        if JumpEnabled then humanoid.JumpPower = desiredJump end
+    end
+end
+
+RunService.Heartbeat:Connect(function()
+    if humanoid then
+        if SpeedEnabled and humanoid.WalkSpeed ~= desiredSpeed then
+            humanoid.WalkSpeed = desiredSpeed
+        end
+        if JumpEnabled and humanoid.JumpPower ~= desiredJump then
+            humanoid.JumpPower = desiredJump
+        end
+    end
+end)
+
+plr.CharacterAdded:Connect(function(char)
+    humanoid = char:WaitForChild("Humanoid")
+    protectSpeed()
+end)
+
+protectSpeed()
+
+-- Toggle para WalkSpeed
+Setting:AddToggle({
+	Name  = "Set WalkSpeed",
+    Description = "Bật tốc độ chạy của bạn",
+    Default = true,
+    Callback = function(Value)
+        SpeedEnabled = Value
+        applyStats()
+    end
+})
+-- Input para definir valor da WalkSpeed 
+Setting:AddSlider({
+    Name = "WalkSpeed Value",
+    Description = "Kéo để chọn tốc độ",
+    Default = _G.SaveData["WalkSpeed_Save"] or 16, -- Đọc giá trị lưu, mặc định 16
+    Min = 20,
+    Max = 500, -- Bạn có thể chỉnh Max tùy ý
+    Rounding = 0, -- Làm tròn số
+    Callback = function(Value)
+        desiredSpeed = Value
+        _G.SaveData["WalkSpeed_Save"] = Value -- Lưu trạng thái
+        if SaveSettings then SaveSettings() end -- Tự động lưu
+        applyStats() -- Áp dụng tốc độ
+    end
+})
+
+-- Toggle para JumpPower
+Setting:AddToggle({
+	Name  = "Set JumpPower",
+    Description = "Bật độ nhả cao của bạn",
+    Default = true,
+    Callback = function(Value)
+        JumpEnabled = Value
+        applyStats()
+    end
+})
+Setting:AddSlider({
+    Name = "JumpPower Value",
+    Description = "Kéo để chọn độ cao nhảy",
+    Default = _G.SaveData["JumpPower_Save"] or 50, -- Đọc giá trị lưu, mặc định 50
+    Min = 50,
+    Max = 900, -- Bạn có thể điều chỉnh mức tối đa tùy ý
+    Rounding = 0,
+    Callback = function(Value)
+        desiredJump = Value
+        _G.SaveData["JumpPower_Save"] = Value -- Lưu trạng thái
+        if SaveSettings then SaveSettings() end -- Tự động lưu
+        applyStats() -- Áp dụng thay đổi
+    end
+})
+Setting:AddToggle({
+	Name = "Auto Active Haki",
+	Description = "tự động kích hoạt haki",
+	-- 1. Carrega o estado salvo
+	Default = GetSetting("AutoHaki_Save", true),
+	Callback = function(I)
+		Boud = I
+        -- 2. Salva
+        _G.SaveData["AutoHaki_Save"] = I
+        SaveSettings()
+	end,
+})
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if Boud then
+				local I = { "HasBuso", "Buso" };
+				if not plr.Character:FindFirstChild(I[1]) then
+					replicated.Remotes.CommF_:InvokeServer(I[2]);
+				end;
+			end;
+		end);
+	end;
+end);
+Setting:AddToggle({
+	Name = "Auto Active V3",
+	Description = "tự động dùng tộc v3",
+	-- 1. Carrega o estado salvo
+	Default = GetSetting("AutoActiveV3_Save", false),
+	Callback = function(I)
+		_G.RaceClickAutov3 = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["AutoActiveV3_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+	end,
+})
+
+Setting:AddToggle({
+	Name = "Auto Active V4",
+	Description = "tự động dùng tộc v4",
+	-- 1. Carrega o estado salvo
+	Default = GetSetting("AutoActiveV4_Save", false),
+	Callback = function(I)
+		_G.RaceClickAutov4 = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["AutoActiveV4_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+	end,
+})
+
+spawn(function()
+	while wait(.2) do
+		pcall(function()
+			if _G.RaceClickAutov3 then
+				repeat
+					replicated.Remotes.CommE:FireServer("ActivateAbility");
+					wait(30);
+				until not _G.RaceClickAutov3;
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(.2) do
+		pcall(function()
+			if _G.RaceClickAutov4 then
+				if plr.Character:FindFirstChild("RaceEnergy") then
+					if (plr.Character:FindFirstChild("RaceEnergy")).Value == 1 then
+						Useskills("nil", "Y");
+					end;
+				end;
+			end;
+		end);
+	end;
+end);
+Setting:AddToggle({
+    Name = "Nhảy cao vô hạn",
+    Default = true,
+    Callback = function(Value)
+        _G.InfiniteJump = Value
+    end
+})
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if _G.InfiniteJump then
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
