@@ -74,8 +74,6 @@ TweenService:Create(Frame, TweenInfo.new(0.35), {
 
 task.wait(0.4)
 Gui:Destroy()
--- Ví dụ:
--- loadstring(game:HttpGet("LINK_CUA_BAN"))()
 local HttpService = Services.HttpService
 local FolderName = "青龙脚本 Hub"
 local FileName = "Settings.json"
@@ -326,7 +324,8 @@ local e = {
 		"Quake",
 		"Light",
 		"Dark",
-		"Spider",
+		"String",
+		"Rumble",
 		"Magma",
 		"Human: Buddha",
 		"Sand",
@@ -11542,7 +11541,8 @@ e = {
 		"Quake",
 		"Light",
 		"Dark",
-		"Spider",
+		"String",
+		"Rumble",
 		"Magma",
 		"Human: Buddha",
 		"Sand",
@@ -11573,8 +11573,10 @@ spawn(function()
 					_G.SelectChip = "Light";
 				elseif GetBP("Dark-Dark") then
 					_G.SelectChip = "Dark";
-				elseif GetBP("Spider-Spider") then
-					_G.SelectChip = "Spider";
+				elseif GetBP("String-String") then
+					_G.SelectChip = "String";
+				elseif GetBP("Rumble-Rumble") then
+				    _G.SelectChip = "Rumble";
 				elseif GetBP("Magma-Magma") then
 					_G.SelectChip = "Magma";
 				elseif GetBP("Human-Human: Buddha Fruit") then
