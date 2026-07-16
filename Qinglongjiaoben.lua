@@ -158,7 +158,7 @@ elseif placeId == 4442272183 or placeId == 79091703265657 then
 elseif placeId == 7449423635 or placeId == 100117331123089 then
     World3 = true
 elseif placeId == 73902483975735 then
-    Dungeon = true
+    World4 = true
 end
 
 if Dungeon then
@@ -2314,6 +2314,7 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
+	print("START UI")
 	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua.txt"))():MakeWindow({
     Title = "青龙脚本 | Hub",
     SubTitle = "Blox Fruit",
@@ -11733,6 +11734,7 @@ spawn(function()
 		end);
 	end;
 end);
+if World2 or World3 then
 Fruit:AddSection({"Dungeon raid"});
 DungeonPlaceId = 73902483975735
 
@@ -11803,6 +11805,8 @@ task.spawn(function()
         end
     end
 end)
+end 
+if World4 then
 Fruit:AddSection({"Bring Mobs"});
 
 local BringRadius = 350
@@ -12037,7 +12041,7 @@ Fruit:AddToggle({
         end
     end
 })
-
+end
 
 
 
