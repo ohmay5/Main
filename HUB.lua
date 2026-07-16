@@ -592,6 +592,114 @@ Main:AddToggle({
 
 })
 
+Main:AddToggle({
+		Title = "Auto Attack Mon",
+		Desc = "Auto Attack Nearest",
+		Default = false,
+		Callback = function(state)
+			_G.AutoAttackMonDungeon = state
+			StopTween(_G.AutoAttackMonDungeon)
+		end
+	})
+	function getHighestFloor()
+		local highest = 0
+		local highestFloor = nil
+
+		for _, v in pairs(workspace.Map.Dungeon:GetChildren()) do
+			local num = tonumber(v.Name)
+			if num and num > highest then
+				highest = num
+				highestFloor = v
+			end
+		end
+
+		return highestFloor
+	end
+	function getCurrentFloor()
+		local highest = 0
+
+		for _, v in pairs(workspace.Map.Dungeon:GetChildren()) do
+			local num = tonumber(v.Name)
+			if num and num > highest then
+				highest = num
+			end
+		end
+
+		local targetFloor = tostring(highest - 1)
+		return workspace.Map.Dungeon:FindFirstChild(targetFloor)
+	end
+
+	spawn(function()
+		while wait() do
+			if _G.AutoAttackMonDungeon then
+				pcall(function()
+					if (HumanoidRootPart.Position - getHighestFloor().Root.Position).Magnitude < 2000 then
+						for _, v in pairs(Enemies:GetChildren()) do
+							if v:FindFirstChild("Humanoid")
+							and v:FindFirstChild("HumanoidRootPart")
+							and v.Humanoid.Health > 0
+							and not string.find(v.Name, "Blank Buddy")
+							and (HumanoidRootPart.Position - v.HumanoidRootPart.Position).Magnitude <= 3000 then
+								if string.find(v.Name, "PropHitboxPlaceholder") then
+									NonBlockAttackTarget(v, false, function()
+										return _G.AutoAttackMonDungeon
+									end)
+								elseif v:GetAttribute("IsBoss") == true then
+									NonBlockAttackTarget(v, false, function()
+										return _G.AutoAttackMonDungeon
+									end)
+								else
+									NonBlockAttackTarget(v, false, function()
+										return _G.AutoAttackMonDungeon
+									end)
+								end
+							end
+						end
+					else
+						if _G.AutoNextFloor then
+							firetouchinterest(getCurrentFloor().ExitTeleporter.Root, HumanoidRootPart, 0);
+							firetouchinterest(getCurrentFloor().ExitTeleporter.Root, HumanoidRootPart, 1);
+							wait(0.5)
+						end
+					end
+				end)
+			end
+		end
+	end)
+Main:AddToggle({
+		Title = "Auto Next Floor",
+		Desc = "Instant Teleport To Highest Floor",
+		Default = false,
+		Callback = function(state)
+			_G.AutoNextFloor = state
+		end
+	})
+Main:AddToggle({
+		Title = "Auto Return To Hub",
+		Desc = "Return To Hub When Dungeon Done",
+		Default = false,
+		Callback = function(state)
+			_G.AutoReturnToHub = state
+		end
+	})
+	spawn(function()
+		while wait() do
+			if _G.AutoReturnToHub then
+				pcall(function()
+					ReplicatedStorage:WaitForChild("DungeonShared"):WaitForChild("ReturnToHub"):FireServer()
+					wait(2)
+				end)
+			end
+		end
+	end)
+end
+
+
+
+
+
+
+
 
 Setting:AddSection({"Cài đặt"});
 

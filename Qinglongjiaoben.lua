@@ -9255,122 +9255,74 @@ Esp:AddSection({"Stats"});
 -- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
 
 Esp:AddToggle({
-    Name = "Add Points Melee",
-    Description = "Gasta pontos automaticamente em Melee",
-    Default = GetSetting("AutoMelee_Save", false),
-    Callback = function(I)
-        _G.Auto_Melee = I
-        _G.SaveData["AutoMelee_Save"] = I
-        SaveSettings()
-    end,
-})
-
+	Title = "Add Melee Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddMeleeStats = state;
+	end
+});
 Esp:AddToggle({
-    Name = "Add Points Sword",
-    Description = "Gasta pontos automaticamente em Sword",
-    Default = GetSetting("AutoSword_Save", false),
-    Callback = function(I)
-        _G.Auto_Sword = I
-        _G.SaveData["AutoSword_Save"] = I
-        SaveSettings()
-    end,
-})
-
+	Title = "Add Defense Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddDefenseStats = state;
+	end
+});
 Esp:AddToggle({
-    Name = "Add Points Gun",
-    Description = "Gasta pontos automaticamente em Gun",
-    Default = GetSetting("AutoGun_Save", false),
-    Callback = function(I)
-        _G.Auto_Gun = I
-        _G.SaveData["AutoGun_Save"] = I
-        SaveSettings()
-    end,
-})
-
+	Title = "Add Sword Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddSwordStats = state;
+	end
+});
 Esp:AddToggle({
-    Name = "Add Points Fruit",
-    Description = "Gasta pontos automaticamente em Fruit",
-    Default = GetSetting("AutoFruit_Save", false),
-    Callback = function(I)
-        _G.Auto_Blox = I
-        _G.SaveData["AutoFruit_Save"] = I
-        SaveSettings()
-    end,
-})
-
+	Title = "Add Gun Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddGunStats = state;
+	end
+});
 Esp:AddToggle({
-    Name = "Add Points Defense",
-    Description = "Gasta pontos automaticamente em Defense",
-    Default = GetSetting("AutoDefense_Save", false),
-    Callback = function(I)
-        _G.Auto_Defense = I
-        _G.SaveData["AutoDefense_Save"] = I
-        SaveSettings()
-    end,
-})
-
--- // LOOP DOS STATS (Execute isso uma vez no seu script) // --
-task.spawn(function()
-    while task.wait(1) do
-        pcall(function()
-            local remote = game:GetService("ReplicatedStorage").Remotes.CommF_
-            if _G.Auto_Melee then remote:InvokeServer("AddPoint", "Melee", 3) end
-            if _G.Auto_Sword then remote:InvokeServer("AddPoint", "Sword", 3) end
-            if _G.Auto_Gun then remote:InvokeServer("AddPoint", "Gun", 3) end
-            if _G.Auto_Blox then remote:InvokeServer("AddPoint", "Demon Fruit", 3) end
-            if _G.Auto_Defense then remote:InvokeServer("AddPoint", "Defense", 3) end
-        end)
-    end
-end)
-
--- Usamos um valor grande (como 9999999) para simular o gasto de 'todos' os pontos disponíveis.
--- Assumimos que a função 'statsSetings' irá apenas gastar o máximo de pontos que o jogador realmente tem.
-local AllAvailablePoints = 9999999; 
-
+	Title = "Add Devil Fruit Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddFruitStats = state;
+	end
+});
+Esp:AddSlider({
+	Title = "Point",
+	Step = 1,
+	Value = {
+		Min = 1,
+		Max = 100,
+		Default = 1
+	},
+	Callback = function(value)
+		_G.PointStats = value;
+	end
+});
+function addStatsPoint(val)
+	Remotes.CommF_:InvokeServer("AddPoint", val, _G.PointStats);
+end;
 spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Melee then
-				statsSetings("Melee", AllAvailablePoints);
+	while wait(0.2) do
+		-- if LocalPlayer.Data.Points.Value > _G.PointStats then
+			if _G.AddMeleeStats then
+				addStatsPoint("Melee");
 			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Sword then
-				statsSetings("Sword", AllAvailablePoints);
+			if _G.AddDefenseStats then
+				addStatsPoint("Defense");
 			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Gun then
-				statsSetings("Gun", AllAvailablePoints);
+			if _G.AddSwordStats then
+				addStatsPoint("Sword");
 			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			-- Note: No seu código original era 'Auto_DevilFruit', mas no menu era 'Fruit'. Corrigi para usar a mesma variável do menu.
-			if _G.Auto_Blox then 
-				statsSetings("Devil", AllAvailablePoints);
+			if _G.AddGunStats then
+				addStatsPoint("Gun");
 			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Defense then
-				statsSetings("Defense", AllAvailablePoints);
+			if _G.AddFruitStats then
+				addStatsPoint("Demon Fruit");
 			end;
-		end);
+		-- end;
 	end;
 end);
 Player:AddSection({"Pvp, aimbot, movement"})
@@ -9783,22 +9735,49 @@ spawn(function()
 	end;
 end);
 Teleport:AddSection({"Travel - Worlds"});
-Teleport:AddButton({ Name = "Teleport Sea 1", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("TravelMain");
-	end });
-Teleport:AddButton({ Name = "Teleport Sea 2", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("TravelDressrosa");
-	end });
-Teleport:AddButton({ Name = "Teleport Sea 3", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("TravelZou");
-	end });
 Teleport:AddButton({
-    Name = "Teleport Dungeon",
+    Name = "Teleport Sea 1",
+    Description = "",
     Callback = function()
-        replicated.Remotes.CommF_:InvokeServer("TênLệnhĐúng")
+        replicated.Remotes.CommF_:InvokeServer("TravelMain")
     end
 })
-	
+
+Teleport:AddButton({
+    Name = "Teleport Sea 2",
+    Description = "",
+    Callback = function()
+        replicated.Remotes.CommF_:InvokeServer("TravelDressrosa")
+    end
+})
+
+Teleport:AddButton({
+    Name = "Teleport Sea 3",
+    Description = "",
+    Callback = function()
+        replicated.Remotes.CommF_:InvokeServer("TravelZou")
+    end
+})
+
+Teleport:AddButton({
+    Name = "Teleport To Dungeon Hub",
+    Description = "",
+    Callback = function()
+        local Net = game:GetService("ReplicatedStorage"):WaitForChild("Net", 5)
+
+        if Net then
+            local RF = Net:FindFirstChild("RF/DungeonNPCNetworkFunction")
+
+            if RF then
+                RF:InvokeServer("TeleportToDungeonHub", false)
+            else
+                warn("Không tìm thấy DungeonNPCNetworkFunction")
+            end
+        else
+            warn("Không tìm thấy Net")
+        end
+    end
+})
 	
 Teleport:AddSection({"Travel - Island"})
 
@@ -11744,76 +11723,6 @@ spawn(function()
 	end;
 end);
 
-Fruit:AddSection({"Dungeon raid"});
-DungeonPlaceId = 73902483975735
-
-local function IsDungeonGame()
-    return game.PlaceId == DungeonPlaceId
-end
-
-local function ClickButtonOnce(Button, AttributeName)
-    if not Button or not Button.Parent then return false end
-    AttributeName = AttributeName or "ClickedOnce"
-    if Button:GetAttribute(AttributeName) then return false end
-    Button:SetAttribute(AttributeName, true)
-    pcall(function() Button:Activate() end)
-    pcall(function() if firesignal and Button.Activated then firesignal(Button.Activated) end end)
-    return true
-end
-
-local function ClickButton(Button)
-    if not Button or not Button.Parent then return false end
-    pcall(function() Button:Activate() end)
-    pcall(function() if firesignal and Button.Activated then firesignal(Button.Activated) end end)
-    return true
-end
-
--- Auto Join Dungeon Server
-AutoJoinDungeonServer = false
-Fruit:AddToggle({
-    Name = "Auto Join Dungeon Server",
-    Description = "Join Dungeon server automatically",
-    Default = false,
-    Callback = function(Value)
-        AutoJoinDungeonServer = Value
-    end
-})
-
-task.spawn(function()
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-    local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
-    
-    while task.wait(0.5) do
-        if IsDungeonGame() then
-            if AutoJoinDungeonServer then AutoJoinDungeonServer = false end
-            task.wait(1)
-        end
-        
-        if not AutoJoinDungeonServer then
-            local ServerBrowserButton = PlayerGui:FindFirstChild("Topbar") and PlayerGui.Topbar:FindFirstChild("Frame") and PlayerGui.Topbar.Frame:FindFirstChild("ServerBrowserButton")
-            if ServerBrowserButton then pcall(function() ServerBrowserButton:SetAttribute("Clicked_ServerBrowserButton", nil) end) end
-            task.wait(1)
-        else
-            local ServerBrowserButton = PlayerGui:WaitForChild("Topbar"):WaitForChild("Frame"):WaitForChild("ServerBrowserButton")
-            ClickButtonOnce(ServerBrowserButton, "Clicked_ServerBrowserButton")
-            
-            local ServerBrowserGui = PlayerGui:WaitForChild("ServerBrowser")
-            task.wait(0.5)
-            
-            local DungeonButton = ServerBrowserGui:WaitForChild("Frame"):WaitForChild("TeleportButtons"):WaitForChild("Dungeon")
-            task.wait(0.5)
-            
-            for i = 1, 3 do
-                if not AutoJoinDungeonServer then break end
-                ClickButton(DungeonButton)
-                task.wait(0.25)
-            end
-            
-            AutoJoinDungeonServer = false
-        end
-    end
-end)
 Fruit:AddSection({"Fruits Options"});
 local J5 = {};
 local function i5(I)
