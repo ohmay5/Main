@@ -4040,7 +4040,47 @@ Farm:AddToggle({
         SaveSettings()
     end,
 })
+Farm:AddToggle({
+	Title = "Auto Stop Chest",
+	Desc = "Stop Auto Chest when get God's Chalice or Fist of Darkness",
+	Default = false,
+	Callback = function(state)
+		_G.AutoStopChest = state
+		if state then
+			StopTween(true)
+		end
+	end
+})
 
+
+spawn(function()
+	while task.wait(_G.GlobalDelay) do
+		pcall(function()
+			if _G.AutoStopChest then
+				
+				local HasChalice = LocalPlayer.Backpack:FindFirstChild("God's Chalice")
+					or Character:FindFirstChild("God's Chalice")
+
+				local HasFist = LocalPlayer.Backpack:FindFirstChild("Fist of Darkness")
+					or Character:FindFirstChild("Fist of Darkness")
+
+				if HasChalice or HasFist then
+					
+					-- Tắt Auto Chest
+					_G.AutoFarmChest = false
+					_G.FarmEliteHunt = false
+					
+					-- Dừng di chuyển
+					pcall(function()
+						StopTween(true)
+					end)
+
+					break
+				end
+			end
+		end)
+	end
+end)
 -- Botão Auto Collect Berry
 Farm:AddToggle({
 	Name = "Auto Collect Berry",
@@ -4676,18 +4716,6 @@ Setting:AddSlider({
         SaveSettings()
     end
 });
-Setting:AddToggle({
-    Name = "Nhảy cao vô hạn",
-    Default = true,
-    Callback = function(Value)
-        _G.InfiniteJump = Value
-    end
-})
-game:GetService("UserInputService").JumpRequest:Connect(function()
-    if _G.InfiniteJump then
-        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
-    end
-end)
 Others:AddSection({"Fishing"})
 -- =========================================================
 -- NOVO SISTEMA DE PESCA (COM SAVE SYSTEM INTEGRADO)
@@ -5322,6 +5350,210 @@ spawn(function()
         end
     end
 end)
+if World1 then 
+Others:AddSection({"Quests"})
+Others:AddToggle({
+    Name = "Auto Second Sea",
+    Description = "Automatically unlock Second Sea",
+    Default = GetSetting("AutoSecondSea_Save", false),
+    Callback = function(Value)
+        _G.AutoSecondSea = Value
+
+        _G.SaveData["AutoSecondSea_Save"] = Value
+        SaveSettings()
+
+        if not Value then
+            StopTween(true)
+        end
+    end,
+})
+
+task.spawn(function()
+    while task.wait(_G.GlobalDelay) do
+        pcall(function()
+            if _G.AutoSecondSea and World1 then
+                if MyLevel >= 700 then
+
+                    if Workspace.Map.Ice.Door.CanCollide == false
+                    and Workspace.Map.Ice.Door.Transparency == 1 then
+
+                        local Pos = CFrame.new(4849.29883, 5.65138149, 719.611877)
+
+                        repeat
+                            TweenPlayer(Pos)
+                            task.wait()
+                        until (Pos.Position - HumanoidRootPart.Position).Magnitude <= 3
+                            or not _G.AutoSecondSea
+
+                        if not _G.AutoSecondSea then
+                            StopTween(true)
+                            return
+                        end
+
+                        task.wait(1.1)
+                        Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                        task.wait(0.5)
+
+                        EquipWeapon("Key")
+
+                        local Door = CFrame.new(1347.7124, 37.3751602, -1325.6488)
+
+                        repeat
+                            TweenPlayer(Door)
+                            task.wait()
+                        until (Door.Position - HumanoidRootPart.Position).Magnitude <= 3
+                            or not _G.AutoSecondSea
+
+                        if not _G.AutoSecondSea then
+                            StopTween(true)
+                            return
+                        end
+
+                        task.wait(0.5)
+
+                    elseif Enemies:FindFirstChild("Ice Admiral") then
+
+                        local Boss = Enemies:FindFirstChild("Ice Admiral")
+
+                        if Boss
+                        and Boss:FindFirstChild("Humanoid")
+                        and Boss:FindFirstChild("HumanoidRootPart")
+                        and Boss.Humanoid.Health > 0 then
+
+                            AttackTarget(Boss, false, function()
+                                return _G.AutoSecondSea
+                            end)
+
+                        elseif Boss and Boss.Humanoid.Health <= 0 then
+
+                            Remotes.CommF_:InvokeServer("TravelDressrosa")
+
+                        end
+
+                    elseif ReplicatedStorage:FindFirstChild("Ice Admiral") then
+
+                        TweenPlayer(
+                            ReplicatedStorage["Ice Admiral"].HumanoidRootPart.CFrame
+                            * CFrame.new(5,10,7)
+                        )
+
+                    end
+                end
+            end
+        end)
+    end
+end)
+end
+if World1 then
+	AutoSecondSeaToggle = WorldSection:Toggle({
+		Title = "Auto Second Sea",
+		Desc = "Function Sea 1 Only",
+		Default = false,
+		Callback = function(state)
+			_G.AutoSecondSea = state;
+			StopTween(_G.AutoSecondSea);
+		end
+	});
+end
+if World2 then
+	AutoThirdSeaToggle = WorldSection:Toggle({
+		Title = "Auto Third Sea",
+		Desc = "Function Sea 2 Only",
+		Default = false,
+		Callback = function(state)
+			_G.AutoThirdSea = state;
+			StopTween(_G.AutoThirdSea);
+		end
+	});
+end
+if World2 then
+	spawn(function()
+		while wait() do
+			wait(_G.GlobalDelay)
+			if _G.AutoThirdSea and World2 then
+				pcall(function()
+					if LocalPlayer.Data.Level.Value >= 1500 and World2 then
+						if Remotes.CommF_:InvokeServer("ZQuestProgress", "General") == 0 then
+							TweenPlayer(CFrame.new(-1926.3221435547, 12.819851875305, 1738.3092041016));
+							if ((CFrame.new((-1926.3221435547), 12.819851875305, 1738.3092041016)).Position - HumanoidRootPart.Position).Magnitude <= 10 then
+								wait(1.5);
+								Remotes.CommF_:InvokeServer("ZQuestProgress", "Begin");
+							end;
+							wait(1.8);
+							if Enemies:FindFirstChild("rip_indra") then
+								for i, v in pairs(Enemies:GetChildren()) do
+									if v.Name == "rip_indra" then
+										AttackTarget(v, false, function()
+											return _G.AutoThirdSea
+										end)
+									end;
+								end;
+							elseif not Enemies:FindFirstChild("rip_indra") and ((CFrame.new((-26880.93359375), 22.848554611206, 473.18951416016)).Position - HumanoidRootPart.Position).Magnitude <= 1000 then
+								TweenPlayer(CFrame.new(-26880.93359375, 22.848554611206, 473.18951416016));
+							end;
+						end;
+					end;
+				end);
+			end;
+		end;
+	end);
+end
+if World1 then
+	spawn(function()
+		while wait() do
+			wait(_G.GlobalDelay)
+			if _G.AutoSecondSea and World1 then
+				pcall(function()
+					if MyLevel >= 700 and World1 then
+						if Workspace.Map.Ice.Door.CanCollide == false and Workspace.Map.Ice.Door.Transparency == 1 then
+							local CFrame1 = CFrame.new(4849.29883, 5.65138149, 719.611877);
+							repeat
+								TweenPlayer(CFrame1);
+								wait();
+							until (CFrame1.Position - HumanoidRootPart.Position).Magnitude <= 3 or _G.AutoSecondSea == false;
+							wait(1.1);
+							Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective");
+							wait(0.5);
+							EquipWeapon("Key");
+							repeat
+								TweenPlayer(CFrame.new(1347.7124, 37.3751602, -1325.6488));
+								wait();
+							until (Vector3.new(1347.7124, 37.3751602, (-1325.6488)) - HumanoidRootPart.Position).Magnitude <= 3 or _G.AutoSecondSea == false;
+							wait(0.5);
+						elseif Workspace.Map.Ice.Door.CanCollide == false and Workspace.Map.Ice.Door.Transparency == 1 then
+							if Enemies:FindFirstChild("Ice Admiral") then
+								for i, v in pairs(Enemies:GetChildren()) do
+									if v.Name == "Ice Admiral" then
+										if not v.Humanoid.Health <= 0 then
+											if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+												AttackTarget(v, false, function()
+													return _G.AutoSecondSea
+												end)
+											end;
+										else
+											Remotes.CommF_:InvokeServer("TravelDressrosa");
+										end;
+									end;
+								end;
+							elseif ReplicatedStorage:FindFirstChild("Ice Admiral") then
+								TweenPlayer((ReplicatedStorage:FindFirstChild("Ice Admiral")).HumanoidRootPart.CFrame * CFrame.new(5, 10, 7));
+							end;
+						end;
+					end;
+				end);
+			end;
+		end;
+	end);
+end
+
+
+
+
+
+
+
+
+
 Others:AddSection({"Quests"})
  Others:AddToggle({
     Name = "Auto Farm Observation",
@@ -5625,32 +5857,7 @@ spawn(function()
 		end);
 	end;
 end);
- Others:AddToggle({
-    Name = "Stop when got God's Chalice",
-    Description = "dừng khi có cúp",
-    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
-    Default = GetSetting("StopChalice_Save", true),
-    Callback = function(I)
-        _G.StopWhenChalice = I
-        
-        -- 2. Guarda na tabela de salvamento
-        _G.SaveData["StopChalice_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
-spawn(function()
-	while wait(.2) do
-		if _G.StopWhenChalice and _G.FarmEliteHunt then
-			pcall(function()
-				if GetBP("God\'s Chalice") or GetBP("Sweet Chalice") or GetBP("Fist of Darkness") then
-					_G.FarmEliteHunt = false;
-				end;
-			end);
-		end;
-	end;
-end);
+ 
 Others:AddToggle({
 	Name = "Auto Tushita Sword",
 	Description = "tự động lấy kiếm tushita",
@@ -9484,7 +9691,7 @@ Player:AddSlider({
 -- Toggle para JumpPower
 Player:AddToggle({
 	Name  = "Set JumpPower",
-    Description = "Bật độ nhả cao của bạn",
+    Description = "Bật độ nhảy cao của bạn",
     Default = true,
     Callback = function(Value)
         JumpEnabled = Value
@@ -9505,7 +9712,39 @@ Player:AddSlider({
         applyStats() -- Áp dụng thay đổi
     end
 })
+Player:AddToggle({
+    Name = "No Clip",
+    Default = false,
+    Callback = function(Value)
+        getgenv().NoClip = Value
+    end
+})
 
+spawn(function()
+    pcall(function()
+        game:GetService("RunService").Stepped:Connect(function()
+            if getgenv().NoClip and plr.Character then
+                for _, v in pairs(plr.Character:GetDescendants()) do
+                    if v:IsA("BasePart") then
+                        v.CanCollide = false
+                    end
+                end
+            end
+        end)
+    end)
+end)
+Player:AddToggle({
+    Name = "Nhảy cao vô hạn",
+    Default = true,
+    Callback = function(Value)
+        _G.InfiniteJump = Value
+    end
+})
+game:GetService("UserInputService").JumpRequest:Connect(function()
+    if _G.InfiniteJump then
+        game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
+    end
+end)
 Player:AddSection({"LocalPlayer Settings / Misc"});
 Player:AddToggle({
 	Name = "Instance Energy [ INF ]",
