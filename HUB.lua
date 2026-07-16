@@ -5,13 +5,19 @@
 
 repeat task.wait() until game:IsLoaded()
 
+local HumanoidRootPart
 
-local Players = game:GetService("Players")
-local UserInputService = game:GetService("UserInputService")
+local function UpdateCharacter()
+    local Character = plr.Character or plr.CharacterAdded:Wait()
+    HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
+end
 
-local plr = Players.LocalPlayer
+UpdateCharacter()
 
-
+plr.CharacterAdded:Connect(function()
+    task.wait(1)
+    UpdateCharacter()
+end)
 -- ========================================
 -- Dungeon Check
 -- ========================================
@@ -40,6 +46,7 @@ print("Dungeon Loaded:", placeId)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
+local Enemies = workspace:WaitForChild("Enemies")
 -- ========================================
 -- Load UI
 -- ========================================
@@ -203,14 +210,14 @@ end)
 
 local Main = Library:MakeTab({
 
-    Title = "Dungeon",
+    Name = "Dungeon",
 
     Icon = "rbxassetid://7040410130"
 
 })
 
 local Setting = Library:MakeTab({
-    Title = "Setting & UI",
+    Name = "Setting & UI",
     Icon = "rbxassetid://7734053495"
 })
 
@@ -526,7 +533,7 @@ Main:AddToggle({
 
 })
 Main:AddToggle({
-		Title = "Auto Attack Mon",
+		Name = "Auto Attack Mon",
 		Default = false,
 		Callback = function(state)
 			_G.AutoAttackMonDungeon = state
@@ -599,7 +606,7 @@ Main:AddToggle({
 		end
 	end)
 Main:AddToggle({
-		Title = "Auto Next Floor",
+		Name = "Auto Next Floor",
 		
 		Default = false,
 		Callback = function(state)
@@ -607,7 +614,7 @@ Main:AddToggle({
 		end
 	})
 Main:AddToggle({
-		Title = "Auto Return To Hub",
+		Name = "Auto Return To Hub",
 		
 		Default = false,
 		Callback = function(state)
@@ -624,7 +631,6 @@ Main:AddToggle({
 			end
 		end
 	end)
-end
 
 Setting:AddSection({"Cài đặt"});
 
@@ -748,7 +754,7 @@ spawn(function()
 			if Boud then
 				local I = { "HasBuso", "Buso" };
 				if not plr.Character:FindFirstChild(I[1]) then
-					replicated.Remotes.CommF_:InvokeServer(I[2]);
+					ReplicatedStorage.Remotes.CommF_:InvokeServer(I[2]);
 				end;
 			end;
 		end);
