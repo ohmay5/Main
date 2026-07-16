@@ -1,97 +1,97 @@
-repeat task.wait() until game:IsLoaded()
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
 local Player = Players.LocalPlayer
 local PlayerGui = Player:WaitForChild("PlayerGui")
 
-
--- Loading GUI
 local Gui = Instance.new("ScreenGui")
 Gui.Name = "LoadingGui"
 Gui.ResetOnSpawn = false
 Gui.IgnoreGuiInset = true
-Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 Gui.Parent = PlayerGui
-
 
 local Frame = Instance.new("Frame")
 Frame.AnchorPoint = Vector2.new(1,1)
 Frame.Position = UDim2.new(1,-15,1,-15)
-Frame.Size = UDim2.new(0,180,0,50)
-Frame.BackgroundColor3 = Color3.fromRGB(18,18,18)
+Frame.Size = UDim2.new(0,180,0,45)
+Frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Frame.BackgroundTransparency = 0.15
 Frame.BorderSizePixel = 0
 Frame.Parent = Gui
 
-local Corner = Instance.new("UICorner")
-Corner.CornerRadius = UDim.new(0,8)
-Corner.Parent = Frame
-
+Instance.new("UICorner",Frame).CornerRadius = UDim.new(0,8)
 
 local Dot = Instance.new("Frame")
-Dot.Size = UDim2.new(0,10,0,10)
-Dot.Position = UDim2.new(0,12,0.5,-5)
-Dot.BackgroundColor3 = Color3.fromRGB(0,120,255)
+Dot.Size = UDim2.new(0,12,0,12)
+Dot.Position = UDim2.new(0,12,0.5,-6)
+Dot.BackgroundColor3 = Color3.fromRGB(139,0,0)
 Dot.BorderSizePixel = 0
 Dot.Parent = Frame
 
-local DotCorner = Instance.new("UICorner")
-DotCorner.CornerRadius = UDim.new(1,0)
-DotCorner.Parent = Dot
-
+Instance.new("UICorner",Dot).CornerRadius = UDim.new(1,0)
 
 local Text = Instance.new("TextLabel")
 Text.BackgroundTransparency = 1
 Text.Position = UDim2.new(0,32,0,0)
 Text.Size = UDim2.new(1,-40,1,0)
 Text.Font = Enum.Font.GothamBold
-Text.Text = "Đang tải..."
-Text.TextSize = 16
+Text.Text = "ĐANG TẢI... 0"
+Text.TextSize = 18
 Text.TextColor3 = Color3.fromRGB(240,240,240)
 Text.TextXAlignment = Enum.TextXAlignment.Left
 Text.Parent = Frame
 
 
--- hiệu ứng chấm
+-- Chấm đỏ nhấp nháy
 task.spawn(function()
 	while Gui.Parent do
-		TweenService:Create(
+		local FadeOut = TweenService:Create(
 			Dot,
-			TweenInfo.new(0.4),
-			{BackgroundTransparency = 0.6}
-		):Play()
+			TweenInfo.new(0.5),
+			{BackgroundTransparency = 0.7}
+		)
 
-		task.wait(0.4)
-
-		TweenService:Create(
+		local FadeIn = TweenService:Create(
 			Dot,
-			TweenInfo.new(0.4),
+			TweenInfo.new(0.5),
 			{BackgroundTransparency = 0}
-		):Play()
+		)
 
-		task.wait(0.4)
+		FadeOut:Play()
+		FadeOut.Completed:Wait()
+
+		FadeIn:Play()
+		FadeIn.Completed:Wait()
 	end
 end)
 
 
--- thời gian loading
-task.wait(0.5)
+-- Đếm số mỗi 0.3 giây
+task.spawn(function()
+	for i = 0,3 do
+		Text.Text = "ĐANG TẢI... "..i
+		task.wait(0.3)
+	end
+
+	Text.Text = "HOÀN TẤT"
+end)
 
 
--- ẩn loading
-local Tween = TweenService:Create(
+-- Chờ xong rồi ẩn
+task.wait(1.5)
+
+local Hide = TweenService:Create(
 	Frame,
-	TweenInfo.new(0.25, Enum.EasingStyle.Quad),
+	TweenInfo.new(0.35),
 	{
-		Position = UDim2.new(1,200,1,-15),
-		BackgroundTransparency = 1
+		BackgroundTransparency = 1,
+		Position = UDim2.new(1,180,1,-15)
 	}
 )
 
-Tween:Play()
-Tween.Completed:Wait()
+Hide:Play()
 
+task.wait(0.4)
 Gui:Destroy()
 -- Ví dụ:
 -- loadstring(game:HttpGet("LINK_CUA_BAN"))()
