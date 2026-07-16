@@ -256,7 +256,7 @@ local Setting = Library:MakeTab({
 -- Dungeon Info
 -- ========================================
 
-Main:AddSection({"Dungeon Info"});
+Main:AddSection({"Dungeon Info"})
 
 
 Main:AddParagraph({
