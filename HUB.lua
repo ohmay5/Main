@@ -198,20 +198,30 @@ end)
 -- Tabs
 -- =======================================
 
+-- ========================================
+-- Tabs
+-- ========================================
+
 local Main = Library:MakeTab({
     Title = "Dungeon",
     Icon = "rbxassetid://7040410130"
 })
 
 
-Main:AddSection({"Dungeon Info"});
-Main:AddLabel("PlaceID: "..tostring(placeId))
-Main:AddLabel("Dungeon Hub Loaded")
+-- Dungeon Info
+Main:AddSection({"Dungeon Info"})
+
+Main:AddParagraph({
+    "Dungeon Info",
+    "PlaceID: "..tostring(placeId).."\nDungeon Hub Loaded"
+})
+
+
 -- ========================================
 -- Bring Mobs Dungeon
 -- ========================================
 
-Main:AddSection({"Bring Mobs"});
+Main:AddSection({"Bring Mobs"})
 
 
 local ScanRadius = 1000
@@ -220,97 +230,68 @@ local HoldHeight = 1
 
 
 local function GetLocalCharacterRoot()
-
-    local Char = plr.Character
-    return Char and Char:FindFirstChild("HumanoidRootPart")
-
+    local Char = plr.Character or plr.CharacterAdded:Wait()
+    return Char:FindFirstChild("HumanoidRootPart")
 end
 
 
 local function GetEnemiesFolder()
-
     return workspace:FindFirstChild("Enemies")
-
 end
-
 
 
 local function GetMobsInRadius(Position, Radius)
 
-    local EnemiesFolder = GetEnemiesFolder()
+    local Folder = GetEnemiesFolder()
 
-    if not EnemiesFolder then
+    if not Folder then
         return {}
     end
 
-
     local Mobs = {}
 
-
-    for _, Mob in ipairs(EnemiesFolder:GetChildren()) do
+    for _,Mob in pairs(Folder:GetChildren()) do
 
         local Humanoid = Mob:FindFirstChild("Humanoid")
         local Root = Mob:FindFirstChild("HumanoidRootPart")
 
-
         if Humanoid and Root and Humanoid.Health > 0 then
 
-            local Distance = (Root.Position - Position).Magnitude
-
-            if Distance <= Radius then
-                table.insert(Mobs, Mob)
+            if (Root.Position - Position).Magnitude <= Radius then
+                table.insert(Mobs,Mob)
             end
 
         end
-
     end
 
-
     return Mobs
-
 end
 
 
-
-local function CalculateRingPosition(Number, Radius)
-
-    local Angle = Number * 2.3999632297287
-
-    return Vector3.new(
-        math.cos(Angle) * Radius,
-        0,
-        math.sin(Angle) * Radius
-    )
-
-end
-
+local BringThread
 
 
 Main:AddToggle({
 
     Name = "Bring Mobs Dungeon",
 
-    Description = "Bring dungeon enemies",
+    Description = "Bring enemies",
 
     Default = false,
 
 
     Callback = function(Value)
 
-
         _G.BringMobsDungeon = Value
 
 
         if Value then
 
+            BringThread = task.spawn(function()
 
-            BringMobsThread = task.spawn(function()
+                while _G.BringMobsDungeon do
 
-
-                while _G.BringMobsDungeon and Dungeon do
-
-
-                    task.wait(0.2)
+                    task.wait(.2)
 
 
                     local Root = GetLocalCharacterRoot()
@@ -318,36 +299,14 @@ Main:AddToggle({
 
                     if Root then
 
-
-                        local Mobs = GetMobsInRadius(
-                            Root.Position,
-                            ScanRadius
-                        )
-
-
-                        table.sort(Mobs,function(a,b)
-
-                            return (
-                                a.HumanoidRootPart.Position - Root.Position
-                            ).Magnitude <
-                            (
-                                b.HumanoidRootPart.Position - Root.Position
-                            ).Magnitude
-
-                        end)
-
-
-
-                        local Base =
-                            Vector3.new(
-                                Root.Position.X,
-                                Root.Position.Y + HoldHeight,
-                                Root.Position.Z
+                        local Mobs =
+                            GetMobsInRadius(
+                                Root.Position,
+                                ScanRadius
                             )
 
 
                         for i = 1, math.min(#Mobs,MaxBring) do
-
 
                             local MobRoot =
                                 Mobs[i]:FindFirstChild("HumanoidRootPart")
@@ -356,42 +315,24 @@ Main:AddToggle({
                             if MobRoot then
 
                                 MobRoot.CFrame =
+                                    Root.CFrame *
                                     CFrame.new(
-                                        Base +
-                                        CalculateRingPosition(i,6)
+                                        math.random(-5,5),
+                                        0,
+                                        math.random(-5,5)
                                     )
 
                             end
-
                         end
-
-
                     end
-
-
                 end
-
-
             end)
-
 
         else
 
-
             _G.BringMobsDungeon = false
 
-
-            if BringMobsThread then
-
-                task.cancel(BringMobsThread)
-
-                BringMobsThread = nil
-
-            end
-
-
         end
-
 
     end
 
@@ -399,265 +340,90 @@ Main:AddToggle({
 
 
 
-
-
 -- ========================================
 -- Auto Farm Dungeon
 -- ========================================
 
+Main:AddSection({"Auto Farm"})
 
-Main:AddSection({"Auto Farm"});
 
-local function GetBestTarget()
-
-
-    local Root = GetLocalCharacterRoot()
-
-    if not Root then
-        return nil
-    end
-
-
-
-    local Target
-    local Distance = math.huge
-
-
-
-    for _,Enemy in ipairs(workspace.Enemies:GetChildren()) do
-
-
-        local Humanoid = Enemy:FindFirstChild("Humanoid")
-        local EnemyRoot = Enemy:FindFirstChild("HumanoidRootPart")
-
-
-        if Humanoid and EnemyRoot and Humanoid.Health > 0 then
-
-
-            local Dist =
-                (EnemyRoot.Position - Root.Position).Magnitude
-
-
-            if Dist < Distance then
-
-                Distance = Dist
-                Target = Enemy
-
-            end
-
-
-        end
-
-
-    end
-
-
-    return Target
-
-end
-
-
-
-
-local function HasTarget()
-
-
-    for _,Enemy in ipairs(workspace.Enemies:GetChildren()) do
-
-
-        local Humanoid = Enemy:FindFirstChild("Humanoid")
-
-
-        if Humanoid and Humanoid.Health > 0 then
-            return true
-        end
-
-
-    end
-
-
-    return false
-
-end
-
-
-
-
-local function GetExit()
-
-
-    local Map = workspace:FindFirstChild("Map")
-
-
-    if not Map then
-        return nil
-    end
-
-
-
-    local DungeonMap =
-        Map:FindFirstChild("Dungeon")
-
-
-    if not DungeonMap then
-        return nil
-    end
-
-
-
-    for _,Room in ipairs(DungeonMap:GetChildren()) do
-
-
-        local Exit =
-            Room:FindFirstChild("ExitTeleporter")
-
-
-        if Exit then
-
-            return Exit
-
-        end
-
-
-    end
-
-
-end
-
-
-
+local FarmThread
 
 
 Main:AddToggle({
 
     Name = "Auto Farm Dungeon",
 
-    Description = "Kill mobs and move floor",
+    Description = "Auto kill dungeon",
 
     Default = false,
 
 
     Callback = function(Value)
 
-
         _G.AutoFarmDungeon = Value
-
 
 
         if Value then
 
 
-
-            FarmDungeonThread =
-            task.spawn(function()
+            FarmThread = task.spawn(function()
 
 
-
-                while _G.AutoFarmDungeon and Dungeon do
-
+                while _G.AutoFarmDungeon do
 
 
-                    task.wait(0.3)
+                    task.wait(.3)
 
 
-
-                    local Root =
-                        GetLocalCharacterRoot()
-
+                    local Enemies =
+                        workspace:FindFirstChild("Enemies")
 
 
-                    if Root then
+                    if Enemies then
 
 
-
-                        local Target =
-                            GetBestTarget()
+                        for _,Enemy in pairs(Enemies:GetChildren()) do
 
 
-
-                        if Target then
-
-
-                            local EnemyRoot =
-                                Target:FindFirstChild("HumanoidRootPart")
+                            local Humanoid =
+                                Enemy:FindFirstChild("Humanoid")
 
 
-                            if EnemyRoot then
+                            local Root =
+                                Enemy:FindFirstChild("HumanoidRootPart")
 
 
-                                _tp(
-                                    EnemyRoot.CFrame *
-                                    CFrame.new(0,25,0)
-                                )
+                            local MyRoot =
+                                GetLocalCharacterRoot()
 
 
-                            end
+                            if Humanoid
+                            and Root
+                            and MyRoot
+                            and Humanoid.Health > 0 then
 
 
+                                MyRoot.CFrame =
+                                    Root.CFrame *
+                                    CFrame.new(0,20,0)
 
-                        else
-
-
-
-                            if not HasTarget() then
-
-
-                                local Exit =
-                                    GetExit()
-
-
-                                if Exit then
-
-
-                                    _tp(
-                                        Exit.CFrame *
-                                        CFrame.new(0,3,0)
-                                    )
-
-
-                                end
-
+                                break
 
                             end
-
-
                         end
-
-
-
                     end
 
-
-
                 end
-
-
 
             end)
 
 
-
         else
-
-
 
             _G.AutoFarmDungeon = false
 
-
-
-            if FarmDungeonThread then
-
-                task.cancel(FarmDungeonThread)
-
-                FarmDungeonThread = nil
-
-            end
-
-
-
         end
-
-
 
     end
 
