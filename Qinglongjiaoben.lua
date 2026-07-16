@@ -147,15 +147,15 @@ until game:IsLoaded() and not (loading and loading.Visible)
 -- World Detection
 local placeId = game.PlaceId
 
-if placeId == 2753915549 or placeId == 85211729168715 then
+if placeId == 73902483975735 then
+    Dungeon = true
+    World4 = true
+elseif placeId == 2753915549 or placeId == 85211729168715 then
     World1 = true
 elseif placeId == 4442272183 or placeId == 79091703265657 then
     World2 = true
 elseif placeId == 7449423635 or placeId == 100117331123089 then
     World3 = true
-elseif placeId == 73902483975735 then
-    World4 = true
-    WorldDungeon = true
 else
     plr:Kick("❌ Error Blox Fruits - World not recognized")
 end
