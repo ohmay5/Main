@@ -138,6 +138,7 @@ do
 end
 
 -- Wait for game to load
+-- Wait for game load
 repeat
     local loading = plr.PlayerGui:FindFirstChild("Main")
     loading = loading and loading:FindFirstChild("Loading")
@@ -158,14 +159,18 @@ elseif placeId == 4442272183 or placeId == 79091703265657 then
 elseif placeId == 7449423635 or placeId == 100117331123089 then
     World3 = true
 elseif placeId == 73902483975735 then
-    World4 = true
+    Dungeon = true
 end
 
 if Dungeon then
     print("Dungeon Detected:", placeId)
+
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/HUB.lua"))()
+
 else
     Sea = World1 or World2 or World3
-    
+
+
     -- đặt toàn bộ phần script Blox Fruits ở đâ
 Marines = function()
     replicated.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
@@ -2314,7 +2319,7 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	print("START UI")
+	
 	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua.txt"))():MakeWindow({
     Title = "青龙脚本 | Hub",
     SubTitle = "Blox Fruit",
@@ -11806,244 +11811,6 @@ task.spawn(function()
     end
 end)
 end 
-if World4 then
-Fruit:AddSection({"Bring Mobs"});
-
-local BringRadius = 350
-local ScanRadius = 1000
-local ClusterLinkDistance = 200
-local MaxBring = 5
-local HoldHeight = 1
-
-local function GetLocalCharacterRoot()
-    return plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-end
-
-local function GetEnemiesFolder()
-    if not World4 then return nil end
-    return workspace:FindFirstChild("Enemies")
-end
-
-local function GetMobsInRadius(Position, Radius)
-    if not World4 then return {} end
-    local EnemiesFolder = GetEnemiesFolder()
-    if not EnemiesFolder then return {} end
-    local Mobs = {}
-    for _, Mob in ipairs(EnemiesFolder:GetChildren()) do
-        local Humanoid = Mob:FindFirstChild("Humanoid")
-        local HumanoidRootPart = Mob:FindFirstChild("HumanoidRootPart")
-        if Humanoid and HumanoidRootPart and Humanoid.Health > 0 then
-            local Distance = (Mob.HumanoidRootPart.Position - Position).Magnitude
-            if Distance <= Radius then
-                table.insert(Mobs, Mob)
-            end
-        end
-    end
-    return Mobs
-end
-
-local function CalculateRingPosition(AngleMultiplier, Radius)
-    local Angle = AngleMultiplier * 2.3999632297287
-    return Vector3.new(math.cos(Angle) * Radius, 0, math.sin(Angle) * Radius)
-end
-
-local MonPosition = nil
-local TargetPosition = nil
-local BringMobsThread = nil
-Fruit:AddToggle({
-    Name = "Bring Mobs Dungeon",
-    Description = "Bring dungeon mobs to you (World 4 only)",
-    Default = false,
-    Callback = function(Value)
-        _G.BringMobsDungeon = Value
-        
-        if Value and World4 then
-            -- B?t ??u thread m?i
-            BringMobsThread = task.spawn(function()
-                local ScanRadius = 1000
-                local MaxBring = 5
-                local HoldHeight = 1
-                
-                while _G.BringMobsDungeon and World4 do
-                    task.wait(0.2)
-                    
-                    local CharacterRoot = GetLocalCharacterRoot()
-                    if CharacterRoot then
-                        local Mobs = GetMobsInRadius(CharacterRoot.Position, ScanRadius)
-                        if #Mobs >= 3 then
-                            table.sort(Mobs, function(a, b)
-                                local distA = (a.HumanoidRootPart.Position - CharacterRoot.Position).Magnitude
-                                local distB = (b.HumanoidRootPart.Position - CharacterRoot.Position).Magnitude
-                                return distA < distB
-                            end)
-                            
-                            local BroughtCount = 0
-                            local BasePosition = Vector3.new(CharacterRoot.Position.X, CharacterRoot.Position.Y + HoldHeight, CharacterRoot.Position.Z)
-                            
-                            for i = 1, math.min(#Mobs, MaxBring) do
-                                BroughtCount = BroughtCount + 1
-                                local MobRoot = Mobs[i].HumanoidRootPart
-                                if MobRoot and MobRoot.Parent then
-                                    local TargetPos = BasePosition + CalculateRingPosition(BroughtCount, 6)
-                                    MobRoot.CFrame = CFrame.new(TargetPos)
-                                end
-                            end
-                        end
-                    end
-                end
-                
-                -- Cleanup khi thread k?t th闂傚倸鍊搁崐鎼佸磹瀹勬噴褰掑炊瑜夐弸鏍煛閸ャ儱鐏╃紒鎰殜閺岀喖鎮ч崼鐔哄嚒闂佸憡鍨规慨鎾煘閹达附鍋愰悗鍦Т椤ユ繄绱撴担鍝勵€岄柛銊ョ－濡?
-                _G.BringMobsDungeon = false
-                BringMobsThread = nil
-            end)
-        else
-            -- D?ng thread
-            _G.BringMobsDungeon = false
-            if BringMobsThread then
-                task.cancel(BringMobsThread)
-                BringMobsThread = nil
-            end
-        end
-    end
-})
-
--- Auto Farm Dungeon
-Fruit:AddSection({"Auto Farm"});
-
-local function GetLocalRootPart()
-    return plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-end
-
-local function GetBestTarget()
-    if not World4 then return nil end
-    
-    local CharacterRoot = GetLocalRootPart()
-    if not CharacterRoot then return nil end
-    
-    local BestTarget = nil
-    local BestDistance = math.huge
-    
-    for _, Enemy in ipairs(workspace.Enemies:GetChildren()) do
-        local Humanoid = Enemy:FindFirstChild("Humanoid")
-        local HumanoidRootPart = Enemy:FindFirstChild("HumanoidRootPart")
-        if Humanoid and HumanoidRootPart and Humanoid.Health > 0 then
-            local Distance = (CharacterRoot.Position - HumanoidRootPart.Position).Magnitude
-            if Distance < BestDistance and Distance < 5000 then
-                BestDistance = Distance
-                BestTarget = Enemy
-            end
-        end
-    end
-    
-    return BestTarget
-end
-
-local function HasValidTargets()
-    if not World4 then return false end
-    
-    for _, Enemy in ipairs(workspace.Enemies:GetChildren()) do
-        local Humanoid = Enemy:FindFirstChild("Humanoid")
-        local HumanoidRootPart = Enemy:FindFirstChild("HumanoidRootPart")
-        if Humanoid and HumanoidRootPart and Humanoid.Health > 0 then
-            return true
-        end
-    end
-    return false
-end
-
-local function GetRoomExitTeleporter()
-    local Dungeon = workspace.Map and workspace.Map:FindFirstChild("Dungeon")
-    if not Dungeon then return nil end
-    
-    local CharacterRoot = GetLocalRootPart()
-    if not CharacterRoot then return nil end
-    
-    local NearestExit = nil
-    local NearestDistance = math.huge
-    
-    for _, Room in ipairs(Dungeon:GetChildren()) do
-        local ExitTeleporter = Room:FindFirstChild("ExitTeleporter")
-        if ExitTeleporter then
-            local ExitPart = ExitTeleporter:FindFirstChild("Part") or ExitTeleporter
-            if ExitPart then
-                local Distance = (CharacterRoot.Position - ExitPart.Position).Magnitude
-                if Distance < NearestDistance then
-                    NearestDistance = Distance
-                    NearestExit = ExitPart
-                end
-            end
-        end
-    end
-    
-    return NearestExit
-end
-
-local FarmDungeonThread = nil
-Fruit:AddToggle({
-    Name = "Auto Farm Raid Dungeon",
-    Description = "Auto farm dungeon + next floor (World 4 only)",
-    Default = false,
-    Callback = function(Value)
-        _G.AutoFarmDungeon = Value
-        
-        if Value and World4 then
-            FarmDungeonThread = task.spawn(function()
-                local FastDelay = 0.5
-                _G.GoingToExit = false
-                _G.DeathPause = false
-                
-                while _G.AutoFarmDungeon and World4 do
-                    task.wait(0.1)
-                    
-                    if not _G.GoingToExit and not _G.DeathPause then
-                        local CharacterRoot = GetLocalRootPart()
-                        if CharacterRoot then
-                            local Target = GetBestTarget()
-                            
-                            if Target then
-                                local TargetRoot = Target:FindFirstChild("HumanoidRootPart")
-                                if TargetRoot then
-                                    -- Teleport ngay ??n target (kh?ng c?n ki?m tra kho?ng c闂傚倸鍊搁崐鎼佸磹瀹勬噴褰掑炊瑜夐弸鏍煛閸ャ儱鐏╃紒鎰殜閺岀喖鎮ч崼鐔哄嚒闂佸憡鍨规慨鎾煘閹达附鍋愰悗鍦Т椤ユ繄绱撴担鍝勵€岄柛銊ョ－濡叉劙骞掗弬鐐媰闂佷紮绲介懟顖炵嵁?
-                                    _tp(TargetRoot.CFrame * CFrame.new(0, 30, 0))
-                                end
-                            else
-                                if not HasValidTargets() then
-                                    _G.GoingToExit = true
-                                    task.wait(0.2)
-                                    local ExitPart = GetRoomExitTeleporter()
-                                    if ExitPart then
-                                        _tp(ExitPart.CFrame * CFrame.new(0, 3, 0))
-                                        task.wait(1)
-                                    end
-                                    _G.GoingToExit = false
-                                end
-                            end
-                        end
-                    end
-                    
-                    task.wait(FastDelay)
-                end
-                
-                -- Cleanup khi thread k?t th闂傚倸鍊搁崐鎼佸磹瀹勬噴褰掑炊瑜夐弸鏍煛閸ャ儱鐏╃紒鎰殜閺岀喖鎮ч崼鐔哄嚒闂佸憡鍨规慨鎾煘閹达附鍋愰悗鍦Т椤ユ繄绱撴担鍝勵€岄柛銊ョ－濡?
-                _G.AutoFarmDungeon = false
-                _G.GoingToExit = false
-                _G.DeathPause = false
-                FarmDungeonThread = nil
-            end)
-        else
-            _G.AutoFarmDungeon = false
-            _G.GoingToExit = false
-            _G.DeathPause = false
-            if FarmDungeonThread then
-                task.cancel(FarmDungeonThread)
-                FarmDungeonThread = nil
-            end
-        end
-    end
-})
-end
-
-
 
 Fruit:AddSection({"Fruits Options"});
 local J5 = {};
@@ -12313,4 +12080,3 @@ Setting:AddToggle({
 	end,
 });
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
-end
