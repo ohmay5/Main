@@ -1,4 +1,18 @@
+task.spawn(function()
+    repeat task.wait() until game:IsLoaded()
 
+    local id = game.PlaceId
+
+    print("PLACE ID:", id)
+
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification",{
+            Title = "Current Place",
+            Text = tostring(id),
+            Duration = 15
+        })
+    end)
+end)
 -- Cache all services at start for better performance
 local Services = setmetatable({}, {
     __index = function(self, serviceName)
