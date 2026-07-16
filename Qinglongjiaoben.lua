@@ -1,5 +1,6 @@
+repeat task.wait() until game:IsLoaded()
 
--- Cache all services at start for better performance
+-- Cache Services
 local Services = setmetatable({}, {
     __index = function(self, serviceName)
         local service = game:GetService(serviceName)
@@ -7,6 +8,72 @@ local Services = setmetatable({}, {
         return service
     end
 })
+
+local Players = Services.Players
+local TweenService = Services.TweenService
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui")
+
+local Gui = Instance.new("ScreenGui")
+Gui.Name = "LoadingGui"
+Gui.ResetOnSpawn = false
+Gui.Parent = PlayerGui
+
+local Frame = Instance.new("Frame")
+Frame.AnchorPoint = Vector2.new(1,1)
+Frame.Position = UDim2.new(1,-15,1,-15)
+Frame.Size = UDim2.new(0,180,0,45)
+Frame.BackgroundColor3 = Color3.fromRGB(20,20,20)
+Frame.BackgroundTransparency = 0.15
+Frame.BorderSizePixel = 0
+Frame.Parent = Gui
+
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0,8)
+
+local Dot = Instance.new("Frame")
+Dot.Size = UDim2.new(0,12,0,12)
+Dot.Position = UDim2.new(0,12,0.5,-6)
+Dot.BackgroundColor3 = Color3.fromRGB(139,0,0)
+Dot.BorderSizePixel = 0
+Dot.Parent = Frame
+
+Instance.new("UICorner", Dot).CornerRadius = UDim.new(1,0)
+
+local Text = Instance.new("TextLabel")
+Text.BackgroundTransparency = 1
+Text.Position = UDim2.new(0,32,0,0)
+Text.Size = UDim2.new(1,-40,1,0)
+Text.Font = Enum.Font.GothamBold
+Text.Text = "Loading..."
+Text.TextSize = 18
+Text.TextColor3 = Color3.fromRGB(240,240,240)
+Text.TextXAlignment = Enum.TextXAlignment.Left
+Text.Parent = Frame
+
+task.spawn(function()
+    while Gui.Parent do
+        TweenService:Create(Dot, TweenInfo.new(0.5), {
+            BackgroundTransparency = 0.7
+        }):Play()
+        task.wait(0.5)
+
+        TweenService:Create(Dot, TweenInfo.new(0.5), {
+            BackgroundTransparency = 0
+        }):Play()
+        task.wait(0.5)
+    end
+end)
+
+task.wait(3)
+
+TweenService:Create(Frame, TweenInfo.new(0.35), {
+    BackgroundTransparency = 1,
+    Position = UDim2.new(1,180,1,-15)
+}):Play()
+
+task.wait(0.4)
+Gui:Destroy()
 
 -- ========================================
 -- SAVE SYSTEM (Optimized)
