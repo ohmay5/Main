@@ -11798,7 +11798,7 @@ task.spawn(function()
         end
     end
 end)
-Tabs.Dungeon:AddSection("Bring Mobs")
+Fruit:AddSection("Bring Mobs")
 
 local BringRadius = 350
 local ScanRadius = 1000
