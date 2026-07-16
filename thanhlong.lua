@@ -9227,23 +9227,6 @@ Esp:AddButton({
 })
 Esp:AddSection({"Stats"});
 
--- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
-_G.StatAmount = GetSetting("StatAmount_Save", 3)
-
-Esp:AddSlider({
-    Name = "Add Points Amount",
-    Description = "Số điểm cộng mỗi lần",
-    Default = GetSetting("StatAmount_Save", 3),
-    Min = 1,
-    Max = 1000,
-    Rounding = 0,
-    Callback = function(Value)
-        _G.StatAmount = Value
-        _G.SaveData["StatAmount_Save"] = Value
-        SaveSettings()
-    end,
-})
-
 Esp:AddToggle({
     Name = "Add Points Melee",
     Description = "Gasta pontos automaticamente em Melee",
@@ -9299,22 +9282,70 @@ Esp:AddToggle({
     end,
 })
 
-
--- AUTO ADD POINT LOOP
+-- // LOOP DOS STATS (Execute isso uma vez no seu script) // --
 task.spawn(function()
     while task.wait(1) do
         pcall(function()
             local remote = game:GetService("ReplicatedStorage").Remotes.CommF_
-            local amount = _G.StatAmount or 3
-
-            if _G.Auto_Melee then remote:InvokeServer("AddPoint", "Melee", amount) end
-            if _G.Auto_Sword then remote:InvokeServer("AddPoint", "Sword", amount) end
-            if _G.Auto_Gun then remote:InvokeServer("AddPoint", "Gun", amount) end
-            if _G.Auto_Blox then remote:InvokeServer("AddPoint", "Demon Fruit", amount) end
-            if _G.Auto_Defense then remote:InvokeServer("AddPoint", "Defense", amount) end
+            if _G.Auto_Melee then remote:InvokeServer("AddPoint", "Melee", 3) end
+            if _G.Auto_Sword then remote:InvokeServer("AddPoint", "Sword", 3) end
+            if _G.Auto_Gun then remote:InvokeServer("AddPoint", "Gun", 3) end
+            if _G.Auto_Blox then remote:InvokeServer("AddPoint", "Demon Fruit", 3) end
+            if _G.Auto_Defense then remote:InvokeServer("AddPoint", "Defense", 3) end
         end)
     end
 end)
+
+-- Usamos um valor grande (como 9999999) para simular o gasto de 'todos' os pontos disponíveis.
+-- Assumimos que a função 'statsSetings' irá apenas gastar o máximo de pontos que o jogador realmente tem.
+local AllAvailablePoints = 9999999; 
+
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Melee then
+				statsSetings("Melee", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Sword then
+				statsSetings("Sword", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Gun then
+				statsSetings("Gun", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			-- Note: No seu código original era 'Auto_DevilFruit', mas no menu era 'Fruit'. Corrigi para usar a mesma variável do menu.
+			if _G.Auto_Blox then 
+				statsSetings("Devil", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Defense then
+				statsSetings("Defense", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
 Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
 local Players = game:GetService("Players")
