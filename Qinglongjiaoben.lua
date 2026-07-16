@@ -3220,23 +3220,26 @@ Farm:AddSection({"Local Main"})
 
 Farm:AddDropdown({
     Name = "Select Weapon",
-    Description = "chọn vũ khí",
-    Options = {"Melee","Sword","Blox Fruit","Gun"},
-    Default = "Melee",
+    Description = "Chọn vũ khí",
+    Options = {"Melee", "Sword", "Blox Fruit", "Gun"},
+    Default = _G.SaveData["ChooseWeapon_Save"] or "Melee",
     Multi = false,
     Callback = function(I)
         _G.ChooseWP = I
+        _G.SaveData["ChooseWeapon_Save"] = I
+        SaveSettings()
     end,
 })
 
+_G.ChooseWP = _G.SaveData["ChooseWeapon_Save"] or "Melee"
+
 spawn(function()
-    while wait(Sec) do
+    while task.wait(Sec) do
         pcall(function()
             for _, e in pairs(plr.Backpack:GetChildren()) do
                 if e.ToolTip == _G.ChooseWP then
-                    if plr.Backpack:FindFirstChild(e.Name) then
-                        _G.SelectWeapon = e.Name
-                    end
+                    _G.SelectWeapon = e.Name
+                    break
                 end
             end
         end)
@@ -4040,47 +4043,7 @@ Farm:AddToggle({
         SaveSettings()
     end,
 })
-Farm:AddToggle({
-	Title = "Auto Stop Chest",
-	Desc = "Stop Auto Chest when get God's Chalice or Fist of Darkness",
-	Default = false,
-	Callback = function(value)
-		_G.AutoStopChest = value 
-		if state then
-			StopTween(true)
-		end
-	end
-})
 
-
-spawn(function()
-	while task.wait(_G.GlobalDelay) do
-		pcall(function()
-			if _G.AutoStopChest then
-				
-				local HasChalice = LocalPlayer.Backpack:FindFirstChild("God's Chalice")
-					or Character:FindFirstChild("God's Chalice")
-
-				local HasFist = LocalPlayer.Backpack:FindFirstChild("Fist of Darkness")
-					or Character:FindFirstChild("Fist of Darkness")
-
-				if HasChalice or HasFist then
-					
-					-- Tắt Auto Chest
-					_G.AutoFarmChest = false
-					_G.FarmEliteHunt = false
-					
-					-- Dừng di chuyển
-					pcall(function()
-						StopTween(true)
-					end)
-
-					break
-				end
-			end
-		end)
-	end
-end)
 -- Botão Auto Collect Berry
 Farm:AddToggle({
 	Name = "Auto Collect Berry",
@@ -9124,6 +9087,80 @@ if World3 then
         task.spawn(function() while advanEsp do pcall(AdvanFruitEsp); task.wait(1) end; pcall(AdvanFruitEsp) end)
     end})
 end
+Esp:AddSection({"Stats"});
+
+-- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
+Esp:AddSlider({
+	Title = "Point",
+	Step = 1,
+	Value = {
+		Min = 1,
+		Max = 100,
+		Default = 1
+	},
+	Callback = function(value)
+		_G.PointStats = value;
+	end
+});
+function addStatsPoint(val)
+	Remotes.CommF_:InvokeServer("AddPoint", val, _G.PointStats);
+end;
+spawn(function()
+	while wait(0.2) do
+		-- if LocalPlayer.Data.Points.Value > _G.PointStats then
+			if _G.AddMeleeStats then
+				addStatsPoint("Melee");
+			end;
+			if _G.AddDefenseStats then
+				addStatsPoint("Defense");
+			end;
+			if _G.AddSwordStats then
+				addStatsPoint("Sword");
+			end;
+			if _G.AddGunStats then
+				addStatsPoint("Gun");
+			end;
+			if _G.AddFruitStats then
+				addStatsPoint("Demon Fruit");
+			end;
+		-- end;
+	end;
+end);
+Esp:AddToggle({
+	Title = "Add Melee Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddMeleeStats = state;
+	end
+});
+Esp:AddToggle({
+	Title = "Add Defense Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddDefenseStats = state;
+	end
+});
+Esp:AddToggle({
+	Title = "Add Sword Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddSwordStats = state;
+	end
+});
+Esp:AddToggle({
+	Title = "Add Gun Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddGunStats = state;
+	end
+});
+Esp:AddToggle({
+	Title = "Add Devil Fruit Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddFruitStats = state;
+	end
+});
 
 
 Esp:AddSection({"Fontes"});
@@ -9267,81 +9304,6 @@ Esp:AddButton({
         ApplyGlobalFont(Enum.Font.Gotham)
     end
 })
-Esp:AddSection({"Stats"});
-
--- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
-Esp:AddSlider({
-	Title = "Point",
-	Step = 1,
-	Value = {
-		Min = 1,
-		Max = 100,
-		Default = 1
-	},
-	Callback = function(value)
-		_G.PointStats = value;
-	end
-});
-function addStatsPoint(val)
-	Remotes.CommF_:InvokeServer("AddPoint", val, _G.PointStats);
-end;
-spawn(function()
-	while wait(0.2) do
-		-- if LocalPlayer.Data.Points.Value > _G.PointStats then
-			if _G.AddMeleeStats then
-				addStatsPoint("Melee");
-			end;
-			if _G.AddDefenseStats then
-				addStatsPoint("Defense");
-			end;
-			if _G.AddSwordStats then
-				addStatsPoint("Sword");
-			end;
-			if _G.AddGunStats then
-				addStatsPoint("Gun");
-			end;
-			if _G.AddFruitStats then
-				addStatsPoint("Demon Fruit");
-			end;
-		-- end;
-	end;
-end);
-Esp:AddToggle({
-	Title = "Add Melee Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddMeleeStats = state;
-	end
-});
-Esp:AddToggle({
-	Title = "Add Defense Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddDefenseStats = state;
-	end
-});
-Esp:AddToggle({
-	Title = "Add Sword Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddSwordStats = state;
-	end
-});
-Esp:AddToggle({
-	Title = "Add Gun Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddGunStats = state;
-	end
-});
-Esp:AddToggle({
-	Title = "Add Devil Fruit Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddFruitStats = state;
-	end
-});
-
 Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
 local Players = game:GetService("Players")
