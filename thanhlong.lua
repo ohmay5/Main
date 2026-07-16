@@ -9225,6 +9225,7 @@ Esp:AddButton({
         ApplyGlobalFont(Enum.Font.Gotham)
     end
 })
+
 Esp:AddSection({"Stats"});
 
 Esp:AddToggle({
@@ -9298,7 +9299,7 @@ end)
 
 -- Usamos um valor grande (como 9999999) para simular o gasto de 'todos' os pontos disponíveis.
 -- Assumimos que a função 'statsSetings' irá apenas gastar o máximo de pontos que o jogador realmente tem.
-local AllAvailablePoints = 9999999; 
+local AllAvailablePoints = 3; 
 
 spawn(function()
 	while wait(Sec) do
