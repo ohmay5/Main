@@ -1195,11 +1195,6 @@ Setting:AddSection({"Cài đặt"})
 -- ========================================
 -- WalkSpeed / JumpPower FIX
 -- ========================================
-
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-
-local plr = Players.LocalPlayer
 local humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid") or nil
 
 plr.CharacterAdded:Connect(function(char)
