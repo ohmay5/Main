@@ -9764,29 +9764,15 @@ spawn(function()
 	end;
 end);
 Teleport:AddSection({"Travel - Worlds"});
-Teleport:AddButton({
-    Name = "Teleport Sea 1",
-    Description = "",
-    Callback = function()
-        replicated.Remotes.CommF_:InvokeServer("TravelMain")
-    end
-})
-
-Teleport:AddButton({
-    Name = "Teleport Sea 2",
-    Description = "",
-    Callback = function()
-        replicated.Remotes.CommF_:InvokeServer("TravelDressrosa")
-    end
-})
-
-Teleport:AddButton({
-    Name = "Teleport Sea 3",
-    Description = "",
-    Callback = function()
-        replicated.Remotes.CommF_:InvokeServer("TravelZou")
-    end
-})
+Teleport:AddButton({ Name = "Teleport Sea 1", Description = "", Callback = function()
+		replicated.Remotes.CommF_:InvokeServer("TravelMain");
+	end });
+Teleport:AddButton({ Name = "Teleport Sea 2", Description = "", Callback = function()
+		replicated.Remotes.CommF_:InvokeServer("TravelDressrosa");
+	end });
+Teleport:AddButton({ Name = "Teleport Sea 3", Description = "", Callback = function()
+		replicated.Remotes.CommF_:InvokeServer("TravelZou");
+	end });
 
 	
 Teleport:AddSection({"Travel - Island"})
