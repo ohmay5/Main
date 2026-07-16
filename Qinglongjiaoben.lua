@@ -4044,8 +4044,8 @@ Farm:AddToggle({
 	Title = "Auto Stop Chest",
 	Desc = "Stop Auto Chest when get God's Chalice or Fist of Darkness",
 	Default = false,
-	Callback = function(state)
-		_G.AutoStopChest = state
+	Callback = function(value)
+		_G.AutoStopChest = value 
 		if state then
 			StopTween(true)
 		end
@@ -5350,100 +5350,6 @@ spawn(function()
         end
     end
 end)
-if World1 then 
-Others:AddSection({"Quests"})
-Others:AddToggle({
-    Name = "Auto Second Sea",
-    Description = "Automatically unlock Second Sea",
-    Default = GetSetting("AutoSecondSea_Save", false),
-    Callback = function(Value)
-        _G.AutoSecondSea = Value
-
-        _G.SaveData["AutoSecondSea_Save"] = Value
-        SaveSettings()
-
-        if not Value then
-            StopTween(true)
-        end
-    end,
-})
-
-task.spawn(function()
-    while task.wait(_G.GlobalDelay) do
-        pcall(function()
-            if _G.AutoSecondSea and World1 then
-                if MyLevel >= 700 then
-
-                    if Workspace.Map.Ice.Door.CanCollide == false
-                    and Workspace.Map.Ice.Door.Transparency == 1 then
-
-                        local Pos = CFrame.new(4849.29883, 5.65138149, 719.611877)
-
-                        repeat
-                            TweenPlayer(Pos)
-                            task.wait()
-                        until (Pos.Position - HumanoidRootPart.Position).Magnitude <= 3
-                            or not _G.AutoSecondSea
-
-                        if not _G.AutoSecondSea then
-                            StopTween(true)
-                            return
-                        end
-
-                        task.wait(1.1)
-                        Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                        task.wait(0.5)
-
-                        EquipWeapon("Key")
-
-                        local Door = CFrame.new(1347.7124, 37.3751602, -1325.6488)
-
-                        repeat
-                            TweenPlayer(Door)
-                            task.wait()
-                        until (Door.Position - HumanoidRootPart.Position).Magnitude <= 3
-                            or not _G.AutoSecondSea
-
-                        if not _G.AutoSecondSea then
-                            StopTween(true)
-                            return
-                        end
-
-                        task.wait(0.5)
-
-                    elseif Enemies:FindFirstChild("Ice Admiral") then
-
-                        local Boss = Enemies:FindFirstChild("Ice Admiral")
-
-                        if Boss
-                        and Boss:FindFirstChild("Humanoid")
-                        and Boss:FindFirstChild("HumanoidRootPart")
-                        and Boss.Humanoid.Health > 0 then
-
-                            AttackTarget(Boss, false, function()
-                                return _G.AutoSecondSea
-                            end)
-
-                        elseif Boss and Boss.Humanoid.Health <= 0 then
-
-                            Remotes.CommF_:InvokeServer("TravelDressrosa")
-
-                        end
-
-                    elseif ReplicatedStorage:FindFirstChild("Ice Admiral") then
-
-                        TweenPlayer(
-                            ReplicatedStorage["Ice Admiral"].HumanoidRootPart.CFrame
-                            * CFrame.new(5,10,7)
-                        )
-
-                    end
-                end
-            end
-        end)
-    end
-end)
-end
 Others:AddSection({"Quests"})
  Others:AddToggle({
     Name = "Auto Farm Observation",
