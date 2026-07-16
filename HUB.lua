@@ -1248,7 +1248,7 @@ end)
 protectSpeed()
 
 -- Toggle para WalkSpeed
-Player:AddToggle({
+Setting:AddToggle({
 	Name  = "Set WalkSpeed",
     Description = "Bật tốc độ chạy của bạn",
     Default = true,
