@@ -7,7 +7,6 @@ local PlayerGui = Player:WaitForChild("PlayerGui")
 local Gui = Instance.new("ScreenGui")
 Gui.Name = "LoadingGui"
 Gui.ResetOnSpawn = false
-Gui.IgnoreGuiInset = true
 Gui.Parent = PlayerGui
 
 local Frame = Instance.new("Frame")
@@ -19,80 +18,52 @@ Frame.BackgroundTransparency = 0.15
 Frame.BorderSizePixel = 0
 Frame.Parent = Gui
 
-Instance.new("UICorner",Frame).CornerRadius = UDim.new(0,8)
+Instance.new("UICorner", Frame).CornerRadius = UDim.new(0,8)
 
 local Dot = Instance.new("Frame")
 Dot.Size = UDim2.new(0,12,0,12)
 Dot.Position = UDim2.new(0,12,0.5,-6)
-Dot.BackgroundColor3 = Color3.fromRGB(139,0,0)
+Dot.BackgroundColor3 = Color3.fromRGB(139,0,0) -- Đỏ máu
 Dot.BorderSizePixel = 0
 Dot.Parent = Frame
 
-Instance.new("UICorner",Dot).CornerRadius = UDim.new(1,0)
+Instance.new("UICorner", Dot).CornerRadius = UDim.new(1,0)
 
 local Text = Instance.new("TextLabel")
 Text.BackgroundTransparency = 1
 Text.Position = UDim2.new(0,32,0,0)
 Text.Size = UDim2.new(1,-40,1,0)
 Text.Font = Enum.Font.GothamBold
-Text.Text = "ĐANG TẢI... 0"
+Text.Text = "ĐĂNGTẢI..."
 Text.TextSize = 18
 Text.TextColor3 = Color3.fromRGB(240,240,240)
 Text.TextXAlignment = Enum.TextXAlignment.Left
 Text.Parent = Frame
 
-
--- Chấm đỏ nhấp nháy
 task.spawn(function()
-	while Gui.Parent do
-		local FadeOut = TweenService:Create(
-			Dot,
-			TweenInfo.new(0.5),
-			{BackgroundTransparency = 0.7}
-		)
-
-		local FadeIn = TweenService:Create(
-			Dot,
-			TweenInfo.new(0.5),
-			{BackgroundTransparency = 0}
-		)
-
-		FadeOut:Play()
-		FadeOut.Completed:Wait()
-
-		FadeIn:Play()
-		FadeIn.Completed:Wait()
-	end
+while Gui.Parent do
+local t1 = TweenService:Create(Dot,TweenInfo.new(0.5),{
+BackgroundTransparency = 0.7
+})
+local t2 = TweenService:Create(Dot,TweenInfo.new(0.5),{
+BackgroundTransparency = 0
+})
+t1:Play()
+t1.Completed:Wait()
+t2:Play()
+t2.Completed:Wait()
+end
 end)
 
+task.wait(3)
 
--- Đếm số mỗi 0.3 giây
-task.spawn(function()
-	for i = 0,3 do
-		Text.Text = "ĐANG TẢI... "..i
-		task.wait(0.3)
-	end
-
-	Text.Text = "HOÀN TẤT"
-end)
-
-
--- Chờ xong rồi ẩn
-task.wait(1.5)
-
-local Hide = TweenService:Create(
-	Frame,
-	TweenInfo.new(0.35),
-	{
-		BackgroundTransparency = 1,
-		Position = UDim2.new(1,180,1,-15)
-	}
-)
-
-Hide:Play()
+TweenService:Create(Frame,TweenInfo.new(0.35),{
+BackgroundTransparency = 1,
+Position = UDim2.new(1,180,1,-15)
+}):Play()
 
 task.wait(0.4)
-Gui:Destroy()
+Gui:Destroy() 
 -- Ví dụ:
 -- loadstring(game:HttpGet("LINK_CUA_BAN"))()
 local HttpService = Services.HttpService
