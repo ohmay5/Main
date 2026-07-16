@@ -112,6 +112,8 @@ CloseTween:Play()
 CloseTween.Completed:Wait()
 
 Gui:Destroy()
+task.wait(0.5)
+
 -- ========================================
 -- SAVE SYSTEM (Optimized)
 -- ========================================
