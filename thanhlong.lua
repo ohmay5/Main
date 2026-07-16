@@ -249,7 +249,7 @@ end
 if World1 then
 	Boss = {
 			"The Gorilla King",
-			"Chef",
+			"Bobby",
 			"The Saw",
 			"Yeti",
 			"Mob Leader",
@@ -270,7 +270,7 @@ elseif World2 then
 	Boss = {
 			"Diamond",
 			"Jeremy",
-			"Orbitus",
+			"Fajita",
 			"Don Swan",
 			"Smoke Admiral",
 			"Awakened Ice Admiral",
@@ -354,7 +354,7 @@ local d = {
 	};
 local z = { "Swan Pirate", "Jeremy" };
 local H = { "Forest Pirate", "Captain Elephant" };
-local F = { "Orbitus", "Jeremy", "Diamond" };
+local F = { "Fajita", "Jeremy", "Diamond" };
 local Q = {
 		"Beast Hunter",
 		"Lantern",
@@ -1323,8 +1323,8 @@ QuestB = function()
 				Qdata = 3;
 				PosQBoss = CFrame.new(-1601.6553955078, 36.85213470459, 153.38809204102);
 				PosB = CFrame.new(-1088.75977, 8.13463783, -488.559906, -0.707134247, 0, .707079291, 0, 1, 0, -0.707079291, 0, -0.707134247);
-			elseif _G.FindBoss == "Chef" then
-				bMon = "Chef";
+			elseif _G.FindBoss == "Bobby" then
+				bMon = "Bobby";
 				Qname = "BuggyQuest1";
 				Qdata = 3;
 				PosQBoss = CFrame.new(-1140.1761474609, 4.752049446106, 3827.4057617188);
@@ -1423,8 +1423,8 @@ QuestB = function()
 				Qdata = 3;
 				PosQBoss = CFrame.new(636.79943847656, 73.413787841797, 918.00415039063);
 				PosB = CFrame.new(2006.9261474609, 448.95666503906, 853.98284912109);
-			elseif _G.FindBoss == "Orbitus" then
-				bMon = "Orbitus";
+			elseif _G.FindBoss == "Fajita" then
+				bMon = "Fajita";
 				Qname = "MarineQuest3";
 				Qdata = 3;
 				PosQBoss = CFrame.new(-2441.986328125, 73.359344482422, -3217.5324707031);
@@ -11473,7 +11473,6 @@ spawn(function()
 	end;
 end);
 end
-Fruit:AddSection({"Raiding"})
 
 Fruit:AddSection({"Raiding"});
 e = {
