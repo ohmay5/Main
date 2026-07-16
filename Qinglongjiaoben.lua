@@ -1,18 +1,4 @@
-task.spawn(function()
-    repeat task.wait() until game:IsLoaded()
 
-    local id = game.PlaceId
-
-    print("PLACE ID:", id)
-
-    pcall(function()
-        game:GetService("StarterGui"):SetCore("SendNotification",{
-            Title = "Current Place",
-            Text = tostring(id),
-            Duration = 15
-        })
-    end)
-end)
 -- Cache all services at start for better performance
 local Services = setmetatable({}, {
     __index = function(self, serviceName)
@@ -158,10 +144,12 @@ repeat
     task.wait()
 until game:IsLoaded() and not (loading and loading.Visible)
 
--- World Detection
-local placeId = game.PlaceId
+World1 = false
+World2 = false
+World3 = false
+Dungeon = false
 
-print("PlaceId:", placeId)
+local placeId = game.PlaceId
 
 if placeId == 2753915549 or placeId == 85211729168715 then
     World1 = true
@@ -170,13 +158,15 @@ elseif placeId == 4442272183 or placeId == 79091703265657 then
 elseif placeId == 7449423635 or placeId == 100117331123089 then
     World3 = true
 elseif placeId == 73902483975735 then
-    World4 = true
-else
-    print("Unknown World:", placeId)
+    Dungeon = true
 end
 
-Sea = World1 or World2 or World3 or World4
-
+if Dungeon then
+    print("Dungeon Detected:", placeId)
+else
+    Sea = World1 or World2 or World3
+    
+    -- đặt toàn bộ phần script Blox Fruits ở đâ
 Marines = function()
     replicated.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
 end
@@ -12319,3 +12309,4 @@ Setting:AddToggle({
 	end,
 });
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
+end
