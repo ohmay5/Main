@@ -1155,102 +1155,91 @@ Setting:AddSection({"Cài đặt"})
 -- ========================================
 
 
-local SpeedEnabled = false
+-- ========================================
+-- WalkSpeed / JumpPower FIX
+-- ========================================
 
+local SpeedEnabled = false
 local JumpEnabled = false
 
-
-local desiredSpeed =
-_G.SaveData["WalkSpeed_Save"] or 16
-
-
-local desiredJump =
-_G.SaveData["JumpPower_Save"] or 50
+local desiredSpeed = 16
+local desiredJump = 50
 
 
+local function GetHumanoid()
+
+    local Char = plr.Character
+
+    if not Char then
+        return nil
+    end
+
+    return Char:FindFirstChildOfClass("Humanoid")
+
+end
 
 
 
 local function ApplyStats()
 
-
-    local Char = plr.Character
-
-    if not Char then
-        return
-    end
-
-
-
-    local Hum =
-    Char:FindFirstChildOfClass(
-    "Humanoid"
-    )
-
-
+    local Hum = GetHumanoid()
 
     if not Hum then
         return
     end
 
 
-
-
     if SpeedEnabled then
-
-        Hum.WalkSpeed =
-        desiredSpeed
-
+        Hum.WalkSpeed = desiredSpeed
     end
-
-
 
 
     if JumpEnabled then
-
-        Hum.JumpPower =
-        desiredJump
-
+        Hum.JumpPower = desiredJump
     end
-
-
 
 end
 
 
 
+plr.CharacterAdded:Connect(function()
+
+    task.wait(1)
+
+    ApplyStats()
+
+end)
+
 
 
 RunService.Heartbeat:Connect(function()
 
-
     pcall(function()
 
+        local Hum = GetHumanoid()
 
-        ApplyStats()
+        if Hum then
 
+            if SpeedEnabled 
+            and Hum.WalkSpeed ~= desiredSpeed then
+
+                Hum.WalkSpeed = desiredSpeed
+
+            end
+
+
+            if JumpEnabled 
+            and Hum.JumpPower ~= desiredJump then
+
+                Hum.JumpPower = desiredJump
+
+            end
+
+        end
 
     end)
 
-
 end)
-
-
-
-
-
-plr.CharacterAdded:Connect(function()
-
-
-    task.wait(1)
-
-
-    ApplyStats()
-
-
-end)
-
-
 
 
 
@@ -1259,27 +1248,19 @@ Setting:AddToggle({
 
     Name = "Set WalkSpeed",
 
-    Description =
-    "Bật tốc độ chạy",
-
+    Description = "Bật tốc độ chạy",
 
     Default = false,
 
-
     Callback = function(Value)
-
 
         SpeedEnabled = Value
 
-
         ApplyStats()
-
 
     end
 
 })
-
-
 
 
 
@@ -1287,48 +1268,25 @@ Setting:AddSlider({
 
     Name = "WalkSpeed Value",
 
-    Description =
-    "Chọn tốc độ",
+    Description = "Chọn tốc độ",
 
-
-    Default = desiredSpeed,
-
+    Default = 16,
 
     Min = 16,
 
     Max = 500,
 
-
     Rounding = 0,
-
 
     Callback = function(Value)
 
-
         desiredSpeed = Value
 
-
-        _G.SaveData["WalkSpeed_Save"]
-        = Value
-
-
-
-        if SaveSettings then
-
-            SaveSettings()
-
-        end
-
-
         ApplyStats()
-
 
     end
 
 })
-
-
-
 
 
 
@@ -1336,21 +1294,15 @@ Setting:AddToggle({
 
     Name = "Set JumpPower",
 
-    Description =
-    "Bật nhảy cao",
-
+    Description = "Bật nhảy cao",
 
     Default = false,
 
-
     Callback = function(Value)
-
 
         JumpEnabled = Value
 
-
         ApplyStats()
-
 
     end
 
@@ -1358,48 +1310,25 @@ Setting:AddToggle({
 
 
 
-
-
-
 Setting:AddSlider({
 
     Name = "JumpPower Value",
 
-    Description =
-    "Chọn độ cao nhảy",
+    Description = "Chọn độ cao nhảy",
 
-
-    Default = desiredJump,
-
+    Default = 50,
 
     Min = 50,
 
     Max = 900,
 
-
     Rounding = 0,
-
 
     Callback = function(Value)
 
-
         desiredJump = Value
 
-
-        _G.SaveData["JumpPower_Save"]
-        = Value
-
-
-
-        if SaveSettings then
-
-            SaveSettings()
-
-        end
-
-
         ApplyStats()
-
 
     end
 
