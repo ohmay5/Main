@@ -5,26 +5,33 @@
 
 repeat task.wait() until game:IsLoaded()
 
+
 local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+
 local plr = Players.LocalPlayer
+
 
 -- ========================================
 -- Dungeon Check
 -- ========================================
 
 local placeId = game.PlaceId
-local Dungeon = false
 
-if placeId == 73902483975735 then
-    Dungeon = true
-end
+local Dungeon = (placeId == 73902483975735)
+
 
 if not Dungeon then
+
     warn("Not Dungeon:", placeId)
+
     return
+
 end
 
+
 print("Dungeon Loaded:", placeId)
+
 
 
 -- ========================================
@@ -33,41 +40,6 @@ print("Dungeon Loaded:", placeId)
 
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-
-
--- ========================================
--- Character
--- ========================================
-
-local function GetRoot()
-    local Char = plr.Character or plr.CharacterAdded:Wait()
-    return Char:WaitForChild("HumanoidRootPart")
-end
-
-
--- Simple TP Function
-function _tp(cf)
-    local Root = GetRoot()
-    if Root then
-        Root.CFrame = cf
-    end
-end
-
-
--- ========================================
--- Variables
--- ========================================
-
-_G.BringMobsDungeon = false
-_G.AutoFarmDungeon = false
-_G.GoingToExit = false
-_G.DeathPause = false
-
-local BringMobsThread = nil
-local FarmDungeonThread = nil
-
-
 -- ========================================
 -- Load UI
 -- ========================================
@@ -79,6 +51,7 @@ local Library = loadstring(game:HttpGet(
     Title = "青龙脚本 | Dungeon Hub",
     SubTitle = "Dungeon",
     SaveFolder = "Dungeon_Settings.json"
+
 })
 
 
@@ -86,17 +59,30 @@ local Library = loadstring(game:HttpGet(
 -- Floating Button
 -- ========================================
 
+pcall(function()
+    game.CoreGui.DungeonControlGUI:Destroy()
+end)
+
+
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "DungeonControlGUI"
 screenGui.Parent = game.CoreGui
 
 
 local imageButton = Instance.new("ImageButton")
+
 imageButton.Size = UDim2.new(0,35,0,35)
-imageButton.Position = UDim2.new(0.15,0,0.15,0)
-imageButton.Image = "rbxassetid://114476175638281"
+
+imageButton.Position =
+    UDim2.new(0.15,0,0.15,0)
+
+imageButton.Image =
+    "rbxassetid://114476175638281"
+
 imageButton.BackgroundTransparency = 1
+
 imageButton.Parent = screenGui
+
 
 
 local uiCorner = Instance.new("UICorner")
@@ -104,47 +90,42 @@ uiCorner.CornerRadius = UDim.new(0,8)
 uiCorner.Parent = imageButton
 
 
-local uiStroke = Instance.new("UIStroke", imageButton)
+
+local uiStroke = Instance.new("UIStroke")
 uiStroke.Thickness = 2
 uiStroke.Color = Color3.fromRGB(255,0,0)
+uiStroke.Parent = imageButton
 
 
--- Drag System
+
+-- ========================================
+-- Drag Button
+-- ========================================
 
 local dragging = false
-local dragInput
 local dragStart
 local startPos
-
-
-local function update(input)
-
-    local delta = input.Position - dragStart
-
-    imageButton.Position = UDim2.new(
-        startPos.X.Scale,
-        startPos.X.Offset + delta.X,
-        startPos.Y.Scale,
-        startPos.Y.Offset + delta.Y
-    )
-
-end
+local dragInput
 
 
 imageButton.InputBegan:Connect(function(input)
 
-    if input.UserInputType == Enum.UserInputType.MouseButton1
-    or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.Touch
+    or input.UserInputType == Enum.UserInputType.MouseButton1 then
 
         dragging = true
+
         dragStart = input.Position
+
         startPos = imageButton.Position
 
 
         input.Changed:Connect(function()
 
             if input.UserInputState == Enum.UserInputState.End then
+
                 dragging = false
+
             end
 
         end)
@@ -154,10 +135,11 @@ imageButton.InputBegan:Connect(function(input)
 end)
 
 
+
 imageButton.InputChanged:Connect(function(input)
 
-    if input.UserInputType == Enum.UserInputType.MouseMovement
-    or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.Touch
+    or input.UserInputType == Enum.UserInputType.MouseMovement then
 
         dragInput = input
 
@@ -166,55 +148,84 @@ imageButton.InputChanged:Connect(function(input)
 end)
 
 
+
 UserInputService.InputChanged:Connect(function(input)
 
     if dragging and input == dragInput then
-        update(input)
+
+        local delta =
+            input.Position - dragStart
+
+
+        imageButton.Position =
+            UDim2.new(
+
+                startPos.X.Scale,
+                startPos.X.Offset + delta.X,
+
+                startPos.Y.Scale,
+                startPos.Y.Offset + delta.Y
+
+            )
+
     end
 
 end)
 
 
 
+-- ========================================
 -- Minimize
+-- ========================================
 
 local isOpen = true
+
 
 imageButton.MouseButton1Click:Connect(function()
 
     isOpen = not isOpen
 
+
     if isOpen then
+
         Library:Minimize(false)
+
     else
+
         Library:Minimize(true)
+
     end
 
 end)
-
-
-
--- ========================================
--- Tabs
--- =======================================
-
 -- ========================================
 -- Tabs
 -- ========================================
 
 local Main = Library:MakeTab({
+
     Title = "Dungeon",
+
     Icon = "rbxassetid://7040410130"
+
 })
 
 
+
+-- ========================================
 -- Dungeon Info
+-- ========================================
+
 Main:AddSection({"Dungeon Info"})
 
+
 Main:AddParagraph({
+
     "Dungeon Info",
+
     "PlaceID: "..tostring(placeId).."\nDungeon Hub Loaded"
+
 })
+
 
 
 -- ========================================
@@ -226,21 +237,29 @@ Main:AddSection({"Bring Mobs"})
 
 local ScanRadius = 1000
 local MaxBring = 5
-local HoldHeight = 1
+
 
 
 local function GetLocalCharacterRoot()
-    local Char = plr.Character or plr.CharacterAdded:Wait()
+
+    local Char =
+        plr.Character or plr.CharacterAdded:Wait()
+
     return Char:FindFirstChild("HumanoidRootPart")
+
 end
+
 
 
 local function GetEnemiesFolder()
+
     return workspace:FindFirstChild("Enemies")
+
 end
 
 
-local function GetMobsInRadius(Position, Radius)
+
+local function GetMobsInRadius(Position,Radius)
 
     local Folder = GetEnemiesFolder()
 
@@ -248,56 +267,82 @@ local function GetMobsInRadius(Position, Radius)
         return {}
     end
 
+
     local Mobs = {}
+
 
     for _,Mob in pairs(Folder:GetChildren()) do
 
-        local Humanoid = Mob:FindFirstChild("Humanoid")
-        local Root = Mob:FindFirstChild("HumanoidRootPart")
 
-        if Humanoid and Root and Humanoid.Health > 0 then
+        local Humanoid =
+            Mob:FindFirstChild("Humanoid")
+
+
+        local Root =
+            Mob:FindFirstChild("HumanoidRootPart")
+
+
+
+        if Humanoid
+        and Root
+        and Humanoid.Health > 0 then
+
 
             if (Root.Position - Position).Magnitude <= Radius then
+
                 table.insert(Mobs,Mob)
+
             end
 
         end
+
     end
 
+
     return Mobs
+
 end
 
 
+
 local BringThread
+
 
 
 Main:AddToggle({
 
     Name = "Bring Mobs Dungeon",
 
-    Description = "Bring enemies",
-
     Default = false,
 
 
     Callback = function(Value)
 
+
         _G.BringMobsDungeon = Value
+
 
 
         if Value then
 
+
             BringThread = task.spawn(function()
+
 
                 while _G.BringMobsDungeon do
 
-                    task.wait(.2)
+
+                    task.wait(0.2)
 
 
-                    local Root = GetLocalCharacterRoot()
+
+                    local Root =
+                        GetLocalCharacterRoot()
+
 
 
                     if Root then
+
 
                         local Mobs =
                             GetMobsInRadius(
@@ -306,13 +351,18 @@ Main:AddToggle({
                             )
 
 
+
                         for i = 1, math.min(#Mobs,MaxBring) do
+
+
 
                             local MobRoot =
                                 Mobs[i]:FindFirstChild("HumanoidRootPart")
 
 
+
                             if MobRoot then
+
 
                                 MobRoot.CFrame =
                                     Root.CFrame *
@@ -322,24 +372,41 @@ Main:AddToggle({
                                         math.random(-5,5)
                                     )
 
+
                             end
+
                         end
+
                     end
+
+
                 end
+
+
             end)
+
 
         else
 
+
             _G.BringMobsDungeon = false
 
+
+            if BringThread then
+
+                task.cancel(BringThread)
+
+                BringThread = nil
+
+            end
+
+
         end
+
 
     end
 
 })
-
-
-
 -- ========================================
 -- Auto Farm Dungeon
 -- ========================================
@@ -350,18 +417,85 @@ Main:AddSection({"Auto Farm"})
 local FarmThread
 
 
+
+local function GetBestEnemy()
+
+    local Folder = workspace:FindFirstChild("Enemies")
+
+    if not Folder then
+        return nil
+    end
+
+
+    local Root = GetLocalCharacterRoot()
+
+    if not Root then
+        return nil
+    end
+
+
+    local Target = nil
+    local Distance = math.huge
+
+
+
+    for _,Enemy in pairs(Folder:GetChildren()) do
+
+
+        local Humanoid =
+            Enemy:FindFirstChild("Humanoid")
+
+
+        local EnemyRoot =
+            Enemy:FindFirstChild("HumanoidRootPart")
+
+
+
+        if Humanoid
+        and EnemyRoot
+        and Humanoid.Health > 0 then
+
+
+
+            local Dist =
+                (EnemyRoot.Position - Root.Position).Magnitude
+
+
+
+            if Dist < Distance then
+
+                Distance = Dist
+
+                Target = Enemy
+
+            end
+
+
+        end
+
+    end
+
+
+    return Target
+
+end
+
+
+
+
+
 Main:AddToggle({
 
     Name = "Auto Farm Dungeon",
-
-    Description = "Auto kill dungeon",
 
     Default = false,
 
 
     Callback = function(Value)
 
+
         _G.AutoFarmDungeon = Value
+
 
 
         if Value then
@@ -370,60 +504,85 @@ Main:AddToggle({
             FarmThread = task.spawn(function()
 
 
+
                 while _G.AutoFarmDungeon do
 
 
-                    task.wait(.3)
+
+                    task.wait(0.3)
 
 
-                    local Enemies =
-                        workspace:FindFirstChild("Enemies")
+
+                    local Target =
+                        GetBestEnemy()
 
 
-                    if Enemies then
+
+                    local MyRoot =
+                        GetLocalCharacterRoot()
 
 
-                        for _,Enemy in pairs(Enemies:GetChildren()) do
+
+                    if Target
+                    and MyRoot then
 
 
-                            local Humanoid =
-                                Enemy:FindFirstChild("Humanoid")
+
+                        local EnemyRoot =
+                            Target:FindFirstChild("HumanoidRootPart")
 
 
-                            local Root =
-                                Enemy:FindFirstChild("HumanoidRootPart")
+
+                        local Humanoid =
+                            Target:FindFirstChild("Humanoid")
 
 
-                            local MyRoot =
-                                GetLocalCharacterRoot()
+
+                        if EnemyRoot
+                        and Humanoid
+                        and Humanoid.Health > 0 then
 
 
-                            if Humanoid
-                            and Root
-                            and MyRoot
-                            and Humanoid.Health > 0 then
+
+                            MyRoot.CFrame =
+                                EnemyRoot.CFrame *
+                                CFrame.new(0,20,0)
 
 
-                                MyRoot.CFrame =
-                                    Root.CFrame *
-                                    CFrame.new(0,20,0)
 
-                                break
-
-                            end
                         end
+
+
                     end
 
+
+
                 end
+
+
 
             end)
 
 
+
         else
+
 
             _G.AutoFarmDungeon = false
 
+
+
+            if FarmThread then
+
+                task.cancel(FarmThread)
+
+                FarmThread = nil
+
+            end
+
+
         end
+
 
     end
 
