@@ -629,34 +629,7 @@ G.Masgun = function(I, e)
 			end;
 		end;
 	end;
-statsSetings = function(I, e)
-		if I == "Melee" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Melee", e);
-			end;
-		elseif I == "Defense" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Defense", e);
-			end;
-		elseif I == "Sword" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Sword", e);
-			end;
-		elseif I == "Gun" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Gun", e);
-			end;
-		elseif I == "Devil" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Demon Fruit", e);
-			end;
-		end;
-	end;
-
-
-
-
---==================================================
+	===================================
 -- VARIÁVEIS DE CONTROLE NECESSÁRIAS
 --==================================================
 _G = _G or {}
@@ -9177,106 +9150,121 @@ if World3 then
     end})
 end
 Esp:AddSection({"Stats"});
-
--- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
-_G.PointStats = _G.PointStats or 1
-_G.AddMeleeStats = false
-_G.AddDefenseStats = false
-_G.AddSwordStats = false
-_G.AddGunStats = false
-_G.AddFruitStats = false
-
 Esp:AddSlider({
-    Title = "Point",
-    Step = 1,
-    Value = {
-        Min = 1,
-        Max = 100,
-        Default = 1
-    },
-    Callback = function(value)
-        _G.PointStats = value
+    Name = "Point",
+    Description = "Số điểm cộng mỗi lần",
+    Min = 1,
+    Max = 100,
+    Increase = 1,
+    Default = 1,
+    Callback = function(Value)
+        _G.PointStats = Value
+    end,
+})
+statsSetings = function(I)
+    if plr.Data.Points.Value <= 0 then
+        return
     end
+
+    local amount = math.min(plr.Data.Points.Value, _G.PointStats)
+
+    if I == "Melee" then
+        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Melee", amount)
+
+    elseif I == "Defense" then
+        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Defense", amount)
+
+    elseif I == "Sword" then
+        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Sword", amount)
+
+    elseif I == "Gun" then
+        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Gun", amount)
+
+    elseif I == "Devil" then
+        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Demon Fruit", amount)
+    end
+end
+_G.PointStats = 1
+-- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // -
+Esp:AddToggle({
+    Name = "Add Points Melee",
+    Description = "Gasta pontos automaticamente em Melee",
+    Default = GetSetting("AutoMelee_Save", false),
+    Callback = function(I)
+        _G.Auto_Melee = I
+        _G.SaveData["AutoMelee_Save"] = I
+        SaveSettings()
+    end,
+})
+Esp:AddToggle({
+    Name = "Add Points Sword",
+    Description = "Gasta pontos automaticamente em Sword",
+    Default = GetSetting("AutoSword_Save", false),
+    Callback = function(I)
+        _G.Auto_Sword = I
+        _G.SaveData["AutoSword_Save"] = I
+        SaveSettings()
+    end,
 })
 
-local function addStatsPoint(stat)
-    pcall(function()
-        Remotes.CommF_:InvokeServer("AddPoint", stat, _G.PointStats)
-    end)
-end
+Esp:AddToggle({
+    Name = "Add Points Gun",
+    Description = "Gasta pontos automaticamente em Gun",
+    Default = GetSetting("AutoGun_Save", false),
+    Callback = function(I)
+        _G.Auto_Gun = I
+        _G.SaveData["AutoGun_Save"] = I
+        SaveSettings()
+    end,
+})
+
+Esp:AddToggle({
+    Name = "Add Points Fruit",
+    Description = "Gasta pontos automaticamente em Fruit",
+    Default = GetSetting("AutoFruit_Save", false),
+    Callback = function(I)
+        _G.Auto_Blox = I
+        _G.SaveData["AutoFruit_Save"] = I
+        SaveSettings()
+    end,
+})
+-- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
+Esp:AddToggle({
+    Name = "Add Points Defense",
+    Description = "Gasta pontos automaticamente em Defense",
+    Default = GetSetting("AutoDefense_Save", false),
+    Callback = function(I)
+        _G.Auto_Defense = I
+        _G.SaveData["AutoDefense_Save"] = I
+        SaveSettings()
+    end,
+})
 
 task.spawn(function()
     while task.wait(0.2) do
         pcall(function()
-            local points = LocalPlayer.Data.Points.Value
-
-            if points < _G.PointStats then
-                return
+            if _G.Auto_Melee then
+                statsSetings("Melee")
             end
 
-            if _G.AddMeleeStats then
-                addStatsPoint("Melee")
+            if _G.Auto_Defense then
+                statsSetings("Defense")
             end
 
-            if _G.AddDefenseStats then
-                addStatsPoint("Defense")
+            if _G.Auto_Sword then
+                statsSetings("Sword")
             end
 
-            if _G.AddSwordStats then
-                addStatsPoint("Sword")
+            if _G.Auto_Gun then
+                statsSetings("Gun")
             end
 
-            if _G.AddGunStats then
-                addStatsPoint("Gun")
-            end
-
-            if _G.AddFruitStats then
-                addStatsPoint("Demon Fruit")
+            if _G.Auto_Blox then
+                statsSetings("Devil")
             end
         end)
     end
 end)
-
-Esp:AddToggle({
-    Title = "Add Melee Stats",
-    Default = false,
-    Callback = function(state)
-        _G.AddMeleeStats = state
-    end
-})
-
-Esp:AddToggle({
-    Title = "Add Defense Stats",
-    Default = false,
-    Callback = function(state)
-        _G.AddDefenseStats = state
-    end
-})
-
-Esp:AddToggle({
-    Title = "Add Sword Stats",
-    Default = false,
-    Callback = function(state)
-        _G.AddSwordStats = state
-    end
-})
-
-Esp:AddToggle({
-    Title = "Add Gun Stats",
-    Default = false,
-    Callback = function(state)
-        _G.AddGunStats = state
-    end
-})
-
-Esp:AddToggle({
-    Title = "Add Devil Fruit Stats",
-    Default = false,
-    Callback = function(state)
-        _G.AddFruitStats = state
-    end
-})
-
 
 Esp:AddSection({"Fontes"});
 
