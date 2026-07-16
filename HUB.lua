@@ -1139,7 +1139,44 @@ end
 
 end)
 
+Main:AddToggle({
+    Name = "Kill aura",
+    Default = false,
+    Callback = function(Value)
+        _G.KillH = Value
+    end
+})
 
+-- Sử dụng task.spawn để chạy mượt mà và tối ưu hơn spawn() cũ
+task.spawn(function()
+    while true do 
+        task.wait(Sec) -- Dùng task.wait thay cho wait vì nó chính xác hơn
+        
+        if _G.KillH then
+            -- Set SimulationRadius một lần ở ngoài vòng lặp để tránh làm nặng game
+            pcall(function()
+                sethiddenproperty(plr, "SimulationRadius", math.huge)
+            end)
+            
+            -- Quét qua toàn bộ danh sách quái vật cùng một lúc
+            for _, v in pairs(workspace.Enemies:GetChildren()) do
+                -- Nếu trong lúc đang quét mà bạn tắt Toggle thì dừng vòng lặp ngay lập tức
+                if not _G.KillH then break end 
+                
+                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                    -- Chỉ xử lý những con quái còn sống
+                    if v.Humanoid.Health > 0 and v.Parent then
+                        pcall(function()
+                            v.HumanoidRootPart.CanCollide = false
+                            v:BreakJoints()
+                            v.Humanoid.Health = 0
+                        end)
+                    end
+                end
+            end
+        end
+    end
+end)
 
 print("Dungeon Floor System Loaded")
 -- ========================================
@@ -1159,181 +1196,107 @@ Setting:AddSection({"Cài đặt"})
 -- WalkSpeed / JumpPower FIX
 -- ========================================
 
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+
+local plr = Players.LocalPlayer
+local humanoid = plr.Character and plr.Character:FindFirstChildOfClass("Humanoid") or nil
+
+plr.CharacterAdded:Connect(function(char)
+    humanoid = char:WaitForChild("Humanoid")
+end)
+
 local SpeedEnabled = false
 local JumpEnabled = false
 
 local desiredSpeed = 16
 local desiredJump = 50
 
-
-local function GetHumanoid()
-
-    local Char = plr.Character
-
-    if not Char then
-        return nil
+local function protectSpeed()
+    if humanoid then
+        humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+            if SpeedEnabled and humanoid.WalkSpeed ~= desiredSpeed then
+                humanoid.WalkSpeed = desiredSpeed
+            end
+        end)
     end
-
-    return Char:FindFirstChildOfClass("Humanoid")
-
 end
 
-
-
-local function ApplyStats()
-
-    local Hum = GetHumanoid()
-
-    if not Hum then
-        return
+local function applyStats()
+    if humanoid then
+        if SpeedEnabled then humanoid.WalkSpeed = desiredSpeed end
+        if JumpEnabled then humanoid.JumpPower = desiredJump end
     end
-
-
-    if SpeedEnabled then
-        Hum.WalkSpeed = desiredSpeed
-    end
-
-
-    if JumpEnabled then
-        Hum.JumpPower = desiredJump
-    end
-
 end
-
-
-
-plr.CharacterAdded:Connect(function()
-
-    task.wait(1)
-
-    ApplyStats()
-
-end)
-
-
 
 RunService.Heartbeat:Connect(function()
-
-    pcall(function()
-
-        local Hum = GetHumanoid()
-
-        if Hum then
-
-            if SpeedEnabled 
-            and Hum.WalkSpeed ~= desiredSpeed then
-
-                Hum.WalkSpeed = desiredSpeed
-
-            end
-
-
-            if JumpEnabled 
-            and Hum.JumpPower ~= desiredJump then
-
-                Hum.JumpPower = desiredJump
-
-            end
-
+    if humanoid then
+        if SpeedEnabled and humanoid.WalkSpeed ~= desiredSpeed then
+            humanoid.WalkSpeed = desiredSpeed
         end
-
-    end)
-
+        if JumpEnabled and humanoid.JumpPower ~= desiredJump then
+            humanoid.JumpPower = desiredJump
+        end
+    end
 end)
 
+plr.CharacterAdded:Connect(function(char)
+    humanoid = char:WaitForChild("Humanoid")
+    protectSpeed()
+end)
 
+protectSpeed()
 
-
-Setting:AddToggle({
-
-    Name = "Set WalkSpeed",
-
-    Description = "Bật tốc độ chạy",
-
-    Default = false,
-
+-- Toggle para WalkSpeed
+Player:AddToggle({
+	Name  = "Set WalkSpeed",
+    Description = "Bật tốc độ chạy của bạn",
+    Default = true,
     Callback = function(Value)
-
         SpeedEnabled = Value
-
-        ApplyStats()
-
+        applyStats()
     end
-
 })
-
-
-
+-- Input para definir valor da WalkSpeed 
 Setting:AddSlider({
-
     Name = "WalkSpeed Value",
-
-    Description = "Chọn tốc độ",
-
-    Default = 16,
-
-    Min = 16,
-
-    Max = 500,
-
-    Rounding = 0,
-
+    Description = "Kéo để chọn tốc độ",
+    Default = _G.SaveData["WalkSpeed_Save"] or 16, -- Đọc giá trị lưu, mặc định 16
+    Min = 20,
+    Max = 500, -- Bạn có thể chỉnh Max tùy ý
+    Rounding = 0, -- Làm tròn số
     Callback = function(Value)
-
         desiredSpeed = Value
-
-        ApplyStats()
-
+        _G.SaveData["WalkSpeed_Save"] = Value -- Lưu trạng thái
+        if SaveSettings then SaveSettings() end -- Tự động lưu
+        applyStats() -- Áp dụng tốc độ
     end
-
 })
 
-
-
+-- Toggle para JumpPower
 Setting:AddToggle({
-
-    Name = "Set JumpPower",
-
-    Description = "Bật nhảy cao",
-
-    Default = false,
-
+	Name  = "Set JumpPower",
+    Description = "Bật độ nhảy cao của bạn",
+    Default = true,
     Callback = function(Value)
-
         JumpEnabled = Value
-
-        ApplyStats()
-
+        applyStats()
     end
-
 })
-
-
-
 Setting:AddSlider({
-
     Name = "JumpPower Value",
-
-    Description = "Chọn độ cao nhảy",
-
-    Default = 50,
-
+    Description = "Kéo để chọn độ cao nhảy",
+    Default = _G.SaveData["JumpPower_Save"] or 50, -- Đọc giá trị lưu, mặc định 50
     Min = 50,
-
-    Max = 900,
-
+    Max = 900, -- Bạn có thể điều chỉnh mức tối đa tùy ý
     Rounding = 0,
-
     Callback = function(Value)
-
         desiredJump = Value
-
-        ApplyStats()
-
+        _G.SaveData["JumpPower_Save"] = Value -- Lưu trạng thái
+        if SaveSettings then SaveSettings() end -- Tự động lưu
+        applyStats() -- Áp dụng thay đổi
     end
-
 })
-
 
 
 
