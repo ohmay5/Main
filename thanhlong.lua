@@ -270,7 +270,7 @@ elseif World2 then
 	Boss = {
 			"Diamond",
 			"Jeremy",
-			"Fajita",
+			"Orbitus",
 			"Don Swan",
 			"Smoke Admiral",
 			"Awakened Ice Admiral",
@@ -354,7 +354,7 @@ local d = {
 	};
 local z = { "Swan Pirate", "Jeremy" };
 local H = { "Forest Pirate", "Captain Elephant" };
-local F = { "Fajita", "Jeremy", "Diamond" };
+local F = { "Orbitus", "Jeremy", "Diamond" };
 local Q = {
 		"Beast Hunter",
 		"Lantern",
@@ -1423,8 +1423,8 @@ QuestB = function()
 				Qdata = 3;
 				PosQBoss = CFrame.new(636.79943847656, 73.413787841797, 918.00415039063);
 				PosB = CFrame.new(2006.9261474609, 448.95666503906, 853.98284912109);
-			elseif _G.FindBoss == "Fajita" then
-				bMon = "Fajita";
+			elseif _G.FindBoss == "Orbitus" then
+				bMon = "Orbitus";
 				Qname = "MarineQuest3";
 				Qdata = 3;
 				PosQBoss = CFrame.new(-2441.986328125, 73.359344482422, -3217.5324707031);
@@ -4282,49 +4282,6 @@ spawn(function()
 end);
 end
 Setting:AddSection({"Manual Save"})
-
-if _G.SaveData["AutoExecute_Save"] == nil then
-    _G.SaveData["AutoExecute_Save"] = false
-end
-
-getgenv().AutoExecute = _G.SaveData["AutoExecute_Save"]
-
-Setting:AddToggle({
-    Title = "Auto Execute",
-    Default = _G.SaveData["AutoExecute_Save"],
-    Callback = function(Value)
-        getgenv().AutoExecute = Value
-        -- Cập nhật vào bảng SaveData và gọi hàm SaveSettings
-        _G.SaveData["AutoExecute_Save"] = Value
-        SaveSettings()
-    end
-})
-
--- Code auto execute
-local function setupAutoExecute()
-    local player = game.Players.LocalPlayer
-    local queue = syn and syn.queue_on_teleport or queue_on_teleport or queueteleport
-    local executed = false
-
-    if not queue then 
-        return 
-    end
-
-    player.OnTeleport:Connect(function()
-        -- Kiểm tra lại giá trị từ biến lưu trữ
-        if _G.SaveData["AutoExecute_Save"] and not executed then
-            executed = true
-            queue([[
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/thanhlong.lua"))()
-            ]])
-        end
-    end)
-end
-
-spawn(function()
-    task.wait(1)
-    pcall(setupAutoExecute)
-end)
 Setting:AddButton({
     Name = "Salvar Config UI",
     Description = "",
