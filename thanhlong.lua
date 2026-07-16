@@ -3120,12 +3120,6 @@ Status:AddButton({
     end
 })
 Status:AddButton({
-    Name = "Hop Server",
-    Callback = function()
-        Hop()
-    end
-})
-Status:AddButton({
     Name = "Hop Server Less People",
     Callback = function()
         local Http = game:GetService("HttpService")
@@ -3150,32 +3144,30 @@ Status:AddButton({
 })
 
 
-Farm:AddSection({"Local Main"})
+Farm:AddSection({"Local Main"});
 
 Farm:AddDropdown({
     Name = "Select Weapon",
-    Description = "chọn vũ khí",
-    Options = {"Melee","Sword","Blox Fruit","Gun"},
-    Default = GetSetting("SelectWeapon_Save", "Melee"),
+    Description = "Chọn vũ khí",
+    Options = {"Melee", "Sword", "Blox Fruit", "Gun"},
+    Default = _G.SaveData["ChooseWeapon_Save"] or "Melee",
     Multi = false,
     Callback = function(I)
         _G.ChooseWP = I
-
-        _G.SaveData["SelectWeapon_Save"] = I
+        _G.SaveData["ChooseWeapon_Save"] = I
         SaveSettings()
     end,
 })
 
-_G.ChooseWP = GetSetting("SelectWeapon_Save", "Melee")
+_G.ChooseWP = _G.SaveData["ChooseWeapon_Save"] or "Melee"
 
 spawn(function()
-    while wait(Sec) do
+    while task.wait(Sec) do
         pcall(function()
             for _, e in pairs(plr.Backpack:GetChildren()) do
                 if e.ToolTip == _G.ChooseWP then
-                    if plr.Backpack:FindFirstChild(e.Name) then
-                        _G.SelectWeapon = e.Name
-                    end
+                    _G.SelectWeapon = e.Name
+                    break
                 end
             end
         end)
@@ -5816,7 +5808,6 @@ local z5 = {
         SaveSettings()
     end,
 });
-
 
     Event:AddToggle({
         Name = "Auto Start farm",
