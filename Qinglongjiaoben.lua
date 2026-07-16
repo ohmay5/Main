@@ -9575,50 +9575,7 @@ Player:AddSlider({
         applyStats() -- Áp dụng thay đổi
     end
 })
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
 
-local Player = Players.LocalPlayer
-local NoClipConnection
-
-_G.SaveData = _G.SaveData or {}
-
-Player:AddToggle({
-    Name = "No Clip",
-    Description = "Đi xuyên vật thể",
-    Default = _G.SaveData["NoClip_Save"] or false,
-    Callback = function(Value)
-        _G.SaveData["NoClip_Save"] = Value
-        Save() -- Nếu Hub của bạn dùng hàm Save()
-
-        if NoClipConnection then
-            NoClipConnection:Disconnect()
-            NoClipConnection = nil
-        end
-
-        if Value then
-            NoClipConnection = RunService.Stepped:Connect(function()
-                local Character = Player.Character
-                if Character then
-                    for _, Part in ipairs(Character:GetDescendants()) do
-                        if Part:IsA("BasePart") then
-                            Part.CanCollide = false
-                        end
-                    end
-                end
-            end)
-        else
-            local Character = Player.Character
-            if Character then
-                for _, Part in ipairs(Character:GetDescendants()) do
-                    if Part:IsA("BasePart") then
-                        Part.CanCollide = true
-                    end
-                end
-            end
-        end
-    end
-})
 Player:AddToggle({
     Name = "Nhảy cao vô hạn",
     Default = true,
@@ -9666,6 +9623,7 @@ Player:AddToggle({
 		end;
 	end,
 });
+
 Player:AddSection({"Settings Combat / Aimbot Settings"});
 local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Aimbot.lua.txt"))()
 
@@ -11533,6 +11491,7 @@ spawn(function()
 	end;
 end);
 end
+
 Fruit:AddSection({"Raiding"});
 e = {
 		"Flame",
@@ -11901,7 +11860,7 @@ spawn(function()
 		end);
 	end;
 end);
-Get:AddToggle({
+Fruit:AddToggle({
 	Name = "Auto Drop Fruit",
 	Description = "Automatic drop devil fruit",
 	Default = false,
