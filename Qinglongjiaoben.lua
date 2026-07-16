@@ -69,10 +69,8 @@ task.spawn(function()
 end)
 
 
-for i = 3,1,-1 do
-    Text.Text = "Đang tải... "..i
-    task.wait(1)
-end
+Text.Text = "Đang tải..."
+task.wait(0.5)
 
 
 local CloseTween = TweenService:Create(
