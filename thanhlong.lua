@@ -249,7 +249,7 @@ end
 if World1 then
 	Boss = {
 			"The Gorilla King",
-			"Bobby",
+			"Chef",
 			"The Saw",
 			"Yeti",
 			"Mob Leader",
@@ -270,7 +270,7 @@ elseif World2 then
 	Boss = {
 			"Diamond",
 			"Jeremy",
-			"Fajita",
+			"Orbitus",
 			"Don Swan",
 			"Smoke Admiral",
 			"Awakened Ice Admiral",
@@ -324,8 +324,7 @@ local e = {
 		"Quake",
 		"Light",
 		"Dark",
-		"String",
-		"Rumble",
+		"Spider",
 		"Magma",
 		"Human: Buddha",
 		"Sand",
@@ -354,7 +353,7 @@ local d = {
 	};
 local z = { "Swan Pirate", "Jeremy" };
 local H = { "Forest Pirate", "Captain Elephant" };
-local F = { "Fajita", "Jeremy", "Diamond" };
+local F = { "Orbitus", "Jeremy", "Diamond" };
 local Q = {
 		"Beast Hunter",
 		"Lantern",
@@ -1323,8 +1322,8 @@ QuestB = function()
 				Qdata = 3;
 				PosQBoss = CFrame.new(-1601.6553955078, 36.85213470459, 153.38809204102);
 				PosB = CFrame.new(-1088.75977, 8.13463783, -488.559906, -0.707134247, 0, .707079291, 0, 1, 0, -0.707079291, 0, -0.707134247);
-			elseif _G.FindBoss == "Bobby" then
-				bMon = "Bobby";
+			elseif _G.FindBoss == "Chef" then
+				bMon = "Chef";
 				Qname = "BuggyQuest1";
 				Qdata = 3;
 				PosQBoss = CFrame.new(-1140.1761474609, 4.752049446106, 3827.4057617188);
@@ -1423,8 +1422,8 @@ QuestB = function()
 				Qdata = 3;
 				PosQBoss = CFrame.new(636.79943847656, 73.413787841797, 918.00415039063);
 				PosB = CFrame.new(2006.9261474609, 448.95666503906, 853.98284912109);
-			elseif _G.FindBoss == "Fajita" then
-				bMon = "Fajita";
+			elseif _G.FindBoss == "Orbitus" then
+				bMon = "Orbitus";
 				Qname = "MarineQuest3";
 				Qdata = 3;
 				PosQBoss = CFrame.new(-2441.986328125, 73.359344482422, -3217.5324707031);
@@ -4283,9 +4282,52 @@ end);
 end
 Setting:AddSection({"Manual Save"})
 
+if _G.SaveData["AutoExecute_Save"] == nil then
+    _G.SaveData["AutoExecute_Save"] = false
+end
+
+getgenv().AutoExecute = _G.SaveData["AutoExecute_Save"]
+
+Setting:AddToggle({
+    Title = "Auto Execute",
+    Default = _G.SaveData["AutoExecute_Save"],
+    Callback = function(Value)
+        getgenv().AutoExecute = Value
+        -- Cập nhật vào bảng SaveData và gọi hàm SaveSettings
+        _G.SaveData["AutoExecute_Save"] = Value
+        SaveSettings()
+    end
+})
+
+-- Code auto execute
+local function setupAutoExecute()
+    local player = game.Players.LocalPlayer
+    local queue = syn and syn.queue_on_teleport or queue_on_teleport or queueteleport
+    local executed = false
+
+    if not queue then 
+        return 
+    end
+
+    player.OnTeleport:Connect(function()
+        -- Kiểm tra lại giá trị từ biến lưu trữ
+        if _G.SaveData["AutoExecute_Save"] and not executed then
+            executed = true
+            queue([[
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/thanhlong.lua"))()
+            ]])
+        end
+    end)
+end
+
+spawn(function()
+    task.wait(1)
+    pcall(setupAutoExecute)
+end)
 Setting:AddButton({
     Name = "Salvar Config UI",
     Description = "",
+    Default= true, 
     Callback = function()
         -- Verifica se a função existe antes de chamar
         if SaveSettings then
@@ -4293,7 +4335,7 @@ Setting:AddButton({
             
             -- Notificação Universal (Funciona sem a lib Fluent)
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Turbo Lite Hub",
+                Title = "青龙脚本Hub",
                 Text = "Done",
                 Duration = 5
             })
@@ -4314,13 +4356,13 @@ Setting:AddButton({
             
             -- Notificação Universal
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Turbo Lite Hub",
+                Title = "青龙脚本 Hub",
                 Text = "Done",
                 Duration = 5
             })
         else
             game.StarterGui:SetCore("SendNotification", {
-                Title = "Turbo Lite Hub",
+                Title = "青龙脚本 Hub",
                 Text = "Done",
                 Duration = 3
             })
@@ -5510,32 +5552,7 @@ spawn(function()
 		end);
 	end;
 end);
- Others:AddToggle({
-    Name = "Stop when got God's Chalice",
-    Description = "dừng khi có cúp",
-    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
-    Default = GetSetting("StopChalice_Save", true),
-    Callback = function(I)
-        _G.StopWhenChalice = I
-        
-        -- 2. Guarda na tabela de salvamento
-        _G.SaveData["StopChalice_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
-spawn(function()
-	while wait(.2) do
-		if _G.StopWhenChalice and _G.FarmEliteHunt then
-			pcall(function()
-				if GetBP("God\'s Chalice") or GetBP("Sweet Chalice") or GetBP("Fist of Darkness") then
-					_G.FarmEliteHunt = false;
-				end;
-			end);
-		end;
-	end;
-end);
+ 
 Others:AddToggle({
 	Name = "Auto Tushita Sword",
 	Description = "tự động lấy kiếm tushita",
@@ -5810,32 +5827,50 @@ local z5 = {
         "Beast Hunter",
     };
 
-    Event:AddDropdown({
-        Name = "Select Boats",
-        Description = "chọn thuyền đi",
-        Options = z5,
-        Default = "Guardian",
-        Multi = false,
-        Callback = function(I)
-            _G.SelectedBoat = I;
-        end,
-    });
+    _G.SelectedBoat = GetSetting("SelectedBoat_Save", "Guardian")
+
+Event:AddDropdown({
+    Name = "Select Boats",
+    Description = "chọn thuyền đi",
+    Options = z5,
+    Default = _G.SelectedBoat,
+    Multi = false,
+
+    Callback = function(I)
+        _G.SelectedBoat = I
+        
+        _G.SaveData["SelectedBoat_Save"] = I
+        SaveSettings()
+    end,
+});
     -- Configuração de Nível de Perigo (SÓ SEA 3)
     if World3 then
         local H5 = {
-            "Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite",
-        };
-        Event:AddDropdown({
-            Name = "Select Level Sea",
-            Description = "chọn mức độ để di chuyển trên biển",
-            Options = H5,
-            Default = "Lv 1",
-            Multi = false,
-            Callback = function(I)
-                _G.DangerSc = I;
-            end,
-        });
-    end
+    "Lv 1",
+    "Lv 2",
+    "Lv 3",
+    "Lv 4",
+    "Lv 5",
+    "Lv 6",
+    "Lv Infinite",
+}
+
+_G.DangerSc = GetSetting("DangerSc_Save", "Lv 1")
+
+Event:AddDropdown({
+    Name = "Select Level Sea",
+    Description = "chọn mức độ để di chuyển trên biển",
+    Options = H5,
+    Default = _G.DangerSc,
+    Multi = false,
+
+    Callback = function(I)
+        _G.DangerSc = I
+
+        _G.SaveData["DangerSc_Save"] = I
+        SaveSettings()
+    end,
+})
 
     Event:AddToggle({
         Name = "Auto Start farm",
@@ -8933,58 +8968,182 @@ end
 -- UI E TOGGLES
 Esp:AddSection({"Esp Items / Entity / Island"});
 
-Esp:AddToggle({Name = "Esp Berries", Default = false, Callback = function(I) 
-    BerryEsp = I; 
-    spawn(function() while BerryEsp do wait(1); berriesEsp(); end; end); 
-end});
+Esp:AddToggle({
+    Name = "Esp Berries",
+    Default = GetSetting("EspBerries_Save", false),
+    Callback = function(I)
+        BerryEsp = I
+        _G.SaveData["EspBerries_Save"] = I
+        SaveSettings()
 
-Esp:AddToggle({Name = "Esp Players", Default = false, Callback = function(I) 
-    PlayerEsp = I; 
-    spawn(function() while PlayerEsp do wait(0.1); EspPly(); end; end); 
-end});
+        task.spawn(function()
+            while BerryEsp do
+                task.wait(1)
+                berriesEsp()
+            end
+        end)
+    end
+})
 
-Esp:AddToggle({Name = "Esp Chests", Default = false, Callback = function(I) 
-    ChestESP = I; 
-    spawn(function() while ChestESP do wait(1); ChestEsp(); end; end); 
-end});
+Esp:AddToggle({
+    Name = "Esp Players",
+    Default = GetSetting("EspPlayers_Save", false),
+    Callback = function(I)
+        PlayerEsp = I
+        _G.SaveData["EspPlayers_Save"] = I
+        SaveSettings()
 
-Esp:AddToggle({Name = "Esp Fruits", Default = false, Callback = function(I)
-    DevilFruitESP = I
-    task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp) end end)
-end})
+        task.spawn(function()
+            while PlayerEsp do
+                task.wait(0.1)
+                EspPly()
+            end
+        end)
+    end
+})
 
-Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
-    _G.IslandESP = I;
-    task.spawn(function() while _G.IslandESP do IslandESP_Func(); task.wait(2) end; IslandESP_Func() end)
-end});
+Esp:AddToggle({
+    Name = "Esp Chests",
+    Default = GetSetting("EspChests_Save", false),
+    Callback = function(I)
+        ChestESP = I
+        _G.SaveData["EspChests_Save"] = I
+        SaveSettings()
+
+        task.spawn(function()
+            while ChestESP do
+                task.wait(1)
+                ChestEsp()
+            end
+        end)
+    end
+})
+
+Esp:AddToggle({
+    Name = "Esp Fruits",
+    Default = GetSetting("EspFruits_Save", false),
+    Callback = function(I)
+        DevilFruitESP = I
+        _G.SaveData["EspFruits_Save"] = I
+        SaveSettings()
+
+        task.spawn(function()
+            while DevilFruitESP do
+                task.wait(1)
+                pcall(DevEsp)
+            end
+        end)
+    end
+})
+Esp:AddToggle({
+    Name = "Esp Island",
+    Default = GetSetting("EspIsland_Save", false),
+    Callback = function(I)
+        _G.IslandESP = I
+        _G.SaveData["EspIsland_Save"] = I
+        SaveSettings()
+
+        task.spawn(function()
+            while _G.IslandESP do
+                IslandESP_Func()
+                task.wait(2)
+            end
+            IslandESP_Func()
+        end)
+    end
+})
 
 if World2 then
-    Esp:AddToggle({Name = "Esp Flower", Default = false, Callback = function(I)
-        FlowerESP = I
-        task.spawn(function() while FlowerESP do pcall(flowerEsp); task.wait(1) end end)
-    end})
-    Esp:AddToggle({Name = "Esp Legendary Sword", Default = false, Callback = function(I)
-        LegenS = I
-        task.spawn(function() while LegenS do pcall(LegenSword); task.wait(1) end end)
-    end})
+    Esp:AddToggle({
+        Name = "Esp Flower",
+        Default = GetSetting("EspFlower_Save", false),
+        Callback = function(I)
+            FlowerESP = I
+            _G.SaveData["EspFlower_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while FlowerESP do
+                    pcall(flowerEsp)
+                    task.wait(1)
+                end
+            end)
+        end
+    })
+
+    Esp:AddToggle({
+        Name = "Esp Legendary Sword",
+        Default = GetSetting("EspLegendarySword_Save", false),
+        Callback = function(I)
+            LegenS = I
+            _G.SaveData["EspLegendarySword_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while LegenS do
+                    pcall(LegenSword)
+                    task.wait(1)
+                end
+            end)
+        end
+    })
 end
 
 if World2 or World3 then
-    Esp:AddToggle({Name = "Esp Aura Colour Dealers", Default = false, Callback = function(I)
-        ColorEsp = I
-        task.spawn(function() while ColorEsp do pcall(HakiClorEsp); task.wait(1) end; pcall(HakiClorEsp) end)
-    end})
+    Esp:AddToggle({
+        Name = "Esp Aura Colour Dealers",
+        Default = GetSetting("EspAuraColour_Save", false),
+        Callback = function(I)
+            ColorEsp = I
+            _G.SaveData["EspAuraColour_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while ColorEsp do
+                    pcall(HakiClorEsp)
+                    task.wait(1)
+                end
+                pcall(HakiClorEsp)
+            end)
+        end
+    })
 end
 
 if World3 then
-    Esp:AddToggle({Name = "Esp Gears", Default = false, Callback = function(I)
-        ESPGear = I
-        task.spawn(function() while ESPGear do pcall(gearEsp); task.wait(1) end end)
-    end})
-    Esp:AddToggle({Name = "Esp Advanced Fruits Dealer", Default = false, Callback = function(I)
-        advanEsp = I
-        task.spawn(function() while advanEsp do pcall(AdvanFruitEsp); task.wait(1) end; pcall(AdvanFruitEsp) end)
-    end})
+    Esp:AddToggle({
+        Name = "Esp Gears",
+        Default = GetSetting("EspGears_Save", false),
+        Callback = function(I)
+            ESPGear = I
+            _G.SaveData["EspGears_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while ESPGear do
+                    pcall(gearEsp)
+                    task.wait(1)
+                end
+            end)
+        end
+    })
+
+    Esp:AddToggle({
+        Name = "Esp Advanced Fruits Dealer",
+        Default = GetSetting("EspAdvancedFruitDealer_Save", false),
+        Callback = function(I)
+            advanEsp = I
+            _G.SaveData["EspAdvancedFruitDealer_Save"] = I
+            SaveSettings()
+
+            task.spawn(function()
+                while advanEsp do
+                    pcall(AdvanFruitEsp)
+                    task.wait(1)
+                end
+                pcall(AdvanFruitEsp)
+            end)
+        end
+    })
 end
 
 
@@ -9132,6 +9291,21 @@ Esp:AddButton({
 Esp:AddSection({"Stats"});
 
 -- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
+_G.StatAmount = GetSetting("StatAmount_Save", 3)
+
+Esp:AddSlider({
+    Name = "Add Points Amount",
+    Description = "Số điểm cộng mỗi lần",
+    Default = GetSetting("StatAmount_Save", 3),
+    Min = 1,
+    Max = 1000,
+    Rounding = 0,
+    Callback = function(Value)
+        _G.StatAmount = Value
+        _G.SaveData["StatAmount_Save"] = Value
+        SaveSettings()
+    end,
+})
 
 Esp:AddToggle({
     Name = "Add Points Melee",
@@ -9188,70 +9362,22 @@ Esp:AddToggle({
     end,
 })
 
--- // LOOP DOS STATS (Execute isso uma vez no seu script) // --
+
+-- AUTO ADD POINT LOOP
 task.spawn(function()
     while task.wait(1) do
         pcall(function()
             local remote = game:GetService("ReplicatedStorage").Remotes.CommF_
-            if _G.Auto_Melee then remote:InvokeServer("AddPoint", "Melee", 3) end
-            if _G.Auto_Sword then remote:InvokeServer("AddPoint", "Sword", 3) end
-            if _G.Auto_Gun then remote:InvokeServer("AddPoint", "Gun", 3) end
-            if _G.Auto_Blox then remote:InvokeServer("AddPoint", "Demon Fruit", 3) end
-            if _G.Auto_Defense then remote:InvokeServer("AddPoint", "Defense", 3) end
+            local amount = _G.StatAmount or 3
+
+            if _G.Auto_Melee then remote:InvokeServer("AddPoint", "Melee", amount) end
+            if _G.Auto_Sword then remote:InvokeServer("AddPoint", "Sword", amount) end
+            if _G.Auto_Gun then remote:InvokeServer("AddPoint", "Gun", amount) end
+            if _G.Auto_Blox then remote:InvokeServer("AddPoint", "Demon Fruit", amount) end
+            if _G.Auto_Defense then remote:InvokeServer("AddPoint", "Defense", amount) end
         end)
     end
 end)
-
--- Usamos um valor grande (como 9999999) para simular o gasto de 'todos' os pontos disponíveis.
--- Assumimos que a função 'statsSetings' irá apenas gastar o máximo de pontos que o jogador realmente tem.
-local AllAvailablePoints = 9999999; 
-
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Melee then
-				statsSetings("Melee", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Sword then
-				statsSetings("Sword", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Gun then
-				statsSetings("Gun", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			-- Note: No seu código original era 'Auto_DevilFruit', mas no menu era 'Fruit'. Corrigi para usar a mesma variável do menu.
-			if _G.Auto_Blox then 
-				statsSetings("Devil", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Defense then
-				statsSetings("Defense", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
 Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
 local Players = game:GetService("Players")
@@ -9616,14 +9742,22 @@ Player:AddToggle({
     end
 })
 
+AimPlayers = GetSetting("AimPlayers_Save", false)
+AimMobs = GetSetting("AimMobs_Save", false)
+
 Player:AddToggle({
     Name = "Aimbot on Players(Ghim người chơi)",
-    Default = false,
+    Default = AimPlayers,
     Callback = function(v)
         AimPlayers = v
 
+        _G.SaveData["AimPlayers_Save"] = v
+        SaveSettings()
+
         if v then
             AimMobs = false
+            _G.SaveData["AimMobs_Save"] = false
+            SaveSettings()
             v1:SetNPCSilentAim(false)
         end
 
@@ -9635,14 +9769,20 @@ Player:AddToggle({
     end
 })
 
+
 Player:AddToggle({
     Name = "Aimbot on Mobs(Ghim quái)",
-    Default = false,
+    Default = AimMobs,
     Callback = function(v)
         AimMobs = v
 
+        _G.SaveData["AimMobs_Save"] = v
+        SaveSettings()
+
         if v then
             AimPlayers = false
+            _G.SaveData["AimPlayers_Save"] = false
+            SaveSettings()
             v1:SetPlayerSilentAim(false)
         end
 
@@ -9653,7 +9793,6 @@ Player:AddToggle({
         end
     end
 })
-
 Player:AddToggle({
 	Name = "Accept Allies",
 	Description = "Tự chấp nhận kết đòng minh",
@@ -11345,66 +11484,88 @@ spawn(function()
 	end;
 end);
 end
-Fruit:AddSection({"Raiding"});
+Fruit:AddSection({"Raiding"})
+
 e = {
-		"Flame",
-		"Ice",
-		"Quake",
-		"Light",
-		"Dark",
-		"String",
-		"Rumble",
-		"Magma",
-		"Human: Buddha",
-		"Sand",
-		"Bird: Phoenix",
-		"Dough",
-	};
+    "Flame",
+    "Ice",
+    "Quake",
+    "Light",
+    "Dark",
+    "Spider",
+    "Magma",
+    "Human: Buddha",
+    "Sand",
+    "Bird: Phoenix",
+    "Dough",
+}
+
+_G.SelectChip = GetSetting("SelectChip_Save", "Flame")
+_G.AutoChip = _G.SelectChip
+
 Fruit:AddDropdown({
-	Name = "Select Chip",
-	Description = "",
-	Options = e,
-	Default = "Flame",
-	Multi = false,
-	Callback = function(I)
-		_G.SelectChip = I;
-	end,
-});
+    Name = "Select Chip",
+    Description = "",
+    Options = e,
+    Default = _G.SelectChip,
+    Multi = false,
+
+    Callback = function(I)
+        _G.SelectChip = I
+        _G.AutoChip = I
+
+        _G.SaveData["SelectChip_Save"] = I
+        SaveSettings()
+    end,
+})
+
+
 spawn(function()
-	while wait(Sec) do
-		if _G.AutoSelectDungeon then
-			pcall(function()
-				if GetBP("Flame-Flame") then
-					_G.SelectChip = "Flame";
-				elseif GetBP("Ice-Ice") then
-					_G.SelectChip = "Ice";
-				elseif GetBP("Quake-Quake") then
-					_G.SelectChip = "Quake";
-				elseif GetBP("Light-Light") then
-					_G.SelectChip = "Light";
-				elseif GetBP("Dark-Dark") then
-					_G.SelectChip = "Dark";
-				elseif GetBP("String-String") then
-					_G.SelectChip = "String";
-				elseif GetBP("Rumble-Rumble") then
-					_G.SelectChip = "Rumble";
-				elseif GetBP("Magma-Magma") then
-					_G.SelectChip = "Magma";
-				elseif GetBP("Human-Human: Buddha Fruit") then
-					_G.SelectChip = "Human: Buddha";
-				elseif GetBP("Dough-Dough") then
-					_G.SelectChip = "Dough";
-				elseif GetBP("Sand-Sand") then
-					_G.SelectChip = "Sand";
-				elseif GetBP("Bird-Bird: Phoenix") then
-					_G.SelectChip = "Bird: Phoenix";
-				else
-					_G.SelectChip = "Ice";
-				end;
-			end);
-		end;
-	end;
-end);
+    while wait(Sec) do
+        if _G.AutoSelectDungeon then
+            pcall(function()
+
+                if GetBP("Flame-Flame") then
+                    _G.AutoChip = "Flame"
+
+                elseif GetBP("Ice-Ice") then
+                    _G.AutoChip = "Ice"
+
+                elseif GetBP("Quake-Quake") then
+                    _G.AutoChip = "Quake"
+
+                elseif GetBP("Light-Light") then
+                    _G.AutoChip = "Light"
+
+                elseif GetBP("Dark-Dark") then
+                    _G.AutoChip = "Dark"
+
+                elseif GetBP("Spider-Spider") then
+                    _G.AutoChip = "Spider"
+
+                elseif GetBP("Magma-Magma") then
+                    _G.AutoChip = "Magma"
+
+                elseif GetBP("Human-Human: Buddha Fruit") then
+                    _G.AutoChip = "Human: Buddha"
+
+                elseif GetBP("Dough-Dough") then
+                    _G.AutoChip = "Dough"
+
+                elseif GetBP("Sand-Sand") then
+                    _G.AutoChip = "Sand"
+
+                elseif GetBP("Bird-Bird: Phoenix") then
+                    _G.AutoChip = "Bird: Phoenix"
+
+                else
+                    _G.AutoChip = _G.SelectChip
+                end
+
+            end)
+        end
+    end
+end)
 Fruit:AddToggle({
 	Name = "Buy Chip With Fruit",
 	Description = "Use your lowest fruit in your bag",
@@ -11446,8 +11607,6 @@ Fruit:AddToggle({
 		end)
 	end
 })
-
-Fruit:AddSection({"Raid Farming"});
 
 Fruit:AddSection({"Raid Farming"});
 
@@ -11894,5 +12053,4 @@ Setting:AddToggle({
 		end;
 	end,
 });
-
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attach.txt"))()
