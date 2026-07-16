@@ -9072,10 +9072,24 @@ Esp:AddToggle({Name = "Esp Chests", Default = false, Callback = function(I)
     spawn(function() while ChestESP do wait(1); ChestEsp(); end; end); 
 end});
 
-Esp:AddToggle({Name = "Esp Fruits", Default = false, Callback = function(I)
-    DevilFruitESP = I
-    task.spawn(function() while DevilFruitESP do task.wait(1); pcall(DevEsp) end end)
-end})
+Esp:AddToggle({
+    Name = "Esp Fruits",
+    Default = _G.SaveData["ESP_Fruit"] or false,
+    Callback = function(Value)
+        DevilFruitESP = Value
+        _G.SaveData["ESP_Fruit"] = Value
+        if SaveSettings then
+            SaveSettings()
+        end
+
+        task.spawn(function()
+            while DevilFruitESP do
+                task.wait(1)
+                pcall(DevEsp)
+            end
+        end)
+    end
+})
 
 Esp:AddToggle({Name = "Esp Island", Default = false, Callback = function(I)
     _G.IslandESP = I;
@@ -9256,42 +9270,6 @@ Esp:AddButton({
 Esp:AddSection({"Stats"});
 
 -- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
-
-Esp:AddToggle({
-	Title = "Add Melee Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddMeleeStats = state;
-	end
-});
-Esp:AddToggle({
-	Title = "Add Defense Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddDefenseStats = state;
-	end
-});
-Esp:AddToggle({
-	Title = "Add Sword Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddSwordStats = state;
-	end
-});
-Esp:AddToggle({
-	Title = "Add Gun Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddGunStats = state;
-	end
-});
-Esp:AddToggle({
-	Title = "Add Devil Fruit Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddFruitStats = state;
-	end
-});
 Esp:AddSlider({
 	Title = "Point",
 	Step = 1,
@@ -9328,6 +9306,42 @@ spawn(function()
 		-- end;
 	end;
 end);
+Esp:AddToggle({
+	Title = "Add Melee Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddMeleeStats = state;
+	end
+});
+Esp:AddToggle({
+	Title = "Add Defense Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddDefenseStats = state;
+	end
+});
+Esp:AddToggle({
+	Title = "Add Sword Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddSwordStats = state;
+	end
+});
+Esp:AddToggle({
+	Title = "Add Gun Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddGunStats = state;
+	end
+});
+Esp:AddToggle({
+	Title = "Add Devil Fruit Stats",
+	Default = false,
+	Callback = function(state)
+		_G.AddFruitStats = state;
+	end
+});
+
 Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
 local Players = game:GetService("Players")
@@ -9509,27 +9523,6 @@ Player:AddSlider({
     end
 })
 Player:AddToggle({
-    Name = "No Clip",
-    Default = false,
-    Callback = function(Value)
-        getgenv().NoClip = Value
-    end
-})
-
-spawn(function()
-    pcall(function()
-        game:GetService("RunService").Stepped:Connect(function()
-            if getgenv().NoClip and plr.Character then
-                for _, v in pairs(plr.Character:GetDescendants()) do
-                    if v:IsA("BasePart") then
-                        v.CanCollide = false
-                    end
-                end
-            end
-        end)
-    end)
-end)
-Player:AddToggle({
     Name = "Nhảy cao vô hạn",
     Default = true,
     Callback = function(Value)
@@ -9541,6 +9534,7 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
         game:GetService("Players").LocalPlayer.Character:FindFirstChildOfClass("Humanoid"):ChangeState("Jumping")
     end
 end)
+
 Player:AddSection({"LocalPlayer Settings / Misc"});
 Player:AddToggle({
 	Name = "Instance Energy [ INF ]",
@@ -9794,25 +9788,6 @@ Teleport:AddButton({
     end
 })
 
-Teleport:AddButton({
-    Name = "Teleport To Dungeon Hub",
-    Description = "",
-    Callback = function()
-        local Net = game:GetService("ReplicatedStorage"):WaitForChild("Net", 5)
-
-        if Net then
-            local RF = Net:FindFirstChild("RF/DungeonNPCNetworkFunction")
-
-            if RF then
-                RF:InvokeServer("TeleportToDungeonHub", false)
-            else
-                warn("Không tìm thấy DungeonNPCNetworkFunction")
-            end
-        else
-            warn("Không tìm thấy Net")
-        end
-    end
-})
 	
 Teleport:AddSection({"Travel - Island"})
 
