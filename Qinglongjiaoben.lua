@@ -74,8 +74,6 @@ TweenService:Create(Frame, TweenInfo.new(0.35), {
 
 task.wait(0.4)
 Gui:Destroy()
--- Ví dụ:
--- loadstring(game:HttpGet("LINK_CUA_BAN"))()
 local HttpService = Services.HttpService
 local FolderName = "青龙脚本 Hub"
 local FileName = "Settings.json"
@@ -629,6 +627,32 @@ G.Masgun = function(I, e)
 			end;
 		end;
 	end;
+	
+	statsSetings = function(I, e)
+		if I == "Melee" then
+			if plr.Data.Points.Value ~= 0 then
+				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Melee", e);
+			end;
+		elseif I == "Defense" then
+			if plr.Data.Points.Value ~= 0 then
+				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Defense", e);
+			end;
+		elseif I == "Sword" then
+			if plr.Data.Points.Value ~= 0 then
+				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Sword", e);
+			end;
+		elseif I == "Gun" then
+			if plr.Data.Points.Value ~= 0 then
+				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Gun", e);
+			end;
+		elseif I == "Devil" then
+			if plr.Data.Points.Value ~= 0 then
+				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Demon Fruit", e);
+			end;
+		end;
+	end;
+	 
+	 
 	===================================
 -- VARIÁVEIS DE CONTROLE NECESSÁRIAS
 --==================================================
@@ -9150,42 +9174,7 @@ if World3 then
     end})
 end
 Esp:AddSection({"Stats"});
-Esp:AddSlider({
-    Name = "Point",
-    Description = "Số điểm cộng mỗi lần",
-    Min = 1,
-    Max = 100,
-    Increase = 1,
-    Default = 1,
-    Callback = function(Value)
-        _G.PointStats = Value
-    end,
-})
-statsSetings = function(I)
-    if plr.Data.Points.Value <= 0 then
-        return
-    end
 
-    local amount = math.min(plr.Data.Points.Value, _G.PointStats)
-
-    if I == "Melee" then
-        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Melee", amount)
-
-    elseif I == "Defense" then
-        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Defense", amount)
-
-    elseif I == "Sword" then
-        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Sword", amount)
-
-    elseif I == "Gun" then
-        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Gun", amount)
-
-    elseif I == "Devil" then
-        replicated.Remotes.CommF_:InvokeServer("AddPoint", "Demon Fruit", amount)
-    end
-end
-_G.PointStats = 1
--- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // -
 Esp:AddToggle({
     Name = "Add Points Melee",
     Description = "Gasta pontos automaticamente em Melee",
@@ -9196,6 +9185,7 @@ Esp:AddToggle({
         SaveSettings()
     end,
 })
+
 Esp:AddToggle({
     Name = "Add Points Sword",
     Description = "Gasta pontos automaticamente em Sword",
@@ -9228,7 +9218,7 @@ Esp:AddToggle({
         SaveSettings()
     end,
 })
--- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
+
 Esp:AddToggle({
     Name = "Add Points Defense",
     Description = "Gasta pontos automaticamente em Defense",
@@ -9240,31 +9230,70 @@ Esp:AddToggle({
     end,
 })
 
+-- // LOOP DOS STATS (Execute isso uma vez no seu script) // --
 task.spawn(function()
-    while task.wait(0.2) do
+    while task.wait(1) do
         pcall(function()
-            if _G.Auto_Melee then
-                statsSetings("Melee")
-            end
-
-            if _G.Auto_Defense then
-                statsSetings("Defense")
-            end
-
-            if _G.Auto_Sword then
-                statsSetings("Sword")
-            end
-
-            if _G.Auto_Gun then
-                statsSetings("Gun")
-            end
-
-            if _G.Auto_Blox then
-                statsSetings("Devil")
-            end
+            local remote = game:GetService("ReplicatedStorage").Remotes.CommF_
+            if _G.Auto_Melee then remote:InvokeServer("AddPoint", "Melee", 3) end
+            if _G.Auto_Sword then remote:InvokeServer("AddPoint", "Sword", 3) end
+            if _G.Auto_Gun then remote:InvokeServer("AddPoint", "Gun", 3) end
+            if _G.Auto_Blox then remote:InvokeServer("AddPoint", "Demon Fruit", 3) end
+            if _G.Auto_Defense then remote:InvokeServer("AddPoint", "Defense", 3) end
         end)
     end
 end)
+
+-- Usamos um valor grande (como 9999999) para simular o gasto de 'todos' os pontos disponíveis.
+-- Assumimos que a função 'statsSetings' irá apenas gastar o máximo de pontos que o jogador realmente tem.
+local AllAvailablePoints = 9999999; 
+
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Melee then
+				statsSetings("Melee", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Sword then
+				statsSetings("Sword", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Gun then
+				statsSetings("Gun", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			-- Note: No seu código original era 'Auto_DevilFruit', mas no menu era 'Fruit'. Corrigi para usar a mesma variável do menu.
+			if _G.Auto_Blox then 
+				statsSetings("Devil", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Defense then
+				statsSetings("Defense", AllAvailablePoints);
+			end;
+		end);
+	end;
+end);
 
 Esp:AddSection({"Fontes"});
 
