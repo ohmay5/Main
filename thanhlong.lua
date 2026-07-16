@@ -324,7 +324,8 @@ local e = {
 		"Quake",
 		"Light",
 		"Dark",
-		"Spider",
+		"String",
+		"Rumble",
 		"Magma",
 		"Human: Buddha",
 		"Sand",
@@ -5827,50 +5828,38 @@ local z5 = {
         "Beast Hunter",
     };
 
-    _G.SelectedBoat = GetSetting("SelectedBoat_Save", "Guardian")
-
-Event:AddDropdown({
-    Name = "Select Boats",
-    Description = "chọn thuyền đi",
-    Options = z5,
-    Default = _G.SelectedBoat,
-    Multi = false,
-
-    Callback = function(I)
-        _G.SelectedBoat = I
-        
-        _G.SaveData["SelectedBoat_Save"] = I
-        SaveSettings()
-    end,
-});
+    Event:AddDropdown({
+        Name = "Select Boats",
+        Description = "chọn thuyền đi",
+        Options = z5,
+        Default = "Guardian",
+        Multi = false,
+        Callback = function(I)
+            _G.SelectedBoat = I;
+        end,
+    });
     -- Configuração de Nível de Perigo (SÓ SEA 3)
     if World3 then
         local H5 = {
-    "Lv 1",
-    "Lv 2",
-    "Lv 3",
-    "Lv 4",
-    "Lv 5",
-    "Lv 6",
-    "Lv Infinite",
-}
-
-_G.DangerSc = GetSetting("DangerSc_Save", "Lv 1")
-
-Event:AddDropdown({
+            "Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite",
+        };
+  Event:AddDropdown({
     Name = "Select Level Sea",
     Description = "chọn mức độ để di chuyển trên biển",
     Options = H5,
-    Default = _G.DangerSc,
+    Default = GetSetting("DangerLevel_Save", "Lv 1"), 
     Multi = false,
-
     Callback = function(I)
         _G.DangerSc = I
-
-        _G.SaveData["DangerSc_Save"] = I
+        
+        -- 2. Lưu giá trị mới vào biến SaveData
+        _G.SaveData["DangerLevel_Save"] = I
+        
+        -- 3. Cập nhật vào file Settings.json
         SaveSettings()
     end,
-})
+});
+
 
     Event:AddToggle({
         Name = "Auto Start farm",
@@ -11486,86 +11475,66 @@ end);
 end
 Fruit:AddSection({"Raiding"})
 
+Fruit:AddSection({"Raiding"});
 e = {
-    "Flame",
-    "Ice",
-    "Quake",
-    "Light",
-    "Dark",
-    "Spider",
-    "Magma",
-    "Human: Buddha",
-    "Sand",
-    "Bird: Phoenix",
-    "Dough",
-}
-
-_G.SelectChip = GetSetting("SelectChip_Save", "Flame")
-_G.AutoChip = _G.SelectChip
-
+		"Flame",
+		"Ice",
+		"Quake",
+		"Light",
+		"Dark",
+		"String",
+		"Rumble",
+		"Magma",
+		"Human: Buddha",
+		"Sand",
+		"Bird: Phoenix",
+		"Dough",
+	};
 Fruit:AddDropdown({
-    Name = "Select Chip",
-    Description = "",
-    Options = e,
-    Default = _G.SelectChip,
-    Multi = false,
-
-    Callback = function(I)
-        _G.SelectChip = I
-        _G.AutoChip = I
-
-        _G.SaveData["SelectChip_Save"] = I
-        SaveSettings()
-    end,
-})
-
-
+	Name = "Select Chip",
+	Description = "",
+	Options = e,
+	Default = "Flame",
+	Multi = false,
+	Callback = function(I)
+		_G.SelectChip = I;
+	end,
+});
 spawn(function()
-    while wait(Sec) do
-        if _G.AutoSelectDungeon then
-            pcall(function()
-
-                if GetBP("Flame-Flame") then
-                    _G.AutoChip = "Flame"
-
-                elseif GetBP("Ice-Ice") then
-                    _G.AutoChip = "Ice"
-
-                elseif GetBP("Quake-Quake") then
-                    _G.AutoChip = "Quake"
-
-                elseif GetBP("Light-Light") then
-                    _G.AutoChip = "Light"
-
-                elseif GetBP("Dark-Dark") then
-                    _G.AutoChip = "Dark"
-
-                elseif GetBP("Spider-Spider") then
-                    _G.AutoChip = "Spider"
-
-                elseif GetBP("Magma-Magma") then
-                    _G.AutoChip = "Magma"
-
-                elseif GetBP("Human-Human: Buddha Fruit") then
-                    _G.AutoChip = "Human: Buddha"
-
-                elseif GetBP("Dough-Dough") then
-                    _G.AutoChip = "Dough"
-
-                elseif GetBP("Sand-Sand") then
-                    _G.AutoChip = "Sand"
-
-                elseif GetBP("Bird-Bird: Phoenix") then
-                    _G.AutoChip = "Bird: Phoenix"
-
-                else
-                    _G.AutoChip = _G.SelectChip
-                end
-
-            end)
-        end
-    end
-end)
+	while wait(Sec) do
+		if _G.AutoSelectDungeon then
+			pcall(function()
+				if GetBP("Flame-Flame") then
+					_G.SelectChip = "Flame";
+				elseif GetBP("Ice-Ice") then
+					_G.SelectChip = "Ice";
+				elseif GetBP("Quake-Quake") then
+					_G.SelectChip = "Quake";
+				elseif GetBP("Light-Light") then
+					_G.SelectChip = "Light";
+				elseif GetBP("Dark-Dark") then
+					_G.SelectChip = "Dark";
+				elseif GetBP("String-String") then
+					_G.SelectChip = "String";
+				elseif GetBP("Rumble-Rumble") then
+					_G.SelectChip = "Rumble";
+				elseif GetBP("Magma-Magma") then
+					_G.SelectChip = "Magma";
+				elseif GetBP("Human-Human: Buddha Fruit") then
+					_G.SelectChip = "Human: Buddha";
+				elseif GetBP("Dough-Dough") then
+					_G.SelectChip = "Dough";
+				elseif GetBP("Sand-Sand") then
+					_G.SelectChip = "Sand";
+				elseif GetBP("Bird-Bird: Phoenix") then
+					_G.SelectChip = "Bird: Phoenix";
+				else
+					_G.SelectChip = "Ice";
+				end;
+			end);
+		end;
+	end;
+end);
 Fruit:AddToggle({
 	Name = "Buy Chip With Fruit",
 	Description = "Use your lowest fruit in your bag",
