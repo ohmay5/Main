@@ -4027,23 +4027,47 @@ spawn(function()
 end)
 end
 Farm:AddSection({"Collect"})
--- Botão Auto Collect Chest
-Farm:AddToggle({
+
+AutoFarmChestToggle = Farm:AddToggle({
     Name = "Auto Collect Chest",
-    Description = "tự động nhặt gương",
-    -- 1. Carrega o estado salvo (ou false por padrão)
+    Description = "tự động nhặt rương",
     Default = GetSetting("AutoFarmChest_Save", false),
     Callback = function(I)
         _G.AutoFarmChest = I
-        
-        -- 2. Guarda na tabela de salvamento
         _G.SaveData["AutoFarmChest_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
         SaveSettings()
     end,
 })
 
+
+spawn(function()
+    while task.wait(1) do
+        if _G.AutoFarmChest then
+            local Character = game.Players.LocalPlayer.Character
+            local Backpack = game.Players.LocalPlayer.Backpack
+
+            local HasSpecialItem =
+                (Backpack:FindFirstChild("Fist of Darkness") or (Character and Character:FindFirstChild("Fist of Darkness")))
+                or
+                (Backpack:FindFirstChild("God's Chalice") or (Character and Character:FindFirstChild("God's Chalice")))
+
+            if HasSpecialItem then
+                _G.AutoFarmChest = false
+
+                -- Tắt Toggle nếu UI của bạn hỗ trợ
+                pcall(function()
+                    AutoFarmChestToggle:Set(false)
+                end)
+
+                _G.SaveData["AutoFarmChest_Save"] = false
+                SaveSettings()
+
+                warn("Đã nhặt được Fist of Darkness hoặc God's Chalice. Auto Collect Chest đã dừng.")
+                break
+            end
+        end
+    end
+end)
 -- Botão Auto Collect Berry
 Farm:AddToggle({
 	Name = "Auto Collect Berry",
@@ -9482,6 +9506,50 @@ Player:AddSlider({
         _G.SaveData["JumpPower_Save"] = Value -- Lưu trạng thái
         if SaveSettings then SaveSettings() end -- Tự động lưu
         applyStats() -- Áp dụng thay đổi
+    end
+})
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+
+local Player = Players.LocalPlayer
+local NoClipConnection
+
+_G.SaveData = _G.SaveData or {}
+
+Player:AddToggle({
+    Name = "No Clip",
+    Description = "Đi xuyên vật thể",
+    Default = _G.SaveData["NoClip_Save"] or false,
+    Callback = function(Value)
+        _G.SaveData["NoClip_Save"] = Value
+        Save() -- Nếu Hub của bạn dùng hàm Save()
+
+        if NoClipConnection then
+            NoClipConnection:Disconnect()
+            NoClipConnection = nil
+        end
+
+        if Value then
+            NoClipConnection = RunService.Stepped:Connect(function()
+                local Character = Player.Character
+                if Character then
+                    for _, Part in ipairs(Character:GetDescendants()) do
+                        if Part:IsA("BasePart") then
+                            Part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            local Character = Player.Character
+            if Character then
+                for _, Part in ipairs(Character:GetDescendants()) do
+                    if Part:IsA("BasePart") then
+                        Part.CanCollide = true
+                    end
+                end
+            end
+        end
     end
 })
 Player:AddToggle({
