@@ -43,7 +43,7 @@ Text.Size = UDim2.new(1,-40,1,0)
 Text.Font = Enum.Font.GothamBold
 Text.TextSize = 16
 Text.TextColor3 = Color3.fromRGB(240,240,240)
-Text.Text = "Đang tải... 3"
+Text.Text = "Đang tải... 0,5"
 Text.TextXAlignment = Enum.TextXAlignment.Left
 Text.Parent = Frame
 
