@@ -12,7 +12,7 @@ local Settings = {
     Enabled = true,
     MinCooldown = 0.28,
     MaxCooldown = 0.45,
-    Radius = 55,
+    Radius = 50,
     MaxTargets = 3
 }
 
