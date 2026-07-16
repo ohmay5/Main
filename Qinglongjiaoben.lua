@@ -9179,77 +9179,103 @@ end
 Esp:AddSection({"Stats"});
 
 -- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
+_G.PointStats = _G.PointStats or 1
+_G.AddMeleeStats = false
+_G.AddDefenseStats = false
+_G.AddSwordStats = false
+_G.AddGunStats = false
+_G.AddFruitStats = false
+
 Esp:AddSlider({
-	Title = "Point",
-	Step = 1,
-	Value = {
-		Min = 1,
-		Max = 100,
-		Default = 1
-	},
-	Callback = function(value)
-		_G.PointStats = value;
-	end
-});
-function addStatsPoint(val)
-	Remotes.CommF_:InvokeServer("AddPoint", val, _G.PointStats);
-end;
-spawn(function()
-	while wait(0.2) do
-		-- if LocalPlayer.Data.Points.Value > _G.PointStats then
-			if _G.AddMeleeStats then
-				addStatsPoint("Melee");
-			end;
-			if _G.AddDefenseStats then
-				addStatsPoint("Defense");
-			end;
-			if _G.AddSwordStats then
-				addStatsPoint("Sword");
-			end;
-			if _G.AddGunStats then
-				addStatsPoint("Gun");
-			end;
-			if _G.AddFruitStats then
-				addStatsPoint("Demon Fruit");
-			end;
-		-- end;
-	end;
-end);
+    Title = "Point",
+    Step = 1,
+    Value = {
+        Min = 1,
+        Max = 100,
+        Default = 1
+    },
+    Callback = function(value)
+        _G.PointStats = value
+    end
+})
+
+local function addStatsPoint(stat)
+    pcall(function()
+        Remotes.CommF_:InvokeServer("AddPoint", stat, _G.PointStats)
+    end)
+end
+
+task.spawn(function()
+    while task.wait(0.2) do
+        pcall(function()
+            local points = LocalPlayer.Data.Points.Value
+
+            if points < _G.PointStats then
+                return
+            end
+
+            if _G.AddMeleeStats then
+                addStatsPoint("Melee")
+            end
+
+            if _G.AddDefenseStats then
+                addStatsPoint("Defense")
+            end
+
+            if _G.AddSwordStats then
+                addStatsPoint("Sword")
+            end
+
+            if _G.AddGunStats then
+                addStatsPoint("Gun")
+            end
+
+            if _G.AddFruitStats then
+                addStatsPoint("Demon Fruit")
+            end
+        end)
+    end
+end)
+
 Esp:AddToggle({
-	Title = "Add Melee Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddMeleeStats = state;
-	end
-});
+    Title = "Add Melee Stats",
+    Default = false,
+    Callback = function(state)
+        _G.AddMeleeStats = state
+    end
+})
+
 Esp:AddToggle({
-	Title = "Add Defense Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddDefenseStats = state;
-	end
-});
+    Title = "Add Defense Stats",
+    Default = false,
+    Callback = function(state)
+        _G.AddDefenseStats = state
+    end
+})
+
 Esp:AddToggle({
-	Title = "Add Sword Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddSwordStats = state;
-	end
-});
+    Title = "Add Sword Stats",
+    Default = false,
+    Callback = function(state)
+        _G.AddSwordStats = state
+    end
+})
+
 Esp:AddToggle({
-	Title = "Add Gun Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddGunStats = state;
-	end
-});
+    Title = "Add Gun Stats",
+    Default = false,
+    Callback = function(state)
+        _G.AddGunStats = state
+    end
+})
+
 Esp:AddToggle({
-	Title = "Add Devil Fruit Stats",
-	Default = false,
-	Callback = function(state)
-		_G.AddFruitStats = state;
-	end
-});
+    Title = "Add Devil Fruit Stats",
+    Default = false,
+    Callback = function(state)
+        _G.AddFruitStats = state
+    end
+})
 
 
 Esp:AddSection({"Fontes"});
