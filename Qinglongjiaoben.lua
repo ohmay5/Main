@@ -1,5 +1,4 @@
 
-
 local Services = setmetatable({}, {
     __index = function(self, serviceName)
         local service = game:GetService(serviceName)
@@ -7,17 +6,6 @@ local Services = setmetatable({}, {
         return service
     end
 })
--- =========================
--- LOAD SCRIPT CHÍNH Ở ĐÂY
--- =========================
-
-task.wait(0.1)
-
--- Ví dụ:
--- loadstring(game:HttpGet("LINK_CUA_BAN"))()
--- ========================================
--- SAVE SYSTEM (Optimized)
--- ========================================
 local HttpService = Services.HttpService
 local FolderName = "青龙脚本 Hub"
 local FileName = "Settings.json"
