@@ -11872,29 +11872,75 @@ spawn(function()
 	end;
 end);
 Fruit:AddToggle({
-	Name  = "Auto Store Fruit",
-    Description = "Automatic store devil fruit",
-    -- 1. Carrega se o armazenamento automático estava ligado
-    Default = GetSetting("AutoStoreFruit_Save", false),
-    Callback = function(I)
-        _G.StoreF = I
-        
-        -- 2. Guarda na memória de salvamento
-        _G.SaveData["AutoStoreFruit_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
+    Name = "Auto Store Fruit", 
+    Default = false ,
+Callback = function(I)
+    getgenv().AutoStoreFruit = I
+end)    
 spawn(function()
-	while wait(Sec) do
-		if _G.StoreF then
-			pcall(function()
-				UpdStFruit();
-			end);
-		end;
-	end;
-end);
+    while task.wait(0.2) do
+        if getgenv().AutoStoreFruit then
+            pcall(function()
+                if getgenv().AutoStoreFruit then
+                    local player = game:GetService("Players").LocalPlayer
+                    local character = player.Character
+                    local backpack = player.Backpack
+                    local fruits = {
+{
+    {"Rocket Fruit", "Rocket-Rocket"},
+    {"Spin Fruit", "Spin-Spin"},
+    {"Blade Fruit", "Blade-Blade"},      -- Revive -> Blade
+    {"Spring Fruit", "Spring-Spring"},
+    {"Bomb Fruit", "Bomb-Bomb"},
+    {"Smoke Fruit", "Smoke-Smoke"},
+    {"Spike Fruit", "Spike-Spike"},      -- Kilo -> Spike
+    {"Flame Fruit", "Flame-Flame"},
+    {"Falcon Fruit", "Falcon-Falcon"},   -- Bird: Falcon -> Falcon
+    {"Ice Fruit", "Ice-Ice"},
+    {"Sand Fruit", "Sand-Sand"},
+    {"Dark Fruit", "Dark-Dark"},
+    {"Diamond Fruit", "Diamond-Diamond"},
+    {"Light Fruit", "Light-Light"},
+    {"Rubber Fruit", "Rubber-Rubber"},
+    {"Barrier Fruit", "Barrier-Barrier"},
+    {"Ghost Fruit", "Ghost-Ghost"},      -- Revive -> Ghost
+    {"Magma Fruit", "Magma-Magma"},
+    {"Quake Fruit", "Quake-Quake"},
+    {"Buddha Fruit", "Buddha-Buddha"},
+    {"Love Fruit", "Love-Love"},
+    {"Spider Fruit", "Spider-Spider"},   -- String -> Spider
+    {"Sound Fruit", "Sound-Sound"},
+    {"Phoenix Fruit", "Phoenix-Phoenix"},-- Bird: Phoenix -> Phoenix
+    {"Portal Fruit", "Portal-Portal"},   -- Door -> Portal
+    {"Rumble Fruit", "Rumble-Rumble"},
+    {"Pain Fruit", "Pain-Pain"},         -- Paw -> Pain
+    {"Blizzard Fruit", "Blizzard-Blizzard"},
+    {"Gravity Fruit", "Gravity-Gravity"},
+    {"Mammoth Fruit", "Mammoth-Mammoth"},
+    {"T-Rex Fruit", "T-Rex-T-Rex"},
+    {"Dough Fruit", "Dough-Dough"},
+    {"Shadow Fruit", "Shadow-Shadow"},
+    {"Venom Fruit", "Venom-Venom"},
+    {"Gas Fruit", "Gas-Gas"},
+    {"Control Fruit", "Control-Control"},
+    {"Spirit Fruit", "Spirit-Spirit"},   -- Soul -> Spirit
+    {"Leopard Fruit", "Leopard-Leopard"},
+    {"Yeti Fruit", "Yeti-Yeti"},
+    {"Kitsune Fruit", "Kitsune-Kitsune"},
+    {"Dragon Fruit", "Dragon-Dragon"},
+}
+                    for _, fruit in ipairs(fruits) do
+                        local fruitName, serverName = fruit[1], fruit[2]
+                        if character:FindFirstChild(fruitName) or backpack:FindFirstChild(fruitName) then
+                            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StoreFruit", serverName, backpack:FindFirstChild(fruitName))
+                        end
+                    end
+                end
+            end)
+        end
+        task.wait(0.1)
+    end
+end)
 Fruit:AddToggle({
 	Name  = "Auto Tween to Fruit",
     Description = "Automatic tween to get devil fruit",
