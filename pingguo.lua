@@ -10951,77 +10951,95 @@ Get:AddToggle({
 	end,
 });
 spawn(function()
-    while task.wait(0.5) do
-        if not _G.AutoSaber then continue end
-        pcall(function()
-            local char = plr.Character
-            if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-
-            -- Kiểm tra hoàn thành
-            if (plr.Backpack:FindFirstChild("Saber") or char:FindFirstChild("Saber")) then
-                _G.AutoSaber = false; return
-            end
-
-            -- BƯỚC 1: JUNGLE
-            if workspace.Map.Jungle.Final.Part.Transparency == 0 then
-                if workspace.Map.Jungle.QuestPlates.Door.Transparency == 0 then
-                    local plates = {"Plate1", "Plate2", "Plate3", "Plate4", "Plate5"}
-                    for _, name in pairs(plates) do
-                        char.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates[name].Button.CFrame
-                        task.wait(0.5)
-                    end
-                else
-                    _tp(CFrame.new(-1612.55, 36.97, 148.71))
-                end
-
-            -- BƯỚC 2: DESERT (Đuốc)
-            elseif workspace.Map.Desert.Burn.Part.Transparency == 0 then
-                if (plr.Backpack:FindFirstChild("Torch") or char:FindFirstChild("Torch")) then
-                    EquipWeapon("Torch");
-                    firetouchinterest(char.Torch.Handle, workspace.Map.Desert.Burn.Fire, 0);
-                    firetouchinterest(char.Torch.Handle, workspace.Map.Desert.Burn.Fire, 1);
-                    _tp(CFrame.new(1114.61, 5.04, 4350.22));
-                else
-                    _tp(CFrame.new(-1610.00, 11.50, 164.00));
-                end
-
-            -- BƯỚC 3: SICKMAN (Cốc)
-            elseif replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
-                replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "GetCup");
-                task.wait(0.5);
-                EquipWeapon("Cup");
-                task.wait(0.5);
-                replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "FillCup", char.Cup);
-                task.wait(2); -- Thời gian chờ Fill Cup an toàn
-                replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan");
-
-            -- BƯỚC 4: RICH SON (Mob Leader)
-            else
-                local richSon = replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon")
-                if richSon == nil then
-                    replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon")
-                elseif richSon == 0 then
-                    local mob = workspace.Enemies:FindFirstChild("Mob Leader")
-                    if mob and G.Alive(mob) then
-                        repeat task.wait() G.Kill(mob, _G.AutoSaber) until mob.Humanoid.Health <= 0 or not _G.AutoSaber
-                    else
-                        _tp(CFrame.new(-2967.59, -4.91, 5328.70))
-                    end
-                elseif richSon == 1 then
-                    -- BƯỚC 5: SABER EXPERT
-                    local boss = workspace.Enemies:FindFirstChild("Saber Expert")
-                    if boss and G.Alive(boss) then
-                        repeat task.wait() G.Kill(boss, _G.AutoSaber) until boss.Humanoid.Health <= 0 or not _G.AutoSaber
-                        if boss.Humanoid.Health <= 0 then replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "PlaceRelic") end
-                    else
-                        _tp(CFrame.new(-1401.85, 29.97, 8.81))
-                    end
-                end
-            end
-        end)
-    end
-end)
-
+	while wait(.2) do
+		pcall(function()
+			if _G.AutoSaber and (plr.Data.Level.Value >= 200 and (not plr.Backpack:FindFirstChild("Saber") and not plr.Character:FindFirstChild("Saber"))) then
+				if workspace.Map.Jungle.Final.Part.Transparency == 0 then
+					if workspace.Map.Jungle.QuestPlates.Door.Transparency == 0 then
+						if ((CFrame.new(-1612.55884, 36.9774132, 148.719543, .37091279, 3.0717151e-09, -0.928667724, 3.97099491e-08, 1, 1.91679348e-08, .928667724, -4.39869794e-08, .37091279)).Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 100 then
+							_tp(plr.Character.HumanoidRootPart.CFrame);
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate1.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate2.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate3.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate4.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate5.Button.CFrame;
+							wait(.5);
+						else
+							_tp(CFrame.new(-1612.55884, 36.9774132, 148.719543, .37091279, 3.0717151e-09, -0.928667724, 3.97099491e-08, 1, 1.91679348e-08, .928667724, -4.39869794e-08, .37091279));
+						end;
+					else
+						if workspace.Map.Desert.Burn.Part.Transparency == 0 then
+                            if plr.Backpack:FindFirstChild("Torch") or plr.Character:FindFirstChild("Torch") then
+                                _tp(CFrame.new(1114.61, 5.04, 4350.22));
+                                EquipWeapon("Torch");
+                                firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 0);
+                                firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 1);
+                            else
+                                _tp(CFrame.new(-1610.00, 11.50, 164.00));
+                            end;
+                        else
+                            -- Bước 3: Làm nhiệm vụ SickMan/RichSon
+                            if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
+						
+							end;
+						else
+							if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
+								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "GetCup");
+								wait(.5);
+								EquipWeapon("Cup");
+								wait(.5);
+								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "FillCup", plr.Character.Cup);
+								wait(Sec);
+								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan");
+							else
+								if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon") == nil then
+									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon");
+								elseif replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon") == 0 then
+									if workspace.Enemies:FindFirstChild("Mob Leader") or replicated:FindFirstChild("Mob Leader") then
+										_tp(CFrame.new(-2967.59521, -4.91089821, 5328.70703, .342208564, -0.0227849055, .939347804, .0251603816, .999569714, .0150796166, -0.939287126, .0184739735, .342634559));
+										for I, e in pairs(workspace.Enemies:GetChildren()) do
+											if e.Name == "Mob Leader" and G.Alive(e) then
+												repeat
+													task.wait();
+													G.Kill(e, _G.AutoSaber);
+												until e.Humanoid.Health <= 0 or _G.AutoSaber == false;
+											end;
+										end;
+									end;
+								elseif replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon") == 1 then
+									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon");
+									EquipWeapon("Relic");
+									_tp(CFrame.new(-1404.91504, 29.9773273, 3.80598116, .876514494, 5.66906877e-09, .481375456, 2.53851997e-08, 1, -5.79995607e-08, -0.481375456, 6.30572643e-08, .876514494));
+								end;
+							end;
+						end;
+					end;
+				else
+					if workspace.Enemies:FindFirstChild("Saber Expert") or replicated:FindFirstChild("Saber Expert") then
+						for I, e in pairs(workspace.Enemies:GetChildren()) do
+							if e.Name == "Saber Expert" and G.Alive(e) then
+								repeat
+									task.wait();
+									G.Kill(e, _G.AutoSaber);
+								until e.Humanoid.Health <= 0 or _G.AutoSaber == false;
+								if e.Humanoid.Health <= 0 then
+									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "PlaceRelic");
+								end;
+							end;
+						end;
+					else
+						_tp(CFrame.new(-1401.85046, 29.9773273, 8.81916237, .85820812, 8.76083845e-08, .513301849, -8.55007443e-08, 1, -2.77243419e-08, -0.513301849, -2.00944328e-08, .85820812));
+					end;
+				end;
+			end;
+		end);
+	end;
+end);
 Get:AddToggle({
  Name = "Auto Usoap\'s Hat",
 	Description = "",
