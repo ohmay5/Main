@@ -89,7 +89,7 @@ local redzlib = {
 	Save = {
 		UISize = {480, 320},
         TabSize = 140,
-		Theme = "Green"
+		Theme = "Purple"
 	},
 	Settings = {},
 	Connection = {},
@@ -1158,7 +1158,6 @@ local function ConnectSave(Instance, func)
 		func()
 	end)
 end
-
 local function CreateTween(Configs)
 	local Instance = Configs[1] or Configs.Instance
 	local Prop = Configs[2] or Configs.Prop
