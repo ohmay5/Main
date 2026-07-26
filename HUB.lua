@@ -19,8 +19,109 @@ local RunService = game:GetService("RunService")
 local plr = Players.LocalPlayer
 
 
+-- ========================================
+-- Save Settings System
+-- ========================================
+
+local HttpService = game:GetService("HttpService")
+
+local FolderName = "青龙脚本 Hub"
+local FileName = "Settings.json"
+
+local FullPath = FolderName .. "/" .. FileName
+
+
+if makefolder and not isfolder(FolderName) then
+    makefolder(FolderName)
+end
+
+
 _G.SaveData = _G.SaveData or {}
 
+
+
+function SaveSettings()
+
+    if not writefile then
+        return false
+    end
+
+
+    local success = pcall(function()
+
+        local json =
+        HttpService:JSONEncode(_G.SaveData)
+
+
+        writefile(
+            FullPath,
+            json
+        )
+
+    end)
+
+
+    return success
+
+end
+
+
+
+
+function LoadSettings()
+
+    if not (isfile and isfile(FullPath)) then
+        return false
+    end
+
+
+    local success,result =
+    pcall(function()
+
+
+        local content =
+        readfile(FullPath)
+
+
+        return HttpService:JSONDecode(content)
+
+
+    end)
+
+
+
+    if success and result then
+
+        _G.SaveData = result
+
+        return true
+
+    end
+
+
+    return false
+
+end
+
+
+
+
+function GetSetting(name,default)
+
+    if _G.SaveData[name] ~= nil then
+
+        return _G.SaveData[name]
+
+    end
+
+
+    return default
+
+end
+
+
+
+LoadSettings()
 
 -- ========================================
 -- Character System
@@ -359,619 +460,10 @@ Main:AddParagraph({
 -- Bring Mobs + Auto Farm
 -- ========================================
 
-local FarmThread = nil
-
-
-local ScanRadius = 1000
-
-local MaxBring = 8
-
-
-local BringHeight = -8
-
-local BringDistance = 10
-
-local FarmHeight = 20
-
-
-
--- Lấy nhân vật hiện tại
-
-local function GetRoot()
-
-    local Char = plr.Character
-
-    if not Char then
-        return nil
-    end
-
-
-    return Char:FindFirstChild("HumanoidRootPart")
-
-end
-
-
-
--- Lấy danh sách quái
-
-local function GetEnemies()
-
-    local Folder =
-        workspace:FindFirstChild("Enemies")
-
-
-    if not Folder then
-
-        return {}
-
-    end
-
-
-    return Folder:GetChildren()
-
-end
-
-
-
--- Tìm quái gần nhất
-
-local function GetNearestEnemy()
-
-
-    local Root = GetRoot()
-
-
-    if not Root then
-
-        return nil
-
-    end
-
-
-
-    local Target = nil
-
-    local Distance = math.huge
-
-
-
-    for _,Mob in pairs(GetEnemies()) do
-
-
-        local Hum =
-            Mob:FindFirstChild("Humanoid")
-
-
-        local MobRoot =
-            Mob:FindFirstChild("HumanoidRootPart")
-
-
-
-        if Hum
-        and MobRoot
-        and Hum.Health > 0 then
-
-
-
-            local Dist =
-            (MobRoot.Position - Root.Position).Magnitude
-
-
-
-            if Dist < Distance then
-
-
-                Distance = Dist
-
-                Target = Mob
-
-
-            end
-
-        end
-
-    end
-
-
-
-    return Target
-
-end
-
-
-
-
--- Gom quái xung quanh,
--- không kéo dính người chơi
-
-local function BringMobs()
-
-
-    local Root = GetRoot()
-
-
-    if not Root then
-
-        return
-
-    end
-
-
-
-    local Count = 0
-
-
-
-    for _,Mob in pairs(GetEnemies()) do
-
-
-
-        if Count >= MaxBring then
-
-            break
-
-        end
-
-
-
-        local Hum =
-            Mob:FindFirstChild("Humanoid")
-
-
-        local MobRoot =
-            Mob:FindFirstChild("HumanoidRootPart")
-
-
-
-        if Hum
-        and MobRoot
-        and Hum.Health > 0 then
-
-
-
-            local Distance =
-            (MobRoot.Position - Root.Position).Magnitude
-
-
-
-            if Distance <= ScanRadius then
-
-
-                Count += 1
-
-
-
-                MobRoot.CFrame =
-                Root.CFrame *
-                CFrame.new(
-
-                    (Count-1)*4-10,
-
-                    BringHeight,
-
-                    -BringDistance
-
-                )
-
-
-
-                pcall(function()
-
-                    MobRoot.Velocity =
-                    Vector3.zero
-
-
-                    MobRoot.RotVelocity =
-                    Vector3.zero
-
-                end)
-
-
-            end
-
-
-        end
-
-
-    end
-
-
-end
-
-
-
-
-Main:AddToggle({
-
-    Name = "Auto Farm Dungeon",
-
-    Default = false,
-
-
-    Callback = function(Value)
-
-
-        _G.AutoFarmDungeon = Value
-
-
-
-        if Value then
-
-
-
-            if FarmThread then
-
-                task.cancel(FarmThread)
-
-            end
-
-
-
-
-            FarmThread =
-            task.spawn(function()
-
-
-
-                while _G.AutoFarmDungeon do
-
-
-                    task.wait(0.25)
-
-
-
-                    pcall(function()
-
-
-
-                        local Root =
-                        GetRoot()
-
-
-
-                        if not Root then
-
-                            return
-
-                        end
-
-
-
-                        BringMobs()
-
-
-
-                        local Enemy =
-                        GetNearestEnemy()
-
-
-
-                        if Enemy then
-
-
-
-                            local EnemyRoot =
-                            Enemy:FindFirstChild(
-                            "HumanoidRootPart"
-                            )
-
-
-                            local Hum =
-                            Enemy:FindFirstChild(
-                            "Humanoid"
-                            )
-
-
-
-                            if EnemyRoot
-                            and Hum
-                            and Hum.Health > 0 then
-
-
-
-                                Root.CFrame =
-                                EnemyRoot.CFrame *
-                                CFrame.new(
-                                    0,
-                                    FarmHeight,
-                                    0
-                                )
-
-
-
-                                -- nếu có hàm Attack bên ngoài
-
-                                if typeof(Attack)
-                                =="function" then
-
-                                    Attack()
-
-                                end
-
-
-                            end
-
-
-                        end
-
-
-
-                    end)
-
-
-
-                end
-
-
-
-            end)
-
-
-
-        else
-
-
-
-            _G.AutoFarmDungeon = false
-
-
-
-            if FarmThread then
-
-                task.cancel(FarmThread)
-
-                FarmThread = nil
-
-            end
-
-
-
-        end
-
-
-    end
-
-})
-
-
-print("Auto Farm Loaded")
--- ========================================
--- Auto Attack Dungeon
--- ========================================
-
-
-_G.AutoAttackMonDungeon = false
-_G.AutoNextFloor = false
-_G.AutoReturnToHub = false
-
-
-
-local function GetHighestFloor()
-
-    local highest = 0
-    local floor = nil
-
-
-    local DungeonMap =
-    workspace:FindFirstChild("Map")
-    and workspace.Map:FindFirstChild("Dungeon")
-
-
-    if not DungeonMap then
-        return nil
-    end
-
-
-
-    for _,v in pairs(DungeonMap:GetChildren()) do
-
-
-        local num = tonumber(v.Name)
-
-
-        if num and num > highest then
-
-            highest = num
-
-            floor = v
-
-        end
-
-
-    end
-
-
-
-    return floor
-
-end
-
-
-
-
-local function GetCurrentFloor()
-
-
-    local highest = 0
-
-
-
-    local DungeonMap =
-    workspace:FindFirstChild("Map")
-    and workspace.Map:FindFirstChild("Dungeon")
-
-
-
-    if not DungeonMap then
-        return nil
-    end
-
-
-
-    for _,v in pairs(DungeonMap:GetChildren()) do
-
-
-        local num = tonumber(v.Name)
-
-
-        if num and num > highest then
-
-            highest = num
-
-        end
-
-    end
-
-
-
-    return DungeonMap:FindFirstChild(
-        tostring(highest-1)
-    )
-
-
-end
-
-
-
-
-
-Main:AddToggle({
-
-    Name = "Auto Attack Mon",
-
-    Default = false,
-
-
-    Callback = function(state)
-
-
-        _G.AutoAttackMonDungeon = state
-
-
-
-        if typeof(StopTween)=="function" then
-
-            StopTween(state)
-
-        end
-
-
-    end
-
-})
-
-
-
-
-
-task.spawn(function()
-
-
-while task.wait(0.5) do
-
-
-
-    if _G.AutoAttackMonDungeon then
-
-
-
-        pcall(function()
-
-
-
-            local Root =
-            GetRoot()
-
-
-
-            if not Root then
-
-                return
-
-            end
-
-
-
-            for _,v in pairs(GetEnemies()) do
-
-
-
-                local Hum =
-                v:FindFirstChild("Humanoid")
-
-
-                local MobRoot =
-                v:FindFirstChild(
-                "HumanoidRootPart"
-                )
-
-
-
-                if Hum
-                and MobRoot
-                and Hum.Health > 0 then
-
-
-
-                    if typeof(NonBlockAttackTarget)
-                    =="function" then
-
-
-
-                        NonBlockAttackTarget(
-
-                            v,
-
-                            false,
-
-                            function()
-
-                                return
-                                _G.AutoAttackMonDungeon
-
-                            end
-
-                        )
-
-
-                    elseif typeof(Attack)
-                    =="function" then
-
-
-                        Attack()
-
-
-                    end
-
-
-
-                end
-
-
-            end
-
-
-
-        end)
-
-
-    end
-
-
-end
-
-
-end)
-
-
-
-
-
 
 -- ========================================
--- Auto Next Floor
+-- Auto Farm Nearest + Tween + Kill
 -- ========================================
-
 
 Main:AddToggle({
 
@@ -1092,91 +584,38 @@ Main:AddToggle({
 
 task.spawn(function()
 
+    while task.wait(3) do
 
-while task.wait(3) do
+        if _G.AutoReturnToHub then
 
-
-
-    if _G.AutoReturnToHub then
-
-
-
-        pcall(function()
-
-
-
-            local Remote =
-            ReplicatedStorage
-            :FindFirstChild("DungeonShared")
-
-
-
-            if Remote
-            and Remote:FindFirstChild(
-            "ReturnToHub"
-            ) then
-
-
-
-                Remote.ReturnToHub:
-                FireServer()
-
-
-            end
-
-
-
-        end)
-
-
-
-    end
-
-
-
-end
-
-
-end)
-
-Main:AddToggle({
-    Name = "Kill aura",
-    Default = false,
-    Callback = function(Value)
-        _G.KillH = Value
-    end
-})
-
--- Sử dụng task.spawn để chạy mượt mà và tối ưu hơn spawn() cũ
-task.spawn(function()
-    while true do 
-        task.wait(Sec) -- Dùng task.wait thay cho wait vì nó chính xác hơn
-        
-        if _G.KillH then
-            -- Set SimulationRadius một lần ở ngoài vòng lặp để tránh làm nặng game
             pcall(function()
-                sethiddenproperty(plr, "SimulationRadius", math.huge)
-            end)
-            
-            -- Quét qua toàn bộ danh sách quái vật cùng một lúc
-            for _, v in pairs(workspace.Enemies:GetChildren()) do
-                -- Nếu trong lúc đang quét mà bạn tắt Toggle thì dừng vòng lặp ngay lập tức
-                if not _G.KillH then break end 
-                
-                if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-                    -- Chỉ xử lý những con quái còn sống
-                    if v.Humanoid.Health > 0 and v.Parent then
-                        pcall(function()
-                            v.HumanoidRootPart.CanCollide = false
-                            v:BreakJoints()
-                            v.Humanoid.Health = 0
-                        end)
+
+                local DungeonShared =
+                ReplicatedStorage:FindFirstChild("DungeonShared")
+
+
+                if DungeonShared then
+
+                    local ReturnToHub =
+                    DungeonShared:FindFirstChild("ReturnToHub")
+
+
+                    if ReturnToHub then
+
+                        ReturnToHub:FireServer()
+
                     end
+
                 end
-            end
+
+            end)
+
         end
+
     end
+
 end)
+
 
 print("Dungeon Floor System Loaded")
 -- ========================================
@@ -1665,80 +1104,3 @@ end)
 -- Final Check
 -- ========================================
 
-
-task.spawn(function()
-
-
-    while task.wait(5) do
-
-
-        pcall(function()
-
-
-
-            -- cập nhật lại Character nếu respawn
-
-
-            local Char =
-            plr.Character
-
-
-
-            if Char then
-
-
-                local Root =
-                Char:FindFirstChild(
-                "HumanoidRootPart"
-                )
-
-
-
-                if Root then
-
-                    HumanoidRootPart =
-                    Root
-
-                end
-
-
-
-            end
-
-
-
-            -- cập nhật Enemies nếu bị load lại
-
-
-            if not Enemies
-            or not Enemies.Parent then
-
-
-                Enemies =
-                workspace:FindFirstChild(
-                "Enemies"
-                )
-
-
-            end
-
-
-
-        end)
-
-
-    end
-
-
-end)
-
-
-
-
-print("============================")
-
-print("Dungeon Hub Loaded Successfully")
-
-print("PlaceID:",placeId)
-
-print("============================")
