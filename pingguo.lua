@@ -10942,6 +10942,7 @@ spawn(function()
 		end);
 	end;
 end);
+
 Get:AddToggle({
  Name = "Auto Saber Sword",
 	Description = "",
@@ -11040,6 +11041,7 @@ spawn(function()
 		end);
 	end;
 end);
+
 Get:AddToggle({
  Name = "Auto Usoap\'s Hat",
 	Description = "",
