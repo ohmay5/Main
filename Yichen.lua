@@ -2386,7 +2386,7 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua.txt"))():MakeWindow({
+	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua"))():MakeWindow({
     Title = "青龙脚本 | Hub",
     SubTitle = "Blox Fruit",
     SaveFolder = "青龙脚本.json"
