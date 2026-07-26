@@ -10950,53 +10950,87 @@ Get:AddToggle({
 		_G.AutoSaber = I;
 	end,
 });
+-- Giả định bạn đã có các biến global hoặc local cơ bản ở trên
+-- Ví dụ: local plr = game.Players.LocalPlayer
+-- Ví dụ: local replicated = game:GetService("ReplicatedStorage")
+
 spawn(function()
-    while wait(.2) do
-        pcall(function()
-            if _G.AutoSaber and (plr.Data.Level.Value >= 200 and (not plr.Backpack:FindFirstChild("Saber") and not plr.Character:FindFirstChild("Saber"))) then
-                
-                -- Bước 1: Kiểm tra Plate ở Đảo Khỉ
+    while task.wait(0.5) do -- Tăng thời gian chờ để giảm tải cho CPU
+        if not _G.AutoSaber then continue end
+        
+        local success, err = pcall(function()
+            local char = plr.Character
+            local root = char and char:FindFirstChild("HumanoidRootPart")
+            if not root then return end
+
+            local hasSaber = (plr.Backpack:FindFirstChild("Saber") or char:FindFirstChild("Saber"))
+            local level = plr.Data.Level.Value
+
+            if level >= 200 and not hasSaber then
+                -- Bước 1: Kiểm tra nhiệm vụ Jungle
                 if workspace.Map.Jungle.Final.Part.Transparency == 0 then
-                    if workspace.Map.Jungle.QuestPlates.Door.Transparency == 0 then
-                        -- [Giữ nguyên logic nhảy Plate của bạn...]
-                        -- ...
+                    local door = workspace.Map.Jungle.QuestPlates.Door
+                    if door.Transparency == 0 then
+                        -- Logic nhấn đĩa (Simplified for smoothness)
+                        local plates = {"Plate1", "Plate2", "Plate3", "Plate4", "Plate5"}
+                        for _, pName in ipairs(plates) do
+                            local plate = workspace.Map.Jungle.QuestPlates:FindFirstChild(pName)
+                            if plate then
+                                root.CFrame = plate.Button.CFrame
+                                task.wait(0.3)
+                            end
+                        end
                     else
-                        -- Bước 2: Kiểm tra Đuốc (Đã sửa theo logic mới)
-                        if workspace.Map.Desert.Burn.Part.Transparency == 0 then
-                            if plr.Backpack:FindFirstChild("Torch") or plr.Character:FindFirstChild("Torch") then
-                                _tp(CFrame.new(1114.61, 5.04, 4350.22));
-                                EquipWeapon("Torch");
-                                firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 0);
-                                firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 1);
-                            else
-                                _tp(CFrame.new(-1610.00, 11.50, 164.00));
-                            end;
-                        else
-                            -- Bước 3: Làm nhiệm vụ SickMan/RichSon
-                            if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
-                                -- ... (Logic Cup của bạn)
-                            else
-                                -- ... (Logic Mob Leader của bạn)
-                            end;
-                        end;
-                    end;
+                        -- Teleport đến vị trí trung tâm nhiệm vụ
+                        _tp(CFrame.new(-1612.55, 36.97, 148.71))
+                    end
+                
+                -- Bước 2: Xử lý Đảo Cát (Desert)
+                elseif workspace.Map.Desert.Burn.Part.Transparency == 0 then
+                    if plr.Backpack:FindFirstChild("Torch") or char:FindFirstChild("Torch") then
+                        EquipWeapon("Torch")
+                        local fire = workspace.Map.Desert.Burn.Fire
+                        firetouchinterest(char.Torch.Handle, fire, 0)
+                        firetouchinterest(char.Torch.Handle, fire, 1)
+                        _tp(CFrame.new(1114.61, 5.04, 4350.22))
+                    else
+                        _tp(CFrame.new(-1610.00, 11.50, 164.00))
+                    end
+
+                -- Bước 3: Các giai đoạn nhiệm vụ khác (SickMan/RichSon)
                 else
-                    -- Bước 4: Đánh Saber Expert
-                    if workspace.Enemies:FindFirstChild("Saber Expert") or replicated:FindFirstChild("Saber Expert") then
-                        for I, e in pairs(workspace.Enemies:GetChildren()) do
-                            if e.Name == "Saber Expert" and G.Alive(e) then
-                                repeat task.wait(); G.Kill(e, _G.AutoSaber); until e.Humanoid.Health <= 0 or not _G.AutoSaber;
-                                if e.Humanoid.Health <= 0 then replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "PlaceRelic"); end;
-                            end;
-                        end;
+                    local proQuest = replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan")
+                    if proQuest ~= 0 then
+                        replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "GetCup")
+                        task.wait(0.5)
+                        EquipWeapon("Cup")
+                        replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "FillCup", char.Cup)
+                        task.wait(1)
+                        replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan")
                     else
-                        _tp(CFrame.new(-1401.85, 29.97, 8.81));
-                    end;
-                end;
-            end;
-        end);
-    end;
-end);
+                        -- Xử lý RichSon
+                        local richSon = replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon")
+                        if richSon == 0 then
+                            local mobLeader = workspace.Enemies:FindFirstChild("Mob Leader")
+                            if mobLeader then
+                                _tp(mobLeader.HumanoidRootPart.CFrame)
+                                G.Kill(mobLeader, _G.AutoSaber)
+                            end
+                        elseif richSon == 1 then
+                            replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon")
+                            EquipWeapon("Relic")
+                            _tp(CFrame.new(-1404.91, 29.97, 3.80))
+                        end
+                    end
+                end
+            end
+        end)
+        
+        if not success then
+            warn("AutoSaber Error: " .. tostring(err))
+        end
+    end
+end)
 
 Get:AddToggle({
  Name = "Auto Usoap\'s Hat",
