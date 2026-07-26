@@ -10950,7 +10950,7 @@ Get:AddToggle({
 		_G.AutoSaber = I;
 	end,
 });
--spawn(function()
+spawn(function()
     while task.wait(0.5) do
         if not _G.AutoSaber then continue end
         pcall(function()
