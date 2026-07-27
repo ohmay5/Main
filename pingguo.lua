@@ -10365,64 +10365,48 @@ Get:AddToggle({
 })
     -- // KHỞI TẠO CỜ HIỆU (Đặt cái này ở ngoài vòng lặp)
 -- // KHỞI TẠO CỜ HIỆU (Đặt cái này ở ngoài vòng lặp)
-getgenv().OpenedDoor = getgenv().OpenedDoor or false 
-
 task.spawn(function()
     while task.wait(0.5) do
         if getgenv().AutoNewWorld and World1 then
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
+                local workspace = game:GetService("Workspace")
                 local rs = game:GetService("ReplicatedStorage")
-                local char = player.Character
-                if not char or not char:FindFirstChild("HumanoidRootPart") then return end
                 
+                -- // KIỂM TRA BOSS TRƯỚC (Ưu tiên số 1)
+                local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
                 local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
-                local doorPos = CFrame.new(1347, 37.3, -1325)
-                local distToDoor = (char.HumanoidRootPart.Position - doorPos.Position).Magnitude
-
-                -- // BƯỚC 1: LẤY KEY (Chỉ chạy nếu chưa có Key VÀ chưa mở cửa)
-                if not hasKey and not getgenv().OpenedDoor then
-                    print("Đang đi lấy Key tại Nhà tù...")
-                    _tp(CFrame.new(4851, 5.6, 717)) 
-                    task.wait(1.5)
-                    rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
                 
-                -- // BƯỚC 2: MỞ CỬA (Chỉ chạy khi có Key VÀ chưa mở cửa)
-                elseif hasKey and not getgenv().OpenedDoor then
-                    if distToDoor > 20 then
-                        print("Đang bay đến cửa Boss...")
-                        _tp(doorPos)
+                -- Kiểm tra xem cửa có thực sự đang mở không (dựa vào va chạm)
+                local iceDoor = workspace.Map:FindFirstChild("Ice") and workspace.Map.Ice:FindFirstChild("Door")
+                local isDoorOpen = (iceDoor and iceDoor.CanCollide == false)
+
+                if Boss and Boss:FindFirstChild("HumanoidRootPart") then
+                    -- // NẾU BOSS TỒN TẠI -> ĐÁNH BOSS (Bất chấp cửa)
+                    AutoHaki()
+                    EquipWeapon(getgenv().SelectWeapon or "Key")
+                    Boss.HumanoidRootPart.CanCollide = false
+                    _tp(Boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 20))
+                
+                elseif isDoorOpen then
+                    -- // NẾU CỬA ĐÃ MỞ NHƯNG BOSS CHƯA SPAWN -> ĐỢI Ở VỊ TRÍ SPAWN
+                    local SpawnBoss = rs:FindFirstChild("Ice Admiral")
+                    if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
+                        _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
                     else
-                        print("Đang mở cửa...")
-                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                        task.wait(1)
-                        getgenv().OpenedDoor = true -- ĐÁNH DẤU LÀ ĐÃ MỞ CỬA
+                        rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
                     end
-                
-                -- // BƯỚC 3: ĐÁNH BOSS (Chạy vĩnh viễn sau khi đã mở cửa)
-                else
 
-                    local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
-                    
-                    if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
-                        AutoHaki()
-                        EquipWeapon(getgenv().SelectWeapon or "Key")
-                        
-                        -- Cấu hình Boss
-                        Boss.HumanoidRootPart.CanCollide = false
-                        Boss.Humanoid.WalkSpeed = 0
-                        
-                        -- Khoảng cách 20 studs phía trước/bên cạnh Boss
-                        -- Nhân vật sẽ luôn giữ khoảng cách này khi Boss di chuyển
-                        _tp(Boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 20))
+                else
+                    -- // NẾU CỬA CHƯA MỞ -> MỚI LÀM CÁC BƯỚC LẤY KEY
+                    if not hasKey then
+                        _tp(CFrame.new(4851, 5.6, 717))
+                        task.wait(1)
+                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
                     else
-                        -- Tìm điểm spawn nếu boss chết
-                        local SpawnBoss = rs:FindFirstChild("Ice Admiral")
-                        if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
-                            _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
-                        else
-                            rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
-                        end
+                        _tp(CFrame.new(1347, 37.3, -1325))
+                        task.wait(1)
+                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
                     end
                 end
             end)
