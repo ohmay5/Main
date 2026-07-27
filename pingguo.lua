@@ -12060,6 +12060,7 @@ Setting:AddButton({
 			Lighting.FantasySky:Destroy();
 		end;
 	end });
+	
 getgenv().NoClip = false
 
 Setting:AddToggle({
