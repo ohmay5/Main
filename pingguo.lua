@@ -10353,7 +10353,7 @@ local function GetClosestMob()
 	end
 	return target
 end
-
+if world1 then
 Get:AddToggle({
     Name = "Auto New World",
     Description = "Nhiệm vụ lên sea 2",
@@ -10413,7 +10413,7 @@ task.spawn(function()
         end
     end
 end)
-
+end
 
 Get:AddToggle({
 	Name = "Auto Farm 600 In Swords",
