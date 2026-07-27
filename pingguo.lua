@@ -11030,7 +11030,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CommF = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
 
 Get:AddToggle({
-    Name = "Auto Bartilo Quest",
+    Name = "Auto Bartilo Quest1",
     Description = "Tự động làm nhiệm vụ Bartilo",
     Default = false,
     Callback = function(Value)
@@ -11039,60 +11039,56 @@ Get:AddToggle({
 })
 
 task.spawn(function()
-    local TryingToAccept = false -- Cờ kiểm soát
-
     while task.wait(0.5) do
         if _G.AutoBartilo then
             pcall(function()
-                local Player = game:GetService("Players").LocalPlayer
-                local QuestGui = Player.PlayerGui.Main.Quest
-                local CommF = game:GetService("ReplicatedStorage").Remotes.CommF_
-
-                -- Kiểm tra trạng thái nhiệm vụ
-                if not QuestGui.Visible then
-                    -- CHƯA NHẬN QUEST
-                    local PosBartilo = CFrame.new(-460.429, 73.050, 300.719)
-                    
-                    if (Player.Character.HumanoidRootPart.Position - PosBartilo.Position).Magnitude > 10 then
-                        _tp(PosBartilo)
+                local player = game:GetService("Players").LocalPlayer
+                local commF = game:GetService("ReplicatedStorage").Remotes.CommF_
+                
+                -- Lấy dữ liệu nhiệm vụ
+                local progress = commF:InvokeServer("BartiloQuestProgress", "Bartilo")
+                local questGui = player.PlayerGui.Main.Quest
+                
+                -- 1. CHƯA CÓ NHIỆM VỤ -> ĐI NHẬN
+                if progress == 0 and not questGui.Visible then
+                    local posBartilo = CFrame.new(-460.429, 73.050, 300.719)
+                    if (player.Character.HumanoidRootPart.Position - posBartilo.Position).Magnitude > 10 then
+                        _tp(posBartilo)
                     else
-                        -- Chỉ gửi lệnh 1 lần duy nhất để tránh bị kẹt
-                        if not TryingToAccept then
-                            TryingToAccept = true
-                            CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
-                            task.wait(2)
-                            TryingToAccept = false
-                        end
-                    end
-                else
-                    -- ĐÃ CÓ QUEST -> THOÁT KHỎI NPC NGAY LẬP TỨC
-                    local QuestTitle = QuestGui.Container.QuestTitle.Title.Text
-                    
-                    local TargetName = ""
-                    local TargetPos = nil
-
-                    if QuestTitle:find("Swan") then
-                        TargetName = "Swan Pirate"
-                        TargetPos = CFrame.new(-457, 71, 160)
-                    elseif QuestTitle:find("Jeremy") then
-                        TargetName = "Jeremy"
-                        TargetPos = CFrame.new(2326.1, 459.2, 718.4)
+                        commF:InvokeServer("StartQuest", "BartiloQuest", 1)
+                        task.wait(1)
                     end
 
-                    if TargetName ~= "" then
-                        local Enemy = GetConnectionEnemies(TargetName)
-                        if Enemy and Enemy:FindFirstChild("HumanoidRootPart") and Enemy.Humanoid.Health > 0 then
-                            G.Kill(Enemy, _G.AutoBartilo)
-                        else
-                            -- Cưỡng ép di chuyển ra xa NPC
-                            _tp(TargetPos)
-                        end
+                -- 2. ĐANG LÀM NHIỆM VỤ SWAN (PROGRESS 0)
+                elseif progress == 0 and questGui.Visible then
+                    local enemy = GetConnectionEnemies("Swan Pirate")
+                    if enemy and enemy:FindFirstChild("HumanoidRootPart") and enemy.Humanoid.Health > 0 then
+                        G.Kill(enemy, _G.AutoBartilo)
+                    else
+                        _tp(CFrame.new(-457, 71, 160)) -- Điểm spawn Swan
                     end
+
+                -- 3. CẦN TRẢ NHIỆM VỤ SWAN HOẶC BẮT ĐẦU JEREMY (PROGRESS 1)
+                elseif progress == 1 then
+                    local boss = GetConnectionEnemies("Jeremy")
+                    -- Kiểm tra nếu boss còn sống thì đánh
+                    if boss and boss:FindFirstChild("HumanoidRootPart") and boss.Humanoid.Health > 0 then
+                        G.Kill(boss, _G.AutoBartilo)
+                    else
+                        -- Nếu chưa xong quest Jeremy hoặc chưa tới chỗ Jeremy thì bay tới
+                        _tp(CFrame.new(2326.1, 459.2, 718.4)) 
+                    end
+                
+                -- 4. KHI HOÀN THÀNH CÁC GIAI ĐOẠN ĐẦU -> TỰ QUAY LẠI NPC
+                elseif progress == 2 then
+                    -- Dẫn tới khu vực giải mã hoặc kết thúc nhiệm vụ
+                    _tp(CFrame.new(-1850.4, 13.1, 1750.8))
                 end
             end)
         end
     end
 end)
+
 
 Get:AddSection({"Boss Raid"});
 
