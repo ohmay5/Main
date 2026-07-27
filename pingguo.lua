@@ -11054,7 +11054,7 @@ task.spawn(function()
                         -- Tự tìm quái trong Workspace bằng tên
                         local enemyFound = false
                         for i, v in pairs(workspace.Enemies:GetChildren()) do
-                            if v.Name == "Swan Pirate" and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+                            if v.Name == "Swan Pirates" and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
                                 enemyFound = true
                                 G.Kill(v, _G.AutoBartilo) -- Chỉ thay bằng G.Kill ở đây
                                 break
@@ -11073,7 +11073,7 @@ task.spawn(function()
                     end
 
                 -- GIAI ĐOẠN 1: JEREMY
-                elseif level >= 800 and progress == 1 then
+                elseif level >= 850 and progress == 1 then
                     local bossFound = false
                     for i, v in pairs(workspace.Enemies:GetChildren()) do
                         if v.Name == "Jeremy" and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
@@ -11096,7 +11096,7 @@ task.spawn(function()
                     end
 
                 -- GIAI ĐOẠN 2: GIẢI MÃ (Giữ nguyên toàn bộ tọa độ gốc của bạn)
-                elseif level >= 800 and progress == 2 then
+                elseif level >= 850 and progress == 2 then
                     local plates = {
                         CFrame.new(-1850.49329, 13.1789551, 1750.89685),
                         CFrame.new(-1858.87305, 19.3777466, 1712.01807),
