@@ -7424,6 +7424,81 @@ Maestry:AddToggle({
 })
 if World2 then
 Race:AddSection({"Upgrade Races"});
+getgenv().UpgradeRaceV2 = false
+
+Race:AddToggle({
+    Name = "Auto Upgrade Race V2",
+    Default = false,
+    Callback = function(Value)
+        getgenv().UpgradeRaceV2 = Value
+    end
+})
+
+task.spawn(function()
+    pcall(function()
+        while task.wait(0.2) do
+            if not getgenv().UpgradeRaceV2 or not World2 then
+                continue
+            end
+
+            local player = game:GetService("Players").LocalPlayer
+            local humanoidRootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            local backpack = player.Backpack
+            local raceData = player.Data.Race
+
+            if raceData:FindFirstChild("Evolved") then
+                continue
+            end
+
+            local alchemistStatus = game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist","1")
+
+            if alchemistStatus == 0 then
+                local targetPos = CFrame.new(-2779.83521, 72.9661407, -3574.02002)
+                if humanoidRootPart and (targetPos.Position - humanoidRootPart.Position).Magnitude > 4 then
+                    topos(targetPos)
+                else
+                    task.wait(1.1)
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist","2")
+                end
+
+            elseif alchemistStatus == 1 then
+                if not (backpack:FindFirstChild("Flower 1") or player.Character:FindFirstChild("Flower 1")) then
+                    topos(game:GetService("Workspace").Flower1.CFrame)
+
+                elseif not (backpack:FindFirstChild("Flower 2") or player.Character:FindFirstChild("Flower 2")) then
+                    topos(game:GetService("Workspace").Flower2.CFrame)
+
+                elseif not (backpack:FindFirstChild("Flower 3") or player.Character:FindFirstChild("Flower 3")) then
+                    local zombie = game:GetService("Workspace").Enemies:FindFirstChild("Zombie")
+                    if zombie then
+                        for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
+                            if v.Name == "Zombie" and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
+                                repeat
+                                    task.wait()
+                                    EquipWeapon(getgenv().SelectWeapon)
+                                    AutoHaki()
+                                    topos(v.HumanoidRootPart.CFrame * Pos)
+                                    v.HumanoidRootPart.CanCollide = false
+                                    v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
+                                    game:GetService("VirtualUser"):CaptureController()
+                                    game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
+                                until backpack:FindFirstChild("Flower 3")
+                                    or v.Humanoid.Health <= 0
+                                    or not v.Parent
+                                    or not getgenv().UpgradeRaceV2
+                            end
+                        end
+                    else
+                        topos(CFrame.new(-5685.923, 48.48, -853.237))
+                    end
+                end
+
+            elseif alchemistStatus == 2 then
+                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist","3")
+            end
+        end
+    end)
+end)
 Race:AddToggle({
     Name = "Auto Mink V2/V3",
     Description = "",
@@ -10880,117 +10955,6 @@ spawn(function()
 	end;
 end);
 
-getgenv().AutoSaber = false
-
-Setting:AddToggle({
-    Name = "Auto Saber V2",
-    Default = false,
-    Callback = function(Value)
-        getgenv().AutoSaber = Value
-    end
-})
-spawn(function()
-    while task.wait(0.5) do
-        if getgenv().AutoSaber and game.Players.LocalPlayer.Data.Level.Value >= 200 then
-            pcall(function()
-                local player = game.Players.LocalPlayer
-                local char = player.Character
-                local hrp = char and char:FindFirstChild("HumanoidRootPart")
-                if not hrp then return end
-                local jungle = game:GetService("Workspace").Map.Jungle
-                local desert = game:GetService("Workspace").Map.Desert
-                local relicPos = CFrame.new(-1404.91, 29.97, 3.80)                
-                if jungle.Final.Part.Transparency == 0 then
-                    if jungle.QuestPlates.Door.Transparency == 0 then
-                        local saberPos = CFrame.new(-1612.55, 36.97, 148.71)
-                        if (saberPos.Position - hrp.Position).Magnitude <= 100 then
-                            for i = 1, 5 do
-                                local plate = jungle.QuestPlates:FindFirstChild("Plate" .. i)
-                                if plate and plate:FindFirstChild("Button") then
-                                    hrp.CFrame = plate.Button.CFrame
-                                    task.wait(0.5)
-                                end
-                            end
-                        else
-                            topos(saberPos)
-                        end
-                    else
-                        if desert.Burn.Part.Transparency == 0 then
-                            if player.Backpack:FindFirstChild("Torch") or char:FindFirstChild("Torch") then
-                                EquipWeapon("Torch")
-                                topos(CFrame.new(1114.61, 5.04, 4350.22))
-                            else
-                                topos(CFrame.new(-1610.00, 11.50, 164.00))
-                            end
-                        else
-                            local commF = game:GetService("ReplicatedStorage").Remotes.CommF_
-                            if commF:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
-                                commF:InvokeServer("ProQuestProgress", "GetCup")
-                                task.wait(0.1)
-                                EquipWeapon("Cup")
-                                task.wait(0.1)
-                                commF:InvokeServer("ProQuestProgress", "FillCup", char:FindFirstChild("Cup"))
-                                task.wait(0.1)
-                                commF:InvokeServer("ProQuestProgress", "SickMan")
-                            else
-                                if commF:InvokeServer("ProQuestProgress", "RichSon") == nil then
-                                    commF:InvokeServer("ProQuestProgress", "RichSon")
-                                elseif commF:InvokeServer("ProQuestProgress", "RichSon") == 0 then
-                                    local mobLeader = game:GetService("Workspace").Enemies:FindFirstChild("Mob Leader")
-                                    if not mobLeader then
-                                        mobLeader = game:GetService("ReplicatedStorage"):FindFirstChild("Mob Leader")
-                                    end                                    
-                                    if mobLeader then
-                                        topos(mobLeader.HumanoidRootPart.CFrame)
-                                        repeat
-                                            task.wait()
-                                            AutoHaki()
-                                            EquipWeapon(getgenv().SelectWeapon)
-                                            mobLeader.HumanoidRootPart.CanCollide = false
-                                            mobLeader.Humanoid.WalkSpeed = 0
-                                            topos(mobLeader.HumanoidRootPart.CFrame)
-                                            game:GetService("VirtualUser"):CaptureController()
-                                            game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                                            sethiddenproperty(player, "SimulationRadius", math.huge)
-                                        until mobLeader.Humanoid.Health <= 0 or not getgenv().AutoSaber
-                                    end
-                                elseif commF:InvokeServer("ProQuestProgress", "RichSon") == 1 then
-                                    commF:InvokeServer("ProQuestProgress", "RichSon")
-                                    task.wait(0.1)
-                                    EquipWeapon("Relic")
-                                    task.wait(0.1)
-                                    topos(relicPos)
-                                end
-                            end
-                        end
-                    end
-                else
-                    local saberExpert = game:GetService("Workspace").Enemies:FindFirstChild("Saber Expert")
-                    if not saberExpert then
-                        saberExpert = game:GetService("ReplicatedStorage"):FindFirstChild("Saber Expert")
-                    end                    
-                    if saberExpert then
-                        repeat
-                            task.wait()
-                            EquipWeapon(getgenv().SelectWeapon)
-                            topos(saberExpert.HumanoidRootPart.CFrame)
-                            saberExpert.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                            saberExpert.HumanoidRootPart.Transparency = 1
-                            saberExpert.Humanoid.JumpPower = 0
-                            saberExpert.Humanoid.WalkSpeed = 0
-                            saberExpert.HumanoidRootPart.CanCollide = false
-                            game:GetService("VirtualUser"):CaptureController()
-                            game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                        until saberExpert.Humanoid.Health <= 0 or not getgenv().AutoSaber                        
-                        if saberExpert.Humanoid.Health <= 0 then
-                            game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ProQuestProgress", "PlaceRelic")
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
 Get:AddToggle({
  Name = "Auto Saber Sword",
 	Description = "",
