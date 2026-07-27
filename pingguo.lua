@@ -10355,7 +10355,7 @@ local function GetClosestMob()
 end
 
 Get:AddToggle({
-    Name = "Auto New World ",
+    Name = "Auto New World 2",
     Description = "Automatically unlock Second Sea",
     Default =false,
     Callback = function(Value)
@@ -10364,51 +10364,56 @@ Get:AddToggle({
     end
 })
 
+-- // KHỞI TẠO BIẾN TRẠNG THÁI (Đặt ở ngoài vòng lặp)
+getgenv().HasKey = false 
+
 task.spawn(function()
     while task.wait(1) do
         if getgenv().AutoNewWorld and World1 then
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
                 local workspace = game:GetService("Workspace")
-                local character = player.Character
-                if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-                local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
-                local iceDoor = workspace.Map:FindFirstChild("Ice") and workspace.Map.Ice:FindFirstChild("Door")
-                local boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
-
-                -- // GIAI ĐOẠN 1: LẤY KEY TỪ XA (Không cần bay)
-                if not hasKey then
-                    print("Đang tiến hành lấy Key từ máy chủ...")
-                    GetKeyRemote():InvokeServer("DressrosaQuestProgress", "Detective")
-                    task.wait(1)
+                local rs = game:GetService("ReplicatedStorage")
                 
-                -- // GIAI ĐOẠN 2: KIỂM TRA CỬA & BAY ĐẾN ĐẢO TUYẾT
-                elseif hasKey then
+                -- Kiểm tra nhân vật
+                local char = player.Character
+                if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+
+                -- CẬP NHẬT TRẠNG THÁI KEY (Kiểm tra trong túi đồ)
+                local inventoryKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
+                if inventoryKey then getgenv().HasKey = true end
+
+                -- // PHẦN 1: NẾU CHƯA CÓ KEY (Bay đến lấy)
+                if not getgenv().HasKey then
+                    print("Status: Đang bay đến Prison lấy Key...")
+                    _tp(CFrame.new(4875, 5.7, 4325)) -- Tọa độ Prison
+                    task.wait(1)
+                    rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                    task.wait(1)
+
+                -- // PHẦN 2: ĐÃ CÓ KEY (Thực hiện logic Đảo Tuyết - Không bao giờ quay lại Prison)
+                else
+                    local iceDoor = workspace.Map:FindFirstChild("Ice") and workspace.Map.Ice:FindFirstChild("Door")
+                    
+                    -- A. Mở cửa (Nếu cửa đóng)
                     if iceDoor and iceDoor.Transparency == 1 then
-                        print("Đang bay đến cửa Đảo Tuyết để mở...")
+                        print("Status: Đã có Key, đang bay đến mở cửa...")
                         _tp(CFrame.new(4849, 5, 719))
                         task.wait(1)
-                        GetKeyRemote():InvokeServer("DressrosaQuestProgress", "Detective")
+                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
                     
-                    -- // GIAI ĐOẠN 3: ĐÁNH BOSS (Phần quan trọng nhất)
+                    -- B. Đánh Boss
                     else
+                        local boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
                         if boss and boss:FindFirstChild("HumanoidRootPart") then
-                            print("Đang tiêu diệt Ice Admiral...")
+                            print("Status: Đang Farm Boss...")
                             AutoHaki()
-                            EquipWeapon(getgenv().SelectWeapon)
-                            
-                            -- Logic giữ Boss an toàn
+                            EquipWeapon(getgenv().SelectWeapon or "Key")
                             boss.HumanoidRootPart.CanCollide = false
-                            _tp(boss.HumanoidRootPart.CFrame * getgenv().Pos)
+                            _tp(boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 5, 0)))
                         else
-                            print("Boss chưa xuất hiện, kiểm tra Travel...")
-                            local spawnPoint = game:GetService("ReplicatedStorage"):FindFirstChild("Ice Admiral")
-                            if spawnPoint then
-                                _tp(spawnPoint.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
-                            else
-                                GetKeyRemote():InvokeServer("TravelDressrosa")
-                            end
+                            -- Nếu boss chưa có thì Travel
+                            rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
                         end
                     end
                 end
@@ -10416,6 +10421,7 @@ task.spawn(function()
         end
     end
 end)
+
 
 Get:AddToggle({
 	Name = "Auto Farm 600 In Swords",
