@@ -11122,26 +11122,35 @@ Get:AddToggle({
      end,
 })
 spawn(function()
-    while wait(0.5) do -- Thay Sec bằng 0.5 để ổn định hơn
+    while wait(0.5) do
         pcall(function()
             if _G.AutoEcBoss then
+                -- 1. Kiểm tra vị trí: Nếu chưa ở trong tàu thì ưu tiên vào tàu
+                -- Giả sử tọa độ tàu là vùng có Y > 100 (bạn có thể thay bằng kiểm tra tên Map)
+                local char = game.Players.LocalPlayer.Character
+                if char and char.HumanoidRootPart.Position.Y < 100 then 
+                    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+                    _tp(CFrame.new(916.928589, 181.092773, 33422))
+                    wait(2) -- Đợi một chút để load map vào tàu
+                    return -- Dừng vòng lặp hiện tại để quay lại kiểm tra boss sau
+                end
+
+                -- 2. Nếu đã ở trong tàu rồi thì mới tìm và đánh Boss
                 local I = GetConnectionEnemies("Cursed Captain")
                 if I then
-                    -- Đang thấy boss, tập trung đánh
                     repeat
                         wait()
                         G.Kill(I, _G.AutoEcBoss)
                     until not _G.AutoEcBoss or not I.Parent or I.Humanoid.Health <= 0
                 else
-                    -- Không thấy boss, di chuyển tới khu vực tàu ma
-                    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
-                    wait(0.5)
-                    _tp(CFrame.new(916.928589, 181.092773, 33422))
+                    -- Không thấy boss nhưng đã ở trong tàu: Đi dạo quanh tàu để tìm boss
+                    _tp(CFrame.new(916.928589, 181.092773, 33422)) 
                 end
             end
         end)
     end
 end)
+
 Get:AddToggle({
  Name = "Auto Darkbeard",
 	Description = "",
