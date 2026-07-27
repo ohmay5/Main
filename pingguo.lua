@@ -11076,6 +11076,7 @@ spawn(function()
 		end;
 	end;
 end);
+-- Toggle trong UI
 Get:AddToggle({
     Name = "Auto Bartilo Quest",
     Description = "Tự động làm nhiệm vụ Bartilo",
@@ -11085,6 +11086,7 @@ Get:AddToggle({
     end,
 });
 
+-- Logic chính
 spawn(function()
     while task.wait(1) do
         if getgenv().AutoBartilo then
@@ -11092,31 +11094,35 @@ spawn(function()
                 local lp = game:GetService("Players").LocalPlayer
                 local rs = game:GetService("ReplicatedStorage")
                 
-                -- Kiểm tra tiến độ nhiệm vụ (Dùng giá trị này để biết đang ở bước nào)
-                local questData = lp.PlayerGui.Main.Quest.Container.Visible -- Kiểm tra xem có đang có quest không
+                -- Tọa độ chuẩn từ ảnh của bạn
+                local bartiloPos = CFrame.new(-464.02, 73.05, 0.0) 
                 
-                -- BƯỚC 1: TƯƠNG TÁC VỚI BARTILO (Để nhận/trả quest)
+                -- BƯỚC 1: TƯƠNG TÁC VỚI BARTILO (Nhận/Trả Quest)
+                -- Kiểm tra xem có đang làm nhiệm vụ không bằng cách nhìn UI
+                local questTitle = lp.PlayerGui.Main.Quest.Container.QuestTitle.Text
+                
                 if not lp.PlayerGui.Main.Quest.Container.Visible then
-                    _tp(CFrame.new(-390, 70, 75)) -- Vị trí Bartilo trong Cafe
+                    _tp(bartiloPos)
                     task.wait(1)
+                    -- Gọi NPC Bartilo (thường dùng tên trong Workspace)
                     rs.Remotes.CommF_:InvokeServer("StartConversation", workspace.NPCs.Bartilo)
                 
-                -- BƯỚC 2: ĐÁNH 50 HẢI TẶC THIÊN NGA (Swan Pirates)
-                elseif string.find(lp.PlayerGui.Main.Quest.Container.QuestTitle.Text, "Swan Pirates") then
-                    local target = workspace.Enemies:FindFirstChild("Swan Pirate") or workspace.Enemies:FindFirstChild("Factory Staff")
+                -- BƯỚC 2: ĐÁNH HẢI TẶC THIÊN NGA
+                elseif string.find(questTitle, "Swan Pirates") then
+                    local target = workspace.Enemies:FindFirstChild("Swan Pirate")
                     if target then
                         _tp(target.HumanoidRootPart.CFrame)
                         G.Kill(target, getgenv().AutoBartilo)
                     end
                 
                 -- BƯỚC 3: ĐÁNH BOSS JEREMY
-                elseif string.find(lp.PlayerGui.Main.Quest.Container.QuestTitle.Text, "Jeremy") then
+                elseif string.find(questTitle, "Jeremy") then
                     local boss = workspace.Enemies:FindFirstChild("Jeremy")
-                    if boss and boss:FindFirstChild("HumanoidRootPart") then
+                    if boss then
                         _tp(boss.HumanoidRootPart.CFrame)
                         G.Kill(boss, getgenv().AutoBartilo)
                     else
-                        _tp(CFrame.new(945, 410, -550)) -- Vị trí Boss Jeremy
+                        _tp(CFrame.new(945, 410, -550)) -- Tọa độ Jeremy
                     end
                 end
             end)
