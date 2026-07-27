@@ -9419,51 +9419,35 @@ spawn(function()
 end);
 Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
--- 1. Hàm lấy danh sách để dùng chung
-local function GetPlayerList()
-    local List = {}
-    for _, p in pairs(Players:GetPlayers()) do
-        if p.Name ~= LocalPlayer.Name then
-            table.insert(List, p.Name)
-        end
-    end
-    return List
-end
-
--- 2. Khởi tạo danh sách ban đầu
-local O5 = GetPlayerList()
-
--- 3. Khai báo biến Dropdown
-local PlayerDropdown
-
--- 4. Tạo Dropdown
--- LƯU Ý: Đảm bảo biến 'Player' đã được định nghĩa là một Section/Tab của Redz
-PlayerDropdown = Player:AddDropdown({ 
-    Name = "Select Players",
-    Options = O5, -- Dùng danh sách đã lấy ở bước 2
-    Callback = function(Value)
-        _G.PlayersList = Value
-    end,
-})
 
 -- 5. Nút Refresh
 Player:AddButton({
     Name = "Refresh Player List",
     Callback = function()
-        local NewPlayers = GetPlayerList()
-        
-        -- Trong Redz Library, thường dùng SetList hoặc Refresh
-        -- Hãy thử SetList trước, nếu không được thì thử Refresh
-        if PlayerDropdown.SetList then
-            PlayerDropdown:SetList(NewPlayers)
-        elseif PlayerDropdown.Refresh then
-            PlayerDropdown:Refresh(NewPlayers)
-        else
-            warn("Library này không tìm thấy phương thức Update!")
+        -- 1. Xóa cái cũ (dựa trên cấu trúc thông thường của Redz)
+        -- Nếu Redz không có hàm :Destroy(), chúng ta sẽ ẩn nó đi hoặc chỉ cần tạo mới đè lên
+        if PlayerDropdown and PlayerDropdown.Delete then
+            PlayerDropdown:Delete()
         end
+
+        -- 2. Lấy danh sách mới
+        local NewPlayers = {}
+        for _, p in pairs(game:GetService("Players"):GetPlayers()) do
+            if p.Name ~= game:GetService("Players").LocalPlayer.Name then
+                table.insert(NewPlayers, p.Name)
+            end
+        end
+
+        -- 3. Tạo lại Dropdown mới
+        PlayerDropdown = Player:AddDropdown({ 
+            Name = "Select Players",
+            Options = NewPlayers, 
+            Callback = function(Value)
+                _G.PlayersList = Value
+            end,
+        })
+        
+        print("Đã làm mới danh sách!")
     end
 })
 
