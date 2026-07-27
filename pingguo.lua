@@ -2696,16 +2696,18 @@ Shop:AddButton({
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Refined Flintlock")
     end
 })
+
 Shop:AddButton({
-    Name = "Refined Flintlock [ 65,000 Beli ]",
+    Name = "Dual Flintlock [ 65,000 Beli ]",
     Callback = function()
         local args = {
             [1] = "BuyItem",
-            [2] = "Refined Flintlock"
+            [2] = "Dual Flintlock"
         }
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
     end
 })
+
 Shop:AddButton({
     Name = "Cannon [ 100,000 Beli ]",
     Callback = function()
@@ -3108,12 +3110,6 @@ Status:AddButton({
     Name = "Rejoin Server",
     Callback = function()
         game:GetService("TeleportService"):Teleport(game.PlaceId,game:GetService("Players").LocalPlayer)
-    end
-})
-Status:AddButton({
-    Name = "Hop Server",
-    Callback = function()
-        Hop()
     end
 })
 Status:AddButton({
@@ -10957,6 +10953,57 @@ spawn(function()
 		end;
 	end;
 end);
+Get:AddToggle({
+ Name = "Auto Unlocked DonSwan",
+	Description = "",
+	Default = false,
+	Callback = function(I)
+		_G.Auto_DonAcces = I;
+	end,
+});
+spawn(function()
+	while wait(.1) do
+		if _G.Auto_DonAcces then
+			pcall(function()
+				if (replicated.Remotes.CommF_:InvokeServer("GetUnlockables")).FlamingoAccess == nil and plr.Data.Level.Value >= 1500 then
+					FruitPrice = {};
+					FruitStore = {};
+					for I, e in next, (replicated:WaitForChild("Remotes")).CommF_:InvokeServer("GetFruits") do
+						if e.Price >= 1000000 then
+							table.insert(FruitPrice, e.Name);
+						end;
+					end;
+					for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("getInventoryFruits")) do
+						for I, e in pairs(e) do
+							if I == "Name" then
+								table.insert(FruitStore, e);
+							end;
+						end;
+						replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy");
+						for I, e in pairs(FruitPrice) do
+							for I, K in pairs(FruitStore) do
+								if e == K and (replicated.Remotes.CommF_:InvokeServer("GetUnlockables")).FlamingoAccess == nil then
+									_G.StoreF = false;
+									if not plr.Backpack:FindFirstChild(FruitStore) then
+										replicated.Remotes.CommF_:InvokeServer("LoadFruit", tostring(e));
+									else
+										replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "1");
+										replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "2");
+										replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "3");
+									end;
+								end;
+							end;
+						end;
+						if (replicated.Remotes.CommF_:InvokeServer("GetUnlockables")).FlamingoAccess ~= nil then
+							_G.StoreF = true;
+							_G.Auto_DonAcces = false;
+						end;
+					end;
+				end;
+			end);
+		end;
+	end;
+end);
 
 Get:AddSection({"Law"});
 
@@ -10993,6 +11040,71 @@ spawn(function()
         end
     end
 end)
+-- Giả sử biến thư viện UI của bạn là 'Tab'
+Get:AddToggle({
+    Name = "Auto Farm Boss Cursed Captain",
+    Description = "Tự động tìm và đánh Cursed Captain",
+    Default = false,
+    Callback = function(Value)
+        _G.AutoEcBoss = Value -- Gán giá trị bật/tắt vào đây
+     end,
+})
+spawn(function()
+    while wait(0.5) do -- Thay Sec bằng 0.5 để ổn định hơn
+        pcall(function()
+            if _G.AutoEcBoss then
+                local I = GetConnectionEnemies("Cursed Captain")
+                if I then
+                    -- Đang thấy boss, tập trung đánh
+                    repeat
+                        wait()
+                        G.Kill(I, _G.AutoEcBoss)
+                    until not _G.AutoEcBoss or not I.Parent or I.Humanoid.Health <= 0
+                else
+                    -- Không thấy boss, di chuyển tới khu vực tàu ma
+                    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
+                    wait(0.5)
+                    _tp(CFrame.new(916.928589, 181.092773, 33422))
+                end
+            end
+        end)
+    end
+end)
+Get:AddToggle({
+ Name = "Auto Darkbeard",
+	Description = "",
+	Default = false,
+	Callback = function(I)
+		_G.Auto_Def_DarkCoat = I;
+	end,
+});
+spawn(function()
+	while wait(.1) do
+		if _G.Auto_Def_DarkCoat then
+			pcall(function()
+				if GetBP("Fist of Darkness") and not workspace.Enemies:FindFirstChild("Darkbeard") then
+					_tp(CFrame.new(3677.08203125, 62.751937866211, -3144.8332519531));
+				elseif GetConnectionEnemies("Darkbeard") then
+					local I = GetConnectionEnemies("Darkbeard");
+					if I then
+						repeat
+							wait();
+							G.Kill(I, _G.Auto_Def_DarkCoat);
+						until _G.Auto_Def_DarkCoat == false or not I.Parent or I.Humanoid.Helath <= 0;
+					end;
+				elseif not GetBP("Fist of Darkness") and not GetConnectionEnemies("Darkbeard") then
+					repeat
+						wait(.1);
+						_G.AutoFarmChest = true;
+					until not _G.Auto_Def_DarkCoat or GetBP("Fist of Darkness") or GetConnectionEnemies("Darkbeard");
+					_G.AutoFarmChest = false;
+				end;
+			end);
+		end;
+	end;
+end);
+
+
 end
 if World1 then
 Get:AddSection({"world 1 items"});
@@ -11396,90 +11508,6 @@ spawn(function()
 				end;
 			end;
 		end);
-	end;
-end);
-Get:AddToggle({
- Name = "Auto Darkbeard",
-	Description = "",
-	Default = false,
-	Callback = function(I)
-		_G.Auto_Def_DarkCoat = I;
-	end,
-});
-spawn(function()
-	while wait(.1) do
-		if _G.Auto_Def_DarkCoat then
-			pcall(function()
-				if GetBP("Fist of Darkness") and not workspace.Enemies:FindFirstChild("Darkbeard") then
-					_tp(CFrame.new(3677.08203125, 62.751937866211, -3144.8332519531));
-				elseif GetConnectionEnemies("Darkbeard") then
-					local I = GetConnectionEnemies("Darkbeard");
-					if I then
-						repeat
-							wait();
-							G.Kill(I, _G.Auto_Def_DarkCoat);
-						until _G.Auto_Def_DarkCoat == false or not I.Parent or I.Humanoid.Helath <= 0;
-					end;
-				elseif not GetBP("Fist of Darkness") and not GetConnectionEnemies("Darkbeard") then
-					repeat
-						wait(.1);
-						_G.AutoFarmChest = true;
-					until not _G.Auto_Def_DarkCoat or GetBP("Fist of Darkness") or GetConnectionEnemies("Darkbeard");
-					_G.AutoFarmChest = false;
-				end;
-			end);
-		end;
-	end;
-end);
-Get:AddToggle({
- Name = "Auto Unlocked DonSwan",
-	Description = "",
-	Default = false,
-	Callback = function(I)
-		_G.Auto_DonAcces = I;
-	end,
-});
-spawn(function()
-	while wait(.1) do
-		if _G.Auto_DonAcces then
-			pcall(function()
-				if (replicated.Remotes.CommF_:InvokeServer("GetUnlockables")).FlamingoAccess == nil and plr.Data.Level.Value >= 1500 then
-					FruitPrice = {};
-					FruitStore = {};
-					for I, e in next, (replicated:WaitForChild("Remotes")).CommF_:InvokeServer("GetFruits") do
-						if e.Price >= 1000000 then
-							table.insert(FruitPrice, e.Name);
-						end;
-					end;
-					for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("getInventoryFruits")) do
-						for I, e in pairs(e) do
-							if I == "Name" then
-								table.insert(FruitStore, e);
-							end;
-						end;
-						replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy");
-						for I, e in pairs(FruitPrice) do
-							for I, K in pairs(FruitStore) do
-								if e == K and (replicated.Remotes.CommF_:InvokeServer("GetUnlockables")).FlamingoAccess == nil then
-									_G.StoreF = false;
-									if not plr.Backpack:FindFirstChild(FruitStore) then
-										replicated.Remotes.CommF_:InvokeServer("LoadFruit", tostring(e));
-									else
-										replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "1");
-										replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "2");
-										replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "3");
-									end;
-								end;
-							end;
-						end;
-						if (replicated.Remotes.CommF_:InvokeServer("GetUnlockables")).FlamingoAccess ~= nil then
-							_G.StoreF = true;
-							_G.Auto_DonAcces = false;
-						end;
-					end;
-				end;
-			end);
-		end;
 	end;
 end);
 Get:AddToggle({
