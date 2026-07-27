@@ -11044,7 +11044,7 @@ task.spawn(function()
                 local QuestData = CommF:InvokeServer("GetQuest")
 
                 -- 1. XỬ LÝ NHẬN QUEST (SỬA Ở ĐÂY)
-                if not QuestData or QuestData == 0 then
+                                if not QuestData or QuestData == 0 then
                     local PosBartilo = CFrame.new(-460.429, 73.050, 300.719)
                     
                     -- Nếu đang ở xa thì mới TP
@@ -11052,12 +11052,6 @@ task.spawn(function()
                         _tp(PosBartilo)
                         task.wait(1.5) -- Đợi 1.5s để game load vị trí
                     end
-
-                    -- Lệnh chuẩn để nhận Quest Bartilo là "StartQuest" với tham số "BartiloQuest", 1
-                    CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
-                    task.wait(0.5)
-                    return
-                end
 
                 -- 2. XỬ LÝ ĐÁNH QUÁI / BOSS (GIỮ NGUYÊN PHẦN CỦA BẠN)
                 local QuestName = tostring(QuestData.Name or "")
