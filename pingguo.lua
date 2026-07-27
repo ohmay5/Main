@@ -11983,25 +11983,31 @@ spawn(function()
 end);
 Setting:AddSection({"Codes"});
 Setting:AddButton({
-	Name = "Redeem All Codes",
-	Description = "",
-	Callback = function()
-		local Codes = {
-			"KITT_RESET", "Sub2UncleKizaru", "SUB2GAMERROBOT_RESET1", "Sub2Fer999", "Enyu_is_Pro", "JCWK",
-			"StarcodeHEO", "MagicBus", "KittGaming", "Sub2CaptainMaui", "Sub2OfficalNoobie", "TheGreatAce",
-			"Sub2NoobMaster123", "Sub2Daigrock", "Axiore", "StrawHatMaine", "TantaiGaming", "Bluxxy",
-			"SUB2GAMERROBOT_EXP1", "Chandler", "NOMOREHACK", "BANEXPLOIT", "WildDares", "BossBuild",
-			"GetPranked", "EARN_FRUITS", "FIGHT4FRUIT", "NOEXPLOITER", "NOOB2ADMIN", "CODESLIDE", "ADMINHACKED",
-			"ADMINDARES", "fruitconcepts", "krazydares", "TRIPLEABUSE", "SEATROLLING", "24NOADMIN", "REWARDFUN",
-			"NEWTROLL", "fudd10_v2", "Fudd10", "Bignews", "SECRET_ADMIN"
-		};
+    Name = "Redeem All Codes",
+    Description = "Tự động nhập các code còn hiệu lực",
+    Callback = function()
+        -- Danh sách code đã lọc các mã "rác" và code lỗi
+        local Codes = {
+            "SUB2GAMERROBOT_RESET1", "KITTRST_RELOAD", "Sub2GamerRobot_EXP1", 
+            "KittGaming", "Sub2OfficialNoobie", "TheGreatAce", "Sub2NoobMaster123", 
+            "Sub2Daigrock", "Axiore", "TantaiGaming", "StrawHatMaine", "Bluxxy", 
+            "Enyu_is_Pro", "MagicBus", "StarcodeHEO", "JCWK", "Sub2CaptainMaui", 
+            "Sub2Fer999", "Sub2UncleKizaru", "Fudd10", "Bignews"
+        };
 
-		for _, code in ipairs(Codes) do
-			pcall(function()
-				game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code);
-			end);
-		end;
-	end,
+        for _, code in ipairs(Codes) do
+            pcall(function()
+                -- Gửi yêu cầu lên server
+                game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code)
+                print("Đã thử nhập code: " .. code)
+            end)
+            
+            -- Chờ 0.5s giữa các lần nhập để tránh bị server chặn (Rate Limit)
+            task.wait(0.5)
+        end
+        
+        print("Đã hoàn tất quá trình nhập code!")
+    end,
 });
 
 Setting:AddSection({"Team"});
@@ -12045,7 +12051,58 @@ Setting:AddButton({ Name = "Change Haki", Description = "", Callback = function(
 			replicated.Remotes.CommF_:InvokeServer("ChangeBusoStage", 5);
 		end;
 	end });
-Setting:AddButton({ Name = "Nofog", Description = "", Callback = function()
+local storedEffects = {}
+
+Setting:AddToggle({
+    Name = "Nofog",
+    -- 1. Tải trạng thái đã lưu (mặc định là false nếu chưa có)
+    Default = GetSetting("NoFog_Save", false),
+    Callback = function(state)
+        if state then
+            -- Khi bật Toggle (Bật chế độ không sương mù)
+            storedEffects = {}
+            
+            -- Kiểm tra và lưu/xóa LightingLayers
+            local layers = Lighting:FindFirstChild("LightingLayers")
+            if layers then
+                storedEffects["LightingLayers"] = layers:Clone()
+                layers:Destroy()
+            end
+            
+            -- Kiểm tra và lưu/xóa SeaTerrorCC
+            local cc = Lighting:FindFirstChild("SeaTerrorCC")
+            if cc then
+                storedEffects["SeaTerrorCC"] = cc:Clone()
+                cc:Destroy()
+            end
+            
+            -- Kiểm tra và lưu/xóa FantasySky
+            local sky = Lighting:FindFirstChild("FantasySky")
+            if sky then
+                storedEffects["FantasySky"] = sky:Clone()
+                sky:Destroy()
+            end
+        else
+            -- Khi tắt Toggle (Khôi phục lại các hiệu ứng như ban đầu)
+            for name, effect in pairs(storedEffects) do
+                if not Lighting:FindFirstChild(name) then
+                    effect.Parent = Lighting
+                end
+            end
+        end
+        
+        -- 2. Lưu trạng thái vào bảng dữ liệu
+        _G.SaveData["NoFog_Save"] = state
+        
+        -- 3. Lưu vào file Settings.json
+        SaveSettings()
+    end
+})
+
+Setting:AddButton({ 
+      Name = "Nofog", 
+      Description = "", 
+      Callback = function()
 		if Lighting:FindFirstChild("LightingLayers") then
 			Lighting.LightingLayers:Destroy();
 		end;
@@ -12058,7 +12115,7 @@ Setting:AddButton({ Name = "Nofog", Description = "", Callback = function()
 	end });
 Setting:AddToggle({
 	Name = "Walk on Water",
-	Description = "walk on water",
+	Description = "Đi trên mặt nước",
 	Default = true,
 	Callback = function(I)
 		_G.WalkWater_Part = I;
