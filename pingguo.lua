@@ -10356,7 +10356,7 @@ end
 
 Get:AddToggle({
     Name = "Auto New World 2",
-    Description = "Automatically unlock Second Sea",
+    Description = "Nhiệm vụ lên sea 2",
     Default =false,
     Callback = function(Value)
         getgenv().AutoNewWorld = Value
@@ -10364,6 +10364,7 @@ Get:AddToggle({
     end
 })
     -- // KHỞI TẠO CỜ HIỆU (Đặt cái này ở ngoài vòng lặp)
+-- // KHỞI TẠO CỜ HIỆU (Đặt cái này ở ngoài vòng lặp)
 getgenv().OpenedDoor = getgenv().OpenedDoor or false 
 
 task.spawn(function()
@@ -10400,28 +10401,7 @@ task.spawn(function()
                 
                 -- // BƯỚC 3: ĐÁNH BOSS (Chạy vĩnh viễn sau khi đã mở cửa)
                 else
-                    local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
-                    if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
-                        AutoHaki()
-                        EquipWeapon(getgenv().SelectWeapon)
-                        Boss.HumanoidRootPart.CanCollide = false
-                        Boss.Humanoid.WalkSpeed = 0
-                        _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 0, 5)))
-                    else
-                        local SpawnBoss = rs:FindFirstChild("Ice Admiral")
-                        if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
-                            _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
-                        else
-                            rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
 
-                    -- // CHẾ ĐỘ: ĐÁNH BOSS (BÁM ĐUÔI 20 STUDS)
                     local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
                     
                     if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
