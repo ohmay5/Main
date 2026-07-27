@@ -7445,69 +7445,64 @@ Race:AddToggle({
 
 task.spawn(function()
     pcall(function()
-        while task.wait(0.2) do
-            if not getgenv().UpgradeRaceV2 or not World2 then
-                continue
-            end
+        while task.wait(0.5) do -- Tăng thời gian chờ để đỡ lag
+            if not getgenv().UpgradeRaceV2 or not World2 then continue end
 
             local player = game:GetService("Players").LocalPlayer
-            local humanoidRootPart = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
-            local backpack = player.Backpack
+            local char = player.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if not hrp then continue end
+            
             local raceData = player.Data.Race
+            if raceData:FindFirstChild("Evolved") then continue end -- Đã V2 thì dừng
 
-            if raceData:FindFirstChild("Evolved") then
-                continue
-            end
-
+            -- Gọi trạng thái Alchemist
             local alchemistStatus = game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist","1")
 
+            -- Giai đoạn 1: Bắt đầu quest
             if alchemistStatus == 0 then
                 local targetPos = CFrame.new(-2779.83521, 72.9661407, -3574.02002)
-                if humanoidRootPart and (targetPos.Position - humanoidRootPart.Position).Magnitude > 4 then
-                    topos(targetPos)
+                if (targetPos.Position - hrp.Position).Magnitude > 5 then
+                    _tp(targetPos) -- Dùng hàm _tp của bạn
                 else
-                    task.wait(1.1)
+                    task.wait(1)
                     game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist","2")
                 end
 
+            -- Giai đoạn 2: Thu thập hoa
             elseif alchemistStatus == 1 then
-                if not (backpack:FindFirstChild("Flower 1") or player.Character:FindFirstChild("Flower 1")) then
-                    topos(game:GetService("Workspace").Flower1.CFrame)
+                -- Kiểm tra hoa trong túi hoặc người
+                local hasF1 = player.Backpack:FindFirstChild("Flower 1") or char:FindFirstChild("Flower 1")
+                local hasF2 = player.Backpack:FindFirstChild("Flower 2") or char:FindFirstChild("Flower 2")
+                local hasF3 = player.Backpack:FindFirstChild("Flower 3") or char:FindFirstChild("Flower 3")
 
-                elseif not (backpack:FindFirstChild("Flower 2") or player.Character:FindFirstChild("Flower 2")) then
-                    topos(game:GetService("Workspace").Flower2.CFrame)
-
-                elseif not (backpack:FindFirstChild("Flower 3") or player.Character:FindFirstChild("Flower 3")) then
-                    local zombie = game:GetService("Workspace").Enemies:FindFirstChild("Zombie")
+                if not hasF1 and workspace:FindFirstChild("Flower1") then
+                    _tp(workspace.Flower1.CFrame)
+                elseif not hasF2 and workspace:FindFirstChild("Flower2") then
+                    _tp(workspace.Flower2.CFrame)
+                elseif not hasF3 then
+                    -- Đánh Zombie lấy Flower 3
+                    local zombie = workspace.Enemies:FindFirstChild("Zombie")
                     if zombie then
-                        for _, v in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
-                            if v.Name == "Zombie" and v:FindFirstChild("HumanoidRootPart") and v:FindFirstChild("Humanoid") then
-                                repeat
-                                    task.wait()
-                                    EquipWeapon(getgenv().SelectWeapon)
-                                    AutoHaki()
-                                    topos(v.HumanoidRootPart.CFrame * Pos)
-                                    v.HumanoidRootPart.CanCollide = false
-                                    v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
-                                    game:GetService("VirtualUser"):CaptureController()
-                                    game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                                until backpack:FindFirstChild("Flower 3")
-                                    or v.Humanoid.Health <= 0
-                                    or not v.Parent
-                                    or not getgenv().UpgradeRaceV2
-                            end
-                        end
+                        EquipWeapon(getgenv().SelectWeapon)
+                        AutoHaki()
+                        -- Fix lỗi biến Pos (thay bằng Vector3 mới hoặc CFrame)
+                        _tp(zombie.HumanoidRootPart.CFrame * CFrame.new(0,0,5))
+                        zombie.HumanoidRootPart.CanCollide = false
+                        game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
                     else
-                        topos(CFrame.new(-5685.923, 48.48, -853.237))
+                        _tp(CFrame.new(-5685.923, 48.48, -853.237))
                     end
                 end
 
+            -- Giai đoạn 3: Hoàn thành
             elseif alchemistStatus == 2 then
                 game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist","3")
             end
         end
     end)
 end)
+
 Race:AddToggle({
     Name = "Auto Mink V2/V3",
     Description = "",
@@ -10037,6 +10032,150 @@ spawn(function()
 		end;
 	end;
 end);
+if world2 then
+Get:AddSection({"Get Race Cyborg/ghoul"});
+Get:AddToggle({
+    Name = "Auto Get Cyborg",
+    Description = "Mua chip và đánh Order",
+    Default = false,
+    Callback = function(Value)
+        getgenv().AutoCyborg = Value
+    end
+})
+
+spawn(function()
+    while task.wait(0.5) do
+        if getgenv().AutoCyborg then
+            pcall(function()
+                local plr = game:GetService("Players").LocalPlayer
+                local hasChip = plr.Character:FindFirstChild("Microchip") or plr.Backpack:FindFirstChild("Microchip")
+                local order = workspace.Enemies:FindFirstChild("Order")
+
+                -- 1. Mua Chip nếu chưa có
+                if not hasChip and not order then
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward", "Microchip", "1")
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward", "Microchip", "2")
+                end
+
+                -- 2. Click vào bệ triệu hồi
+                if hasChip and not order then
+                    fireclickdetector(workspace.Map.CircleIsland.RaidSummon.Button.Main.ClickDetector)
+                end
+
+                -- 3. Đánh Order
+                if order and order:FindFirstChild("HumanoidRootPart") then
+                    AutoHaki()
+                    EquipWeapon(getgenv().SelectWeapon)
+                    order.HumanoidRootPart.CanCollide = false
+                    order.HumanoidRootPart.Size = Vector3.new(120, 120, 120)
+                    _tp(order.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
+                end
+            end)
+        end
+    end
+end)
+Get:AddToggle({
+    Name = "Auto Get Ghoul",
+    Default = false,
+    Callback = function(Value)
+        getgenv().AutoGhoul = Value
+    end
+})
+
+spawn(function()
+    while task.wait(0.5) do
+        if getgenv().AutoGhoul then
+            pcall(function()
+                local enemies = workspace.Enemies
+                local cursedCaptain = enemies:FindFirstChild("Cursed Captain")
+                
+                if cursedCaptain and cursedCaptain:FindFirstChild("Humanoid") and cursedCaptain.Humanoid.Health > 0 then
+                    -- Đang đánh Boss
+                    cursedCaptain.HumanoidRootPart.CanCollide = false
+                    cursedCaptain.Humanoid.WalkSpeed = 0
+                    cursedCaptain.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
+                    
+                    AutoHaki()
+                    EquipWeapon(getgenv().SelectWeapon)
+                    _tp(cursedCaptain.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0))
+                    
+                    -- Tăng tầm nhìn server để không bị ẩn boss
+                    sethiddenproperty(game:GetService("Players").LocalPlayer, "SimulationRadius", 1000)
+                else
+                    -- Boss chưa spawn -> Teleport đến vị trí spawn đợi
+                    local storageCaptain = game:GetService("ReplicatedStorage"):FindFirstChild("Cursed Captain")
+                    if storageCaptain and storageCaptain:FindFirstChild("HumanoidRootPart") then
+                        _tp(storageCaptain.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0))
+                    end
+                end
+            end)
+        end
+    end
+end)
+end
+if world1 then
+Get:AddSection({"Quest/nhiệm vụ"});
+Get:AddToggle({
+    Name = "Auto New World",
+    Description = "Nhiệm vụ lên sea 2",
+    Default =false,
+    Callback = function(Value)
+        getgenv().AutoNewWorld = Value
+        StopTween(Value)
+    end
+})
+    -- // KHỞI TẠO CỜ HIỆU (Đặt cái này ở ngoài vòng lặp)
+-- // KHỞI TẠO CỜ HIỆU (Đặt cái này ở ngoài vòng lặp)
+task.spawn(function()
+    while task.wait(0.5) do
+        if getgenv().AutoNewWorld and World1 then
+            pcall(function()
+                local player = game:GetService("Players").LocalPlayer
+                local workspace = game:GetService("Workspace")
+                local rs = game:GetService("ReplicatedStorage")
+                
+                -- // KIỂM TRA BOSS TRƯỚC (Ưu tiên số 1)
+                local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
+                local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
+                
+                -- Kiểm tra xem cửa có thực sự đang mở không (dựa vào va chạm)
+                local iceDoor = workspace.Map:FindFirstChild("Ice") and workspace.Map.Ice:FindFirstChild("Door")
+                local isDoorOpen = (iceDoor and iceDoor.CanCollide == false)
+
+                if Boss and Boss:FindFirstChild("HumanoidRootPart") then
+                    -- // NẾU BOSS TỒN TẠI -> ĐÁNH BOSS (Bất chấp cửa)
+                    AutoHaki()
+                    EquipWeapon(getgenv().SelectWeapon or "Key")
+                    Boss.HumanoidRootPart.CanCollide = false
+                    _tp(Boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 20))
+                
+                elseif isDoorOpen then
+                    -- // NẾU CỬA ĐÃ MỞ NHƯNG BOSS CHƯA SPAWN -> ĐỢI Ở VỊ TRÍ SPAWN
+                    local SpawnBoss = rs:FindFirstChild("Ice Admiral")
+                    if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
+                        _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
+                    else
+                        rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
+                    end
+
+                else
+                    -- // NẾU CỬA CHƯA MỞ -> MỚI LÀM CÁC BƯỚC LẤY KEY
+                    if not hasKey then
+                        _tp(CFrame.new(4851, 5.6, 717))
+                        task.wait(1)
+                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                    else
+                        _tp(CFrame.new(1347, 37.3, -1325))
+                        task.wait(1)
+                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                    end
+                end
+            end)
+        end
+    end
+end)
+end
+
 if World3 then
 Get:AddSection({"Skull Guitar"});
 Get:AddToggle({
@@ -10362,68 +10501,6 @@ local function GetClosestMob()
 	end
 	return target
 end
-if world1 then
-Get:AddToggle({
-    Name = "Auto New World",
-    Description = "Nhiệm vụ lên sea 2",
-    Default =false,
-    Callback = function(Value)
-        getgenv().AutoNewWorld = Value
-        StopTween(Value)
-    end
-})
-    -- // KHỞI TẠO CỜ HIỆU (Đặt cái này ở ngoài vòng lặp)
--- // KHỞI TẠO CỜ HIỆU (Đặt cái này ở ngoài vòng lặp)
-task.spawn(function()
-    while task.wait(0.5) do
-        if getgenv().AutoNewWorld and World1 then
-            pcall(function()
-                local player = game:GetService("Players").LocalPlayer
-                local workspace = game:GetService("Workspace")
-                local rs = game:GetService("ReplicatedStorage")
-                
-                -- // KIỂM TRA BOSS TRƯỚC (Ưu tiên số 1)
-                local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
-                local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
-                
-                -- Kiểm tra xem cửa có thực sự đang mở không (dựa vào va chạm)
-                local iceDoor = workspace.Map:FindFirstChild("Ice") and workspace.Map.Ice:FindFirstChild("Door")
-                local isDoorOpen = (iceDoor and iceDoor.CanCollide == false)
-
-                if Boss and Boss:FindFirstChild("HumanoidRootPart") then
-                    -- // NẾU BOSS TỒN TẠI -> ĐÁNH BOSS (Bất chấp cửa)
-                    AutoHaki()
-                    EquipWeapon(getgenv().SelectWeapon or "Key")
-                    Boss.HumanoidRootPart.CanCollide = false
-                    _tp(Boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 20))
-                
-                elseif isDoorOpen then
-                    -- // NẾU CỬA ĐÃ MỞ NHƯNG BOSS CHƯA SPAWN -> ĐỢI Ở VỊ TRÍ SPAWN
-                    local SpawnBoss = rs:FindFirstChild("Ice Admiral")
-                    if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
-                        _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
-                    else
-                        rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
-                    end
-
-                else
-                    -- // NẾU CỬA CHƯA MỞ -> MỚI LÀM CÁC BƯỚC LẤY KEY
-                    if not hasKey then
-                        _tp(CFrame.new(4851, 5.6, 717))
-                        task.wait(1)
-                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                    else
-                        _tp(CFrame.new(1347, 37.3, -1325))
-                        task.wait(1)
-                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                    end
-                end
-            end)
-        end
-    end
-end)
-end
-
 Get:AddToggle({
 	Name = "Auto Farm 600 In Swords",
 	Description = "",
