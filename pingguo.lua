@@ -11043,47 +11043,49 @@ task.spawn(function()
         if _G.AutoBartilo then
             pcall(function()
                 local QuestData = CommF:InvokeServer("GetQuest")
+                local Progress = CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
 
-                -- 1. XỬ LÝ NHẬN QUEST
-                if not QuestData or QuestData == 0 then
+                -- 1. Nếu chưa có Quest hoặc Progress = 0 thì nhận
+                if (not QuestData or QuestData == 0) and Progress == 0 then
                     local PosBartilo = CFrame.new(-460.429, 73.050, 300.719)
-                    
                     if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - PosBartilo.Position).Magnitude > 20 then
                         _tp(PosBartilo)
                         task.wait(1.5)
                     end
-
                     CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
-                    task.wait(1)
-                    return -- Dừng lại để đợi vòng lặp tiếp theo check lại QuestData
+                    task.wait(2) -- Đợi lâu hơn để server cập nhật trạng thái
+                    return 
                 end
 
-                -- 2. XỬ LÝ ĐÁNH QUÁI / BOSS (ƯU TIÊN TUYỆT ĐỐI)
-                local QuestName = tostring(QuestData.Name or "")
-                
-                -- Tìm quái/boss trước khi thực hiện logic khác
+                -- 2. XỬ LÝ ĐÁNH QUÁI (Dựa vào Progress thay vì đợi QuestData)
+                -- Progress 0 = Swan, Progress 1 = Jeremy
                 local Target = nil
                 local TargetPos = nil
+                local TargetName = ""
 
-                if QuestName:find("Swan") then
-                    Target = GetConnectionEnemies("Swan Pirate")
+                if Progress == 0 then
+                    TargetName = "Swan Pirate"
                     TargetPos = CFrame.new(-457, 71, 160)
-                elseif QuestName:find("Jeremy") then
-                    Target = GetConnectionEnemies("Jeremy")
+                elseif Progress == 1 then
+                    TargetName = "Jeremy"
                     TargetPos = CFrame.new(2326.10, 459.27, 718.47)
                 end
 
-                -- Thực hiện tấn công hoặc di chuyển
-                if Target and Target:FindFirstChild("HumanoidRootPart") and Target.Humanoid.Health > 0 then
-                    G.Kill(Target, _G.AutoBartilo)
-                elseif TargetPos then
-                    -- Nếu không tìm thấy mục tiêu, bay đến vị trí spawn
-                    _tp(TargetPos)
+                if TargetName ~= "" then
+                    Target = GetConnectionEnemies(TargetName)
+                    
+                    if Target and Target:FindFirstChild("HumanoidRootPart") and Target.Humanoid.Health > 0 then
+                        G.Kill(Target, _G.AutoBartilo)
+                    else
+                        -- Bay đến điểm spawn nếu không thấy quái
+                        _tp(TargetPos)
+                    end
                 end
             end)
         end
     end
 end)
+
 
 Get:AddSection({"Boss Raid"});
 
