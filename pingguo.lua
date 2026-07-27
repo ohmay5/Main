@@ -11044,27 +11044,32 @@ task.spawn(function()
                 local QuestData = CommF:InvokeServer("GetQuest")
 
                 -- 1. XỬ LÝ NHẬN QUEST
-                               -- XỬ LÝ NHẬN QUEST (Sửa lại đoạn này)
-                if not QuestData or QuestData == 0 then
-                    local PosBartilo = CFrame.new(-460.429, 73.050, 300.719)
-                    
-                    if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - PosBartilo.Position).Magnitude > 10 then
-                        _tp(PosBartilo)
-                        task.wait(1.5)
-                    end
+-- XỬ LÝ NHẬN QUEST (Đoạn này đã tổng hợp mọi cách gọi phổ biến nhất)
+if not QuestData or QuestData == 0 then
+    local PosBartilo = CFrame.new(-460.429, 73.050, 300.719)
+    
+    -- Bay đến và đứng sát
+    _tp(PosBartilo)
+    task.wait(1.5)
 
-                    local Bartilo = workspace:FindFirstChild("Bartilo", true)
-                    if Bartilo then
-                        -- Thử các phương pháp tương tác phổ biến nhất
-                        CommF:InvokeServer("StartConversation", Bartilo) -- Cách cũ
-                        task.wait(0.5)
-                        CommF:InvokeServer("TalkToNPC", Bartilo)         -- Cách 2
-                        task.wait(0.5)
-                        -- Một số game yêu cầu phải truyền thêm thông số (thường là tên NPC)
-                        CommF:InvokeServer("StartConversation", "Bartilo") 
-                    end
-                    return
-                end         -- 2. XỬ LÝ ĐÁNH QUÁI / BOSS
+    -- Cách 1: Gọi theo tên NPC (Phổ biến nhất)
+    CommF:InvokeServer("StartConversation", "Bartilo")
+    task.wait(0.5)
+
+    -- Cách 2: Gọi theo đường dẫn NPC (Dành cho bản cập nhật mới)
+    local bartiloNPC = workspace:FindFirstChild("Bartilo", true)
+    if bartiloNPC then
+        CommF:InvokeServer("StartConversation", bartiloNPC)
+    end
+    
+    -- Cách 3: Lệnh ép nhận Quest (Nếu game bắt phải chọn dialog)
+    -- Gửi dialog số 1 thường là mặc định để nhận quest
+    CommF:InvokeServer("ContinueConversation", "Bartilo", "1")
+    
+    task.wait(1)
+    return
+end
+
                 local QuestName = tostring(QuestData.Name or "")
                 
                 if QuestName:find("Swan") then
