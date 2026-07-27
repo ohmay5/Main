@@ -10935,6 +10935,8 @@ spawn(function()
 		end);
 	end;
 end);
+
+
 Get:AddToggle({
  Name = "Auto Saber Sword",
 	Description = "",
@@ -10944,11 +10946,13 @@ Get:AddToggle({
 	end,
 });
 spawn(function()
-	while wait(.2) do
-		pcall(function()
-			if _G.AutoSaber and (plr.Data.Level.Value >= 200 and (not plr.Backpack:FindFirstChild("Saber") and not plr.Character:FindFirstChild("Saber"))) then
-				if workspace.Map.Jungle.Final.Part.Transparency == 0 then
-					if workspace.Map.Jungle.QuestPlates.Door.Transparency == 0 then
+    while wait(.2) do
+        pcall(function()
+            if _G.AutoSaber and (plr.Data.Level.Value >= 200 and (not plr.Backpack:FindFirstChild("Saber") and not plr.Character:FindFirstChild("Saber"))) then
+                
+                -- Bước 1: Kiểm tra Plate ở Đảo Khỉ
+                if workspace.Map.Jungle.Final.Part.Transparency == 0 then
+                    if workspace.Map.Jungle.QuestPlates.Door.Transparency == 0 then
 						if ((CFrame.new(-1612.55884, 36.9774132, 148.719543, .37091279, 3.0717151e-09, -0.928667724, 3.97099491e-08, 1, 1.91679348e-08, .928667724, -4.39869794e-08, .37091279)).Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 100 then
 							_tp(plr.Character.HumanoidRootPart.CFrame);
 							wait(.5);
@@ -10966,17 +10970,18 @@ spawn(function()
 							_tp(CFrame.new(-1612.55884, 36.9774132, 148.719543, .37091279, 3.0717151e-09, -0.928667724, 3.97099491e-08, 1, 1.91679348e-08, .928667724, -4.39869794e-08, .37091279));
 						end;
 					else
-						if workspace.Map.Desert.Burn.Part.Transparency == 0 then
-							if plr.Backpack:FindFirstChild("Torch") or plr.Character:FindFirstChild("Torch") then
-								EquipWeapon("Torch");
-								firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 0);
-								firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 1);
-								_tp(CFrame.new(1114.61475, 5.04679728, 4350.22803, -0.648466587, -1.28799094e-09, .761243105, -5.70652914e-10, 1, 1.20584542e-09, -0.761243105, 3.47544882e-10, -0.648466587));
-							else
-								_tp(CFrame.new(-1610.00757, 11.5049858, 164.001587, .984807551, -0.167722285, -0.0449818149, .17364943, .951244235, .254912198, 3.42372805e-05, -0.258850515, .965917408));
-							end;
-						else
-							if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
+                   
+                        -- Bước 2: Kiểm tra Đuốc (Đã sửa theo logic mới)
+                        if workspace.Map.Desert.Burn.Part.Transparency == 0 then
+                            if plr.Backpack:FindFirstChild("Torch") or plr.Character:FindFirstChild("Torch") then
+                                _tp(CFrame.new(1114.61, 5.04, 4350.22));
+                                EquipWeapon("Torch");
+                                firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 0);
+                                firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 1);
+                            else
+                                _tp(CFrame.new(-1610.00, 11.50, 164.00));
+                            end;
+                               	if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
 								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "GetCup");
 								wait(.5);
 								EquipWeapon("Cup");
@@ -11008,26 +11013,24 @@ spawn(function()
 						end;
 					end;
 				else
-					if workspace.Enemies:FindFirstChild("Saber Expert") or replicated:FindFirstChild("Saber Expert") then
-						for I, e in pairs(workspace.Enemies:GetChildren()) do
-							if e.Name == "Saber Expert" and G.Alive(e) then
-								repeat
-									task.wait();
-									G.Kill(e, _G.AutoSaber);
-								until e.Humanoid.Health <= 0 or _G.AutoSaber == false;
-								if e.Humanoid.Health <= 0 then
-									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "PlaceRelic");
-								end;
-							end;
-						end;
-					else
-						_tp(CFrame.new(-1401.85046, 29.9773273, 8.81916237, .85820812, 8.76083845e-08, .513301849, -8.55007443e-08, 1, -2.77243419e-08, -0.513301849, -2.00944328e-08, .85820812));
-					end;
-				end;
-			end;
-		end);
-	end;
+                    if workspace.Enemies:FindFirstChild("Saber Expert") or replicated:FindFirstChild("Saber Expert") then
+                        for I, e in pairs(workspace.Enemies:GetChildren()) do
+                            if e.Name == "Saber Expert" and G.Alive(e) then
+                                repeat task.wait(); G.Kill(e, _G.AutoSaber); until e.Humanoid.Health <= 0 or not _G.AutoSaber;
+                                if e.Humanoid.Health <= 0 then replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "PlaceRelic"); end;
+                            end;
+                        end;
+                    else
+                        _tp(CFrame.new(-1401.85, 29.97, 8.81));
+                    end;
+                end;
+            end;
+        end);
+    end;
 end);
+
+
+
 Get:AddToggle({
  Name = "Auto Usoap\'s Hat",
 	Description = "",
