@@ -11039,6 +11039,8 @@ Get:AddToggle({
 })
 
 task.spawn(function()
+    local TryingToAccept = false -- Cờ kiểm soát
+
     while task.wait(0.5) do
         if _G.AutoBartilo then
             pcall(function()
@@ -11046,19 +11048,25 @@ task.spawn(function()
                 local QuestGui = Player.PlayerGui.Main.Quest
                 local CommF = game:GetService("ReplicatedStorage").Remotes.CommF_
 
-                -- 1. KIỂM TRA XEM ĐANG CÓ NHIỆM VỤ KHÔNG
+                -- Kiểm tra trạng thái nhiệm vụ
                 if not QuestGui.Visible then
-                    -- Chưa nhận quest -> Về Bartilo
+                    -- CHƯA NHẬN QUEST
                     local PosBartilo = CFrame.new(-460.429, 73.050, 300.719)
-                    if (Player.Character.HumanoidRootPart.Position - PosBartilo.Position).Magnitude > 20 then
+                    
+                    if (Player.Character.HumanoidRootPart.Position - PosBartilo.Position).Magnitude > 10 then
                         _tp(PosBartilo)
                     else
-                        CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
+                        -- Chỉ gửi lệnh 1 lần duy nhất để tránh bị kẹt
+                        if not TryingToAccept then
+                            TryingToAccept = true
+                            CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
+                            task.wait(2)
+                            TryingToAccept = false
+                        end
                     end
                 else
-                    -- 2. ĐÃ CÓ QUEST -> ĐỌC TÊN VÀ SỐ LƯỢNG CÒN LẠI
+                    -- ĐÃ CÓ QUEST -> THOÁT KHỎI NPC NGAY LẬP TỨC
                     local QuestTitle = QuestGui.Container.QuestTitle.Title.Text
-                    local QuestProgress = QuestGui.Container.QuestProgress.Text -- Dạng "0/50"
                     
                     local TargetName = ""
                     local TargetPos = nil
@@ -11071,15 +11079,12 @@ task.spawn(function()
                         TargetPos = CFrame.new(2326.1, 459.2, 718.4)
                     end
 
-                    -- 3. HÀNH ĐỘNG DỰA TRÊN DỮ LIỆU THỰC TẾ
                     if TargetName ~= "" then
                         local Enemy = GetConnectionEnemies(TargetName)
-                        
-                        -- Nếu thấy quái và chưa làm xong nhiệm vụ
                         if Enemy and Enemy:FindFirstChild("HumanoidRootPart") and Enemy.Humanoid.Health > 0 then
                             G.Kill(Enemy, _G.AutoBartilo)
                         else
-                            -- Nếu không thấy quái thì bay ra điểm spawn
+                            -- Cưỡng ép di chuyển ra xa NPC
                             _tp(TargetPos)
                         end
                     end
