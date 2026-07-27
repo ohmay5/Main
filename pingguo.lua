@@ -10365,7 +10365,7 @@ Get:AddToggle({
 })
 
 task.spawn(function()
-    while task.wait(0.5) do -- Giảm tần suất check để game mượt hơn
+    while task.wait(0.5) do
         if getgenv().AutoNewWorld and World1 then
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
@@ -10373,39 +10373,45 @@ task.spawn(function()
                 local replicatedStorage = game:GetService("ReplicatedStorage")
                 local char = player.Character
                 if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-                
+
                 local myLevel = player.Data.Level.Value
+                if myLevel < 700 then return end -- Chỉ chạy khi đủ level
 
-                if myLevel >= 700 then
+                -- Kiểm tra xem đã có nhiệm vụ/chìa khóa chưa (kiểm tra đơn giản)
+                local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
+                
+                -- 1. CHƯA CÓ CHÌA KHÓA -> ĐẾN PRISON NHẬN QUEST
+                if not hasKey and not workspace:FindFirstChild("Ice Admiral [Lv. 700] [Boss]") then
+                    _tp(CFrame.new(4875, 5.7, 4325)) -- Tọa độ Đảo Nhà Tù (Prison)
+                    task.wait(1)
+                    -- Gọi lệnh nhận quest (cần đảm bảo tên Remote chính xác)
+                    replicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                    task.wait(0.5)
+                
+                -- 2. ĐÃ CÓ QUEST/CHÌA KHÓA -> ĐẾN ICE CASTLE
+                else
                     local iceDoor = workspace.Map.Ice.Door
-
-                    -- 1. Nếu cửa chưa mở -> Làm nhiệm vụ
+                    
+                    -- Nếu cửa chưa mở -> Bay đến NPC mở cửa
                     if not iceDoor.CanCollide and iceDoor.Transparency == 1 then
-                        _tp(CFrame.new(4849.29883, 5.65138149, 719.611877))
-                        task.wait(2) -- Đợi tween chạy xong
-                        
-                        replicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                        _tp(CFrame.new(4849, 5, 719)) 
+                        task.wait(1.5)
+                        replicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective") -- NPC mở cửa
                         task.wait(0.5)
-
-                        EquipWeapon("Key")
-                        _tp(CFrame.new(1347.7124, 37.3751602, -1325.6488))
-
-                    -- 2. Đánh Boss
+                    
+                    -- 3. CỬA ĐÃ MỞ -> ĐÁNH BOSS
                     else
                         local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
 
                         if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
                             AutoHaki()
-                            EquipWeapon(getgenv().SelectWeapon)
+                            EquipWeapon(getgenv().SelectWeapon or "Key")
 
-                            -- Logic giữ boss
+                            -- Giữ Boss đứng yên để farm
                             Boss.HumanoidRootPart.CanCollide = false
                             Boss.Humanoid.WalkSpeed = 0
-                            Boss.Head.CanCollide = false
                             
-                            -- Di chuyển đến Boss (Dùng _tp)
-                            _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 0, 5)))
-                            
+                            _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 10, 0)))
                         else
                             -- Nếu boss chưa spawn -> Đi đến vị trí spawn boss hoặc Travel
                             local SpawnBoss = replicatedStorage:FindFirstChild("Ice Admiral")
@@ -10421,6 +10427,7 @@ task.spawn(function()
         end
     end
 end)
+
 Get:AddToggle({
 	Name = "Auto Farm 600 In Swords",
 	Description = "",
