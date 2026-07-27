@@ -9421,33 +9421,46 @@ Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
 
 -- 5. Nút Refresh
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- LISTA INICIAL (O5)
+local O5 = {}
+
+for _, p in pairs(Players:GetPlayers()) do
+    if p.Name ~= LocalPlayer.Name then
+        table.insert(O5, p.Name)
+    end
+end
+
+-- DROPDOWN
+local PlayerDropdown = Player:AddDropdown({ 
+    Name = "Select Players",
+    Description = "",
+    Options = O5,
+    Default = nil,
+    Multi = false,
+    Callback = function(I)
+        _G.PlayersList = I
+    end,
+})
+
+-- BOTÃO DE ATUALIZAR REAL
 Player:AddButton({
     Name = "Refresh Player List",
+    Description = "",
     Callback = function()
-        -- 1. Xóa cái cũ (dựa trên cấu trúc thông thường của Redz)
-        -- Nếu Redz không có hàm :Destroy(), chúng ta sẽ ẩn nó đi hoặc chỉ cần tạo mới đè lên
-        if PlayerDropdown and PlayerDropdown.Delete then
-            PlayerDropdown:Delete()
-        end
-
-        -- 2. Lấy danh sách mới
         local NewPlayers = {}
-        for _, p in pairs(game:GetService("Players"):GetPlayers()) do
-            if p.Name ~= game:GetService("Players").LocalPlayer.Name then
+
+        -- SCAN EM TEMPO REAL
+        for _, p in pairs(Players:GetPlayers()) do
+            if p.Name ~= LocalPlayer.Name then
                 table.insert(NewPlayers, p.Name)
             end
         end
 
-        -- 3. Tạo lại Dropdown mới
-        PlayerDropdown = Player:AddDropdown({ 
-            Name = "Select Players",
-            Options = NewPlayers, 
-            Callback = function(Value)
-                _G.PlayersList = Value
-            end,
-        })
-        
-        print("Đã làm mới danh sách!")
+        -- ATUALIZA O DROPDOWN
+        PlayerDropdown:Refresh(NewPlayers, true)
     end
 })
 
