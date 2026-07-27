@@ -10353,7 +10353,91 @@ local function GetClosestMob()
 	end
 	return target
 end
+Get:AddToggle({
+    Name = "Auto New World",
+    Default = false,
+    Callback = function(Value)
+        getgenv().AutoNewWorld = Value
+        if not Value then
+            StopTween()
+        end
+    end
+})
 
+task.spawn(function()
+    local Players = game:GetService("Players")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local Workspace = game:GetService("Workspace")
+
+    while task.wait(0.2) do
+        if not getgenv().AutoNewWorld or not World1 then
+            continue
+        end
+
+        local Player = Players.LocalPlayer
+        local Character = Player.Character
+        local HRP = Character and Character:FindFirstChild("HumanoidRootPart")
+
+        if not Character or not HRP then
+            continue
+        end
+
+        if Player.Data.Level.Value < 700 then
+            continue
+        end
+
+        local Door = Workspace.Map.Ice.Door
+
+        -- Đã mở cửa
+        if Door.Transparency == 1 and not Door.CanCollide then
+
+            local QuestPos = CFrame.new(4849.29883,5.65138149,719.611877)
+
+            repeat
+                topos(QuestPos)
+                task.wait()
+            until not getgenv().AutoNewWorld
+                or (HRP.Position - QuestPos.Position).Magnitude < 3
+
+            ReplicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress","Detective")
+
+            EquipWeapon("Key")
+
+            local DoorPos = CFrame.new(1347.7124,37.3751602,-1325.6488)
+
+            repeat
+                topos(DoorPos)
+                task.wait()
+            until not getgenv().AutoNewWorld
+                or (HRP.Position - DoorPos.Position).Magnitude < 3
+
+        else
+            local Boss = Workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
+
+            if Boss and Boss:FindFirstChild("HumanoidRootPart") and Boss:FindFirstChild("Humanoid") then
+
+                repeat
+                    task.wait()
+
+                    AutoHaki()
+                    EquipWeapon(getgenv().SelectWeapon)
+
+                    Boss.HumanoidRootPart.CanCollide = false
+                    Boss.Head.CanCollide = false
+                    Boss.Humanoid.WalkSpeed = 0
+
+                    topos(Boss.HumanoidRootPart.CFrame * Pos)
+
+                until not getgenv().AutoNewWorld
+                    or Boss.Humanoid.Health <= 0
+                    or not Boss.Parent
+
+            else
+                ReplicatedStorage.Remotes.CommF_:InvokeServer("TravelDressrosa")
+            end
+        end
+    end
+end)
 Get:AddToggle({
 	Name = "Auto Farm 600 In Swords",
 	Description = "",
