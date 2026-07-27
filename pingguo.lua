@@ -4574,18 +4574,20 @@ Setting:AddToggle({
         SaveSettings()
     end
 })
+local SpinOffset = CFrame.new(0, PosY, 0)
+
 spawn(function()
-    while wait() do
+    while task.wait(0.1) do
         if getgenv().SpinPos then
-            Pos = CFrame.new(0, PosY, -20)
-            wait(0.1)
-            Pos = CFrame.new(-20, PosY, 0)
-            wait(0.1)
-            Pos = CFrame.new(0, PosY, 20)
-            wait(0.1)
-            Pos = CFrame.new(20, PosY, 0)
+            SpinOffset = CFrame.new(0, PosY, -20)
+            task.wait(0.1)
+            SpinOffset = CFrame.new(-20, PosY, 0)
+            task.wait(0.1)
+            SpinOffset = CFrame.new(0, PosY, 20)
+            task.wait(0.1)
+            SpinOffset = CFrame.new(20, PosY, 0)
         else
-            Pos = CFrame.new(0, PosY, 0)
+            SpinOffset = CFrame.new(0, PosY, 0)
         end
     end
 end)
