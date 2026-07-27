@@ -27,7 +27,7 @@ local notificationCooldown = 10
 local currentTime = tick()
 if currentTime - lastNotificationTime >= notificationCooldown then
     game.StarterGui:SetCore("SendNotification", {
-        Title = "skiring hub beta version",
+        Title = "青龙脚本 hub",
         Text = "Loading...",
         Duration = 5
     })
