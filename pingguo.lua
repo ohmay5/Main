@@ -11047,7 +11047,11 @@ task.spawn(function()
                 -- Chưa nhận quest
                 if not QuestData or QuestData == 0 or type(QuestData) ~= "table" then
 
-                    local Pos = CFrame.new(-464.03,73.05,1.2)
+                    local Pos = CFrame.new(
+    -460.429290771484375,
+    73.050231933593750,
+    300.719299316406250
+))
                     _tp(Pos)
                     task.wait(1)
 
@@ -11077,7 +11081,7 @@ task.spawn(function()
                     if Enemy and Enemy:FindFirstChild("Humanoid") and Enemy.Humanoid.Health > 0 then
                         G.Kill(Enemy, true)
                     else
-                        _tp(CFrame.new(-464.03, 73.05, 1.2))
+                        _tp(CFrame.new(-457,71,160))
                     end
 
                     return
