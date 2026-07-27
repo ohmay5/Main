@@ -10370,47 +10370,45 @@ Get:AddToggle({
                 local player = game:GetService("Players").LocalPlayer
                 local rs = game:GetService("ReplicatedStorage")
                 local workspace = game:GetService("Workspace")
-                
-                if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
+                local char = player.Character
+                if not char or not char:FindFirstChild("HumanoidRootPart") then return end
                 
                 -- 1. Tự nhận diện trạng thái cửa
                 local iceDoor = workspace.Map:FindFirstChild("Ice") and workspace.Map.Ice:FindFirstChild("Door")
                 local isDoorOpen = (iceDoor and iceDoor.Transparency == 1)
 
                 if not isDoorOpen then
-                    -- // TRƯỜNG HỢP: CỬA CHƯA MỞ
+                    -- // CHẾ ĐỘ: LẤY KEY VÀ MỞ CỬA
                     local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
                     
                     if not hasKey then
-                        -- Chưa có Key -> Bay đi lấy
-                        print("Cửa chưa mở, đang đi lấy Key tại Nhà tù...")
+                        print("Cửa chưa mở, đi lấy Key...")
                         _tp(CFrame.new(4851, 5.6, 717))
                         task.wait(1)
                         rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
                     else
-                        -- Đã có Key -> Bay đến cửa mở
-                        print("Đã có Key, đang bay đến mở cửa...")
+                        print("Đã có Key, đang đến cửa mở...")
                         _tp(CFrame.new(1347, 37.3, -1325))
                         task.wait(1)
                         rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
                     end
                 else
-                    -- // TRƯỜNG HỢP: CỬA ĐÃ MỞ -> CHỈ ĐÁNH 
+                    -- // CHẾ ĐỘ: ĐÁNH BOSS (BÁM ĐUÔI 20 STUDS)
                     local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
                     
                     if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
                         AutoHaki()
                         EquipWeapon(getgenv().SelectWeapon or "Key")
+                        
+                        -- Cấu hình Boss
                         Boss.HumanoidRootPart.CanCollide = false
                         Boss.Humanoid.WalkSpeed = 0
                         
-                        -- TĂNG KHOẢNG CÁCH LÊN 20 STUD VÀ DI CHUYỂN THEO BOSS
-                        -- Chúng ta dùng tọa độ của Boss và cộng thêm 20 đơn vị vào trục Z (phía trước mặt Boss)
-                        local targetPos = Boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 20) 
-                        _tp(targetPos)
-                        
+                        -- Khoảng cách 20 studs phía trước/bên cạnh Boss
+                        -- Nhân vật sẽ luôn giữ khoảng cách này khi Boss di chuyển
+                        _tp(Boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 20))
                     else
-                        -- Đợi boss spawn
+                        -- Tìm điểm spawn nếu boss chết
                         local SpawnBoss = rs:FindFirstChild("Ice Admiral")
                         if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
                             _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
@@ -10419,7 +10417,10 @@ Get:AddToggle({
                         end
                     end
                 end
-
+            end)
+        end
+    end
+end)
 
 
 Get:AddToggle({
