@@ -10364,59 +10364,56 @@ Get:AddToggle({
     end
 })
 
--- // KHỞI TẠO BIẾN TRẠNG THÁI (Đặt ở ngoài vòng lặp)
--- // KHỞI TẠO BIẾN TRẠNG THÁI (Đảm bảo chạy 1 lần duy nhất)
-task.spawn(function()
+-- task.spawn(function()
     while task.wait(0.5) do
         if getgenv().AutoNewWorld and World1 then
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
                 local workspace = game:GetService("Workspace")
-                local replicatedStorage = game:GetService("ReplicatedStorage")
+                local rs = game:GetService("ReplicatedStorage")
                 local char = player.Character
                 if not char or not char:FindFirstChild("HumanoidRootPart") then return end
                 
                 local myLevel = player.Data.Level.Value
                 if myLevel < 700 then return end
 
-                -- KIỂM TRA XEM ĐÃ CÓ KEY CHƯA
                 local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
-
-                -- BƯỚC 1: NẾU CHƯA CÓ KEY -> BAY ĐẾN ĐẢO NHÀ TÙ (PRISON) LẤY KEY
-                if not hasKey then
-                    print("Chưa có Key, đang bay đến Prison...")
-                    _tp(CFrame.new(4875, 5.7, 4325)) -- Tọa độ NPC Military Detective
-                    task.wait(2)
-                    replicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                    task.wait(1)
+                local iceDoor = workspace.Map.Ice.Door
                 
-                -- BƯỚC 2: NẾU ĐÃ CÓ KEY -> XỬ LÝ ĐẢO TUYẾT
+                -- BƯỚC 1: LẤY KEY
+                if not hasKey then
+                    print("Đi lấy Key...")
+                    _tp(CFrame.new(4875, 5.7, 4325))
+                    task.wait(2)
+                    rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                
+                -- BƯỚC 2: CỬA ĐANG ĐÓNG (Cần mở cửa)
+                -- Lưu ý: Kiểm tra Transparency == 1 thường là cửa đang đóng trong Blox Fruits
+                elseif iceDoor.Transparency == 1 then
+                    print("Đang mở cửa Đảo Tuyết...")
+                    _tp(CFrame.new(4849.29883, 5.65138149, 719.611877))
+                    task.wait(1)
+                    EquipWeapon("Key") -- Đảm bảo cầm Key
+                    task.wait(0.5)
+                    rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                    task.wait(1)
+
+                -- BƯỚC 3: CỬA ĐÃ MỞ (Mới được đánh Boss)
                 else
-                    local iceDoor = workspace.Map.Ice.Door
-                    
-                    if not iceDoor.CanCollide and iceDoor.Transparency == 1 then
-                        _tp(CFrame.new(4849.29883, 5.65138149, 719.611877))
-                        task.wait(2)
-                        replicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                        task.wait(0.5)
-                        EquipWeapon("Key")
-                        _tp(CFrame.new(1347.7124, 37.3751602, -1325.6488))
+                    local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
+                    if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
+                        AutoHaki()
+                        EquipWeapon(getgenv().SelectWeapon)
+                        Boss.HumanoidRootPart.CanCollide = false
+                        Boss.Humanoid.WalkSpeed = 0
+                        _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 0, 5)))
                     else
-                        -- ĐÁNH BOSS (Phần logic cũ của bạn)
-                        local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
-                        if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
-                            AutoHaki()
-                            EquipWeapon(getgenv().SelectWeapon)
-                            Boss.HumanoidRootPart.CanCollide = false
-                            Boss.Humanoid.WalkSpeed = 0
-                            _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 0, 5)))
+                        -- Đợi boss spawn hoặc Travel
+                        local SpawnBoss = rs:FindFirstChild("Ice Admiral")
+                        if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
+                            _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
                         else
-                            local SpawnBoss = replicatedStorage:FindFirstChild("Ice Admiral")
-                            if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
-                                _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
-                            else
-                                replicatedStorage.Remotes.CommF_:InvokeServer("TravelDressrosa")
-                            end
+                            rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
                         end
                     end
                 end
@@ -10424,6 +10421,7 @@ task.spawn(function()
         end
     end
 end)
+
 
 Get:AddToggle({
 	Name = "Auto Farm 600 In Swords",
