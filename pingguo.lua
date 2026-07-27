@@ -11044,22 +11044,26 @@ task.spawn(function()
 
                 local QuestData = CommF:InvokeServer("GetQuest")
 
-                -- Chưa có quest
-                if not QuestData or QuestData == 0 then
-                    _tp(CFrame.new(-456, 74, 1))
+                -- Chưa nhận quest
+                if not QuestData or QuestData == 0 or type(QuestData) ~= "table" then
 
-                    local Bartilo = workspace:FindFirstChild("Bartilo")
-                    if not Bartilo and workspace:FindFirstChild("NPCs") then
-                        Bartilo = workspace.NPCs:FindFirstChild("Bartilo")
-                    end
+                    local Pos = CFrame.new(-464.03,73.05,1.2)
+                    _tp(Pos)
+                    task.wait(1)
+
+                    local Bartilo =
+                        workspace:FindFirstChild("Bartilo") or
+                        (workspace:FindFirstChild("NPCs") and workspace.NPCs:FindFirstChild("Bartilo"))
 
                     if Bartilo then
-                        CommF:InvokeServer("StartConversation", Bartilo)
+                        for i = 1,3 do
+                            pcall(function()
+                                CommF:InvokeServer("StartConversation", Bartilo)
+                            end)
+                            task.wait(0.5)
+                        end
                     end
-                    return
-                end
 
-                if type(QuestData) ~= "table" then
                     return
                 end
 
@@ -11067,30 +11071,36 @@ task.spawn(function()
 
                 -- Swan Pirate
                 if QuestName:find("Swan") then
+
                     local Enemy = GetConnectionEnemies("Swan Pirate")
 
-                    if Enemy then
+                    if Enemy and Enemy:FindFirstChild("Humanoid") and Enemy.Humanoid.Health > 0 then
                         G.Kill(Enemy, true)
                     else
-                        _tp(CFrame.new(-457, 71, 160))
+                        _tp(CFrame.new(-457,71,160))
                     end
+
+                    return
+                end
 
                 -- Jeremy
-                elseif QuestName:find("Jeremy") then
+                if QuestName:find("Jeremy") then
+
                     local Boss = GetConnectionEnemies("Jeremy")
 
-                    if Boss then
+                    if Boss and Boss:FindFirstChild("Humanoid") and Boss.Humanoid.Health > 0 then
                         G.Kill(Boss, true)
                     else
-                        _tp(CFrame.new(2326, 449, 787))
+                        _tp(CFrame.new(2326,449,787))
                     end
+
+                    return
                 end
 
             end)
         end
     end
 end)
-
 Get:AddSection({"Boss Raid"});
 
 Get:AddToggle({
