@@ -10033,7 +10033,6 @@ spawn(function()
 	end;
 end);
 
-if world2 then
 Get:AddSection({"Get Race Cyborg/ghoul"});
 Get:AddToggle({
     Name = "Auto Get Cyborg",
@@ -10113,7 +10112,7 @@ spawn(function()
         end
     end
 end)
-end
+
 if world1 then
 Get:AddSection({"Quest/nhiệm vụ"});
 Get:AddToggle({
