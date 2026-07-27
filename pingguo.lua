@@ -11026,57 +11026,61 @@ spawn(function()
 	end;
 end);
 Get:AddToggle({
- Name = "Auto Unlocked DonSwan",
-	Description = "",
-	Default = false,
-	Callback = function(I)
-		_G.Auto_DonAcces = I;
-	end,
+    Name = "Auto Unlocked DonSwan",
+    Description = "Tự động đổi trái cây cho Trevor",
+    Default = false,
+    Callback = function(I)
+        _G.Auto_DonAcces = I;
+    end,
 });
+
 spawn(function()
-	while wait(.1) do
-		if _G.Auto_DonAcces then
-			pcall(function()
-				if (replicated.Remotes.CommF_:InvokeServer("GetUnlockables")).FlamingoAccess == nil and plr.Data.Level.Value >= 1500 then
-					FruitPrice = {};
-					FruitStore = {};
-					for I, e in next, (replicated:WaitForChild("Remotes")).CommF_:InvokeServer("GetFruits") do
-						if e.Price >= 1000000 then
-							table.insert(FruitPrice, e.Name);
-						end;
-					end;
-					for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("getInventoryFruits")) do
-						for I, e in pairs(e) do
-							if I == "Name" then
-								table.insert(FruitStore, e);
-							end;
-						end;
-						replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy");
-						for I, e in pairs(FruitPrice) do
-							for I, K in pairs(FruitStore) do
-								if e == K and (replicated.Remotes.CommF_:InvokeServer("GetUnlockables")).FlamingoAccess == nil then
-									_G.StoreF = false;
-									if not plr.Backpack:FindFirstChild(FruitStore) then
-										replicated.Remotes.CommF_:InvokeServer("LoadFruit", tostring(e));
-									else
-										replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "1");
-										replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "2");
-										replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "3");
-									end;
-								end;
-							end;
-						end;
-						if (replicated.Remotes.CommF_:InvokeServer("GetUnlockables")).FlamingoAccess ~= nil then
-							_G.StoreF = true;
-							_G.Auto_DonAcces = false;
-						end;
-					end;
-				end;
-			end);
-		end;
-	end;
-end);
--- Toggle trong UI
+    while wait(2) do -- Tăng thời gian chờ để tránh lag/crash
+        if _G.Auto_DonAcces then
+            pcall(function()
+                local unlockables = replicated.Remotes.CommF_:InvokeServer("GetUnlockables")
+                
+                -- Kiểm tra nếu đã mở khóa thì dừng
+                if unlockables.FlamingoAccess ~= nil then
+                    _G.Auto_DonAcces = false
+                    return
+                end
+
+                if plr.Data.Level.Value >= 1500 then
+                    -- Lấy danh sách trái cây trong kho
+                    local inv = replicated.Remotes.CommF_:InvokeServer("getInventoryFruits")
+                    
+                    for _, fruitData in pairs(inv) do
+                        -- Kiểm tra trái cây có giá trị > 1tr Beli không
+                        local fruitName = fruitData.Name
+                        local fruitPrice = replicated.Remotes.CommF_:InvokeServer("GetFruits")[fruitName].Price
+                        
+                        if fruitPrice >= 1000000 then
+                            -- Di chuyển đến NPC Trevor (Cần tọa độ)
+                            _tp(CFrame.new(-3871, 7, -2005)) -- Tọa độ khu vực Trevor
+                            wait(1)
+                            
+                            -- Load trái cây ra (Cầm trái trên tay)
+                            replicated.Remotes.CommF_:InvokeServer("LoadFruit", fruitName)
+                            wait(1)
+                            
+                            -- Nói chuyện với Trevor
+                            replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "1")
+                            wait(0.5)
+                            replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "2")
+                            wait(0.5)
+                            replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "3")
+                            
+                            wait(5) -- Đợi server cập nhật
+                            break -- Thoát vòng lặp sau khi thử 1 trái
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
 Get:AddToggle({
     Name = "Auto Bartilo Quest",
     Description = "Tự động nhận quest và đánh",
