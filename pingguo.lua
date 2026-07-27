@@ -12039,6 +12039,50 @@ spawn(function()
 		end;
 	end;
 end);
+-- Giả sử bạn đã khởi tạo Tab: local Tab = Window:AddTab("TabName")
+
+Fruit:AddToggle({
+    Name = "Auto Teleport To Fruit [Hop]", -- Tên hiển thị trên UI
+    Default = false,
+    Callback = function(Value)
+        getgenv().TeleportToFruit = Value
+    end
+})
+
+spawn(function()
+    while task.wait(0.5) do
+        if getgenv().TeleportToFruit then
+            local foundFruit = false
+            
+            -- Kiểm tra trong Folder 'Fruits' (phổ biến nhất)
+            local fruitFolder = workspace:FindFirstChild("Fruits") or workspace:FindFirstChild("Items")
+            local list = fruitFolder and fruitFolder:GetChildren() or workspace:GetChildren()
+            
+            for _, v in ipairs(list) do
+                -- Kiểm tra cả Tool và Model (một số game để trái cây là Model có Handle)
+                if (v:IsA("Tool") or v:IsA("Model")) and string.find(v.Name, "Fruit") and v:FindFirstChild("Handle") then
+                    _tp(v.Handle.CFrame)
+                    foundFruit = true
+                    break
+                end
+            end
+            
+            -- Nếu sau 5 giây tìm không thấy thì mới Hop
+            if not foundFruit then
+                task.wait(5) -- Đợi một chút để server load kịp trái cây
+                if getgenv().TeleportToFruit then -- Kiểm tra lại xem người dùng còn bật không
+                    if typeof(Hop) == "function" then
+                        Hop()
+                    else
+                        warn("Hàm Hop() chưa được định nghĩa trong Script!")
+                    end
+                end
+            end
+        end
+    end
+end)
+
+
 Fruit:AddToggle({
 	Name  = "Auto Collect Fruit",
     Description = "Automatic bring devil fruit",
