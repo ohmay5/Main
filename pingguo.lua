@@ -11044,23 +11044,27 @@ task.spawn(function()
                 local QuestData = CommF:InvokeServer("GetQuest")
 
                 -- 1. XỬ LÝ NHẬN QUEST
+                               -- XỬ LÝ NHẬN QUEST (Sửa lại đoạn này)
                 if not QuestData or QuestData == 0 then
                     local PosBartilo = CFrame.new(-460.429, 73.050, 300.719)
                     
-                    -- Nếu đang ở xa Bartilo thì mới TP (Tránh bị rung màn hình)
                     if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - PosBartilo.Position).Magnitude > 10 then
                         _tp(PosBartilo)
-                        task.wait(1)
+                        task.wait(1.5)
                     end
 
                     local Bartilo = workspace:FindFirstChild("Bartilo", true)
                     if Bartilo then
-                        CommF:InvokeServer("StartConversation", Bartilo)
+                        -- Thử các phương pháp tương tác phổ biến nhất
+                        CommF:InvokeServer("StartConversation", Bartilo) -- Cách cũ
+                        task.wait(0.5)
+                        CommF:InvokeServer("TalkToNPC", Bartilo)         -- Cách 2
+                        task.wait(0.5)
+                        -- Một số game yêu cầu phải truyền thêm thông số (thường là tên NPC)
+                        CommF:InvokeServer("StartConversation", "Bartilo") 
                     end
                     return
-                end
-
-                -- 2. XỬ LÝ ĐÁNH QUÁI / BOSS
+                end         -- 2. XỬ LÝ ĐÁNH QUÁI / BOSS
                 local QuestName = tostring(QuestData.Name or "")
                 
                 if QuestName:find("Swan") then
