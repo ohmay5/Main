@@ -10363,36 +10363,64 @@ Get:AddToggle({
         StopTween(Value)
     end
 })
-    task.spawn(function()
+    -- // KHỞI TẠO CỜ HIỆU (Đặt cái này ở ngoài vòng lặp)
+getgenv().OpenedDoor = getgenv().OpenedDoor or false 
+
+task.spawn(function()
     while task.wait(0.5) do
         if getgenv().AutoNewWorld and World1 then
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
                 local rs = game:GetService("ReplicatedStorage")
-                local workspace = game:GetService("Workspace")
                 local char = player.Character
                 if not char or not char:FindFirstChild("HumanoidRootPart") then return end
                 
-                -- 1. Tự nhận diện trạng thái cửa
-                local iceDoor = workspace.Map:FindFirstChild("Ice") and workspace.Map.Ice:FindFirstChild("Door")
-                local isDoorOpen = (iceDoor and iceDoor.Transparency == 1)
+                local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
+                local doorPos = CFrame.new(1347, 37.3, -1325)
+                local distToDoor = (char.HumanoidRootPart.Position - doorPos.Position).Magnitude
 
-                if not isDoorOpen then
-                    -- // CHẾ ĐỘ: LẤY KEY VÀ MỞ CỬA
-                    local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
-                    
-                    if not hasKey then
-                        print("Cửa chưa mở, đi lấy Key...")
-                        _tp(CFrame.new(4851, 5.6, 717))
-                        task.wait(1)
-                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                -- // BƯỚC 1: LẤY KEY (Chỉ chạy nếu chưa có Key VÀ chưa mở cửa)
+                if not hasKey and not getgenv().OpenedDoor then
+                    print("Đang đi lấy Key tại Nhà tù...")
+                    _tp(CFrame.new(4851, 5.6, 717)) 
+                    task.wait(1.5)
+                    rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                
+                -- // BƯỚC 2: MỞ CỬA (Chỉ chạy khi có Key VÀ chưa mở cửa)
+                elseif hasKey and not getgenv().OpenedDoor then
+                    if distToDoor > 20 then
+                        print("Đang bay đến cửa Boss...")
+                        _tp(doorPos)
                     else
-                        print("Đã có Key, đang đến cửa mở...")
-                        _tp(CFrame.new(1347, 37.3, -1325))
-                        task.wait(1)
+                        print("Đang mở cửa...")
                         rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                        task.wait(1)
+                        getgenv().OpenedDoor = true -- ĐÁNH DẤU LÀ ĐÃ MỞ CỬA
                     end
+                
+                -- // BƯỚC 3: ĐÁNH BOSS (Chạy vĩnh viễn sau khi đã mở cửa)
                 else
+                    local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
+                    if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
+                        AutoHaki()
+                        EquipWeapon(getgenv().SelectWeapon)
+                        Boss.HumanoidRootPart.CanCollide = false
+                        Boss.Humanoid.WalkSpeed = 0
+                        _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 0, 5)))
+                    else
+                        local SpawnBoss = rs:FindFirstChild("Ice Admiral")
+                        if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
+                            _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
+                        else
+                            rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
+                        end
+                    end
+                end
+            end)
+        end
+    end
+end)
+
                     -- // CHẾ ĐỘ: ĐÁNH BOSS (BÁM ĐUÔI 20 STUDS)
                     local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
                     
