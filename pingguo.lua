@@ -11622,7 +11622,7 @@ Fruit:AddToggle({
 						local rarity = tostring(data.Rarity or ""):lower()
 
 						-- Aceita frutas até 1.150.000 OU raridades Common/Uncommon/Rare
-						if data.Price <= 1150000
+						if data.Price <= 1000000
 							or rarity == "common"
 							or rarity == "uncommon"
 							or rarity == "rare"
