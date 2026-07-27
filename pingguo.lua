@@ -11025,112 +11025,67 @@ spawn(function()
 		end;
 	end;
 end);
-Get:AddToggle({
-    Name = "Auto Unlocked DonSwan",
-    Description = "Tự động đổi trái cây cho Trevor",
-    Default = false,
-    Callback = function(I)
-        _G.Auto_DonAcces = I;
-    end,
-});
-
-spawn(function()
-    while wait(2) do
-        if _G.Auto_DonAcces then
-            pcall(function()
-                -- Kiểm tra quyền truy cập từ server
-                local unlockables = replicated.Remotes.CommF_:InvokeServer("GetUnlockables")
-                
-                if unlockables.FlamingoAccess ~= nil then
-                    _G.Auto_DonAcces = false
-                    return
-                end
-
-                if plr.Data.Level.Value >= 1000 then
-                    -- Lấy danh sách trái cây trong kho
-                    local inv = replicated.Remotes.CommF_:InvokeServer("getInventoryFruits")
-                    
-                    for _, fruitData in pairs(inv) do
-                        local fruitName = fruitData.Name
-                        -- Lấy giá trị trái cây để kiểm tra xem có > 1tr Beli không
-                        local allFruits = replicated.Remotes.CommF_:InvokeServer("GetFruits")
-                        if allFruits[fruitName] and allFruits[fruitName].Price >= 1000000 then
-                            
-                            -- 1. Di chuyển tới tọa độ Trevor vừa cung cấp
-                            _tp(CFrame.new(-337.5, 331.8, 0)) 
-                            wait(1)
-                            
-                            -- 2. Cầm trái cây ra
-                            replicated.Remotes.CommF_:InvokeServer("LoadFruit", fruitName)
-                            wait(1.5)
-                            
-                            -- 3. Nói chuyện với Trevor theo thứ tự
-                            replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "1")
-                            wait(0.5)
-                            replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "2")
-                            wait(0.5)
-                            replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "3")
-                            
-                            wait(3) -- Chờ server xử lý xong
-                            break 
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local CommF = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
 
 Get:AddToggle({
     Name = "Auto Bartilo Quest",
-    Description = "Tự động nhận quest và đánh",
+    Description = "Tự động làm nhiệm vụ Bartilo",
     Default = false,
-    Callback = function(state)
-        _G.AutoBartilo = state
-    end,
-});
+    Callback = function(Value)
+        _G.AutoBartilo = Value
+    end
+})
 
-spawn(function()
-    while wait(1) do
+task.spawn(function()
+    while task.wait(0.5) do
         if _G.AutoBartilo then
             pcall(function()
-                -- Lấy dữ liệu nhiệm vụ trực tiếp từ Server của game
-                local questData = replicated.Remotes.CommF_:InvokeServer("GetQuest")
-                
-                -- 1. NẾU CHƯA CÓ NHIỆM VỤ -> ĐI NHẬN
-                if questData == 0 then -- Trong Blox Fruits, 0 thường có nghĩa là chưa có quest
-                    _tp(CFrame.new(-464.02, 73.05, 0.0)) -- Tọa độ Bartilo
-                    wait(1)
-                    local npc = workspace:FindFirstChild("Bartilo") or workspace.NPCs:FindFirstChild("Bartilo")
-                    if npc then
-                        replicated.Remotes.CommF_:InvokeServer("StartConversation", npc)
+
+                local QuestData = CommF:InvokeServer("GetQuest")
+
+                -- Chưa có quest
+                if not QuestData or QuestData == 0 then
+                    _tp(CFrame.new(-456, 74, 1))
+
+                    local Bartilo = workspace:FindFirstChild("Bartilo")
+                    if not Bartilo and workspace:FindFirstChild("NPCs") then
+                        Bartilo = workspace.NPCs:FindFirstChild("Bartilo")
                     end
-                
-                -- 2. NẾU ĐANG CÓ NHIỆM VỤ
-                else
-                    -- Lấy tên nhiệm vụ từ Server
-                    local qName = questData.Name
-                    
-                    -- A. Đánh Swan Pirates
-                    if string.find(qName, "Swan") then
-                        local target = GetConnectionEnemies("Swan Pirate")
-                        if target then
-                            G.Kill(target, _G.AutoBartilo)
-                        else
-                            _tp(CFrame.new(-457.0, 71.0, 160.0)) -- Vị trí Swan Pirates
-                        end
-                    
-                    -- B. Đánh Boss Jeremy
-                    elseif string.find(qName, "Jeremy") then
-                        local boss = GetConnectionEnemies("Jeremy")
-                        if boss then
-                            G.Kill(boss, _G.AutoBartilo)
-                        else
-                            _tp(CFrame.new(2326.1, 459.27, 718.47)) -- Vị trí Jeremy
-                        end
+
+                    if Bartilo then
+                        CommF:InvokeServer("StartConversation", Bartilo)
+                    end
+                    return
+                end
+
+                if type(QuestData) ~= "table" then
+                    return
+                end
+
+                local QuestName = tostring(QuestData.Name or "")
+
+                -- Swan Pirate
+                if QuestName:find("Swan") then
+                    local Enemy = GetConnectionEnemies("Swan Pirate")
+
+                    if Enemy then
+                        G.Kill(Enemy, true)
+                    else
+                        _tp(CFrame.new(-457, 71, 160))
+                    end
+
+                -- Jeremy
+                elseif QuestName:find("Jeremy") then
+                    local Boss = GetConnectionEnemies("Jeremy")
+
+                    if Boss then
+                        G.Kill(Boss, true)
+                    else
+                        _tp(CFrame.new(2326, 449, 787))
                     end
                 end
+
             end)
         end
     end
