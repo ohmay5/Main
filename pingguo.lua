@@ -11025,6 +11025,7 @@ spawn(function()
 		end;
 	end;
 end);
+
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local CommF = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
 
@@ -11083,8 +11084,6 @@ task.spawn(function()
         end
     end
 end)
-
-
 
 Get:AddSection({"Boss Raid"});
 
