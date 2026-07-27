@@ -10365,54 +10365,45 @@ Get:AddToggle({
 })
 
 -- // KHỞI TẠO BIẾN TRẠNG THÁI (Đặt ở ngoài vòng lặp)
-getgenv().HasKey = false 
+-- // KHỞI TẠO BIẾN TRẠNG THÁI (Đảm bảo chạy 1 lần duy nhất)
+getgenv().CurrentState = "FindingKey" -- Trạng thái bắt đầu
 
 task.spawn(function()
-    while task.wait(1) do
+    while task.wait(1.5) do -- Tăng thời gian chờ để game load kịp
         if getgenv().AutoNewWorld and World1 then
             pcall(function()
-                local player = game:GetService("Players").LocalPlayer
-                local workspace = game:GetService("Workspace")
+                local plr = game:GetService("Players").LocalPlayer
+                local ws = game:GetService("Workspace")
                 local rs = game:GetService("ReplicatedStorage")
                 
-                -- Kiểm tra nhân vật
-                local char = player.Character
-                if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+                -- 1. KIỂM TRA ĐIỀU KIỆN KEY
+                local hasKey = plr.Backpack:FindFirstChild("Key") or plr.Character:FindFirstChild("Key")
+                if hasKey then getgenv().CurrentState = "ToIceCastle" end
 
-                -- CẬP NHẬT TRẠNG THÁI KEY (Kiểm tra trong túi đồ)
-                local inventoryKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
-                if inventoryKey then getgenv().HasKey = true end
-
-                -- // PHẦN 1: NẾU CHƯA CÓ KEY (Bay đến lấy)
-                if not getgenv().HasKey then
-                    print("Status: Đang bay đến Prison lấy Key...")
-                    _tp(CFrame.new(4875, 5.7, 4325)) -- Tọa độ Prison
+                -- // CHẾ ĐỘ 1: ĐI TÌM KEY (Chỉ chạy khi chưa có Key)
+                if getgenv().CurrentState == "FindingKey" then
+                    print("Đang ở chế độ: Lấy Key")
+                    _tp(CFrame.new(4875, 5.7, 4325))
                     task.wait(1)
                     rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                    task.wait(1)
-
-                -- // PHẦN 2: ĐÃ CÓ KEY (Thực hiện logic Đảo Tuyết - Không bao giờ quay lại Prison)
-                else
-                    local iceDoor = workspace.Map:FindFirstChild("Ice") and workspace.Map.Ice:FindFirstChild("Door")
+                
+                -- // CHẾ ĐỘ 2: MỞ CỬA VÀ FARM BOSS (Chỉ chạy khi đã có Key)
+                elseif getgenv().CurrentState == "ToIceCastle" then
+                    local iceDoor = ws.Map.Ice.Door
                     
-                    -- A. Mở cửa (Nếu cửa đóng)
-                    if iceDoor and iceDoor.Transparency == 1 then
-                        print("Status: Đã có Key, đang bay đến mở cửa...")
+                    if iceDoor.Transparency == 1 then
+                        print("Đang mở cửa...")
                         _tp(CFrame.new(4849, 5, 719))
                         task.wait(1)
                         rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                    
-                    -- B. Đánh Boss
                     else
-                        local boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
+                        -- ĐÁNH BOSS
+                        local boss = ws.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
                         if boss and boss:FindFirstChild("HumanoidRootPart") then
-                            print("Status: Đang Farm Boss...")
                             AutoHaki()
                             EquipWeapon(getgenv().SelectWeapon or "Key")
-                            boss.HumanoidRootPart.CanCollide = false
-                            _tp(boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 5, 0)))
+                            _tp(boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
                         else
-                            -- Nếu boss chưa có thì Travel
                             rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
                         end
                     end
