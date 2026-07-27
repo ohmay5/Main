@@ -11079,8 +11079,8 @@ end);
 
 Get:AddSection({"Law"});
 
-Get:AddToggle({
- Name = "Auto Law Raid",
+AddToggle({
+    Name = "Auto Law Raid",
     Description = "",
     Default = false,
     Callback = function(state)
@@ -11089,30 +11089,51 @@ Get:AddToggle({
 });
 
 spawn(function()
-    while wait(Sec) do
+    while task.wait(0.5) do
         if _G.AutoLawKak then
             pcall(function()
-                -- Comprar o Microchip
-                replicated.Remotes.CommF_:InvokeServer("BlackbeardReward", "Microchip", "2")
+                local lp = game:GetService("Players").LocalPlayer
+                local ws = game:GetService("Workspace")
+                local rs = game:GetService("ReplicatedStorage")
                 
-                -- Iniciar a raid
-                fireclickdetector(workspace.Map.CircleIsland.RaidSummon.Button.Main.ClickDetector)
+                -- Kiểm tra trạng thái Raid
+                local orderBoss = ws.Enemies:FindFirstChild("Order")
+                local orderStorage = rs:FindFirstChild("Order")
                 
-                -- Procurar inimigo "Order"
-                local enemy = GetConnectionEnemies("Order")
-                if enemy then
-                    repeat
-                        task.wait()
-                        G.Kill(enemy, _G.AutoLawKak)
-                    until not _G.AutoLawKak or not enemy.Parent or enemy.Humanoid.Health <= 0
-                else
+                -- 1. Mua Chip nếu chưa có (Chỉ mua khi KHÔNG có raid)
+                if not orderBoss and not orderStorage then
+                    if not lp.Backpack:FindFirstChild("Microchip") and not lp.Character:FindFirstChild("Microchip") then
+                        rs.Remotes.CommF_:InvokeServer("BlackbeardReward", "Microchip", "2")
+                        task.wait(0.5)
+                    end
+                end
+
+                -- 2. Kích hoạt Raid (Chỉ khi có chip và KHÔNG có raid)
+                if (lp.Backpack:FindFirstChild("Microchip") or lp.Character:FindFirstChild("Microchip")) 
+                and not orderBoss and not orderStorage then
+                    _tp(CFrame.new(-6217.2021484375, 28.047645568848, -5053.1357421875))
+                    task.wait(0.5)
+                    fireclickdetector(ws.Map.CircleIsland.RaidSummon.Button.Main.ClickDetector)
+                end
+
+                -- 3. Đánh Boss Order
+                if orderBoss then
+                    local enemy = GetConnectionEnemies("Order")
+                    if enemy then
+                        repeat
+                            task.wait()
+                            G.Kill(enemy, _G.AutoLawKak)
+                        until not _G.AutoLawKak or not enemy.Parent or enemy.Humanoid.Health <= 0
+                    end
+                elseif orderStorage then
+                    -- Đợi raid bắt đầu
                     _tp(CFrame.new(-6217.2021484375, 28.047645568848, -5053.1357421875))
                 end
             end)
         end
     end
 end)
--- Giả sử biến thư viện UI của bạn là 'Tab'
+
 Get:AddToggle({
     Name = "Auto Farm Boss Cursed Captain",
     Description = "Tự động tìm và đánh Cursed Captain",
@@ -11185,60 +11206,64 @@ spawn(function()
 	end;
 end);
 Get:AddToggle({
-    Name = "Auto Cyborg",
-    Description = "Nhặt rương, mua Chip & Auto Raid",
+    Name = "Auto Get Cyborg",
+    Description = "Nhặt rương -> Mua Chip Cyborg -> Auto Raid",
     Default = false,
-    Callback = function(Value)
-        getgenv().AutoCyborg = Value
-        -- Nếu tắt AutoCyborg, tắt luôn việc nhặt rương
-        if not Value then
-            _G.AutoFarmChest = false
-        end
+    Callback = function(state)
+        getgenv().AutoCyborg = state
     end,
-})
+});
+
 spawn(function()
     while task.wait(0.5) do
         if getgenv().AutoCyborg then
             pcall(function()
                 local lp = game:GetService("Players").LocalPlayer
-                local workspace = game:GetService("Workspace")
+                local ws = game:GetService("Workspace")
+                local rs = game:GetService("ReplicatedStorage")
+                
                 local hasFist = lp.Backpack:FindFirstChild("Fist of Darkness") or lp.Character:FindFirstChild("Fist of Darkness")
                 local hasChip = lp.Backpack:FindFirstChild("Microchip") or lp.Character:FindFirstChild("Microchip")
-                local isRaidActive = workspace.Enemies:FindFirstChild("Order") or game:GetService("ReplicatedStorage"):FindFirstChild("Order")
+                local isRaidActive = ws.Enemies:FindFirstChild("Order") or rs:FindFirstChild("Order")
 
-                -- GIAI ĐOẠN 1: TÌM FIST OF DARKNESS (NHẶT RƯƠNG)
+                -- BƯỚC 1: NHẶT RƯƠNG LẤY FIST
                 if not hasFist and not hasChip and not isRaidActive then
-                    -- Gọi hàm nhặt rương của bạn ở đây
-                    -- Giả sử hàm của bạn tên là AutoFarmChest()
                     _G.AutoFarmChest = true 
-                
-                -- GIAI ĐOẠN 2: ĐÃ CÓ FIST -> ĐI TÀU MA MUA CHIP
-                elseif hasFist and not hasChip and not isRaidActive then
+                    repeat task.wait(0.5) until not getgenv().AutoCyborg or hasFist
                     _G.AutoFarmChest = false
-                    _tp(CFrame.new(916.928589, 181.092773, 33422)) -- Vị trí NPC Invisible
-                    task.wait(1)
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("getChip", "Cyborg")
                 
-                -- GIAI ĐOẠN 3: ĐÃ CÓ CHIP -> ĐI RAID
+                -- BƯỚC 2: MUA CHIP CYBORG (DÙNG FIST ĐỔI CHIP)
+                elseif hasFist and not hasChip and not isRaidActive then
+                    _tp(CFrame.new(916.928589, 181.092773, 33422))
+                    task.wait(1.5)
+                    -- Gọi lệnh đổi Fist lấy Microchip Cyborg
+                    rs.Remotes.CommF_:InvokeServer("getChip", "Cyborg")
+                    task.wait(1)
+                
+                -- BƯỚC 3: KÍCH HOẠT RAID (KHI ĐÃ CÓ CHIP)
                 elseif hasChip and not isRaidActive then
                     _tp(CFrame.new(-6217.2021484375, 28.047645568848, -5053.1357421875))
                     task.wait(0.5)
-                    fireclickdetector(workspace.Map.CircleIsland.RaidSummon.Button.Main.ClickDetector)
+                    -- Click vào máy để kích hoạt Raid bằng Chip
+                    fireclickdetector(ws.Map.CircleIsland.RaidSummon.Button.Main.ClickDetector)
+                    task.wait(2) -- Đợi máy load raid
                 
-                -- GIAI ĐOẠN 4: ĐÁNH BOSS
+                -- BƯỚC 4: ĐÁNH BOSS (KHI RAID ĐANG DIỄN RA)
                 elseif isRaidActive then
-                    local orderBoss = workspace.Enemies:FindFirstChild("Order")
+                    local orderBoss = ws.Enemies:FindFirstChild("Order")
                     if orderBoss then
                         G.Kill(orderBoss, getgenv().AutoCyborg)
+                    else
+                        -- Nếu Raid đã mở nhưng chưa thấy boss, đứng chờ tại điểm hồi boss
+                        _tp(CFrame.new(-6217.2021484375, 28.047645568848, -5053.1357421875))
                     end
                 end
             end)
         else
-            _G.AutoFarmChest = false -- Tắt nhặt rương khi tắt AutoCyborg
+            _G.AutoFarmChest = false
         end
     end
 end)
-
 
 end
 if World1 then
