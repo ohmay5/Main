@@ -11046,7 +11046,7 @@ spawn(function()
                     return
                 end
 
-                if plr.Data.Level.Value >= 1100 then
+                if plr.Data.Level.Value >= 1000 then
                     -- Lấy danh sách trái cây trong kho
                     local inv = replicated.Remotes.CommF_:InvokeServer("getInventoryFruits")
                     
