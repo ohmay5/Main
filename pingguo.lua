@@ -10354,7 +10354,7 @@ local function GetClosestMob()
 	return target
 end
 -- // 1. KHAI BÁO TOGGLE (Giao diện
-Settings:AddToggle({
+Get:AddToggle({
     Name = "Auto New World",
     Description = "Automatically unlock Second Sea",
     Default =false,
