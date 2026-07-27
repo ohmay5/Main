@@ -10355,7 +10355,7 @@ local function GetClosestMob()
 end
 
 Get:AddToggle({
-    Name = "Auto New World 2",
+    Name = "Auto New World",
     Description = "Nhiệm vụ lên sea 2",
     Default =false,
     Callback = function(Value)
