@@ -9422,45 +9422,51 @@ Player:AddSection({"Pvp, aimbot, movement"})
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 
--- LISTA INICIAL (O5)
-local O5 = {}
-
-for _, p in pairs(Players:GetPlayers()) do
-    if p.Name ~= LocalPlayer.Name then
-        table.insert(O5, p.Name)
+-- 1. Hàm lấy danh sách để dùng chung
+local function GetPlayerList()
+    local List = {}
+    for _, p in pairs(Players:GetPlayers()) do
+        if p.Name ~= LocalPlayer.Name then
+            table.insert(List, p.Name)
+        end
     end
+    return List
 end
 
--- DROPDOWN
-local PlayerDropdown = Player:AddDropdown({ 
+-- 2. Khởi tạo danh sách ban đầu
+local O5 = GetPlayerList()
+
+-- 3. Khai báo biến Dropdown
+local PlayerDropdown
+
+-- 4. Tạo Dropdown
+-- LƯU Ý: Đảm bảo biến 'Player' đã được định nghĩa là một Section/Tab của Redz
+PlayerDropdown = Player:AddDropdown({ 
     Name = "Select Players",
-    Description = "",
-    Options = O5,
-    Default = nil,
-    Multi = false,
-    Callback = function(I)
-        _G.PlayersList = I
+    Options = O5, -- Dùng danh sách đã lấy ở bước 2
+    Callback = function(Value)
+        _G.PlayersList = Value
     end,
 })
 
--- BOTÃO DE ATUALIZAR REAL
+-- 5. Nút Refresh
 Player:AddButton({
     Name = "Refresh Player List",
-    Description = "",
     Callback = function()
-        local NewPlayers = {}
-
-        -- SCAN EM TEMPO REAL
-        for _, p in pairs(Players:GetPlayers()) do
-            if p.Name ~= LocalPlayer.Name then
-                table.insert(NewPlayers, p.Name)
-            end
+        local NewPlayers = GetPlayerList()
+        
+        -- Trong Redz Library, thường dùng SetList hoặc Refresh
+        -- Hãy thử SetList trước, nếu không được thì thử Refresh
+        if PlayerDropdown.SetList then
+            PlayerDropdown:SetList(NewPlayers)
+        elseif PlayerDropdown.Refresh then
+            PlayerDropdown:Refresh(NewPlayers)
+        else
+            warn("Library này không tìm thấy phương thức Update!")
         end
-
-        -- ATUALIZA O DROPDOWN
-        PlayerDropdown:UpdateDropdown(NewPlayers)
     end
 })
+
 
 Player:AddToggle({
 	Name = "Teleport to Player",
