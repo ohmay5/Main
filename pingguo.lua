@@ -1,3 +1,6 @@
+repeat task.wait() until game:IsLoaded()
+
+-- Cache Services
 local Services = setmetatable({}, {
     __index = function(self, serviceName)
         local service = game:GetService(serviceName)
@@ -5,6 +8,64 @@ local Services = setmetatable({}, {
         return service
     end
 })
+
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
+local RunService = game:GetService("RunService")
+local HttpService = game:GetService("HttpService")
+local Player = Players.LocalPlayer
+local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5)
+local CommF = Remotes:WaitForChild("CommF_", 5) 
+local PlayerGui = Player:WaitForChild("PlayerGui", 5)
+local MainGui = PlayerGui:WaitForChild("Main", 5)
+local lastNotificationTime = 0
+local notificationCooldown = 10
+local currentTime = tick()
+if currentTime - lastNotificationTime >= notificationCooldown then
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "skiring hub beta version",
+        Text = "Loading...",
+        Duration = 5
+    })
+    lastNotificationTime = currentTime
+end
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local EffectContainer = ReplicatedStorage:FindFirstChild("Effect") and ReplicatedStorage.Effect:FindFirstChild("Container")
+if EffectContainer then
+    local Death = EffectContainer:FindFirstChild("Death")
+    if Death then
+        local success, result = pcall(require, Death)
+        if success and type(result) == "function" then
+            hookfunction(result, function() end)
+        end
+    end
+    local Respawn = EffectContainer:FindFirstChild("Respawn")
+    if Respawn then
+        local success, result = pcall(require, Respawn)
+        if success and type(result) == "function" then
+            hookfunction(result, function() end)
+        end
+    end
+end
+local GuideModule = ReplicatedStorage:FindFirstChild("GuideModule")
+if GuideModule then
+    local success, module = pcall(require, GuideModule)
+    if success and module and type(module.ChangeDisplayedNPC) == "function" then
+        hookfunction(module.ChangeDisplayedNPC, function() end)
+    end
+end
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Util = ReplicatedStorage:WaitForChild("Util", 5)
+if Util then
+    local CameraShaker = Util:FindFirstChild("CameraShaker")
+    if CameraShaker then
+        require(CameraShaker):Stop()
+    end
+end
 
 local HttpService = Services.HttpService
 local FolderName = "青龙脚本 Hub"
@@ -2317,7 +2378,7 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua"))():MakeWindow({
+	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua.txt"))():MakeWindow({
     Title = "青龙脚本 | Hub",
     SubTitle = "Blox Fruit",
     SaveFolder = "青龙脚本.json"
@@ -4240,6 +4301,7 @@ spawn(function()
 end);
 end
 Setting:AddSection({"Manual Save"})
+
 if _G.SaveData["AutoExecute_Save"] == nil then
     _G.SaveData["AutoExecute_Save"] = false
 end
@@ -4305,7 +4367,7 @@ Setting:AddToggle({
 
 Setting:AddButton({
     Name = "Resetar Config UI",
-    Description = "Xoá setting đã lưu",
+    Description = "",
     Callback = function()
         -- Usa a variável FullPath que foi definida lá no topo do script
         if isfile and isfile(FullPath) then
@@ -10873,7 +10935,99 @@ spawn(function()
 		end);
 	end;
 end);
-
+Get:AddToggle({
+ Name = "Auto Saber Sword",
+	Description = "",
+	Default = false,
+	Callback = function(I)
+		_G.AutoSaber = I;
+	end,
+});
+spawn(function()
+	while wait(.2) do
+		pcall(function()
+			if _G.AutoSaber and (plr.Data.Level.Value >= 200 and (not plr.Backpack:FindFirstChild("Saber") and not plr.Character:FindFirstChild("Saber"))) then
+				if workspace.Map.Jungle.Final.Part.Transparency == 0 then
+					if workspace.Map.Jungle.QuestPlates.Door.Transparency == 0 then
+						if ((CFrame.new(-1612.55884, 36.9774132, 148.719543, .37091279, 3.0717151e-09, -0.928667724, 3.97099491e-08, 1, 1.91679348e-08, .928667724, -4.39869794e-08, .37091279)).Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 100 then
+							_tp(plr.Character.HumanoidRootPart.CFrame);
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate1.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate2.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate3.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate4.Button.CFrame;
+							wait(.5);
+							plr.Character.HumanoidRootPart.CFrame = workspace.Map.Jungle.QuestPlates.Plate5.Button.CFrame;
+							wait(.5);
+						else
+							_tp(CFrame.new(-1612.55884, 36.9774132, 148.719543, .37091279, 3.0717151e-09, -0.928667724, 3.97099491e-08, 1, 1.91679348e-08, .928667724, -4.39869794e-08, .37091279));
+						end;
+					else
+						if workspace.Map.Desert.Burn.Part.Transparency == 0 then
+							if plr.Backpack:FindFirstChild("Torch") or plr.Character:FindFirstChild("Torch") then
+								EquipWeapon("Torch");
+								firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 0);
+								firetouchinterest(plr.Character.Torch.Handle, workspace.Map.Desert.Burn.Fire, 1);
+								_tp(CFrame.new(1114.61475, 5.04679728, 4350.22803, -0.648466587, -1.28799094e-09, .761243105, -5.70652914e-10, 1, 1.20584542e-09, -0.761243105, 3.47544882e-10, -0.648466587));
+							else
+								_tp(CFrame.new(-1610.00757, 11.5049858, 164.001587, .984807551, -0.167722285, -0.0449818149, .17364943, .951244235, .254912198, 3.42372805e-05, -0.258850515, .965917408));
+							end;
+						else
+							if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan") ~= 0 then
+								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "GetCup");
+								wait(.5);
+								EquipWeapon("Cup");
+								wait(.5);
+								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "FillCup", plr.Character.Cup);
+								wait(Sec);
+								replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "SickMan");
+							else
+								if replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon") == nil then
+									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon");
+								elseif replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon") == 0 then
+									if workspace.Enemies:FindFirstChild("Mob Leader") or replicated:FindFirstChild("Mob Leader") then
+										_tp(CFrame.new(-2967.59521, -4.91089821, 5328.70703, .342208564, -0.0227849055, .939347804, .0251603816, .999569714, .0150796166, -0.939287126, .0184739735, .342634559));
+										for I, e in pairs(workspace.Enemies:GetChildren()) do
+											if e.Name == "Mob Leader" and G.Alive(e) then
+												repeat
+													task.wait();
+													G.Kill(e, _G.AutoSaber);
+												until e.Humanoid.Health <= 0 or _G.AutoSaber == false;
+											end;
+										end;
+									end;
+								elseif replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon") == 1 then
+									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "RichSon");
+									EquipWeapon("Relic");
+									_tp(CFrame.new(-1404.91504, 29.9773273, 3.80598116, .876514494, 5.66906877e-09, .481375456, 2.53851997e-08, 1, -5.79995607e-08, -0.481375456, 6.30572643e-08, .876514494));
+								end;
+							end;
+						end;
+					end;
+				else
+					if workspace.Enemies:FindFirstChild("Saber Expert") or replicated:FindFirstChild("Saber Expert") then
+						for I, e in pairs(workspace.Enemies:GetChildren()) do
+							if e.Name == "Saber Expert" and G.Alive(e) then
+								repeat
+									task.wait();
+									G.Kill(e, _G.AutoSaber);
+								until e.Humanoid.Health <= 0 or _G.AutoSaber == false;
+								if e.Humanoid.Health <= 0 then
+									replicated.Remotes.CommF_:InvokeServer("ProQuestProgress", "PlaceRelic");
+								end;
+							end;
+						end;
+					else
+						_tp(CFrame.new(-1401.85046, 29.9773273, 8.81916237, .85820812, 8.76083845e-08, .513301849, -8.55007443e-08, 1, -2.77243419e-08, -0.513301849, -2.00944328e-08, .85820812));
+					end;
+				end;
+			end;
+		end);
+	end;
+end);
 Get:AddToggle({
  Name = "Auto Usoap\'s Hat",
 	Description = "",
@@ -11829,31 +11983,25 @@ spawn(function()
 end);
 Setting:AddSection({"Codes"});
 Setting:AddButton({
-    Name = "Redeem All Codes",
-    Description = "Tự động nhập các code còn hiệu lực",
-    Callback = function()
-        -- Danh sách code đã lọc các mã "rác" và code lỗi
-        local Codes = {
-            "SUB2GAMERROBOT_RESET1", "KITTRST_RELOAD", "Sub2GamerRobot_EXP1", 
-            "KittGaming", "Sub2OfficialNoobie", "TheGreatAce", "Sub2NoobMaster123", 
-            "Sub2Daigrock", "Axiore", "TantaiGaming", "StrawHatMaine", "Bluxxy", 
-            "Enyu_is_Pro", "MagicBus", "StarcodeHEO", "JCWK", "Sub2CaptainMaui", 
-            "Sub2Fer999", "Sub2UncleKizaru", "Fudd10", "Bignews"
-        };
+	Name = "Redeem All Codes",
+	Description = "",
+	Callback = function()
+		local Codes = {
+			"KITT_RESET", "Sub2UncleKizaru", "SUB2GAMERROBOT_RESET1", "Sub2Fer999", "Enyu_is_Pro", "JCWK",
+			"StarcodeHEO", "MagicBus", "KittGaming", "Sub2CaptainMaui", "Sub2OfficalNoobie", "TheGreatAce",
+			"Sub2NoobMaster123", "Sub2Daigrock", "Axiore", "StrawHatMaine", "TantaiGaming", "Bluxxy",
+			"SUB2GAMERROBOT_EXP1", "Chandler", "NOMOREHACK", "BANEXPLOIT", "WildDares", "BossBuild",
+			"GetPranked", "EARN_FRUITS", "FIGHT4FRUIT", "NOEXPLOITER", "NOOB2ADMIN", "CODESLIDE", "ADMINHACKED",
+			"ADMINDARES", "fruitconcepts", "krazydares", "TRIPLEABUSE", "SEATROLLING", "24NOADMIN", "REWARDFUN",
+			"NEWTROLL", "fudd10_v2", "Fudd10", "Bignews", "SECRET_ADMIN"
+		};
 
-        for _, code in ipairs(Codes) do
-            pcall(function()
-                -- Gửi yêu cầu lên server
-                game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code)
-                print("Đã thử nhập code: " .. code)
-            end)
-            
-            -- Chờ 0.5s giữa các lần nhập để tránh bị server chặn (Rate Limit)
-            task.wait(0.5)
-        end
-        
-        print("Đã hoàn tất quá trình nhập code!")
-    end,
+		for _, code in ipairs(Codes) do
+			pcall(function()
+				game:GetService("ReplicatedStorage").Remotes.Redeem:InvokeServer(code);
+			end);
+		end;
+	end,
 });
 
 Setting:AddSection({"Team"});
@@ -11897,58 +12045,7 @@ Setting:AddButton({ Name = "Change Haki", Description = "", Callback = function(
 			replicated.Remotes.CommF_:InvokeServer("ChangeBusoStage", 5);
 		end;
 	end });
-local storedEffects = {}
-
-Setting:AddToggle({
-    Name = "Nofog",
-    -- 1. Tải trạng thái đã lưu (mặc định là false nếu chưa có)
-    Default = GetSetting("NoFog_Save", false),
-    Callback = function(state)
-        if state then
-            -- Khi bật Toggle (Bật chế độ không sương mù)
-            storedEffects = {}
-            
-            -- Kiểm tra và lưu/xóa LightingLayers
-            local layers = Lighting:FindFirstChild("LightingLayers")
-            if layers then
-                storedEffects["LightingLayers"] = layers:Clone()
-                layers:Destroy()
-            end
-            
-            -- Kiểm tra và lưu/xóa SeaTerrorCC
-            local cc = Lighting:FindFirstChild("SeaTerrorCC")
-            if cc then
-                storedEffects["SeaTerrorCC"] = cc:Clone()
-                cc:Destroy()
-            end
-            
-            -- Kiểm tra và lưu/xóa FantasySky
-            local sky = Lighting:FindFirstChild("FantasySky")
-            if sky then
-                storedEffects["FantasySky"] = sky:Clone()
-                sky:Destroy()
-            end
-        else
-            -- Khi tắt Toggle (Khôi phục lại các hiệu ứng như ban đầu)
-            for name, effect in pairs(storedEffects) do
-                if not Lighting:FindFirstChild(name) then
-                    effect.Parent = Lighting
-                end
-            end
-        end
-        
-        -- 2. Lưu trạng thái vào bảng dữ liệu
-        _G.SaveData["NoFog_Save"] = state
-        
-        -- 3. Lưu vào file Settings.json
-        SaveSettings()
-    end
-})
-
-Setting:AddButton({ 
-      Name = "Nofog", 
-      Description = "", 
-      Callback = function()
+Setting:AddButton({ Name = "Nofog", Description = "", Callback = function()
 		if Lighting:FindFirstChild("LightingLayers") then
 			Lighting.LightingLayers:Destroy();
 		end;
