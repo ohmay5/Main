@@ -10363,8 +10363,6 @@ Get:AddToggle({
         StopTween(Value)
     end
 })
-
--- task.spawn(function()
     while task.wait(0.5) do
         if getgenv().AutoNewWorld and World1 then
             pcall(function()
