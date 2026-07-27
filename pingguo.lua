@@ -4414,30 +4414,17 @@ local function y5(I)
 	local e = I:FindFirstChild("Humanoid");
 	return e and e.Health > 0;
 end
+getgenv().Safe = 30
+getgenv().SafeMode = false
+
 Setting:AddToggle({
-        Name = "Safe Modes", 
-        Default = false })
-        Callback = (function(Value)
-    getgenv().SafeMode = Value
-end)
-spawn(function()
-    while task.wait(0.1) do
-        pcall(function()
-            if getgenv().SafeMode then
-                local CharacterPlayer = game.Players.LocalPlayer.Character
-                if CharacterPlayer and CharacterPlayer:FindFirstChild("Humanoid") and CharacterPlayer:FindFirstChild("HumanoidRootPart") then
-                    local HealthMinPlayer = CharacterPlayer.Humanoid.MaxHealth * (getgenv().Safe / 100)
-                    if CharacterPlayer.Humanoid.Health <= HealthMinPlayer then
-                        while getgenv().SafeMode and CharacterPlayer.Humanoid.Health <= HealthMinPlayer do
-                            task.wait(0.1)
-                            CharacterPlayer.HumanoidRootPart.CFrame = CharacterPlayer.HumanoidRootPart.CFrame + Vector3.new(0, 50, 0)
-                        end
-                    end
-                end
-            end
-        end)
+    Name = "Safe Modes",
+    Default = false,
+    Callback = function(Value)
+        getgenv().SafeMode = Value
     end
-end)
+})
+
 Setting:AddSlider({
     Name = "Safe Mode At",
     Default = 30,
@@ -4449,6 +4436,34 @@ Setting:AddSlider({
     end
 })
 
+task.spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+            if not getgenv().SafeMode then
+                return
+            end
+
+            local Character = game.Players.LocalPlayer.Character
+            if not Character then
+                return
+            end
+
+            local Humanoid = Character:FindFirstChild("Humanoid")
+            local Root = Character:FindFirstChild("HumanoidRootPart")
+
+            if not Humanoid or not Root then
+                return
+            end
+
+            local HealthMin = Humanoid.MaxHealth * (getgenv().Safe / 100)
+
+            while getgenv().SafeMode and Humanoid.Health <= HealthMin do
+                Root.CFrame = Root.CFrame + Vector3.new(0, 50, 0)
+                task.wait(0.1)
+            end
+        end)
+    end
+end)
 Setting:AddToggle({
 	Name = "Auto Active Haki",
 	Description = "tự động kích hoạt haki",
