@@ -11042,50 +11042,52 @@ task.spawn(function()
     while task.wait(0.5) do
         if _G.AutoBartilo then
             pcall(function()
-                local QuestData = CommF:InvokeServer("GetQuest")
-                local Progress = CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
+                local Player = game:GetService("Players").LocalPlayer
+                local QuestGui = Player.PlayerGui.Main.Quest
+                local CommF = game:GetService("ReplicatedStorage").Remotes.CommF_
 
-                -- 1. Nếu chưa có Quest hoặc Progress = 0 thì nhận
-                if (not QuestData or QuestData == 0) and Progress == 0 then
+                -- 1. KIỂM TRA XEM ĐANG CÓ NHIỆM VỤ KHÔNG
+                if not QuestGui.Visible then
+                    -- Chưa nhận quest -> Về Bartilo
                     local PosBartilo = CFrame.new(-460.429, 73.050, 300.719)
-                    if (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - PosBartilo.Position).Magnitude > 20 then
+                    if (Player.Character.HumanoidRootPart.Position - PosBartilo.Position).Magnitude > 20 then
                         _tp(PosBartilo)
-                        task.wait(1.5)
-                    end
-                    CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
-                    task.wait(2) -- Đợi lâu hơn để server cập nhật trạng thái
-                    return 
-                end
-
-                -- 2. XỬ LÝ ĐÁNH QUÁI (Dựa vào Progress thay vì đợi QuestData)
-                -- Progress 0 = Swan, Progress 1 = Jeremy
-                local Target = nil
-                local TargetPos = nil
-                local TargetName = ""
-
-                if Progress == 0 then
-                    TargetName = "Swan Pirate"
-                    TargetPos = CFrame.new(-457, 71, 160)
-                elseif Progress == 1 then
-                    TargetName = "Jeremy"
-                    TargetPos = CFrame.new(2326.10, 459.27, 718.47)
-                end
-
-                if TargetName ~= "" then
-                    Target = GetConnectionEnemies(TargetName)
-                    
-                    if Target and Target:FindFirstChild("HumanoidRootPart") and Target.Humanoid.Health > 0 then
-                        G.Kill(Target, _G.AutoBartilo)
                     else
-                        -- Bay đến điểm spawn nếu không thấy quái
-                        _tp(TargetPos)
+                        CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
+                    end
+                else
+                    -- 2. ĐÃ CÓ QUEST -> ĐỌC TÊN VÀ SỐ LƯỢNG CÒN LẠI
+                    local QuestTitle = QuestGui.Container.QuestTitle.Title.Text
+                    local QuestProgress = QuestGui.Container.QuestProgress.Text -- Dạng "0/50"
+                    
+                    local TargetName = ""
+                    local TargetPos = nil
+
+                    if QuestTitle:find("Swan") then
+                        TargetName = "Swan Pirate"
+                        TargetPos = CFrame.new(-457, 71, 160)
+                    elseif QuestTitle:find("Jeremy") then
+                        TargetName = "Jeremy"
+                        TargetPos = CFrame.new(2326.1, 459.2, 718.4)
+                    end
+
+                    -- 3. HÀNH ĐỘNG DỰA TRÊN DỮ LIỆU THỰC TẾ
+                    if TargetName ~= "" then
+                        local Enemy = GetConnectionEnemies(TargetName)
+                        
+                        -- Nếu thấy quái và chưa làm xong nhiệm vụ
+                        if Enemy and Enemy:FindFirstChild("HumanoidRootPart") and Enemy.Humanoid.Health > 0 then
+                            G.Kill(Enemy, _G.AutoBartilo)
+                        else
+                            -- Nếu không thấy quái thì bay ra điểm spawn
+                            _tp(TargetPos)
+                        end
                     end
                 end
             end)
         end
     end
 end)
-
 
 Get:AddSection({"Boss Raid"});
 
