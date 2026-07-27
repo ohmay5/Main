@@ -11077,7 +11077,7 @@ task.spawn(function()
                     if Enemy and Enemy:FindFirstChild("Humanoid") and Enemy.Humanoid.Health > 0 then
                         G.Kill(Enemy, true)
                     else
-                        _tp(CFrame.new(-457,71,160))
+                        _tp(CFrame.new(-464.03, 73.05, 1.2))
                     end
 
                     return
@@ -11091,7 +11091,7 @@ task.spawn(function()
                     if Boss and Boss:FindFirstChild("Humanoid") and Boss.Humanoid.Health > 0 then
                         G.Kill(Boss, true)
                     else
-                        _tp(CFrame.new(2326,449,787))
+                        _tp(CFrame.new(2326.10107421875, 459.2700500488281, 718.4699096679688))
                     end
 
                     return
