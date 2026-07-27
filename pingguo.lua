@@ -11085,56 +11085,48 @@ Get:AddToggle({
         getgenv().AutoBartilo = state
     end,
 });
-
--- Logic chính
 spawn(function()
     while task.wait(1) do
         if getgenv().AutoBartilo then
             pcall(function()
                 local lp = game:GetService("Players").LocalPlayer
-                
-                -- 1. TỰ ĐỘNG TÌM NPC BARTILO (Không cần biết nó nằm ở đâu)
-                local Bartilo = nil
-                for _, obj in pairs(workspace:GetDescendants()) do
-                    if obj.Name == "Bartilo" and obj:IsA("Model") then
-                        Bartilo = obj
-                        break
-                    end
-                end
-
-                -- 2. ĐỌC TÊN NHIỆM VỤ (Dùng đường dẫn UI chuẩn của Blox Fruits)
                 local questUI = lp.PlayerGui.Main.Quest.Container
-                local hasQuest = questUI.Visible
-                local questName = hasQuest and questUI.QuestTitle.Text or ""
-
-                -- LUỒNG XỬ LÝ
-                if not hasQuest then
-                    -- Chưa có nhiệm vụ -> Đi tìm Bartilo
-                    if Bartilo then
-                        _tp(Bartilo.HumanoidRootPart.CFrame)
-                        task.wait(1)
-                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartConversation", Bartilo)
-                    end
                 
-                elseif string.find(questName, "Swan") then
-                    -- Đang làm nhiệm vụ đánh lính -> Tìm lính
-                    local target = nil
-                    for _, e in pairs(workspace.Enemies:GetChildren()) do
-                        if string.find(e.Name, "Swan") then target = e break end
-                    end
-                    if target then
-                        _tp(target.HumanoidRootPart.CFrame)
-                        G.Kill(target, getgenv().AutoBartilo)
-                    end
+                -- Tọa độ cố định
+                local posBartilo = CFrame.new(-464.02, 73.05, 0.0) -- Tọa độ NPC Bartilo từ ảnh của bạn
+                local posJeremy = CFrame.new(2326.1, 459.27, 718.47) -- Tọa độ Boss Jeremy từ ảnh của bạn
 
-                elseif string.find(questName, "Jeremy") then
-                    -- Đang làm nhiệm vụ đánh Boss Jeremy
-                    local boss = workspace.Enemies:FindFirstChild("Jeremy")
-                    if boss then
-                        _tp(boss.HumanoidRootPart.CFrame)
-                        G.Kill(boss, getgenv().AutoBartilo)
-                    else
-                        _tp(CFrame.new(945, 410, -550)) -- Bay đến chỗ boss
+                -- 1. XỬ LÝ NHẬN NHIỆM VỤ
+                if not questUI.Visible then
+                    _tp(posBartilo)
+                    task.wait(1)
+                    -- Tương tác với Bartilo
+                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartConversation", workspace.NPCs.Bartilo)
+                
+                -- 2. XỬ LÝ KHI ĐANG CÓ NHIỆM VỤ
+                else
+                    local questTitle = questUI.QuestTitle.Text
+                    
+                    -- A. NẾU NHIỆM VỤ LÀ ĐÁNH QUÁI (Dùng tên quái)
+                    if string.find(questTitle, "Swan") then
+                        local target = nil
+                        for _, e in pairs(workspace.Enemies:GetChildren()) do
+                            if string.find(e.Name, "Swan") then target = e break end
+                        end
+                        if target then
+                            _tp(target.HumanoidRootPart.CFrame)
+                            G.Kill(target, getgenv().AutoBartilo)
+                        end
+                        
+                    -- B. NẾU NHIỆM VỤ LÀ ĐÁNH BOSS (Dùng tọa độ)
+                    elseif string.find(questTitle, "Jeremy") then
+                        local boss = workspace.Enemies:FindFirstChild("Jeremy")
+                        if boss and boss:FindFirstChild("HumanoidRootPart") then
+                            _tp(boss.HumanoidRootPart.CFrame)
+                            G.Kill(boss, getgenv().AutoBartilo)
+                        else
+                            _tp(posJeremy) -- Di chuyển đến tọa độ Boss Jeremy đã cung cấp
+                        end
                     end
                 end
             end)
