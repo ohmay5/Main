@@ -11035,12 +11035,12 @@ Get:AddToggle({
 });
 
 spawn(function()
-    while wait(2) do -- Tăng thời gian chờ để tránh lag/crash
+    while wait(2) do
         if _G.Auto_DonAcces then
             pcall(function()
+                -- Kiểm tra quyền truy cập từ server
                 local unlockables = replicated.Remotes.CommF_:InvokeServer("GetUnlockables")
                 
-                -- Kiểm tra nếu đã mở khóa thì dừng
                 if unlockables.FlamingoAccess ~= nil then
                     _G.Auto_DonAcces = false
                     return
@@ -11051,28 +11051,28 @@ spawn(function()
                     local inv = replicated.Remotes.CommF_:InvokeServer("getInventoryFruits")
                     
                     for _, fruitData in pairs(inv) do
-                        -- Kiểm tra trái cây có giá trị > 1tr Beli không
                         local fruitName = fruitData.Name
-                        local fruitPrice = replicated.Remotes.CommF_:InvokeServer("GetFruits")[fruitName].Price
-                        
-                        if fruitPrice >= 1000000 then
-                            -- Di chuyển đến NPC Trevor (Cần tọa độ)
-                            _tp(CFrame.new(-3871, 7, -2005)) -- Tọa độ khu vực Trevor
+                        -- Lấy giá trị trái cây để kiểm tra xem có > 1tr Beli không
+                        local allFruits = replicated.Remotes.CommF_:InvokeServer("GetFruits")
+                        if allFruits[fruitName] and allFruits[fruitName].Price >= 1000000 then
+                            
+                            -- 1. Di chuyển tới tọa độ Trevor vừa cung cấp
+                            _tp(CFrame.new(-337.5, 331.8, 0)) 
                             wait(1)
                             
-                            -- Load trái cây ra (Cầm trái trên tay)
+                            -- 2. Cầm trái cây ra
                             replicated.Remotes.CommF_:InvokeServer("LoadFruit", fruitName)
-                            wait(1)
+                            wait(1.5)
                             
-                            -- Nói chuyện với Trevor
+                            -- 3. Nói chuyện với Trevor theo thứ tự
                             replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "1")
                             wait(0.5)
                             replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "2")
                             wait(0.5)
                             replicated.Remotes.CommF_:InvokeServer("TalkTrevor", "3")
                             
-                            wait(5) -- Đợi server cập nhật
-                            break -- Thoát vòng lặp sau khi thử 1 trái
+                            wait(3) -- Chờ server xử lý xong
+                            break 
                         end
                     end
                 end
@@ -11080,6 +11080,7 @@ spawn(function()
         end
     end
 end)
+
 
 Get:AddToggle({
     Name = "Auto Bartilo Quest",
@@ -11094,47 +11095,39 @@ spawn(function()
     while wait(1) do
         if _G.AutoBartilo then
             pcall(function()
-                local lp = game.Players.LocalPlayer
-                local questUI = lp.PlayerGui.Main.Quest.Container
+                -- Lấy dữ liệu nhiệm vụ trực tiếp từ Server của game
+                local questData = replicated.Remotes.CommF_:InvokeServer("GetQuest")
                 
-                -- Tọa độ cố định của Bartilo (theo ảnh bạn cung cấp)
-                local posBartilo = CFrame.new(-464.02, 73.05, 0.0)
-                -- Tọa độ của Boss Jeremy (theo ảnh bạn cung cấp)
-                local posJeremy = CFrame.new(2326.1, 459.27, 718.47)
-
-                -- 1. KIỂM TRA ĐANG CÓ QUEST KHÔNG
-                if not questUI.Visible then
-                    -- Chưa có quest: Bay đến NPC Bartilo để nhận
-                    _tp(posBartilo)
+                -- 1. NẾU CHƯA CÓ NHIỆM VỤ -> ĐI NHẬN
+                if questData == 0 then -- Trong Blox Fruits, 0 thường có nghĩa là chưa có quest
+                    _tp(CFrame.new(-464.02, 73.05, 0.0)) -- Tọa độ Bartilo
                     wait(1)
-                    -- Gọi NPC Bartilo (Lưu ý: Dùng đường dẫn chuẩn trong Blox Fruits)
                     local npc = workspace:FindFirstChild("Bartilo") or workspace.NPCs:FindFirstChild("Bartilo")
                     if npc then
                         replicated.Remotes.CommF_:InvokeServer("StartConversation", npc)
                     end
                 
-                -- 2. ĐANG CÓ QUEST: ĐÁNH QUÁI HOẶC BOSS
+                -- 2. NẾU ĐANG CÓ NHIỆM VỤ
                 else
-                    local questName = questUI.QuestTitle.Text
+                    -- Lấy tên nhiệm vụ từ Server
+                    local qName = questData.Name
                     
-                    -- A. NẾU LÀ QUEST ĐÁNH QUÁI (Swan Pirates)
-                    if string.find(questName, "Swan") then
+                    -- A. Đánh Swan Pirates
+                    if string.find(qName, "Swan") then
                         local target = GetConnectionEnemies("Swan Pirate")
                         if target then
                             G.Kill(target, _G.AutoBartilo)
                         else
-                            -- Nếu không thấy quái, bay đến khu vực Swan Pirate (thường ở đảo Swan)
-                            _tp(CFrame.new(-457.0, 71.0, 160.0)) 
+                            _tp(CFrame.new(-457.0, 71.0, 160.0)) -- Vị trí Swan Pirates
                         end
                     
-                    -- B. NẾU LÀ QUEST ĐÁNH BOSS (Jeremy)
-                    elseif string.find(questName, "Jeremy") then
+                    -- B. Đánh Boss Jeremy
+                    elseif string.find(qName, "Jeremy") then
                         local boss = GetConnectionEnemies("Jeremy")
                         if boss then
                             G.Kill(boss, _G.AutoBartilo)
                         else
-                            -- Nếu chưa thấy Boss, bay đến vị trí hồi Boss
-                            _tp(posJeremy)
+                            _tp(CFrame.new(2326.1, 459.27, 718.47)) -- Vị trí Jeremy
                         end
                     end
                 end
