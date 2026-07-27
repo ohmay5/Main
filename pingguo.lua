@@ -4414,56 +4414,6 @@ local function y5(I)
 	local e = I:FindFirstChild("Humanoid");
 	return e and e.Health > 0;
 end
-getgenv().Safe = 30
-getgenv().SafeMode = false
-
-Setting:AddToggle({
-    Name = "Safe Modes",
-    Default = false,
-    Callback = function(Value)
-        getgenv().SafeMode = Value
-    end
-})
-
-Setting:AddSlider({
-    Name = "Safe Mode At",
-    Default = 30,
-    Min = 0,
-    Max = 100,
-    Rounding = 5,
-    Callback = function(Value)
-        getgenv().Safe = Value
-    end
-})
-
-task.spawn(function()
-    while task.wait(0.1) do
-        pcall(function()
-            if not getgenv().SafeMode then
-                return
-            end
-
-            local Character = game.Players.LocalPlayer.Character
-            if not Character then
-                return
-            end
-
-            local Humanoid = Character:FindFirstChild("Humanoid")
-            local Root = Character:FindFirstChild("HumanoidRootPart")
-
-            if not Humanoid or not Root then
-                return
-            end
-
-            local HealthMin = Humanoid.MaxHealth * (getgenv().Safe / 100)
-
-            while getgenv().SafeMode and Humanoid.Health <= HealthMin do
-                Root.CFrame = Root.CFrame + Vector3.new(0, 50, 0)
-                task.wait(0.1)
-            end
-        end)
-    end
-end)
 Setting:AddToggle({
 	Name = "Auto Active Haki",
 	Description = "tự động kích hoạt haki",
@@ -12110,6 +12060,42 @@ Setting:AddButton({
 			Lighting.FantasySky:Destroy();
 		end;
 	end });
+getgenv().NoClip = false
+
+Setting:AddToggle({
+    Name = "No Clip",
+    Default = false,
+    Callback = function(Value)
+        getgenv().NoClip = Value
+
+        if getgenv().NoClipConnection then
+            getgenv().NoClipConnection:Disconnect()
+            getgenv().NoClipConnection = nil
+        end
+
+        if Value then
+            getgenv().NoClipConnection = game:GetService("RunService").Stepped:Connect(function()
+                local Character = game.Players.LocalPlayer.Character
+                if Character then
+                    for _, Part in ipairs(Character:GetDescendants()) do
+                        if Part:IsA("BasePart") then
+                            Part.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            local Character = game.Players.LocalPlayer.Character
+            if Character then
+                for _, Part in ipairs(Character:GetDescendants()) do
+                    if Part:IsA("BasePart") then
+                        Part.CanCollide = true
+                    end
+                end
+            end
+        end
+    end
+})
 Setting:AddToggle({
 	Name = "Walk on Water",
 	Description = "Đi trên mặt nước",
