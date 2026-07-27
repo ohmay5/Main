@@ -11092,37 +11092,49 @@ spawn(function()
         if getgenv().AutoBartilo then
             pcall(function()
                 local lp = game:GetService("Players").LocalPlayer
-                local rs = game:GetService("ReplicatedStorage")
                 
-                -- Tọa độ chuẩn từ ảnh của bạn
-                local bartiloPos = CFrame.new(-464.02, 73.05, 0.0) 
+                -- 1. TỰ ĐỘNG TÌM NPC BARTILO (Không cần biết nó nằm ở đâu)
+                local Bartilo = nil
+                for _, obj in pairs(workspace:GetDescendants()) do
+                    if obj.Name == "Bartilo" and obj:IsA("Model") then
+                        Bartilo = obj
+                        break
+                    end
+                end
+
+                -- 2. ĐỌC TÊN NHIỆM VỤ (Dùng đường dẫn UI chuẩn của Blox Fruits)
+                local questUI = lp.PlayerGui.Main.Quest.Container
+                local hasQuest = questUI.Visible
+                local questName = hasQuest and questUI.QuestTitle.Text or ""
+
+                -- LUỒNG XỬ LÝ
+                if not hasQuest then
+                    -- Chưa có nhiệm vụ -> Đi tìm Bartilo
+                    if Bartilo then
+                        _tp(Bartilo.HumanoidRootPart.CFrame)
+                        task.wait(1)
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartConversation", Bartilo)
+                    end
                 
-                -- BƯỚC 1: TƯƠNG TÁC VỚI BARTILO (Nhận/Trả Quest)
-                -- Kiểm tra xem có đang làm nhiệm vụ không bằng cách nhìn UI
-                local questTitle = lp.PlayerGui.Main.Quest.Container.QuestTitle.Text
-                
-                if not lp.PlayerGui.Main.Quest.Container.Visible then
-                    _tp(bartiloPos)
-                    task.wait(1)
-                    -- Gọi NPC Bartilo (thường dùng tên trong Workspace)
-                    rs.Remotes.CommF_:InvokeServer("StartConversation", workspace.NPCs.Bartilo)
-                
-                -- BƯỚC 2: ĐÁNH HẢI TẶC THIÊN NGA
-                elseif string.find(questTitle, "Swan Pirates") then
-                    local target = workspace.Enemies:FindFirstChild("Swan Pirate")
+                elseif string.find(questName, "Swan") then
+                    -- Đang làm nhiệm vụ đánh lính -> Tìm lính
+                    local target = nil
+                    for _, e in pairs(workspace.Enemies:GetChildren()) do
+                        if string.find(e.Name, "Swan") then target = e break end
+                    end
                     if target then
                         _tp(target.HumanoidRootPart.CFrame)
                         G.Kill(target, getgenv().AutoBartilo)
                     end
-                
-                -- BƯỚC 3: ĐÁNH BOSS JEREMY
-                elseif string.find(questTitle, "Jeremy") then
+
+                elseif string.find(questName, "Jeremy") then
+                    -- Đang làm nhiệm vụ đánh Boss Jeremy
                     local boss = workspace.Enemies:FindFirstChild("Jeremy")
                     if boss then
                         _tp(boss.HumanoidRootPart.CFrame)
                         G.Kill(boss, getgenv().AutoBartilo)
                     else
-                        _tp(CFrame.new(945, 410, -550)) -- Tọa độ Jeremy
+                        _tp(CFrame.new(945, 410, -550)) -- Bay đến chỗ boss
                     end
                 end
             end)
