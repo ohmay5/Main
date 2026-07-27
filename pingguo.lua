@@ -4414,63 +4414,39 @@ local function y5(I)
 	local e = I:FindFirstChild("Humanoid");
 	return e and e.Health > 0;
 end
-Setting:AddButton({
-    Name = "Stop Tween",
-    Description = "dừng bay tween",
-    Callback = function()
-        local plr = game.Players.LocalPlayer
-        local char = plr.Character
-        if not char then return end
-
-        local hrp = char:FindFirstChild("HumanoidRootPart")
-        local hum = char:FindFirstChild("Humanoid")
-
-        -- 🔴 PARA O TWEEN (usa a variável que JÁ EXISTE)
-        shouldTween = false
-
-        -- 🔓 Solta o player
-        if hrp then
-            hrp.Anchored = false
-
-            -- Remove coisas que costumam travar
-            for _, v in pairs(hrp:GetChildren()) do
-                if v:IsA("BodyVelocity")
-                or v:IsA("BodyPosition")
-                or v:IsA("BodyGyro") then
-                    v:Destroy()
+Setting:AddToggle({
+        Name = "Safe Modes", 
+        Default = false })
+        Callback = (function(Value)
+    getgenv().SafeMode = Value
+end)
+spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+            if getgenv().SafeMode then
+                local CharacterPlayer = game.Players.LocalPlayer.Character
+                if CharacterPlayer and CharacterPlayer:FindFirstChild("Humanoid") and CharacterPlayer:FindFirstChild("HumanoidRootPart") then
+                    local HealthMinPlayer = CharacterPlayer.Humanoid.MaxHealth * (getgenv().Safe / 100)
+                    if CharacterPlayer.Humanoid.Health <= HealthMinPlayer then
+                        while getgenv().SafeMode and CharacterPlayer.Humanoid.Health <= HealthMinPlayer do
+                            task.wait(0.1)
+                            CharacterPlayer.HumanoidRootPart.CFrame = CharacterPlayer.HumanoidRootPart.CFrame + Vector3.new(0, 50, 0)
+                        end
+                    end
                 end
             end
-        end
-
-        if hum then
-            hum.PlatformStand = false
-            hum.Sit = false
-            hum.WalkSpeed = 16
-            hum.JumpPower = 50
-            hum.AutoRotate = true
-            hum:ChangeState(Enum.HumanoidStateType.Running)
-        end
-
-        -- Libera o farm de novo
-        getgenv().OnFarm = true
-
-        -- Permite novos tweens depois
-        task.wait()
-        shouldTween = true
+        end)
     end
-})
-
-Setting:AddToggle({
-	Name = "Safe Mode",
-	Description = "bật lên để bảo vệ máu của bạn nếu mức thấp",
-	-- 1. Carrega o estado salvo
-	Default = GetSetting("SafeMode_Save", false),
-	Callback = function(I)
-		_G.Safemode = I
-        -- 2. Salva
-        _G.SaveData["SafeMode_Save"] = I
-        SaveSettings()
-	end,
+end)
+Setting:AddSlider({
+    Name = "Safe Mode At",
+    Default = 30,
+    Min = 0,
+    Max = 100,
+    Rounding = 5,
+    Callback = function(Value)
+        getgenv().Safe = Value
+    end
 })
 
 Setting:AddToggle({
