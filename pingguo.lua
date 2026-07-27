@@ -7436,7 +7436,7 @@ Race:AddSection({"Upgrade Races"});
 getgenv().UpgradeRaceV2 = false
 
 Race:AddToggle({
-    Name = "Auto Upgrade Race V2",
+    Name = "Auto Upgrade Race V2 ok",
     Default = false,
     Callback = function(Value)
         getgenv().UpgradeRaceV2 = Value
