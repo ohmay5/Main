@@ -5123,9 +5123,9 @@ Others:AddButton({
 
         if FoundAny then 
             table.sort(LiveBosses)
-            BossDropdown:Refresh(LiveBosses, true)  
+            BossDropdown:SetList(LiveBosses, true)  
         else 
-            BossDropdown:Refresh({"Nenhum Boss Encontrado"}, true) 
+            BossDropdown:SetList({"Nenhum Boss Encontrado"}, true) 
         end  
     end
 })
@@ -9460,7 +9460,7 @@ Player:AddButton({
         end
 
         -- ATUALIZA O DROPDOWN
-        PlayerDropdown:Refresh(NewPlayers, true)
+        PlayerDropdown:SetList(NewPlayers, true)
     end
 })
 
