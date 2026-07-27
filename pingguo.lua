@@ -10354,69 +10354,80 @@ local function GetClosestMob()
 	return target
 end
 -- // 1. KHAI BÁO TOGGLE (Giao diện)
-local TweenService = game:GetService("TweenService")
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+getgenv().AutoNewWorld = _G.SaveData["AutoNewWorld_Save"] ~= false
 
-function topos(targetCFrame)
-    local char = LocalPlayer.Character
-    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
-    
-    local hrp = char.HumanoidRootPart
-    local distance = (targetCFrame.Position - hrp.Position).Magnitude
-    local speed = 300 
-    local info = TweenInfo.new(distance / speed, Enum.EasingStyle.Linear)
-    local tween = TweenService:Create(hrp, info, {CFrame = targetCFrame})
-    tween:Play()
-    tween.Completed:Wait()
-end
-
-function EquipWeapon(name)
-    local tool = LocalPlayer.Backpack:FindFirstChild(name) or LocalPlayer.Character:FindFirstChild(name)
-    if tool then LocalPlayer.Character.Humanoid:EquipTool(tool) end
-end
-
--- // 3. TẠO NÚT TOGGLE
-Get:AddToggle({
-    Name = "Auto Farm Boss",
-    Default = false,
+Settings:AddToggle({
+    Name = "Auto New World",
+    Description = "Automatically unlock Second Sea",
+    Default = _G.SaveData["AutoNewWorld_Save"] ~= false,
     Callback = function(Value)
-        getgenv().AutoFarm = Value
-        if Value then print("Auto Farm đã BẬT") else print("Auto Farm đã TẮT") end
+        getgenv().AutoNewWorld = Value
+        _G.SaveData["AutoNewWorld_Save"] = Value
+        SaveSettings()
+        StopTween(Value)
     end
 })
 
--- // 4. VÒNG LẶP CHÍNH (CÓ CƠ CHẾ CHỐNG LỖI)
-task.spawn(function()
-    while task.wait(1) do -- Chạy mỗi 1s là đủ, giúp giảm tải CPU tối đa
-        if getgenv().AutoFarm then
-            pcall(function()
-                local Workspace = game:GetService("Workspace")
-                local Remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
-                
-                -- Kiểm tra dữ liệu game có tồn tại không trước khi đọc
-                if not LocalPlayer:FindFirstChild("Data") then return end
-                local myLevel = LocalPlayer.Data.Level.Value
-                
-                if myLevel >= 700 then
-                    local map = Workspace:FindFirstChild("Map")
-                    local iceDoor = map and map:FindFirstChild("Ice") and map.Ice:FindFirstChild("Door")
-                    
-                    -- Kiểm tra cửa
-                    if iceDoor and iceDoor.Transparency == 1 then
-                        topos(CFrame.new(4849, 5, 719))
-                        task.wait(1)
-                        if Remotes then Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective") end
+spawn(function()
+    while task.wait(0.1) do
+        if getgenv().AutoNewWorld and World1 then
+            spawn(function()
+                local player = game:GetService("Players").LocalPlayer
+                local workspace = game:GetService("Workspace")
+                local replicatedStorage = game:GetService("ReplicatedStorage")
+                local myLevel = player.Data.Level.Value
+
+                if myLevel >= 700 and World1 then
+                    local iceDoor = workspace.Map.Ice.Door
+
+                    if iceDoor.CanCollide == false and iceDoor.Transparency == 1 then
+                        local cframe1 = CFrame.new(4849.29883, 5.65138149, 719.611877)
+                        repeat
+                            topos(cframe1)
+                            task.wait(0.1)
+                        until (cframe1.Position - player.Character.HumanoidRootPart.Position).Magnitude <= 3 or not getgenv().AutoNewWorld
+
+                        task.wait(1.1)
+                        replicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                        task.wait(0.1)
+
+                        EquipWeapon("Key")
+
+                        local targetCFrame = CFrame.new(1347.7124, 37.3751602, -1325.6488)
+                        repeat
+                            topos(targetCFrame)
+                            task.wait(0.1)
+                        until (targetCFrame.Position - player.Character.HumanoidRootPart.Position).Magnitude <= 3 or not getgenv().AutoNewWorld
+
+                        task.wait(0.1)
                     else
-                        local enemies = Workspace:FindFirstChild("Enemies")
-                        local boss = enemies and enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
-                        
-                        if boss and boss:FindFirstChild("HumanoidRootPart") then
-                            topos(boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
-                            EquipWeapon("Key")
+                        if workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]") then
+                            for _, v in pairs(workspace.Enemies:GetChildren()) do
+                                if v.Name == "Ice Admiral [Lv. 700] [Boss]" and v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                                    local oldCFrameSecond = v.HumanoidRootPart.CFrame
+
+                                    repeat
+                                        task.wait(0.05)
+                                        AutoHaki()
+                                        EquipWeapon(getgenv().SelectWeapon)
+
+                                        v.HumanoidRootPart.CanCollide = false
+                                        v.Humanoid.WalkSpeed = 0
+                                        v.Head.CanCollide = false
+                                        v.HumanoidRootPart.CFrame = oldCFrameSecond
+
+                                        topos(v.HumanoidRootPart.CFrame * Pos)
+                                    until not getgenv().AutoNewWorld
+                                        or not v.Parent
+                                        or v.Humanoid.Health <= 0
+                                end
+                            end
                         else
-                            -- Nếu boss không có, check để sang map
-                            if Remotes then Remotes.CommF_:InvokeServer("TravelDressrosa") end
+                            if replicatedStorage:FindFirstChild("Ice Admiral") then
+                                topos(replicatedStorage:FindFirstChild("Ice Admiral").HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
+                            else
+                                replicatedStorage.Remotes.CommF_:InvokeServer("TravelDressrosa")
+                            end
                         end
                     end
                 end
