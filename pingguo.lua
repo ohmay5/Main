@@ -11077,9 +11077,9 @@ spawn(function()
 	end;
 end);
 
-Get:AddSection({"Law"});
+Get:AddSection({"Boss Raid"});
 
-AddToggle({
+Get:AddToggle({
     Name = "Auto Law Raid",
     Description = "",
     Default = false,
