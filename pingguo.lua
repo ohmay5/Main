@@ -9432,7 +9432,7 @@ for _, p in pairs(Players:GetPlayers()) do
 end
 
 -- DROPDOWN
-local PlayerDropdown = Player:AddDropdown({ 
+Player:AddDropdown({ 
     Name = "Select Players",
     Description = "",
     Options = O5,
