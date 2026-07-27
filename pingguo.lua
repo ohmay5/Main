@@ -10355,7 +10355,7 @@ local function GetClosestMob()
 end
 
 Get:AddToggle({
-    Name = "Auto New World số 1",
+    Name = "Auto New World 2",
     Description = "Automatically unlock Second Sea",
     Default =false,
     Callback = function(Value)
@@ -10398,11 +10398,17 @@ Get:AddToggle({
                     -- // BƯỚC 3: ĐÁNH BOSS
                     else
                         local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
-                        if Boss and Boss:FindFirstChild("HumanoidRootPart") then
-                            AutoHaki()
-                            EquipWeapon(getgenv().SelectWeapon or "Key")
-                            Boss.HumanoidRootPart.CanCollide = false
-                            _tp(Boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
+                    if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
+                        AutoHaki()
+                        EquipWeapon(getgenv().SelectWeapon)
+                        Boss.HumanoidRootPart.CanCollide = false
+                        Boss.Humanoid.WalkSpeed = 0
+                        _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 0, 5)))
+                    else
+                        -- Đợi boss spawn hoặc Travel
+                        local SpawnBoss = rs:FindFirstChild("Ice Admiral")
+                        if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
+                            _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
                         else
                             rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
                         end
@@ -10412,7 +10418,6 @@ Get:AddToggle({
         end
     end
 end)
-
 
 
 Get:AddToggle({
