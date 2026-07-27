@@ -10353,59 +10353,68 @@ local function GetClosestMob()
 	end
 	return target
 end
--- Giữ nguyên phần AddToggle của bạn
+-- // 1. KHAI BÁO TOGGLE (Giao diện)
 Get:AddToggle({
     Name = "Auto New World",
     Default = false,
     Callback = function(Value)
         getgenv().AutoNewWorld = Value
-        if not Value then
+        -- Nếu tắt toggle thì dừng việc di chuyển (nếu có hàm StopTween)
+        if not Value and type(StopTween) == "function" then
             StopTween()
         end
     end
 })
 
--- Chỉ chạy 1 luồng duy nhất, dùng if để kiểm soát trạng thái
+-- // 2. VÒNG LẶP XỬ LÝ (Logic chính)
 task.spawn(function()
-    while task.wait(0.5) do -- Giảm tần suất check nếu không cần thiết
+    while task.wait(0.5) do
+        -- Kiểm tra xem có đang bật Auto không
         if getgenv().AutoNewWorld and World1 then
-            local player = game:GetService("Players").LocalPlayer
-            local workspace = game:GetService("Workspace")
-            local replicatedStorage = game:GetService("ReplicatedStorage")
+            local Player = game:GetService("Players").LocalPlayer
+            local Workspace = game:GetService("Workspace")
+            local ReplicatedStorage = game:GetService("ReplicatedStorage")
+            local HRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
             
-            -- Kiểm tra Level (tối ưu hóa biến local)
-            local myLevel = player.Data.Level.Value
+            if not HRP then continue end -- Nếu chưa load xong nhân vật thì bỏ qua
+
+            local myLevel = Player.Data.Level.Value
             
             if myLevel >= 700 then
-                local iceDoor = workspace.Map.Ice.Door
+                local iceDoor = Workspace.Map.Ice.Door
                 
+                -- Trường hợp 1: Cửa đã mở (Đi làm nhiệm vụ)
                 if iceDoor.CanCollide == false and iceDoor.Transparency == 1 then
-                    -- Di chuyển tới cửa
-                    local cframe1 = CFrame.new(4849.29883, 5.65138149, 719.611877)
-                    topos(cframe1)
+                    topos(CFrame.new(4849.29883, 5.65138149, 719.611877))
                     
-                    if (cframe1.Position - player.Character.HumanoidRootPart.Position).Magnitude <= 5 then
-                        task.wait(1.1)
-                        replicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                        task.wait(0.1)
+                    if (HRP.Position - Vector3.new(4849.29883, 5.65138149, 719.611877)).Magnitude < 5 then
+                        task.wait(1)
+                        ReplicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
                         EquipWeapon("Key")
-                        
-                        local targetCFrame = CFrame.new(1347.7124, 37.3751602, -1325.6488)
-                        topos(targetCFrame)
+                        topos(CFrame.new(1347.7124, 37.3751602, -1325.6488))
                     end
+                
+                -- Trường hợp 2: Đánh Boss
                 else
-                    -- Xử lý Boss
-                    local boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
-                    if boss then
-                        -- Logic đánh boss
+                    local boss = Workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
+                    
+                    if boss and boss:FindFirstChild("HumanoidRootPart") then
                         AutoHaki()
                         EquipWeapon(getgenv().SelectWeapon)
-                        -- (Chèn thêm logic đánh boss của bạn vào đây)
+                        
+                        -- Khóa boss
+                        boss.HumanoidRootPart.CanCollide = false
+                        boss.Humanoid.WalkSpeed = 0
+                        
+                        -- Di chuyển đến vị trí tấn công
+                        local offset = getgenv().Pos or CFrame.new(0, 0, 5)
+                        topos(boss.HumanoidRootPart.CFrame * offset)
                     else
-                        if replicatedStorage:FindFirstChild("Ice Admiral") then
-                            topos(replicatedStorage.IceAdmiral.HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
+                        -- Teleport đến boss hoặc reset map
+                        if ReplicatedStorage:FindFirstChild("Ice Admiral") then
+                            topos(ReplicatedStorage.IceAdmiral.HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
                         else
-                            replicatedStorage.Remotes.CommF_:InvokeServer("TravelDressrosa")
+                            ReplicatedStorage.Remotes.CommF_:InvokeServer("TravelDressrosa")
                         end
                     end
                 end
@@ -10413,7 +10422,6 @@ task.spawn(function()
         end
     end
 end)
-
 
 Get:AddToggle({
 	Name = "Auto Farm 600 In Swords",
