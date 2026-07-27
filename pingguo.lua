@@ -4538,28 +4538,36 @@ spawn(function()
 	end;
 end);
 Setting:AddSection({"Select"})
+_G.BringRange = _G.SaveData["BringRange_Save"] or 250
+
 Setting:AddSlider({
     Title = "Bring Mobs Range",
     Description = "Điều chỉnh độ xa để gom quái",
-    Default = _G.BringRange or 250,
+    Default = _G.SaveData["BringRange_Save"] or 250,
     Min = 0,
-    Max = 1000, -- Bạn có thể chỉnh lại Max tùy theo nhu cầu
-    Rounding = 0, -- 0 nếu muốn số nguyên, 1 nếu muốn số thập phân
+    Max = 1000,
+    Rounding = 0,
     Callback = function(Value)
         _G.BringRange = Value
+        _G.SaveData["BringRange_Save"] = Value
+        SaveSettings()
     end
 })
 
 
+_G.MobHeight = _G.SaveData["MobHeight_Save"] or 20
+
 Setting:AddSlider({
     Title = "Farm Height",
     Description = "Độ cao farm quái",
-    Default = _G.MobHeight or 20,
+    Default = _G.SaveData["MobHeight_Save"] or 20,
     Min = 0,
-    Max = 100, -- Adjust this to your desired limit
+    Max = 100,
     Rounding = 1,
     Callback = function(Value)
         _G.MobHeight = Value
+        _G.SaveData["MobHeight_Save"] = Value
+        SaveSettings()
     end
 })
 
@@ -4602,7 +4610,7 @@ local ToolAbilities = Net:WaitForChild("RF/JobToolAbilities")
 -- =========================================================
 -- CONFIGURAÇÃO DA NOTIFICAÇÃO CUSTOMIZADA (FULL BLACK)
 -- =========================================================
-local LogoID = "rbxassetid://18919385586"
+local LogoID = "rbxassetid://114476175638281"
 
 local function NotifyNightMystic(texto)
     task.spawn(function()
@@ -4789,53 +4797,50 @@ task.spawn(function()
                 local plr = Players.LocalPlayer
                 local char = plr.Character or plr.CharacterAdded:Wait()
                 local hrp = char:FindFirstChild("HumanoidRootPart")
-                
                 if not hrp then return end
 
                 local equippedTool = char:FindFirstChildOfClass("Tool")
                 
-                -- Verifica se a vara selecionada está equipada
+                -- 1. Kiểm tra trang bị
                 if _G.SelectedRod and (not equippedTool or equippedTool.Name ~= _G.SelectedRod) then
                     local rodInBag = plr.Backpack:FindFirstChild(_G.SelectedRod)
-                    
                     if rodInBag then
-                        -- Se tiver na mochila, equipa sozinho
                         char.Humanoid:EquipTool(rodInBag)
                         equippedTool = rodInBag
                     else
-
-                        NotifyNightMystic("please equip:" .. tostring(_G.SelectedRod))
-                        return -- Para a execução aqui para não dar erro tentando pescar sem vara
+                        NotifyNightMystic("Vui lòng cầm: " .. tostring(_G.SelectedRod))
+                        return
                     end
                 end
 
                 if equippedTool then
-                    local maxLaunch = FishingClientConfig.Rod.MaxLaunchDistance
-                    local waterHeight = GetWaterHeight(hrp.Position)
-                    
-                    local rayOrigin = char.Head.Position
-                    local rayDirection = hrp.CFrame.LookVector * maxLaunch
-                    
-                    local ignoreList = {char, Workspace.Characters, Workspace.Enemies}
-                    local _, hitPos = Workspace:FindPartOnRayWithIgnoreList(Ray.new(rayOrigin, rayDirection), ignoreList)
-                    
-                    local targetPos = hitPos and Vector3.new(hitPos.X, math.max(hitPos.Y, waterHeight), hitPos.Z)
-                    
-                    local state = equippedTool:GetAttribute("State")
-                    local serverState = equippedTool:GetAttribute("ServerState")
+                    local state = equippedTool:GetAttribute("State") or ""
+                    local serverState = equippedTool:GetAttribute("ServerState") or ""
 
-                    if targetPos and (state == "ReeledIn" or serverState == "ReeledIn") then
-                        FishingRequest:InvokeServer("StartCasting")
-                        task.wait()
-                        FishingRequest:InvokeServer("CastLineAtLocation", targetPos, 100, true)
-                    
-                    elseif serverState == "Biting" then
+                    -- 2. Logic Bắt cá (ưu tiên cao nhất)
+                    if serverState == "Biting" then
                         FishingRequest:InvokeServer("Catching", true)
-                        task.wait(0.1)
+                        task.wait(0.2)
                         FishingRequest:InvokeServer("Catch", 1)
+                        NotifyNightMystic("Đã bắt được cá!")
+                        return
+                    end
+
+                    -- 3. Logic Vung cần (Fix lỗi không vung)
+                    if state == "ReeledIn" or serverState == "ReeledIn" then
+                        -- Lấy chiều cao nước thực tế
+                        local waterHeight = GetWaterHeight(hrp.Position)
                         
-                        -- [[ NOTIFICAÇÃO PRETA AO PEGAR PEIXE ]]
-                        NotifyNightMystic("New item caught")
+                        -- Thay vì raycast phức tạp, ta tạo điểm ném trực tiếp phía trước mặt
+                        -- Khoảng cách mặc định là 30-50 studs, đủ xa để chạm nước
+                        local castDist = 40 
+                        local targetPos = hrp.Position + (hrp.CFrame.LookVector * castDist)
+                        targetPos = Vector3.new(targetPos.X, waterHeight, targetPos.Z)
+
+                        FishingRequest:InvokeServer("StartCasting")
+                        task.wait(0.3)
+                        FishingRequest:InvokeServer("CastLineAtLocation", targetPos, 100, true)
+                        print("Đang cố gắng ném cần tại:", targetPos)
                     end
                 end
             end)
@@ -12039,49 +12044,6 @@ spawn(function()
 		end;
 	end;
 end);
--- Giả sử bạn đã khởi tạo Tab: local Tab = Window:AddTab("TabName")
-
-Fruit:AddToggle({
-    Name = "Auto Teleport To Fruit [Hop]", -- Tên hiển thị trên UI
-    Default = false,
-    Callback = function(Value)
-        getgenv().TeleportToFruit = Value
-    end
-})
-
-spawn(function()
-    while task.wait(0.5) do
-        if getgenv().TeleportToFruit then
-            local foundFruit = false
-            
-            -- Kiểm tra trong Folder 'Fruits' (phổ biến nhất)
-            local fruitFolder = workspace:FindFirstChild("Fruits") or workspace:FindFirstChild("Items")
-            local list = fruitFolder and fruitFolder:GetChildren() or workspace:GetChildren()
-            
-            for _, v in ipairs(list) do
-                -- Kiểm tra cả Tool và Model (một số game để trái cây là Model có Handle)
-                if (v:IsA("Tool") or v:IsA("Model")) and string.find(v.Name, "Fruit") and v:FindFirstChild("Handle") then
-                    _tp(v.Handle.CFrame)
-                    foundFruit = true
-                    break
-                end
-            end
-            
-            -- Nếu sau 5 giây tìm không thấy thì mới Hop
-            if not foundFruit then
-                task.wait(5) -- Đợi một chút để server load kịp trái cây
-                if getgenv().TeleportToFruit then -- Kiểm tra lại xem người dùng còn bật không
-                    if typeof(Hop) == "function" then
-                        Hop()
-                    else
-                        warn("Hàm Hop() chưa được định nghĩa trong Script!")
-                    end
-                end
-            end
-        end
-    end
-end)
-
 
 Fruit:AddToggle({
 	Name  = "Auto Collect Fruit",
