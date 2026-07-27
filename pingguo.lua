@@ -4767,14 +4767,18 @@ Others:AddToggle({
 })
 
 task.spawn(function()
-    while task.wait(2) do
+    while task.wait(5) do -- Tăng thời gian chờ lên 5s để tránh spam server
         if _G.AutoBuyBait and _G.SelectedBait then
             pcall(function()
-                CraftRemote:InvokeServer("Craft", _G.SelectedBait, {})
+                -- Thử gửi số lượng là 1 hoặc một bảng có chứa số lượng
+                -- Nhiều game yêu cầu cấu trúc: {["Name"] = "Mồi", ["Amount"] = 1}
+                -- Hoặc chỉ cần truyền thêm số 1 vào tham số thứ 3
+                CraftRemote:InvokeServer("Craft", _G.SelectedBait, 1) 
             end)
         end
     end
 end)
+
 
 -- 4. TOGGLE AUTO FISHING (CAST/CATCH)
 Others:AddToggle({
