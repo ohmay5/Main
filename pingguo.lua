@@ -690,7 +690,7 @@ local function FarmAtivo()
         _G.FarmMastery_G or  
         (getgenv()).AutoMaterial or  
         _G.AutoTyrant or
-        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Mink or _G.Auto_Human or _G.Auto_Skypiea or _G.Auto_Fish or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoCyborg or _G.AutoBartilo
+        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Mink or _G.Auto_Human or _G.Auto_Skypiea or _G.Auto_Fish or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoCyborg 
     )
 end
 
@@ -11027,67 +11027,91 @@ spawn(function()
 end);
 Get:AddToggle({
     Name = "Auto Bartilo Quest",
-    Description = "Tự động làm nhiệm vụ Bartilo (Full)",
+    Description = "Tự động làm nhiệm vụ Bartilo",
     Default = false,
-    Callback = function(state)
-        _G.AutoBartilo = state
-    end,
-});
+    Callback = function(Value)
+        _G.AutoBartilo = Value
+    end
+})
 
 spawn(function()
-    while task.wait(0.5) do
-        if _G.AutoBartilo then
-            pcall(function()
+    pcall(function()
+        while wait(0.1) do
+            if _G.AutoBartilo then
                 local player = game:GetService("Players").LocalPlayer
-                local progress = CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
+                local commF = game:GetService("ReplicatedStorage").Remotes.CommF_
                 
-                -- 1. QUEST GIAI ĐOẠN 0: NHẬN QUEST & ĐÁNH SWAN PIRATES
-                if progress == 0 then
-                    local questUI = player.PlayerGui.Main.Quest.Container
-                    if questUI.Visible and questUI.QuestTitle.Title.Text:find("Swan") then
-                        local enemy = workspace.Enemies:FindFirstChild("Swan Pirate")
-                        if enemy and enemy:FindFirstChild("HumanoidRootPart") then
-                            G.Kill(enemy, _G.AutoBartilo)
+                if player.Data.Level.Value >= 800 and commF:InvokeServer("BartiloQuestProgress", "Bartilo") == 0 then
+                    if player.PlayerGui.Main.Quest.Visible and string.find(player.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Swan Pirates") then
+                        if workspace.Enemies:FindFirstChild("Swan Pirate") then
+                            for i, v in pairs(workspace.Enemies:GetChildren()) do
+                                if v.Name == "Swan Pirate" then
+                                    repeat
+                                        task.wait(_G.FastAttackDelay)
+                                        sethiddenproperty(player, "SimulationRadius", math.huge)
+                                        EquipWeapon(_G.SelectWeapon)
+                                        AutoHaki()
+                                        v.HumanoidRootPart.Transparency = 1
+                                        v.HumanoidRootPart.CanCollide = false
+                                        v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
+                                        _tp(v.HumanoidRootPart.CFrame * Pos) -- Đã thay topos thành _tp
+                                        AttackNoCD()
+                                        StartBring = true
+                                    until not v.Parent or v.Humanoid.Health <= 0 or not _G.AutoBartilo or not player.PlayerGui.Main.Quest.Visible
+                                    StartBring = false
+                                end
+                            end
                         else
-                            topos(CFrame.new(932.6, 156.1, 1180.2)) -- Tọa độ spawn Swan
+                            _tp(CFrame.new(932.62, 156.10, 1180.27)) -- Đã thay topos thành _tp
                         end
                     else
-                        topos(CFrame.new(-456.2, 73.0, 299.8))
-                        task.wait(1)
-                        CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
+                        _tp(CFrame.new(-456.28, 73.02, 299.89)) -- Đã thay topos thành _tp
+                        wait(1.1)
+                        commF:InvokeServer("StartQuest", "BartiloQuest", 1)
                     end
-
-                -- 2. QUEST GIAI ĐOẠN 1: ĐÁNH JEREMY
-                elseif progress == 1 then
-                    local boss = workspace.Enemies:FindFirstChild("Jeremy")
-                    if boss and boss:FindFirstChild("HumanoidRootPart") then
-                        G.Kill(boss, _G.AutoBartilo)
+                elseif player.Data.Level.Value >= 800 and commF:InvokeServer("BartiloQuestProgress", "Bartilo") == 1 then
+                    if workspace.Enemies:FindFirstChild("Jeremy") then
+                        for i, v in pairs(workspace.Enemies:GetChildren()) do
+                            if v.Name == "Jeremy" then
+                                local OldCFrameBartlio = v.HumanoidRootPart.CFrame
+                                repeat
+                                    task.wait(_G.FastAttackDelay)
+                                    EquipWeapon(_G.SelectWeapon)
+                                    AutoHaki()
+                                    v.HumanoidRootPart.Transparency = 1
+                                    v.HumanoidRootPart.CanCollide = false
+                                    v.HumanoidRootPart.Size = Vector3.new(50, 50, 50)
+                                    v.HumanoidRootPart.CFrame = OldCFrameBartlio
+                                    _tp(v.HumanoidRootPart.CFrame * Pos) -- Đã thay topos thành _tp
+                                    AttackNoCD()
+                                until not v.Parent or v.Humanoid.Health <= 0 or not _G.AutoBartilo
+                            end
+                        end
                     else
-                        topos(CFrame.new(2099.8, 448.9, 648.9)) -- Tọa độ Jeremy
+                        _tp(CFrame.new(2099.88, 448.93, 648.99)) -- Đã thay topos thành _tp
                     end
-
-                -- 3. QUEST GIAI ĐOẠN 2: NHẬP MÃ (TỰ ĐỘNG CHẠY QUA CÁC TỌA ĐỘ)
-                elseif progress == 2 then
-                    local points = {
-                        CFrame.new(-1850.4, 13.1, 1750.8),
-                        CFrame.new(-1858.8, 19.3, 1712.0),
-                        CFrame.new(-1803.9, 16.5, 1750.8),
-                        CFrame.new(-1858.5, 16.8, 1724.7),
-                        CFrame.new(-1869.5, 15.9, 1681.0),
-                        CFrame.new(-1800.0, 16.4, 1684.5),
-                        CFrame.new(-1819.2, 14.7, 1717.9),
-                        CFrame.new(-1813.5, 14.8, 1724.7)
-                    }
-                    for _, pos in pairs(points) do
-                        if not _G.AutoBartilo then break end
-                        topos(pos)
-                        task.wait(0.5)
-                    end
+                elseif player.Data.Level.Value >= 800 and commF:InvokeServer("BartiloQuestProgress", "Bartilo") == 2 then
+                    _tp(CFrame.new(-1850.49, 13.17, 1750.89)) -- Đã thay topos thành _tp
+                    wait(1)
+                    _tp(CFrame.new(-1858.87, 19.37, 1712.01))
+                    wait(1)
+                    _tp(CFrame.new(-1803.94, 16.57, 1750.89))
+                    wait(1)
+                    _tp(CFrame.new(-1858.55, 16.86, 1724.79))
+                    wait(1)
+                    _tp(CFrame.new(-1869.54, 15.98, 1681.00))
+                    wait(1)
+                    _tp(CFrame.new(-1800.09, 16.49, 1684.52))
+                    wait(1)
+                    _tp(CFrame.new(-1819.26, 14.79, 1717.90))
+                    wait(1)
+                    _tp(CFrame.new(-1813.51, 14.86, 1724.79))
                 end
-            end)
+            end
         end
-    end
+    end)
 end)
+
 
 Get:AddSection({"Boss Raid"});
 
