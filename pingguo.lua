@@ -10355,7 +10355,7 @@ local function GetClosestMob()
 end
 
 Get:AddToggle({
-    Name = "Auto New World 2",
+    Name = "Auto New World 4",
     Description = "Automatically unlock Second Sea",
     Default =false,
     Callback = function(Value)
@@ -10369,46 +10369,46 @@ Get:AddToggle({
             pcall(function()
                 local player = game:GetService("Players").LocalPlayer
                 local rs = game:GetService("ReplicatedStorage")
+                local workspace = game:GetService("Workspace")
                 
-                -- Kiểm tra nhân vật
                 if not player.Character or not player.Character:FindFirstChild("HumanoidRootPart") then return end
                 
-                -- Kiểm tra Chìa khóa
-                local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
-                
-                -- // BƯỚC 1: NẾU CHƯA CÓ KEY -> ĐẾN NHÀ TÙ
-                if not hasKey then
-                    print("Đang đi lấy Key tại Nhà tù...")
-                    _tp(CFrame.new(4851, 5.6, 717)) 
-                    task.wait(1.5)
-                    rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                
-                -- // BƯỚC 2: ĐÃ CÓ KEY -> ĐẾN CỬA BOSS
-                else
-                    -- Cửa ở tọa độ: 1347, 37.3, -1325
-                    local doorPos = CFrame.new(1347, 37.3, -1325)
-                    local dist = (player.Character.HumanoidRootPart.Position - doorPos.Position).Magnitude
+                -- 1. Tự nhận diện trạng thái cửa
+                local iceDoor = workspace.Map:FindFirstChild("Ice") and workspace.Map.Ice:FindFirstChild("Door")
+                local isDoorOpen = (iceDoor and iceDoor.Transparency == 1)
+
+                if not isDoorOpen then
+                    -- // TRƯỜNG HỢP: CỬA CHƯA MỞ
+                    local hasKey = player.Backpack:FindFirstChild("Key") or player.Character:FindFirstChild("Key")
                     
-                    if dist > 20 then
-                        print("Đã có Key, đang bay đến cửa Boss...")
-                        _tp(doorPos)
+                    if not hasKey then
+                        -- Chưa có Key -> Bay đi lấy
+                        print("Cửa chưa mở, đang đi lấy Key tại Nhà tù...")
+                        _tp(CFrame.new(4851, 5.6, 717))
                         task.wait(1)
                         rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                    
-                    -- // BƯỚC 3: ĐÁNH BOSS
                     else
-                        local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
+                        -- Đã có Key -> Bay đến cửa mở
+                        print("Đã có Key, đang bay đến mở cửa...")
+                        _tp(CFrame.new(1347, 37.3, -1325))
+                        task.wait(1)
+                        rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
+                    end
+                else
+                    -- // TRƯỜNG HỢP: CỬA ĐÃ MỞ -> CHỈ ĐÁNH BOSS
+                    local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
+                    
                     if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
                         AutoHaki()
-                        EquipWeapon(getgenv().SelectWeapon)
+                        EquipWeapon(getgenv().SelectWeapon or "Key")
                         Boss.HumanoidRootPart.CanCollide = false
                         Boss.Humanoid.WalkSpeed = 0
-                        _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 0, 5)))
+                        _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 5, 0)))
                     else
-                        -- Đợi boss spawn hoặc Travel
+                        -- Đợi boss spawn
                         local SpawnBoss = rs:FindFirstChild("Ice Admiral")
                         if SpawnBoss and SpawnBoss:FindFirstChild("HumanoidRootPart") then
-                            _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
+                            _tp(SpawnBoss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
                         else
                             rs.Remotes.CommF_:InvokeServer("TravelDressrosa")
                         end
