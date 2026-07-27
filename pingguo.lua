@@ -10355,7 +10355,7 @@ local function GetClosestMob()
 end
 
 Get:AddToggle({
-    Name = "Auto New World 4",
+    Name = "Auto New World 2",
     Description = "Automatically unlock Second Sea",
     Default =false,
     Callback = function(Value)
@@ -10395,7 +10395,7 @@ Get:AddToggle({
                         rs.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
                     end
                 else
-                    -- // TRƯỜNG HỢP: CỬA ĐÃ MỞ -> CHỈ ĐÁNH BOSS
+                    -- // TRƯỜNG HỢP: CỬA ĐÃ MỞ -> CHỈ ĐÁNH 
                     local Boss = workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
                     
                     if Boss and Boss:FindFirstChild("Humanoid") and Boss:FindFirstChild("HumanoidRootPart") then
@@ -10403,7 +10403,12 @@ Get:AddToggle({
                         EquipWeapon(getgenv().SelectWeapon or "Key")
                         Boss.HumanoidRootPart.CanCollide = false
                         Boss.Humanoid.WalkSpeed = 0
-                        _tp(Boss.HumanoidRootPart.CFrame * (getgenv().Pos or CFrame.new(0, 5, 0)))
+                        
+                        -- TĂNG KHOẢNG CÁCH LÊN 20 STUD VÀ DI CHUYỂN THEO BOSS
+                        -- Chúng ta dùng tọa độ của Boss và cộng thêm 20 đơn vị vào trục Z (phía trước mặt Boss)
+                        local targetPos = Boss.HumanoidRootPart.CFrame * CFrame.new(0, 0, 20) 
+                        _tp(targetPos)
+                        
                     else
                         -- Đợi boss spawn
                         local SpawnBoss = rs:FindFirstChild("Ice Admiral")
@@ -10414,10 +10419,7 @@ Get:AddToggle({
                         end
                     end
                 end
-            end)
-        end
-    end
-end)
+
 
 
 Get:AddToggle({
