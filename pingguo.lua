@@ -10354,75 +10354,76 @@ local function GetClosestMob()
 	return target
 end
 -- // 1. KHAI BÁO TOGGLE (Giao diện)
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+function topos(targetCFrame)
+    local char = LocalPlayer.Character
+    if not char or not char:FindFirstChild("HumanoidRootPart") then return end
+    
+    local hrp = char.HumanoidRootPart
+    local distance = (targetCFrame.Position - hrp.Position).Magnitude
+    local speed = 300 
+    local info = TweenInfo.new(distance / speed, Enum.EasingStyle.Linear)
+    local tween = TweenService:Create(hrp, info, {CFrame = targetCFrame})
+    tween:Play()
+    tween.Completed:Wait()
+end
+
+function EquipWeapon(name)
+    local tool = LocalPlayer.Backpack:FindFirstChild(name) or LocalPlayer.Character:FindFirstChild(name)
+    if tool then LocalPlayer.Character.Humanoid:EquipTool(tool) end
+end
+
+-- // 3. TẠO NÚT TOGGLE
 Get:AddToggle({
-    Name = "Auto New World",
+    Name = "Auto Farm Boss",
     Default = false,
     Callback = function(Value)
-        getgenv().AutoNewWorld = Value
-        -- Nếu tắt toggle thì dừng việc di chuyển (nếu có hàm StopTween)
-        if not Value and type(StopTween) == "function" then
-            StopTween()
-        end
+        getgenv().AutoFarm = Value
+        if Value then print("Auto Farm đã BẬT") else print("Auto Farm đã TẮT") end
     end
 })
 
--- // 2. VÒNG LẶP XỬ LÝ (Logic chính)
+-- // 4. VÒNG LẶP CHÍNH (CÓ CƠ CHẾ CHỐNG LỖI)
 task.spawn(function()
-    while task.wait(0.5) do
-        -- Kiểm tra xem có đang bật Auto không
-        if getgenv().AutoNewWorld and World1 then
-            local Player = game:GetService("Players").LocalPlayer
-            local Workspace = game:GetService("Workspace")
-            local ReplicatedStorage = game:GetService("ReplicatedStorage")
-            local HRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-            
-            if not HRP then continue end -- Nếu chưa load xong nhân vật thì bỏ qua
-
-            local myLevel = Player.Data.Level.Value
-            
-            if myLevel >= 700 then
-                local iceDoor = Workspace.Map.Ice.Door
+    while task.wait(1) do -- Chạy mỗi 1s là đủ, giúp giảm tải CPU tối đa
+        if getgenv().AutoFarm then
+            pcall(function()
+                local Workspace = game:GetService("Workspace")
+                local Remotes = game:GetService("ReplicatedStorage"):FindFirstChild("Remotes")
                 
-                -- Trường hợp 1: Cửa đã mở (Đi làm nhiệm vụ)
-                if iceDoor.CanCollide == false and iceDoor.Transparency == 1 then
-                    topos(CFrame.new(4849.29883, 5.65138149, 719.611877))
+                -- Kiểm tra dữ liệu game có tồn tại không trước khi đọc
+                if not LocalPlayer:FindFirstChild("Data") then return end
+                local myLevel = LocalPlayer.Data.Level.Value
+                
+                if myLevel >= 700 then
+                    local map = Workspace:FindFirstChild("Map")
+                    local iceDoor = map and map:FindFirstChild("Ice") and map.Ice:FindFirstChild("Door")
                     
-                    if (HRP.Position - Vector3.new(4849.29883, 5.65138149, 719.611877)).Magnitude < 5 then
+                    -- Kiểm tra cửa
+                    if iceDoor and iceDoor.Transparency == 1 then
+                        topos(CFrame.new(4849, 5, 719))
                         task.wait(1)
-                        ReplicatedStorage.Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective")
-                        EquipWeapon("Key")
-                        topos(CFrame.new(1347.7124, 37.3751602, -1325.6488))
-                    end
-                
-                -- Trường hợp 2: Đánh Boss
-                else
-                    local boss = Workspace.Enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
-                    
-                    if boss and boss:FindFirstChild("HumanoidRootPart") then
-                        AutoHaki()
-                        EquipWeapon(getgenv().SelectWeapon)
-                        
-                        -- Khóa boss
-                        boss.HumanoidRootPart.CanCollide = false
-                        boss.Humanoid.WalkSpeed = 0
-                        
-                        -- Di chuyển đến vị trí tấn công
-                        local offset = getgenv().Pos or CFrame.new(0, 0, 5)
-                        topos(boss.HumanoidRootPart.CFrame * offset)
+                        if Remotes then Remotes.CommF_:InvokeServer("DressrosaQuestProgress", "Detective") end
                     else
-                        -- Teleport đến boss hoặc reset map
-                        if ReplicatedStorage:FindFirstChild("Ice Admiral") then
-                            topos(ReplicatedStorage.IceAdmiral.HumanoidRootPart.CFrame * CFrame.new(5, 10, 7))
+                        local enemies = Workspace:FindFirstChild("Enemies")
+                        local boss = enemies and enemies:FindFirstChild("Ice Admiral [Lv. 700] [Boss]")
+                        
+                        if boss and boss:FindFirstChild("HumanoidRootPart") then
+                            topos(boss.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
+                            EquipWeapon("Key")
                         else
-                            ReplicatedStorage.Remotes.CommF_:InvokeServer("TravelDressrosa")
+                            -- Nếu boss không có, check để sang map
+                            if Remotes then Remotes.CommF_:InvokeServer("TravelDressrosa") end
                         end
                     end
                 end
-            end
+            end)
         end
     end
 end)
-
 Get:AddToggle({
 	Name = "Auto Farm 600 In Swords",
 	Description = "",
