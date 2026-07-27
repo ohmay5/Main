@@ -9432,7 +9432,7 @@ for _, p in pairs(Players:GetPlayers()) do
 end
 
 -- DROPDOWN
-Player:AddDropdown({ 
+local PlayerDropdown = Player:AddDropdown({ 
     Name = "Select Players",
     Description = "",
     Options = O5,
@@ -9458,7 +9458,7 @@ Player:AddButton({
         end
 
         -- ATUALIZA O DROPDOWN
-        PlayerDropdown:Refresh(NewPlayers, true)
+        PlayerDropdown:UpdateDropdown(NewPlayers)
     end
 })
 
