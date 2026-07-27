@@ -10879,6 +10879,7 @@ spawn(function()
 		end);
 	end;
 end);
+
 getgenv().AutoSaber = false
 
 Setting:AddToggle({
