@@ -4562,35 +4562,7 @@ Setting:AddSlider({
         _G.MobHeight = Value
     end
 })
-getgenv().SpinPos = _G.SaveData["SpinPos_Save"] ~= false
 
-Setting:AddToggle({
-    Name = "Spin Position",
-    Description = "Spin Position When Farm",
-    Default = _G.SaveData["SpinPos_Save"] ~= false,
-    Callback = function(Value)
-        getgenv().SpinPos = Value
-        _G.SaveData["SpinPos_Save"] = Value
-        SaveSettings()
-    end
-})
-local SpinOffset = CFrame.new(0, PosY, 0)
-
-spawn(function()
-    while task.wait(0.1) do
-        if getgenv().SpinPos then
-            SpinOffset = CFrame.new(0, PosY, -20)
-            task.wait(0.1)
-            SpinOffset = CFrame.new(-20, PosY, 0)
-            task.wait(0.1)
-            SpinOffset = CFrame.new(0, PosY, 20)
-            task.wait(0.1)
-            SpinOffset = CFrame.new(20, PosY, 0)
-        else
-            SpinOffset = CFrame.new(0, PosY, 0)
-        end
-    end
-end)
 Setting:AddSlider({
     Title = "Tween Speed",
     Description = "Điều chỉnh tốc độ tween",
