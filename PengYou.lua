@@ -7542,49 +7542,58 @@ Race:AddToggle({
     end,
 })
 spawn(function()
-    while wait(Sec) do
+    while task.wait(Sec) do
         pcall(function()
-            if G.Auto_Human then
-                if replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 0 then
-                    replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "2")
+            if not G.Auto_Human then return end
 
-                elseif replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 1 then
+            local Progress = replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1")
 
-                    local Mob = GetConnectionEnemies(F[1])
-                    if Mob then
-                        repeat
-                            wait()
-                            G.Kill(Mob, G.Auto_Human)
-                        until Mob.Humanoid.Health <= 0 or not Mob.Parent or not G.Auto_Human
-                    else
+            if Progress == 0 then
+                replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "2")
+
+            elseif Progress == 1 then
+
+                local Mob = GetConnectionEnemies(F[1])
+                local Mob2 = GetConnectionEnemies(F[2])
+                local Mob3 = GetConnectionEnemies(F[3])
+
+                if Mob then
+                    repeat
+                        task.wait()
+                        G.Kill(Mob, G.Auto_Human)
+                    until not G.Auto_Human
+                        or not Mob.Parent
+                        or Mob.Humanoid.Health <= 0
+
+                elseif Mob2 then
+                    repeat
+                        task.wait()
+                        G.Kill(Mob2, G.Auto_Human)
+                    until not G.Auto_Human
+                        or not Mob2.Parent
+                        or Mob2.Humanoid.Health <= 0
+
+                elseif Mob3 then
+                    repeat
+                        task.wait()
+                        G.Kill(Mob3, G.Auto_Human)
+                    until not G.Auto_Human
+                        or not Mob3.Parent
+                        or Mob3.Humanoid.Health <= 0
+
+                else
+                    if not workspace:FindFirstChild(F[1]) then
                         _tp(CFrame.new(-2172,103,-4015))
-                    end
-
-                    local Mob2 = GetConnectionEnemies(F[2])
-                    if Mob2 then
-                        repeat
-                            wait()
-                            G.Kill(Mob2, G.Auto_Human)
-                        until Mob2.Humanoid.Health <= 0 or not Mob2.Parent or not G.Auto_Human
-                    else
+                    elseif not workspace:FindFirstChild(F[2]) then
                         _tp(CFrame.new(2006,448,853))
-                    end
-
-                    local Mob3 = GetConnectionEnemies(F[3])
-                    if Mob3 then
-                        repeat
-                            wait()
-                            G.Kill(Mob3, G.Auto_Human)
-                        until Mob3.Humanoid.Health <= 0 or not Mob3.Parent or not G.Auto_Human
                     else
-                        tp(CFrame.new(-1576,198,13))
+                        _tp(CFrame.new(-1576,198,13))
                     end
                 end
             end
         end)
     end
 end)
-
 Race:AddToggle({
     Name = "Auto Angel V2/V3",
     Description = "",
