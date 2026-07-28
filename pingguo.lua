@@ -11043,6 +11043,7 @@ Get:AddToggle({
 spawn(function()
     while task.wait(0.5) do
         if _G.AutoBartilo then
+            _B = true
             pcall(function()
                 local lp = game:GetService("Players").LocalPlayer
                 local questGui = lp.PlayerGui.Main.Quest
@@ -11088,12 +11089,13 @@ spawn(function()
                         _tp(CFrame.new(900, 300, 600)) 
                         task.wait(1)
                     end
-                end
-            end)
+                 end
+               end)
+         else
+            _B = false
         end
     end
 end)
-
 
 
 Get:AddSection({"Boss Raid"});
