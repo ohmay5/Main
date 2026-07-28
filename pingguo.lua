@@ -11091,25 +11091,36 @@ Spawn(function()
                                 -- GIAI ĐOẠN 2: CHẠM VÀO MÃ (Đã nâng độ cao Y lên 12.00)
                 elseif progress == 2 then
     local CodePositions = {
-        CFrame.new(-1850.56, 13.00, 1749.02), -- Y
-        CFrame.new(-1858.71, 16.00, 1709.13), -- Vô cực
-        CFrame.new(-1804.00, 15.00, 1749.24), -- C
-        CFrame.new(-1858.79, 16.00, 1727.47), -- /
-        CFrame.new(-1866.85, 14.00, 1681.42), -- M
-        CFrame.new(-1802.71, 16.00, 1684.17), -- F
-        CFrame.new(-1822.28, 13.00, 1717.06), -- N
-        CFrame.new(-1813.12, 13.50, 1727.74)  -- B
+        CFrame.new(-1850.56, 13.00, 1749.02),
+        CFrame.new(-1858.71, 16.00, 1709.13),
+        CFrame.new(-1804.00, 15.00, 1749.24),
+        CFrame.new(-1858.79, 16.00, 1727.47),
+        CFrame.new(-1866.85, 14.00, 1681.42),
+        CFrame.new(-1802.71, 16.00, 1684.17),
+        CFrame.new(-1822.28, 13.00, 1717.06),
+        CFrame.new(-1813.12, 13.50, 1727.74)
     }
 
-    for i = 1, #CodePositions do
+    local HRP = game.Players.LocalPlayer.Character.HumanoidRootPart
+    local StartPos = CodePositions[1]
+
+    -- Nếu đang xa khu vực chữ thì bay tới điểm đầu
+    if (HRP.Position - StartPos.Position).Magnitude > 300 then
+        _tp(StartPos)
+        task.wait(2)
+    end
+
+    -- Đã ở gần thì chạy hết các điểm
+    for i, pos in ipairs(CodePositions) do
         if not _G.AutoBartilo then break end
         
-        _tp(CodePositions[i])
+        _tp(pos)
         task.wait(2)
     end
 
     CommF:InvokeServer("BartiloQuestProgress", "Finish")
     task.wait(10)
+end
                 end
             end)
         else
