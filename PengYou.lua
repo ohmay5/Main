@@ -690,7 +690,7 @@ local function FarmAtivo()
         _G.FarmMastery_G or  
         (getgenv()).AutoMaterial or  
         _G.AutoTyrant or
-        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Mink or _G.Auto_Human or _G.Auto_Skypiea or _G.Auto_Fish or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoCyborg or _G.AutoBartilo
+        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Human or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoCyborg or _G.AutoBartilo or G.AutoRaceV3
     )
 end
 
@@ -1283,7 +1283,7 @@ end;
 spawn(function()
 	while task.wait() do
 		pcall(function()
-			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Mink or _G.Auto_Human or _G.Auto_Skypiea or _G.Auto_Fish or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoNewWorld or getgenv().UpgradeRaceV2 or getgenv().AutoRaceV2 or getgenv().AutoCyborg or _G.AutoBartilo then
+			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Human or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoNewWorld or getgenv().UpgradeRaceV2 or getgenv().AutoRaceV2 or getgenv().AutoCyborg or _G.AutoBartilo or G.AutoRaceV3 then
 				shouldTween = true;
 				if not plr.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
 					local I = Instance.new("BodyVelocity");
@@ -7488,52 +7488,6 @@ end
         end
     end
 end)
-
-
-Race:AddToggle({
-    Name = "Auto Mink V2/V3",
-    Description = "",
-    Default = false,
-    Callback = function(I)
-        G.Auto_Mink = I;
-    end,
-});
-spawn(function()
-    while wait(Sec) do
-        pcall(function()
-            if G.Auto_Mink then
-                if replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") ~= 2 then
-                    if replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 0 then
-                        replicated.Remotes.CommF_:InvokeServer("Alchemist", "2");
-                    elseif replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 1 then
-                        if not plr.Backpack:FindFirstChild("Flower 1") and not plr.Character:FindFirstChild("Flower 1") then
-                            tp(workspace.Flower1.CFrame);
-                        elseif not plr.Backpack:FindFirstChild("Flower 2") and not plr.Character:FindFirstChild("Flower 2") then
-                            tp(workspace.Flower2.CFrame);
-                        elseif not plr.Backpack:FindFirstChild("Flower 3") and not plr.Character:FindFirstChild("Flower 3") then
-                            local I = GetConnectionEnemies("Swan Pirate");
-                            if I then
-                                repeat wait();
-                                    G.Kill(I, G.Auto_Mink);
-                                until GetBP("Flower 3") or not I.Parent or I.Humanoid.Health <= 0 or G.Auto_Mink == false;
-                            else
-                                tp(CFrame.new(980,121,1287));
-                            end;
-                        end;
-                    elseif replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 2 then
-                        replicated.Remotes.CommF_:InvokeServer("Alchemist", "3");
-                    end;
-                elseif replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 0 then
-                    replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "2");
-                elseif replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 1 then
-                    G.AutoFarmChest = true;
-                else
-                    G.AutoFarmChest = false;
-                end;
-            end;
-        end);
-    end;
-end);
 Race:AddToggle({
     Name = "Auto Human V3",
     Default = false,
@@ -7554,8 +7508,6 @@ spawn(function()
             elseif Progress == 1 then
 
                 local Mob = GetConnectionEnemies(F[1])
-                local Mob2 = GetConnectionEnemies(F[2])
-                local Mob3 = GetConnectionEnemies(F[3])
 
                 if Mob then
                     repeat
@@ -7565,125 +7517,158 @@ spawn(function()
                         or not Mob.Parent
                         or Mob.Humanoid.Health <= 0
 
-                elseif Mob2 then
-                    repeat
-                        task.wait()
-                        G.Kill(Mob2, G.Auto_Human)
-                    until not G.Auto_Human
-                        or not Mob2.Parent
-                        or Mob2.Humanoid.Health <= 0
-
-                elseif Mob3 then
-                    repeat
-                        task.wait()
-                        G.Kill(Mob3, G.Auto_Human)
-                    until not G.Auto_Human
-                        or not Mob3.Parent
-                        or Mob3.Humanoid.Health <= 0
-
                 else
-                    if not workspace:FindFirstChild(F[1]) then
-                        _tp(CFrame.new(-2172,103,-4015))
-                    elseif not workspace:FindFirstChild(F[2]) then
-                        _tp(CFrame.new(2006,448,853))
+                    _tp(CFrame.new(-2172,103,-4015))
+                    task.wait(2)
+
+                    local Mob2 = GetConnectionEnemies(F[2])
+                    if Mob2 then
+                        repeat
+                            task.wait()
+                            G.Kill(Mob2, G.Auto_Human)
+                        until not G.Auto_Human
+                            or not Mob2.Parent
+                            or Mob2.Humanoid.Health <= 0
                     else
-                        _tp(CFrame.new(-1576,198,13))
+                        _tp(CFrame.new(2006,448,853))
+                        task.wait(2)
+
+                        local Mob3 = GetConnectionEnemies(F[3])
+                        if Mob3 then
+                            repeat
+                                task.wait()
+                                G.Kill(Mob3, G.Auto_Human)
+                            until not G.Auto_Human
+                                or not Mob3.Parent
+                                or Mob3.Humanoid.Health <= 0
+                        else
+                            _tp(CFrame.new(-1576,198,13))
+                            task.wait(3)
+                        end
                     end
+                end
+
+                -- kiểm tra hoàn thành sau khi giết đủ 3 con
+                local Check = replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1")
+                if Check == 2 then
+                    replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "3")
                 end
             end
         end)
     end
 end)
 Race:AddToggle({
-    Name = "Auto Angel V2/V3",
-    Description = "",
+    Name = "Auto Race V3",
+    Description = "Auto Human/Mink/Angel/Shark V3",
     Default = false,
-    Callback = function(I)
-        G.Auto_Skypiea = I;
+    Callback = function(v)
+        G.AutoRaceV3 = v
     end,
-});
-spawn(function()
-    while wait(Sec) do
-        pcall(function()
-            if G.Auto_Skypiea then
-                if replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") ~= -2 then
-                    if replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 0 then
-                        replicated.Remotes.CommF_:InvokeServer("Alchemist", "2");
-                    elseif replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 1 then
-                        if not plr.Backpack:FindFirstChild("Flower 1") and not plr.Character:FindFirstChild("Flower 1") then
-                            tp(workspace.Flower1.CFrame);
-                        elseif not plr.Backpack:FindFirstChild("Flower 2") and not plr.Character:FindFirstChild("Flower 2") then
-                            tp(workspace.Flower2.CFrame);
-                        elseif not plr.Backpack:FindFirstChild("Flower 3") and not plr.Character:FindFirstChild("Flower 3") then
-                            local I = GetConnectionEnemies("Swan Pirate");
-                            if I then
-                                repeat task.wait();
-                                    G.Kill(I, G.Auto_Skypiea);
-                                until plr.Backpack:FindFirstChild("Flower 3") or not I.Parent or I.Humanoid.Health <= 0 or G.Auto_Skypiea == false;
-                            else
-                                tp(CFrame.new(980,121,1287));
-                            end;
-                        end;
-                    elseif replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 2 then
-                        replicated.Remotes.CommF_:InvokeServer("Alchemist", "3");
-                    end;
-                elseif replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 0 then
-                    replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "2");
-                elseif replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 1 then
-                    for I, e in pairs(game.Players:GetChildren()) do
-                        if e.Name ~= plr.Name and tostring(e.Data.Race.Value) == "Skypiea" then
-                            repeat task.wait();
-                                tp((e.HumanoidRootPart.CFrame * CFrame.new(0, 8, 0)) * CFrame.Angles(math.rad(-45), 0, 0));
-                            until e.Humanoid.Health <= 0 or G.Auto_Skypiea == false;
-                        end;
-                    end;
-                end;
-            end;
-        end);
-    end;
-end);
+})
 
-Race:AddToggle({
-    Name = "Auto Shark V2/V3",
-    Description = "",
-    Default = false,
-    Callback = function(I)
-        G.Auto_Fish = I;
-    end,
-});
+
 spawn(function()
-    while wait(Sec) do
+    while task.wait(Sec) do
         pcall(function()
-            if G.Auto_Fish then
-                if replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") ~= -2 then
-                    if replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 0 then
-                        replicated.Remotes.CommF_:InvokeServer("Alchemist", "2");
-                    elseif replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 1 then
-                        if not plr.Backpack:FindFirstChild("Flower 1") and not plr.Character:FindFirstChild("Flower 1") then
-                            tp(workspace.Flower1.CFrame);
-                        elseif not plr.Backpack:FindFirstChild("Flower 2") and not plr.Character:FindFirstChild("Flower 2") then
-                            tp(workspace.Flower2.CFrame);
-                        elseif not plr.Backpack:FindFirstChild("Flower 3") and not plr.Character:FindFirstChild("Flower 3") then
-                            local I = GetConnectionEnemies("Swan Pirate");
-                            if I then
-                                repeat wait();
-                                    G.Kill(I, G.Auto_Fish);
-                                until plr.Backpack:FindFirstChild("Flower 3") or not I.Parent or I.Humanoid.Health <= 0 or G.Auto_Fish == false;
-                            else
-                                tp(CFrame.new(980,121,1287));
-                            end;
-                        end;
-                    elseif replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 2 then
-                        replicated.Remotes.CommF_:InvokeServer("Alchemist", "3");
-                    end;
-                elseif replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 0 then
-                    replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "2");
-                elseif replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 1 then
-                    warn("Sea Beast Soon");
-                end;
-            end;
-        end);
-    end;
+            if not G.AutoRaceV3 then return end
+
+            local Race = plr.Data.Race.Value
+            local Progress = replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1")
+
+
+            -- Chưa nhận quest V3
+            if Progress == 0 then
+                replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "2")
+
+
+            -- Đang làm quest V3
+            elseif Progress == 1 then
+
+
+                -- Human V3
+                if Race == "Human" then
+
+                    local Mob = GetConnectionEnemies(F[1])
+                    local Mob2 = GetConnectionEnemies(F[2])
+                    local Mob3 = GetConnectionEnemies(F[3])
+
+                    if Mob then
+                        repeat
+                            task.wait()
+                            G.Kill(Mob, G.AutoRaceV3)
+                        until not G.AutoRaceV3
+                        or not Mob.Parent
+                        or Mob.Humanoid.Health <= 0
+
+
+                    elseif Mob2 then
+                        repeat
+                            task.wait()
+                            G.Kill(Mob2, G.AutoRaceV3)
+                        until not G.AutoRaceV3
+                        or not Mob2.Parent
+                        or Mob2.Humanoid.Health <= 0
+
+
+                    elseif Mob3 then
+                        repeat
+                            task.wait()
+                            G.Kill(Mob3, G.AutoRaceV3)
+                        until not G.AutoRaceV3
+                        or not Mob3.Parent
+                        or Mob3.Humanoid.Health <= 0
+
+
+                    else
+                        _tp(CFrame.new(-2172,103,-4015))
+                    end
+
+
+
+                -- Mink V3
+                elseif Race == "Mink" then
+
+                    G.AutoFarmChest = true
+
+
+
+                -- Angel V3
+                elseif Race == "Skypiea" then
+
+                    for _,v in pairs(game.Players:GetPlayers()) do
+                        if v ~= plr 
+                        and v:FindFirstChild("Data")
+                        and v.Data.Race.Value == "Skypiea"
+                        and v.Character
+                        and v.Character:FindFirstChild("HumanoidRootPart") then
+
+                            repeat
+                                task.wait()
+                                _tp(v.Character.HumanoidRootPart.CFrame * CFrame.new(0,8,0))
+                            until not G.AutoRaceV3
+                            or v.Character.Humanoid.Health <= 0
+                        end
+                    end
+
+
+
+                -- Shark V3
+                elseif Race == "Fishman" then
+
+                    warn("Auto Sea Beast chưa thêm")
+
+                end
+
+
+
+            -- Hoàn thành V3
+            elseif Progress == 2 then
+
+                replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "3")
+
+            end
+        end)
+    end
 end)
 Race:AddSection({"Race upgrade v4 only in Sea 3"});
 end
