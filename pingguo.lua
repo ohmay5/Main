@@ -11088,34 +11088,33 @@ Spawn(function()
                         _tp(CFrame.new(900, 300, 600)) 
                         task.wait(1)
                     end              
-                    elseif progress == 2 then
-    local CodePositions = {
-        CFrame.new(-1850.4193, 10.4620, 1784.4238), -- Y
-        CFrame.new(-1857.8804, 11.6191, 1760.9619), -- D
-        CFrame.new(-1858.7991, 10.4620, 1784.4238), -- P
-        CFrame.new(-1803.5776, 10.4620, 1699.2200), -- K
-        CFrame.new(-1867.3148, 10.4620, 1784.4238), -- M
-        CFrame.new(-1801.4269, 10.4620, 1784.4238), -- F
-        CFrame.new(-1822.1522, 10.4620, 1717.1514), -- H
-        CFrame.new(-1813.7142, 10.4620, 1699.2200), -- B
-    }
-
-    local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-
-    for _, cf in ipairs(CodePositions) do
-        if not _G.AutoBartilo then break end
-
-        _tp(cf + Vector3.new(0,3,0))
-        task.wait(0.8)
-
-        -- Chạm trực tiếp
-        hrp.CFrame = cf + Vector3.new(0,1,0)
-        task.wait(0.8)
-    end
-
-    CommF:InvokeServer("BartiloQuestProgress", "Finish")
-    task.wait(3)
-end
+                elseif progress == 2 then
+                    local CodePositions = {
+                        CFrame.new(-1850.56, 10.46, 1749.02), -- 1. Chữ Y
+                        CFrame.new(-1858.71, 10.46, 1709.13), -- 2. Vô cực
+                        CFrame.new(-1804.00, 10.46, 1749.24), -- 3. Chữ C
+                        CFrame.new(-1858.79, 10.46, 1727.47), -- 4. Dấu gạch chéo
+                        CFrame.new(-1866.85, 10.46, 1681.42), -- 5. Chữ M
+                        CFrame.new(-1802.71, 10.46, 1684.17), -- 6. Chữ F
+                        CFrame.new(-1822.28, 10.46, 1717.06), -- 7. Chữ N
+                        CFrame.new(-1813.12, 10.46, 1727.74)  -- 8. Chữ B
+                    }
+                    
+                    -- Chạy qua lần lượt các tọa độ theo đúng thứ tự
+                    for _, pos in ipairs(CodePositions) do
+                        if not _G.AutoBartilo then break end
+                        
+                        -- Teleport đến vị trí
+                        _tp(pos)
+                        
+                        -- Nghỉ 2 giây để game nhận diện chạm thành công
+                        task.wait(2.0)
+                    end
+                    
+                    -- Kết thúc giải mã
+                    CommF:InvokeServer("BartiloQuestProgress", "Finish")
+                    task.wait(10)
+                end
             end)
         else
             _B = false
