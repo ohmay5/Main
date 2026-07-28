@@ -11090,35 +11090,35 @@ Spawn(function()
                     end
 
                 --                 -- GIAI ĐOẠN 2: GIẢI MÃ (CODE) - Đã căn chỉnh bay sát vào mã trên cột
+                                -- GIAI ĐOẠN 2: CHẠM VÀO MÃ (Tự động chạm)
                 elseif progress == 2 then
                     local CodePositions = {
-                        CFrame.new(-1801.42, 13.50, 1717.15), -- Bay vào vị trí mã 1
-                        CFrame.new(-1857.88, 13.50, 1717.15), -- Bay vào vị trí mã 2
-                        CFrame.new(-1822.15, 13.50, 1717.15), -- Bay vào vị trí mã 3
-                        CFrame.new(-1813.71, 13.50, 1717.15), -- Bay vào vị trí mã 4
-                        CFrame.new(-1867.31, 13.50, 1717.15), -- Bay vào vị trí mã 5
-                        CFrame.new(-1803.58, 13.50, 1717.15), -- Bay vào vị trí mã 6
-                        CFrame.new(-1858.80, 13.50, 1717.15), -- Bay vào vị trí mã 7
-                        CFrame.new(-1850.22, 13.50, 1717.15)  -- Bay vào vị trí mã 8
+                        CFrame.new(-1801.42, 13.50, 1717.15),
+                        CFrame.new(-1857.88, 13.50, 1717.15),
+                        CFrame.new(-1822.15, 13.50, 1717.15),
+                        CFrame.new(-1813.71, 13.50, 1717.15),
+                        CFrame.new(-1867.31, 13.50, 1717.15),
+                        CFrame.new(-1803.58, 13.50, 1717.15),
+                        CFrame.new(-1858.80, 13.50, 1717.15),
+                        CFrame.new(-1850.22, 13.50, 1717.15)
                     }
                     
+                    -- Chạy qua lần lượt các tọa độ
                     for _, pos in pairs(CodePositions) do
                         if not _G.AutoBartilo then break end
                         
-                        -- Bay thẳng vào vị trí nút bấm
+                        -- Chỉ cần teleport đến là nhân vật "chạm" vào tấm mã
                         _tp(pos)
-                        task.wait(1.5)
                         
-                        -- Tương tác
-                        game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game)
-                        task.wait(0.2)
-                        game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.E, false, game)
-                        task.wait(0.5)
+                        -- Đợi 2 giây để game ghi nhận va chạm (thay vì nhấn E)
+                        task.wait(2.0)
                     end
                     
-                    -- Kết thúc nhiệm vụ
+                    -- Sau khi đã "chạm" hết 8 tấm, gửi lệnh kết thúc
                     CommF:InvokeServer("BartiloQuestProgress", "Finish")
-                    task.wait(5) -- Chống lặp
+                    
+                    -- Nghỉ dài để tránh lặp lại không cần thiết
+                    task.wait(10)
                 end
             end)
         else
