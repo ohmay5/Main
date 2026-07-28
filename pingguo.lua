@@ -11089,31 +11089,36 @@ Spawn(function()
                         task.wait(1)
                     end
 
-                -- GIAI ĐOẠN 2: NHẬP MẬT MÃ (Dưới hầm)
+                --                 -- GIAI ĐOẠN 2: GIẢI MÃ (CODE) - Đã căn chỉnh bay sát vào mã trên cột
                 elseif progress == 2 then
                     local CodePositions = {
-                        CFrame.new(-1801.42, 10.46, 1717.15),
-                        CFrame.new(-1857.88, 10.46, 1717.15),
-                        CFrame.new(-1822.15, 10.46, 1717.15),
-                        CFrame.new(-1813.71, 10.46, 1717.15),
-                        CFrame.new(-1867.31, 10.46, 1717.15),
-                        CFrame.new(-1803.58, 10.46, 1717.15),
-                        CFrame.new(-1858.80, 10.46, 1717.15),
-                        CFrame.new(-1850.22, 10.46, 1717.15)
+                        CFrame.new(-1801.42, 13.50, 1717.15), -- Bay vào vị trí mã 1
+                        CFrame.new(-1857.88, 13.50, 1717.15), -- Bay vào vị trí mã 2
+                        CFrame.new(-1822.15, 13.50, 1717.15), -- Bay vào vị trí mã 3
+                        CFrame.new(-1813.71, 13.50, 1717.15), -- Bay vào vị trí mã 4
+                        CFrame.new(-1867.31, 13.50, 1717.15), -- Bay vào vị trí mã 5
+                        CFrame.new(-1803.58, 13.50, 1717.15), -- Bay vào vị trí mã 6
+                        CFrame.new(-1858.80, 13.50, 1717.15), -- Bay vào vị trí mã 7
+                        CFrame.new(-1850.22, 13.50, 1717.15)  -- Bay vào vị trí mã 8
                     }
                     
                     for _, pos in pairs(CodePositions) do
                         if not _G.AutoBartilo then break end
+                        
+                        -- Bay thẳng vào vị trí nút bấm
                         _tp(pos)
                         task.wait(1.5)
-                        -- Giả lập nhấn phím E để tương tác với nút
+                        
+                        -- Tương tác
                         game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game)
                         task.wait(0.2)
                         game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.E, false, game)
                         task.wait(0.5)
                     end
-                    -- Sau khi nhấn xong hết thì báo hoàn thành cho NPC
+                    
+                    -- Kết thúc nhiệm vụ
                     CommF:InvokeServer("BartiloQuestProgress", "Finish")
+                    task.wait(5) -- Chống lặp
                 end
             end)
         else
