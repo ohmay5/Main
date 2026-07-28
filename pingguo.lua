@@ -11127,44 +11127,61 @@ Get:AddToggle({
 
 spawn(function()
     while task.wait(0.5) do
-        if _G.AutoLawKak then
+        if _G.AutoBartilo then
             pcall(function()
                 local lp = game:GetService("Players").LocalPlayer
                 local ws = game:GetService("Workspace")
                 local rs = game:GetService("ReplicatedStorage")
                 
-                -- Kiểm tra trạng thái Raid
-                local orderBoss = ws.Enemies:FindFirstChild("Order")
-                local orderStorage = rs:FindFirstChild("Order")
+                -- Lấy dữ liệu từ quest
+                local level = lp.Data.Level.Value
+                local progress = CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
+                local questGui = lp.PlayerGui.Main.Quest
                 
-                -- 1. Mua Chip nếu chưa có (Chỉ mua khi KHÔNG có raid)
-                if not orderBoss and not orderStorage then
-                    if not lp.Backpack:FindFirstChild("Microchip") and not lp.Character:FindFirstChild("Microchip") then
-                        rs.Remotes.CommF_:InvokeServer("BlackbeardReward", "Microchip", "2")
-                        task.wait(0.5)
+                -- GIAI ĐOẠN 0: SWAN PIRATES
+                if level >= 800 and progress == 0 then
+                    -- Kiểm tra xem đã nhận quest chưa
+                    if questGui.Visible and string.find(questGui.Container.QuestTitle.Title.Text, "Swan Pirates") then
+                        local enemy = GetConnectionEnemies("Swan Pirates") -- Dùng hàm tìm quái chuẩn
+                        if enemy then
+                            repeat
+                                task.wait(0.1)
+                                G.Kill(enemy, _G.AutoBartilo)
+                            until not _G.AutoBartilo or not enemy.Parent or enemy.Humanoid.Health <= 0
+                        end
+                    else
+                        -- Bay tới nhận quest
+                        _tp(CFrame.new(-456.28, 73.02, 299.89))
+                        task.wait(1)
+                        CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
                     end
-                end
 
-                -- 2. Kích hoạt Raid (Chỉ khi có chip và KHÔNG có raid)
-                if (lp.Backpack:FindFirstChild("Microchip") or lp.Character:FindFirstChild("Microchip")) 
-                and not orderBoss and not orderStorage then
-                    _tp(CFrame.new(-6217.2021484375, 28.047645568848, -5053.1357421875))
-                    task.wait(0.5)
-                    fireclickdetector(ws.Map.CircleIsland.RaidSummon.Button.Main.ClickDetector)
-                end
-
-                -- 3. Đánh Boss Order
-                if orderBoss then
-                    local enemy = GetConnectionEnemies("Order")
-                    if enemy then
+                -- GIAI ĐOẠN 1: JEREMY
+                elseif level >= 850 and progress == 1 then
+                    local boss = GetConnectionEnemies("Jeremy")
+                    if boss then
                         repeat
-                            task.wait()
-                            G.Kill(enemy, _G.AutoLawKak)
-                        until not _G.AutoLawKak or not enemy.Parent or enemy.Humanoid.Health <= 0
+                            task.wait(0.1)
+                            G.Kill(boss, _G.AutoBartilo)
+                        until not _G.AutoBartilo or not boss.Parent or boss.Humanoid.Health <= 0
+                    else
+                        -- Bay về NPC check tiến độ nếu không thấy Jeremy
+                        _tp(CFrame.new(-456.28, 73.02, 299.89))
                     end
-                elseif orderStorage then
-                    -- Đợi raid bắt đầu
-                    _tp(CFrame.new(-6217.2021484375, 28.047645568848, -5053.1357421875))
+
+                -- GIAI ĐOẠN 2: GIẢI MÃ
+                elseif level >= 850 and progress == 2 then
+                    local plates = {
+                        CFrame.new(-1850.49, 13.17, 1750.89), CFrame.new(-1858.87, 19.37, 1712.01),
+                        CFrame.new(-1803.94, 16.57, 1750.89), CFrame.new(-1858.55, 16.86, 1724.79),
+                        CFrame.new(-1869.54, 15.98, 1681.00), CFrame.new(-1800.09, 16.49, 1684.52),
+                        CFrame.new(-1819.26, 14.79, 1717.90), CFrame.new(-1813.51, 14.86, 1724.79)
+                    }
+                    for _, pt in ipairs(plates) do
+                        if not _G.AutoBartilo then break end
+                        _tp(pt)
+                        task.wait(0.6) -- Chờ để game nhận diện plate
+                    end
                 end
             end)
         end
