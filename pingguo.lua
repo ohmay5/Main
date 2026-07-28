@@ -11090,34 +11090,32 @@ Spawn(function()
                     end              
                                 -- GIAI ĐOẠN 2: CHẠM VÀO MÃ (Đã nâng độ cao Y lên 12.00)
                 elseif progress == 2 then
-                 local CodePositions = {
-        CFrame.new(-1850.56, 13.00, 1749.02), -- 1. Chữ Y
-        CFrame.new(-1858.71, 16.00, 1709.13), -- 2. Vô cực
-        CFrame.new(-1804.00, 15.00, 1749.24), -- 3. Chữ C
-        CFrame.new(-1858.79, 16.00, 1727.47), -- 4. Dấu gạch chéo
-        CFrame.new(-1866.85, 14.00, 1681.42), -- 5. Chữ M
-        CFrame.new(-1802.71, 16.00, 1684.17), -- 6. Chữ F
-        CFrame.new(-1822.28, 13.00, 1717.06), -- 7. Chữ N
-        CFrame.new(-1813.12, 13.50, 1727.74)  -- 8. Chữ B
+    local CodePositions = {
+        CFrame.new(-1850.56, 13.00, 1749.02), -- Y
+        CFrame.new(-1858.71, 16.00, 1709.13), -- Vô cực
+        CFrame.new(-1804.00, 15.00, 1749.24), -- C
+        CFrame.new(-1858.79, 16.00, 1727.47), -- /
+        CFrame.new(-1866.85, 14.00, 1681.42), -- M
+        CFrame.new(-1802.71, 16.00, 1684.17), -- F
+        CFrame.new(-1822.28, 13.00, 1717.06), -- N
+        CFrame.new(-1813.12, 13.50, 1727.74)  -- B
     }
 
     local HRP = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 
-    for _, pos in ipairs(CodePositions) do
+    for i, pos in ipairs(CodePositions) do
         if not _G.AutoBartilo then break end
 
-        _tp(pos)
+        HRP.CFrame = pos
+        task.wait(1.5)
 
-        repeat
-            task.wait(0.1)
-        until not _G.AutoBartilo
-            or (HRP.Position - pos.Position).Magnitude <= 5
-
-        task.wait(0.8)
+        -- Chạm lại để chắc chắn
+        HRP.CFrame = pos
+        task.wait(1)
     end
 
     CommF:InvokeServer("BartiloQuestProgress", "Finish")
-    task.wait(10)
+    task.wait(15)
                 end
             end)
         else
