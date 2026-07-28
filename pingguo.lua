@@ -12045,11 +12045,18 @@ spawn(function()
     pcall(function()
         while wait(Sec) do
             if _G.Raiding then
-                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
+                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible then
                     attackNearbyEnemies()
+
                     local nextIsland = getNextIsland()
                     if nextIsland then
-                        _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+                        if _G.KillH then
+                            -- Đảo 4-5: giữ ở 80 stud
+                            _tp(nextIsland.CFrame * CFrame.new(0, 80, 0))
+                        else
+                            -- Đảo 1-3: giữ ở 50 stud
+                            _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+                        end
                         NextIs = true
                     else
                         NextIs = false
@@ -12063,7 +12070,6 @@ spawn(function()
         end
     end)
 end)
-
 -- // 4. Loop Kill Aura (Giữ nguyên)
 task.spawn(function()
     while true do 
