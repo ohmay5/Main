@@ -11101,21 +11101,26 @@ Spawn(function()
         CFrame.new(-1813.12, 13.50, 1727.74)  -- B
     }
 
-    local HRP = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
-
-    for i, pos in ipairs(CodePositions) do
+    for i = 1, #CodePositions do
         if not _G.AutoBartilo then break end
 
-        HRP.CFrame = pos
-        task.wait(1.5)
+        local pos = CodePositions[i]
 
-        -- Chạm lại để chắc chắn
-        HRP.CFrame = pos
-        task.wait(1)
+        -- bay tới từng chữ
+        _tp(pos)
+
+        -- đợi tới nơi
+        repeat
+            task.wait(0.2)
+        until (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - pos.Position).Magnitude < 8
+
+        -- chờ chữ nhận
+        task.wait(2)
     end
 
     CommF:InvokeServer("BartiloQuestProgress", "Finish")
-    task.wait(15)
+    task.wait(10)
+end
                 end
             end)
         else
