@@ -7404,75 +7404,7 @@ Maestry:AddToggle({
 })
 if World2 then
 Race:AddSection({"Upgrade Races"});
-getgenv().UpgradeRaceV2 = false
 
-Race:AddToggle({
-    Name = "Auto Upgrade Race V2 ok",
-    Default = false,
-    Callback = function(Value)
-        getgenv().UpgradeRaceV2 = Value
-    end
-})
-
-task.spawn(function()
-    pcall(function()
-        while task.wait(0.5) do -- Tăng thời gian chờ để đỡ lag
-            if not getgenv().UpgradeRaceV2 or not World2 then continue end
-
-            local player = game:GetService("Players").LocalPlayer
-            local char = player.Character
-            local hrp = char and char:FindFirstChild("HumanoidRootPart")
-            if not hrp then continue end
-            
-            local raceData = player.Data.Race
-            if raceData:FindFirstChild("Evolved") then continue end -- Đã V2 thì dừng
-
-            -- Gọi trạng thái Alchemist
-            local alchemistStatus = game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist","1")
-
-            -- Giai đoạn 1: Bắt đầu quest
-            if alchemistStatus == 0 then
-                local targetPos = CFrame.new(-2779.83521, 72.9661407, -3574.02002)
-                if (targetPos.Position - hrp.Position).Magnitude > 5 then
-                    _tp(targetPos) -- Dùng hàm _tp của bạn
-                else
-                    task.wait(1)
-                    game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist","2")
-                end
-
-            -- Giai đoạn 2: Thu thập hoa
-            elseif alchemistStatus == 1 then
-                -- Kiểm tra hoa trong túi hoặc người
-                local hasF1 = player.Backpack:FindFirstChild("Flower 1") or char:FindFirstChild("Flower 1")
-                local hasF2 = player.Backpack:FindFirstChild("Flower 2") or char:FindFirstChild("Flower 2")
-                local hasF3 = player.Backpack:FindFirstChild("Flower 3") or char:FindFirstChild("Flower 3")
-
-                if not hasF1 and workspace:FindFirstChild("Flower1") then
-                    _tp(workspace.Flower1.CFrame)
-                elseif not hasF2 and workspace:FindFirstChild("Flower2") then
-                    _tp(workspace.Flower2.CFrame)
-                elseif not hasF3 then
-                    -- Đánh Zombie lấy Flower 3
-                    local zombie = workspace.Enemies:FindFirstChild("Zombie")
-                    if zombie then
-                        EquipWeapon(getgenv().SelectWeapon)
-                        AutoHaki()
-                        -- Fix lỗi biến Pos (thay bằng Vector3 mới hoặc CFrame)
-                        _tp(zombie.HumanoidRootPart.CFrame * CFrame.new(0,0,5))
-                        zombie.HumanoidRootPart.CanCollide = false
-                        game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                    else
-                        _tp(CFrame.new(-5685.923, 48.48, -853.237))
-                    end
-                end
-
-            -- Giai đoạn 3: Hoàn thành
-            elseif alchemistStatus == 2 then
-                game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist","3")
-            end
-        end
-    end)
-end)
 Race:AddToggle({
     Name = "Auto Race V2",
     Default = false,
@@ -7539,7 +7471,7 @@ spawn(function()
         end
 
         if target then
-            _tp(target.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
+            _tp(target.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0))
             G.Kill(target)
         else
             _tp(CFrame.new(-5685.92, 48.48, -853.23))
@@ -7603,72 +7535,55 @@ spawn(function()
     end;
 end);
 Race:AddToggle({
-    Name = "Auto Human V2/V3",
-    Description = "",
+    Name = "Auto Human V3",
     Default = false,
-    Callback = function(I)
-        G.Auto_Human = I;
+    Callback = function(v)
+        G.Auto_Human = v
     end,
-});
+})
 spawn(function()
     while wait(Sec) do
         pcall(function()
             if G.Auto_Human then
-                if replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") ~= -2 then
-                    if replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 0 then
-                        replicated.Remotes.CommF_:InvokeServer("Alchemist", "2");
-                    elseif replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 1 then
-                        if not plr.Backpack:FindFirstChild("Flower 1") and not plr.Character:FindFirstChild("Flower 1") then
-                            tp(workspace.Flower1.CFrame);
-                        elseif not plr.Backpack:FindFirstChild("Flower 2") and not plr.Character:FindFirstChild("Flower 2") then
-                            tp(workspace.Flower2.CFrame);
-                        elseif not plr.Backpack:FindFirstChild("Flower 3") and not plr.Character:FindFirstChild("Flower 3") then
-                            local I = GetConnectionEnemies("Swan Pirate");
-                            if I then
-                                repeat wait();
-                                    G.Kill(I, G.Auto_Human);
-                                until plr.Backpack:FindFirstChild("Flower 3") or not I.Parent or I.Humanoid.Health <= 0 or G.Auto_Human == false;
-                            else
-                                tp(CFrame.new(980,121,1287));
-                            end;
-                        end;
-                    elseif replicated.Remotes.CommF_:InvokeServer("Alchemist", "1") == 2 then
-                        replicated.Remotes.CommF_:InvokeServer("Alchemist", "3");
-                    end;
-                elseif replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 0 then
-                    replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "2");
+                if replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 0 then
+                    replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "2")
+
                 elseif replicated.Remotes.CommF_:InvokeServer("Wenlocktoad", "1") == 1 then
-                    local I = GetConnectionEnemies(F[1]);
-                    if I then
-                        repeat wait();
-                            G.Kill(I, _G.Auto_Human);
-                        until I.Humanoid.Health <= 0 or not I.Parent or not _G.Auto_Human;
-                    else
-                        _tp(CFrame.new(-2172,103,-4015));
-                    end;
 
-                    local e = GetConnectionEnemies(F[2]);
-                    if e then
-                        repeat wait();
-                            G.Kill(e, _G.Auto_Human);
-                        until e.Humanoid.Health <= 0 or not e.Parent or not _G.Auto_Human;
+                    local Mob = GetConnectionEnemies(F[1])
+                    if Mob then
+                        repeat
+                            wait()
+                            G.Kill(Mob, G.Auto_Human)
+                        until Mob.Humanoid.Health <= 0 or not Mob.Parent or not G.Auto_Human
                     else
-                        _tp(CFrame.new(2006,448,853));
-                    end;
+                        _tp(CFrame.new(-2172,103,-4015))
+                    end
 
-                    local K = GetConnectionEnemies(F[3]);
-                    if K then
-                        repeat wait();
-                            G.Kill(K, _G.Auto_Human);
-                        until K.Humanoid.Health <= 0 or not K.Parent or not G.Auto_Human;
+                    local Mob2 = GetConnectionEnemies(F[2])
+                    if Mob2 then
+                        repeat
+                            wait()
+                            G.Kill(Mob2, G.Auto_Human)
+                        until Mob2.Humanoid.Health <= 0 or not Mob2.Parent or not G.Auto_Human
                     else
-                        tp(CFrame.new(-1576,198,13));
-                    end;
-                end;
-            end;
-        end);
-    end;
-end);
+                        _tp(CFrame.new(2006,448,853))
+                    end
+
+                    local Mob3 = GetConnectionEnemies(F[3])
+                    if Mob3 then
+                        repeat
+                            wait()
+                            G.Kill(Mob3, G.Auto_Human)
+                        until Mob3.Humanoid.Health <= 0 or not Mob3.Parent or not G.Auto_Human
+                    else
+                        tp(CFrame.new(-1576,198,13))
+                    end
+                end
+            end
+        end)
+    end
+end)
 
 Race:AddToggle({
     Name = "Auto Angel V2/V3",
