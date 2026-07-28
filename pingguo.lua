@@ -11046,7 +11046,7 @@ Get:AddToggle({
     end
 })
 
-spawn(function()
+Spawn(function()
     while task.wait(0.5) do
         if _G.AutoBartilo then
             _B = true
@@ -11054,29 +11054,23 @@ spawn(function()
                 local lp = game:GetService("Players").LocalPlayer
                 local questGui = lp.PlayerGui.Main.Quest
                 local level = lp.Data.Level.Value
+                local CommF = game:GetService("ReplicatedStorage").Remotes.CommF_
                 local progress = CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
 
                 -- GIAI ĐOẠN 0: SWAN PIRATES
                 if level >= 800 and progress == 0 then
-                    -- Kiểm tra xem đã nhận quest chưa qua TÊN trên GUI
                     if questGui.Visible and string.find(questGui.Container.QuestTitle.Title.Text, "Swan Pirates") then
-                        -- TÌM QUÁI THEO TÊN
                         local enemy = GetConnectionEnemies("Swan Pirate")
-                        
                         if enemy then
-                            -- Nếu thấy quái, bám đuổi và đánh
                             repeat
                                 task.wait(0.1)
                                 G.Kill(enemy, _G.AutoBartilo)
                             until not _G.AutoBartilo or not enemy.Parent or enemy.Humanoid.Health <= 0
                         else
-                            -- NẾU CHƯA THẤY: Teleport tới tọa độ bãi quái để nó spawn/load vào tầm nhìn
-                            -- Tọa độ bãi Swan Pirates tại Kingdom of Rose
-                            _tp(CFrame.new(1068.6643066406, 137.61428833008, 1322.1060791016))
+                            _tp(CFrame.new(1068.66, 137.61, 1322.10))
                             task.wait(1)
                         end
                     else
-                        -- CHƯA NHẬN QUEST: Quay về NPC
                         _tp(CFrame.new(-456.28, 73.02, 299.89))
                         task.wait(1)
                         CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
@@ -11091,13 +11085,38 @@ spawn(function()
                             G.Kill(boss, _G.AutoBartilo)
                         until not _G.AutoBartilo or not boss.Parent or boss.Humanoid.Health <= 0
                     else
-                        -- Teleport tới đỉnh tháp chỗ Jeremy đứng
                         _tp(CFrame.new(900, 300, 600)) 
                         task.wait(1)
                     end
-                 end
-               end)
-         else
+
+                -- GIAI ĐOẠN 2: NHẬP MẬT MÃ (Dưới hầm)
+                elseif progress == 2 then
+                    local CodePositions = {
+                        CFrame.new(-1801.42, 10.46, 1717.15),
+                        CFrame.new(-1857.88, 10.46, 1717.15),
+                        CFrame.new(-1822.15, 10.46, 1717.15),
+                        CFrame.new(-1813.71, 10.46, 1717.15),
+                        CFrame.new(-1867.31, 10.46, 1717.15),
+                        CFrame.new(-1803.58, 10.46, 1717.15),
+                        CFrame.new(-1858.80, 10.46, 1717.15),
+                        CFrame.new(-1850.22, 10.46, 1717.15)
+                    }
+                    
+                    for _, pos in pairs(CodePositions) do
+                        if not _G.AutoBartilo then break end
+                        _tp(pos)
+                        task.wait(1.5)
+                        -- Giả lập nhấn phím E để tương tác với nút
+                        game:GetService("VirtualInputManager"):SendKeyEvent(true, Enum.KeyCode.E, false, game)
+                        task.wait(0.2)
+                        game:GetService("VirtualInputManager"):SendKeyEvent(false, Enum.KeyCode.E, false, game)
+                        task.wait(0.5)
+                    end
+                    -- Sau khi nhấn xong hết thì báo hoàn thành cho NPC
+                    CommF:InvokeServer("BartiloQuestProgress", "Finish")
+                end
+            end)
+        else
             _B = false
         end
     end
