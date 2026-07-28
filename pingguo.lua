@@ -11088,30 +11088,25 @@ Spawn(function()
                         _tp(CFrame.new(900, 300, 600)) 
                         task.wait(1)
                     end              
+                                -- GIAI ĐOẠN 2: CHẠM VÀO MÃ (Đã nâng độ cao Y lên 12.00)
                 elseif progress == 2 then
                     local CodePositions = {
-                        CFrame.new(-1850.56, 10.46, 1749.02), -- 1. Chữ Y
-                        CFrame.new(-1858.71, 10.46, 1709.13), -- 2. Vô cực
-                        CFrame.new(-1804.00, 10.46, 1749.24), -- 3. Chữ C
-                        CFrame.new(-1858.79, 10.46, 1727.47), -- 4. Dấu gạch chéo
-                        CFrame.new(-1866.85, 10.46, 1681.42), -- 5. Chữ M
-                        CFrame.new(-1802.71, 10.46, 1684.17), -- 6. Chữ F
-                        CFrame.new(-1822.28, 10.46, 1717.06), -- 7. Chữ N
-                        CFrame.new(-1813.12, 10.46, 1727.74)  -- 8. Chữ B
+                        CFrame.new(-1850.56, 12.00, 1749.02), -- 1. Chữ Y
+                        CFrame.new(-1858.71, 12.00, 1709.13), -- 2. Vô cực
+                        CFrame.new(-1804.00, 12.00, 1749.24), -- 3. Chữ C
+                        CFrame.new(-1858.79, 12.00, 1727.47), -- 4. Dấu gạch chéo
+                        CFrame.new(-1866.85, 12.00, 1681.42), -- 5. Chữ M
+                        CFrame.new(-1802.71, 12.00, 1684.17), -- 6. Chữ F
+                        CFrame.new(-1822.28, 12.00, 1717.06), -- 7. Chữ N
+                        CFrame.new(-1813.12, 12.00, 1727.74)  -- 8. Chữ B
                     }
                     
-                    -- Chạy qua lần lượt các tọa độ theo đúng thứ tự
                     for _, pos in ipairs(CodePositions) do
                         if not _G.AutoBartilo then break end
-                        
-                        -- Teleport đến vị trí
                         _tp(pos)
-                        
-                        -- Nghỉ 2 giây để game nhận diện chạm thành công
                         task.wait(2.0)
                     end
                     
-                    -- Kết thúc giải mã
                     CommF:InvokeServer("BartiloQuestProgress", "Finish")
                     task.wait(10)
                 end
