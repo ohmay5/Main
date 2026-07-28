@@ -1835,8 +1835,8 @@ QuestCheck = function()
             Qdata = 2
             Qname = "FireSideQuest"
             NameMon = "Lava Pirate"
-            PosQ = CFrame.new(-5428.03174, 15.0622921, -5299.43457)
-            PosM = CFrame.new(-5213.3315429688, 49.737880706787, -4701.451171875)
+            PosQ = CFrame.new(-5403.81, 29.20, -5367.39)
+            PosM = CFrame.new(-5033.36, 85.59, -5003.91)
         elseif I >= 1250 and I <= 1274 then
             Mon = "Ship Deckhand"
             Qdata = 1
