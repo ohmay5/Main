@@ -7523,16 +7523,14 @@ spawn(function()
 
                     -- Hoa 3 (Vàng - Drop từ quái)
                     elseif not (backpack:FindFirstChild("Flower 3") or char:FindFirstChild("Flower 3")) then
-                        local zombie = workspace.Enemies:FindFirstChild("Zombie")
-                        if zombie and zombie:FindFirstChild("HumanoidRootPart") then
-                            _tp(zombie.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
-                            -- Tự động đánh zombie lấy hoa
-                            game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
-                        else
-                            -- Đi đến chỗ spawn zombie nếu không thấy nó
-                            _tp(CFrame.new(-5685.92, 48.48, -853.23))
-                        end
-                    end
+    local zombie = workspace.Enemies:FindFirstChild("Zombie")
+    if zombie and zombie:FindFirstChild("HumanoidRootPart") then
+        _tp(zombie.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0))
+        game:GetService("VirtualUser"):Button1Down(Vector2.new(1280, 672))
+    else
+        _tp(CFrame.new(-5685.92, 48.48, -853.23))
+    end
+end
 
                 elseif status == 2 then
                     -- Đã đủ hoa -> Trả quest
