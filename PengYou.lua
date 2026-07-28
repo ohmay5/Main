@@ -1828,8 +1828,8 @@ QuestCheck = function()
             Qdata = 1
             Qname = "FireSideQuest"
             NameMon = "Magma Ninja"
-            PosQ = CFrame.new(-5402.01416015625, 29.197275161743164,-5299.43457)
-            PosM = CFrame.new(-5449.6728515625, 76.658744812012, -5808.2006835938)
+            PosQ = CFrame.new(-5403.81, 29.20, -5367.39)
+            PosM = CFrame.new(-5773.18, 76.39, -5672.34)
         elseif I >= 1200 and I <= 1249 then
             Mon = "Lava Pirate"
             Qdata = 2
