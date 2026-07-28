@@ -11120,7 +11120,6 @@ Spawn(function()
 
     CommF:InvokeServer("BartiloQuestProgress", "Finish")
     task.wait(10)
-end
                 end
             end)
         else
