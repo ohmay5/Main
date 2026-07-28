@@ -11138,25 +11138,33 @@ spawn(function()
                 local progress = CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
                 local questGui = lp.PlayerGui.Main.Quest
                 
-                -- GIAI ĐOẠN 0: SWAN PIRATES
-                if level >= 800 and progress == 0 then
-                    -- Kiểm tra xem đã nhận quest chưa
-                    if questGui.Visible and string.find(questGui.Container.QuestTitle.Title.Text, "Swan Pirates") then
-                        local enemy = GetConnectionEnemies("Swan Pirates") -- Dùng hàm tìm quái chuẩn
-                        if enemy then
-                            repeat
-                                task.wait(0.1)
-                                G.Kill(enemy, _G.AutoBartilo)
-                            until not _G.AutoBartilo or not enemy.Parent or enemy.Humanoid.Health <= 0
-                        end
-                    else
-                        -- Bay tới nhận quest
-                        _tp(CFrame.new(-456.28, 73.02, 299.89))
-                        task.wait(1)
-                        CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
-                    end
-
-                -- GIAI ĐOẠN 1: JEREMY
+                -- Sửa lại đoạn GIAI ĐOẠN 0 của bạn:
+if level >= 800 and progress == 0 then
+    -- 1. Kiểm tra nếu ĐÃ nhận quest (dựa vào title trên GUI)
+    local hasQuest = questGui.Visible and string.find(questGui.Container.QuestTitle.Title.Text, "Swan Pirates")
+    
+    if hasQuest then
+        -- ĐÃ NHẬN QUEST -> TÌM QUÁI
+        local enemy = GetConnectionEnemies("Swan Pirates")
+        if enemy then
+            repeat
+                task.wait(0.1)
+                G.Kill(enemy, _G.AutoBartilo)
+            until not _G.AutoBartilo or not enemy.Parent or enemy.Humanoid.Health <= 0
+        else
+            -- Đã nhận quest nhưng chưa thấy quái -> Bay tới khu vực quái
+            _tp(CFrame.new(-1200, 10, -1200)) -- Thay bằng tọa độ bãi Swan Pirates của bạn
+        end
+    else
+        -- CHƯA NHẬN QUEST -> BAY TỚI NPC
+        if (lp.Character.HumanoidRootPart.Position - Vector3.new(-456, 73, 299)).Magnitude > 15 then
+            _tp(CFrame.new(-456.28, 73.02, 299.89))
+        else
+            task.wait(0.5)
+            CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
+            task.wait(1)
+        end
+    end              -- GIAI ĐOẠN 1: JEREMY
                 elseif level >= 850 and progress == 1 then
                     local boss = GetConnectionEnemies("Jeremy")
                     if boss then
