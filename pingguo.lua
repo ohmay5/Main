@@ -11087,33 +11087,35 @@ Spawn(function()
                     else
                         _tp(CFrame.new(900, 300, 600)) 
                         task.wait(1)
-                    end
+                    end              
+                    elseif progress == 2 then
+    local CodePositions = {
+        CFrame.new(-1850.4193, 10.4620, 1784.4238), -- Y
+        CFrame.new(-1857.8804, 11.6191, 1760.9619), -- D
+        CFrame.new(-1858.7991, 10.4620, 1784.4238), -- P
+        CFrame.new(-1803.5776, 10.4620, 1699.2200), -- K
+        CFrame.new(-1867.3148, 10.4620, 1784.4238), -- M
+        CFrame.new(-1801.4269, 10.4620, 1784.4238), -- F
+        CFrame.new(-1822.1522, 10.4620, 1717.1514), -- H
+        CFrame.new(-1813.7142, 10.4620, 1699.2200), -- B
+    }
 
-                --                 -- GIAI ĐOẠN 2: GIẢI MÃ (CODE) - Đã căn chỉnh bay sát vào mã trên cột
-                                -- GIAI ĐOẠN 2: CHẠM VÀO MÃ (Tự động chạm)
-                elseif progress == 2 then
-                    local CodePositions = {
-    CFrame.new(-1850.4193, 10.4620, 1784.4238), -- Y
-    CFrame.new(-1857.8804, 11.6191, 1760.9619), -- D
-    CFrame.new(-1858.7991, 10.4620, 1784.4238), -- P
-    CFrame.new(-1803.5776, 10.4620, 1699.2200), -- K
-    CFrame.new(-1867.3148, 10.4620, 1784.4238), -- M
-    CFrame.new(-1801.4269, 10.4620, 1784.4238), -- F
-    CFrame.new(-1822.1522, 10.4620, 1717.1514), -- H
-    CFrame.new(-1813.7142, 10.4620, 1699.2200), -- B
-}
-                    
-                    -- Chạy qua lần lượt các tọa độ
-                    for _, pos in ipairs(CodePositions) do
-             if not _G.AutoBartilo then break end
+    local hrp = game.Players.LocalPlayer.Character:WaitForChild("HumanoidRootPart")
 
-          _tp(pos + Vector3.new(0, 3, 0))
-            task.wait(1.5)
-            end
+    for _, cf in ipairs(CodePositions) do
+        if not _G.AutoBartilo then break end
 
-          CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
-               task.wait(2)
-                end
+        _tp(cf + Vector3.new(0,3,0))
+        task.wait(0.8)
+
+        -- Chạm trực tiếp
+        hrp.CFrame = cf + Vector3.new(0,1,0)
+        task.wait(0.8)
+    end
+
+    CommF:InvokeServer("BartiloQuestProgress", "Finish")
+    task.wait(3)
+end
             end)
         else
             _B = false
