@@ -726,7 +726,9 @@ end
 -- FUNÇÃO PRINCIPAL: BRING
 --==================================================
 BringEnemy = function()
-    if not FarmAtivo() or not _B then return end
+    if not (FarmAtivo() or _G.AutoBartilo) or not _B then
+    return
+end
 
     local plr = game.Players.LocalPlayer  
     local char = plr.Character  
