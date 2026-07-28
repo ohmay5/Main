@@ -11093,32 +11093,26 @@ Spawn(function()
                                 -- GIAI ĐOẠN 2: CHẠM VÀO MÃ (Tự động chạm)
                 elseif progress == 2 then
                     local CodePositions = {
-                        CFrame.new(-1801.42, 13.50, 1717.15),
-                        CFrame.new(-1857.88, 13.50, 1717.15),
-                        CFrame.new(-1822.15, 13.50, 1717.15),
-                        CFrame.new(-1813.71, 13.50, 1717.15),
-                        CFrame.new(-1867.31, 13.50, 1717.15),
-                        CFrame.new(-1803.58, 13.50, 1717.15),
-                        CFrame.new(-1858.80, 13.50, 1717.15),
-                        CFrame.new(-1850.22, 13.50, 1717.15)
-                    }
+    CFrame.new(-1850.4193, 10.4620, 1784.4238), -- Y
+    CFrame.new(-1857.8804, 11.6191, 1760.9619), -- D
+    CFrame.new(-1858.7991, 10.4620, 1784.4238), -- P
+    CFrame.new(-1803.5776, 10.4620, 1699.2200), -- K
+    CFrame.new(-1867.3148, 10.4620, 1784.4238), -- M
+    CFrame.new(-1801.4269, 10.4620, 1784.4238), -- F
+    CFrame.new(-1822.1522, 10.4620, 1717.1514), -- H
+    CFrame.new(-1813.7142, 10.4620, 1699.2200), -- B
+}
                     
                     -- Chạy qua lần lượt các tọa độ
-                    for _, pos in pairs(CodePositions) do
-                        if not _G.AutoBartilo then break end
-                        
-                        -- Chỉ cần teleport đến là nhân vật "chạm" vào tấm mã
-                        _tp(pos)
-                        
-                        -- Đợi 2 giây để game ghi nhận va chạm (thay vì nhấn E)
-                        task.wait(2.0)
-                    end
-                    
-                    -- Sau khi đã "chạm" hết 8 tấm, gửi lệnh kết thúc
-                    CommF:InvokeServer("BartiloQuestProgress", "Finish")
-                    
-                    -- Nghỉ dài để tránh lặp lại không cần thiết
-                    task.wait(10)
+                    for _, pos in ipairs(CodePositions) do
+             if not _G.AutoBartilo then break end
+
+          _tp(pos + Vector3.new(0, 3, 0))
+            task.wait(1.5)
+            end
+
+          CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
+               task.wait(2)
                 end
             end)
         else
