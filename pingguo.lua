@@ -11091,14 +11091,14 @@ Spawn(function()
                                 -- GIAI ĐOẠN 2: CHẠM VÀO MÃ (Đã nâng độ cao Y lên 12.00)
                 elseif progress == 2 then
                     local CodePositions = {
-                        CFrame.new(-1850.56, 12.00, 1749.02), -- 1. Chữ Y
-                        CFrame.new(-1858.71, 12.00, 1709.13), -- 2. Vô cực
-                        CFrame.new(-1804.00, 12.00, 1749.24), -- 3. Chữ C
-                        CFrame.new(-1858.79, 12.00, 1727.47), -- 4. Dấu gạch chéo
-                        CFrame.new(-1866.85, 12.00, 1681.42), -- 5. Chữ M
-                        CFrame.new(-1802.71, 12.00, 1684.17), -- 6. Chữ F
-                        CFrame.new(-1822.28, 12.00, 1717.06), -- 7. Chữ N
-                        CFrame.new(-1813.12, 12.00, 1727.74)  -- 8. Chữ B
+                        CFrame.new(-1850.56, 13.00, 1749.02), -- 1. Chữ Y
+                        CFrame.new(-1858.71, 13.00, 1709.13), -- 2. Vô cực
+                        CFrame.new(-1804.00, 13.00, 1749.24), -- 3. Chữ C
+                        CFrame.new(-1858.79, 13.00, 1727.47), -- 4. Dấu gạch chéo
+                        CFrame.new(-1866.85, 13.00, 1681.42), -- 5. Chữ M
+                        CFrame.new(-1802.71, 13.00, 1684.17), -- 6. Chữ F
+                        CFrame.new(-1822.28, 13.00, 1717.06), -- 7. Chữ N
+                        CFrame.new(-1813.12, 13.00, 1727.74)  -- 8. Chữ B
                     }
                     
                     for _, pos in ipairs(CodePositions) do
