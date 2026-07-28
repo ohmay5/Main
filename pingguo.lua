@@ -726,7 +726,7 @@ end
 -- FUNÇÃO PRINCIPAL: BRING
 --==================================================
 BringEnemy = function()
-    if not (FarmAtivo() or not _B then
+    if not FarmAtivo() or not _B then
     return
 end
 
