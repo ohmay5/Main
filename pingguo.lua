@@ -3970,8 +3970,6 @@ AutoFarmChestToggle = Farm:AddToggle({
         SaveSettings()
     end,
 })
-
-
 spawn(function()
     while task.wait(1) do
         if _G.AutoFarmChest then
