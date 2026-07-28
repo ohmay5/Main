@@ -11041,83 +11041,74 @@ Get:AddToggle({
 })
 
 task.spawn(function()
-    while task.wait(0.1) do
-        if _G.AutoBartilo then
-            pcall(function()
-                local level = LocalPlayer.Data.Level.Value
-                local progress = CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
-                local questGui = LocalPlayer.PlayerGui.Main.Quest
-                
-                -- GIAI ĐOẠN 0: SWAN PIRATES
-                if level >= 800 and progress == 0 then
-                    if questGui.Visible and string.find(questGui.Container.QuestTitle.Title.Text, "Swan Pirates") then
-                        -- Tự tìm quái trong Workspace bằng tên
-                        local enemyFound = false
-                        for i, v in pairs(workspace.Enemies:GetChildren()) do
-                            if v.Name == "Swan Pirates" and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-                                enemyFound = true
-                                G.Kill(v, _G.AutoBartilo) -- Chỉ thay bằng G.Kill ở đây
-                                break
-                            end
-                        end
-                        -- (Lược bỏ tọa độ bay tới bãi quái vì bạn yêu cầu chỉ tìm bằng tên)
-                    else
-                        -- Giữ nguyên code bay tới NPC nhận quest
-                        local posBartilo = CFrame.new(-456.28952, 73.0200958, 299.895966)
-                        if (LocalPlayer.Character.HumanoidRootPart.Position - posBartilo.Position).Magnitude > 10 then
-                            _tp(posBartilo)
-                        else
-                            task.wait(1.1)
-                            CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
-                        end
-                    end
-
-                -- GIAI ĐOẠN 1: JEREMY
-                elseif level >= 850 and progress == 1 then
-                    local bossFound = false
-                    for i, v in pairs(workspace.Enemies:GetChildren()) do
-                        if v.Name == "Jeremy" and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
-                            bossFound = true
-                            G.Kill(v, _G.AutoBartilo) -- Chỉ thay bằng G.Kill ở đây
-                            break
-                        end
-                    end
-                    
-                    -- Giữ nguyên đoạn check Boss Jeremy chưa spawn của bạn
-                    if not bossFound and ReplicatedStorage:FindFirstChild("Jeremy [Lv. 850] [Boss]") then
-                        local posBartilo = CFrame.new(-456.28952, 73.0200958, 299.895966)
-                        if (LocalPlayer.Character.HumanoidRootPart.Position - posBartilo.Position).Magnitude > 10 then
-                            _tp(posBartilo)
-                        else
-                            task.wait(1.1)
-                            CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
-                            task.wait(1)
-                        end
-                    end
-
-                -- GIAI ĐOẠN 2: GIẢI MÃ (Giữ nguyên toàn bộ tọa độ gốc của bạn)
-                elseif level >= 850 and progress == 2 then
-                    local plates = {
-                        CFrame.new(-1850.49329, 13.1789551, 1750.89685),
-                        CFrame.new(-1858.87305, 19.3777466, 1712.01807),
-                        CFrame.new(-1803.94324, 16.5789185, 1750.89685),
-                        CFrame.new(-1858.55835, 16.8604317, 1724.79541),
-                        CFrame.new(-1869.54224, 15.987854, 1681.00659),
-                        CFrame.new(-1800.0979, 16.4978027, 1684.52368),
-                        CFrame.new(-1819.26343, 14.795166, 1717.90625),
-                        CFrame.new(-1813.51843, 14.8604736, 1724.79541)
-                    }
-                    
-                    for _, pt in ipairs(plates) do
-                        if not _G.AutoBartilo then break end
-                        if (LocalPlayer.Character.HumanoidRootPart.Position - pt.Position).Magnitude > 10 then
-                            _tp(pt)
-                            task.wait(1)
+    while task.wait(0.5) do -- Tăng thời gian chờ để tránh quá tải
+        if not _G.AutoBartilo then continue end
+        
+        pcall(function()
+            local char = LocalPlayer.Character
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            
+            local level = LocalPlayer.Data.Level.Value
+            local progress = CommF:InvokeServer("BartiloQuestProgress", "Bartilo")
+            
+            -- HÀM TÌM QUÁI GẦN NHẤT
+            local function getNearestEnemy(name)
+                local closest = nil
+                local dist = 1000 -- Khoảng cách tối đa để tìm
+                for _, v in pairs(workspace.Enemies:GetChildren()) do
+                    if v.Name == name and v:FindFirstChild("HumanoidRootPart") and v.Humanoid.Health > 0 then
+                        local mag = (hrp.Position - v.HumanoidRootPart.Position).Magnitude
+                        if mag < dist then
+                            dist = mag
+                            closest = v
                         end
                     end
                 end
-            end)
-        end
+                return closest
+            end
+
+            -- GIAI ĐOẠN 0: SWAN PIRATES
+            if level >= 800 and progress == 0 then
+                local enemy = getNearestEnemy("Swan Pirates")
+                if enemy then
+                    G.Kill(enemy, _G.AutoBartilo)
+                else
+                    -- Bay tới NPC nếu không thấy quái
+                    _tp(CFrame.new(-456.28, 73.02, 299.89))
+                    task.wait(1)
+                    CommF:InvokeServer("StartQuest", "BartiloQuest", 1)
+                end
+
+            -- GIAI ĐOẠN 1: JEREMY
+            elseif level >= 850 and progress == 1 then
+                local boss = getNearestEnemy("Jeremy")
+                if boss then
+                    G.Kill(boss, _G.AutoBartilo)
+                else
+                    -- Kiểm tra xem Boss có đang tồn tại không
+                    if not workspace.Enemies:FindFirstChild("Jeremy") then
+                        _tp(CFrame.new(-456.28, 73.02, 299.89)) -- Quay về NPC
+                    end
+                end
+
+            -- GIAI ĐOẠN 2: GIẢI MÃ
+            elseif level >= 850 and progress == 2 then
+                local plates = {
+                    CFrame.new(-1850.49, 13.17, 1750.89), CFrame.new(-1858.87, 19.37, 1712.01),
+                    CFrame.new(-1803.94, 16.57, 1750.89), CFrame.new(-1858.55, 16.86, 1724.79),
+                    CFrame.new(-1869.54, 15.98, 1681.00), CFrame.new(-1800.09, 16.49, 1684.52),
+                    CFrame.new(-1819.26, 14.79, 1717.90), CFrame.new(-1813.51, 14.86, 1724.79)
+                }
+                
+                for _, pt in ipairs(plates) do
+                    if not _G.AutoBartilo then break end
+                    -- Teleport tới plate và đứng chờ 1 chút để game nhận diện
+                    hrp.CFrame = pt
+                    task.wait(0.5) 
+                end
+            end
+        end)
     end
 end)
 
