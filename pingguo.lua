@@ -11127,8 +11127,6 @@ end
         end
     end
 end)
-
-
 Get:AddSection({"Boss Raid"});
 
 Get:AddToggle({
