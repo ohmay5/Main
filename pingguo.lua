@@ -3772,7 +3772,11 @@ Farm:AddToggle({
 spawn(function()
     while task.wait() do
         pcall(function()
-            if not _G.AutoFarmNear then return end
+            if not _G.AutoFarmNear then
+              _B = false
+               return 
+            end
+              _B = true
 
             local Plr = Players.LocalPlayer
             local Char = Plr.Character or Plr.CharacterAdded:Wait()
