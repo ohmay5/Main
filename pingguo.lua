@@ -11103,18 +11103,8 @@ Spawn(function()
 
     for i = 1, #CodePositions do
         if not _G.AutoBartilo then break end
-
-        local pos = CodePositions[i]
-
-        -- bay tới từng chữ
-        _tp(pos)
-
-        -- đợi tới nơi
-        repeat
-            task.wait(0.2)
-        until (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - pos.Position).Magnitude < 8
-
-        -- chờ chữ nhận
+        
+        _tp(CodePositions[i])
         task.wait(2)
     end
 
