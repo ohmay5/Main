@@ -11054,7 +11054,7 @@ spawn(function()
                     -- Kiểm tra xem đã nhận quest chưa qua TÊN trên GUI
                     if questGui.Visible and string.find(questGui.Container.QuestTitle.Title.Text, "Swan Pirates") then
                         -- TÌM QUÁI THEO TÊN
-                        local enemy = GetConnectionEnemies("Swan Pirates")
+                        local enemy = GetConnectionEnemies("Swan Pirate")
                         
                         if enemy then
                             -- Nếu thấy quái, bám đuổi và đánh
@@ -11065,7 +11065,7 @@ spawn(function()
                         else
                             -- NẾU CHƯA THẤY: Teleport tới tọa độ bãi quái để nó spawn/load vào tầm nhìn
                             -- Tọa độ bãi Swan Pirates tại Kingdom of Rose
-                            _tp(CFrame.new(900, 20, 1000)) 
+                            _tp(CFrame.new(1068.6643066406, 137.61428833008, 1322.1060791016))
                             task.wait(1)
                         end
                     else
