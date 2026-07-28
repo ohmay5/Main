@@ -3970,35 +3970,6 @@ AutoFarmChestToggle = Farm:AddToggle({
         SaveSettings()
     end,
 })
-spawn(function()
-    while task.wait(1) do
-        if _G.AutoFarmChest then
-            local Character = game.Players.LocalPlayer.Character
-            local Backpack = game.Players.LocalPlayer.Backpack
-
-            local HasSpecialItem =
-                (Backpack:FindFirstChild("Fist of Darkness") or (Character and Character:FindFirstChild("Fist of Darkness")))
-                or
-                (Backpack:FindFirstChild("God's Chalice") or (Character and Character:FindFirstChild("God's Chalice")))
-
-            if HasSpecialItem then
-                _G.AutoFarmChest = false
-
-                -- Tắt Toggle nếu UI của bạn hỗ trợ
-                pcall(function()
-                    AutoFarmChestToggle:Set(false)
-                end)
-
-                _G.SaveData["AutoFarmChest_Save"] = false
-                SaveSettings()
-
-                warn("Đã nhặt được Fist of Darkness hoặc God's Chalice. Auto Collect Chest đã dừng.")
-                break
-            end
-        end
-    end
-end)
-
 -- Botão Auto Collect Berry
 Farm:AddToggle({
 	Name = "Auto Collect Berry",
