@@ -7500,7 +7500,7 @@ spawn(function()
 
                 if status == 0 then
                     -- Chưa nhận quest -> Đến gặp Alchemist
-                    _tp(CFrame.new(-2779.83, 72.96, -3574.02))
+                    _tp(CFrame.new(-2775.763916015635, 72.99609375, -3570.328125))
                     task.wait(1)
                     game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist", "2")
                     
@@ -7536,7 +7536,7 @@ spawn(function()
 
                 elseif status == 2 then
                     -- Đã đủ hoa -> Trả quest
-                    _tp(CFrame.new(-2779.83, 72.96, -3574.02))
+                    _tp(CFrame.new(-2775.763916015635, 72.99609375, -3570.328125))
                     task.wait(1)
                     game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Alchemist", "3")
                 end
