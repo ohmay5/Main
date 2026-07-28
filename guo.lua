@@ -4818,14 +4818,18 @@ Others:AddToggle({
 })
 
 task.spawn(function()
-    while task.wait(2) do
+    while task.wait(5) do -- Tăng thời gian chờ lên 5s để tránh spam server
         if _G.AutoBuyBait and _G.SelectedBait then
             pcall(function()
-                CraftRemote:InvokeServer("Craft", _G.SelectedBait, {})
+                -- Thử gửi số lượng là 1 hoặc một bảng có chứa số lượng
+                -- Nhiều game yêu cầu cấu trúc: {["Name"] = "Mồi", ["Amount"] = 1}
+                -- Hoặc chỉ cần truyền thêm số 1 vào tham số thứ 3
+                CraftRemote:InvokeServer("Craft", _G.SelectedBait, 1) 
             end)
         end
     end
 end)
+
 
 -- 4. TOGGLE AUTO FISHING (CAST/CATCH)
 Others:AddToggle({
@@ -4848,60 +4852,56 @@ task.spawn(function()
                 local plr = Players.LocalPlayer
                 local char = plr.Character or plr.CharacterAdded:Wait()
                 local hrp = char:FindFirstChild("HumanoidRootPart")
-                
                 if not hrp then return end
 
                 local equippedTool = char:FindFirstChildOfClass("Tool")
                 
-                -- Verifica se a vara selecionada está equipada
+                -- 1. Kiểm tra trang bị
                 if _G.SelectedRod and (not equippedTool or equippedTool.Name ~= _G.SelectedRod) then
                     local rodInBag = plr.Backpack:FindFirstChild(_G.SelectedRod)
-                    
                     if rodInBag then
-                        -- Se tiver na mochila, equipa sozinho
                         char.Humanoid:EquipTool(rodInBag)
                         equippedTool = rodInBag
                     else
-
-                        NotifyNightMystic("please equip:" .. tostring(_G.SelectedRod))
-                        return -- Para a execução aqui para não dar erro tentando pescar sem vara
+                        NotifyNightMystic("Vui lòng cầm: " .. tostring(_G.SelectedRod))
+                        return
                     end
                 end
 
                 if equippedTool then
-                    local maxLaunch = FishingClientConfig.Rod.MaxLaunchDistance
-                    local waterHeight = GetWaterHeight(hrp.Position)
-                    
-                    local rayOrigin = char.Head.Position
-                    local rayDirection = hrp.CFrame.LookVector * maxLaunch
-                    
-                    local ignoreList = {char, Workspace.Characters, Workspace.Enemies}
-                    local _, hitPos = Workspace:FindPartOnRayWithIgnoreList(Ray.new(rayOrigin, rayDirection), ignoreList)
-                    
-                    local targetPos = hitPos and Vector3.new(hitPos.X, math.max(hitPos.Y, waterHeight), hitPos.Z)
-                    
-                    local state = equippedTool:GetAttribute("State")
-                    local serverState = equippedTool:GetAttribute("ServerState")
+                    local state = equippedTool:GetAttribute("State") or ""
+                    local serverState = equippedTool:GetAttribute("ServerState") or ""
 
-                    if targetPos and (state == "ReeledIn" or serverState == "ReeledIn") then
-                        FishingRequest:InvokeServer("StartCasting")
-                        task.wait()
-                        FishingRequest:InvokeServer("CastLineAtLocation", targetPos, 100, true)
-                    
-                    elseif serverState == "Biting" then
+                    -- 2. Logic Bắt cá (ưu tiên cao nhất)
+                    if serverState == "Biting" then
                         FishingRequest:InvokeServer("Catching", true)
-                        task.wait(0.1)
+                        task.wait(0.2)
                         FishingRequest:InvokeServer("Catch", 1)
+                        NotifyNightMystic("Đã bắt được cá!")
+                        return
+                    end
+
+                    -- 3. Logic Vung cần (Fix lỗi không vung)
+                    if state == "ReeledIn" or serverState == "ReeledIn" then
+                        -- Lấy chiều cao nước thực tế
+                        local waterHeight = GetWaterHeight(hrp.Position)
                         
-                        -- [[ NOTIFICAÇÃO PRETA AO PEGAR PEIXE ]]
-                        NotifyNightMystic("New item caught")
+                        -- Thay vì raycast phức tạp, ta tạo điểm ném trực tiếp phía trước mặt
+                        -- Khoảng cách mặc định là 30-50 studs, đủ xa để chạm nước
+                        local castDist = 40 
+                        local targetPos = hrp.Position + (hrp.CFrame.LookVector * castDist)
+                        targetPos = Vector3.new(targetPos.X, waterHeight, targetPos.Z)
+
+                        FishingRequest:InvokeServer("StartCasting")
+                        task.wait(0.3)
+                        FishingRequest:InvokeServer("CastLineAtLocation", targetPos, 100, true)
+                        print("Đang cố gắng ném cần tại:", targetPos)
                     end
                 end
             end)
         end
     end
 end)
-
 -- 5. AUTO QUEST FISHING
 Others:AddToggle({
     Name = "Auto Quest Fishing",
