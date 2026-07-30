@@ -12096,12 +12096,14 @@ Fruit:AddToggle({
     end,
 })
 spawn(function()
-     while task.wait(0.2) do
-         if _G.Random_Auto then
-              game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Cousin","Buy")
-          end 
-     end
-end)
+	while wait(Sec) do
+		pcall(function()
+			if _G.Random_Auto then
+				replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy");
+			end;
+		end);
+	end;
+end);
 
 Fruit:AddToggle({
 	Name = "Auto Drop Fruit",
