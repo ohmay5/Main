@@ -3959,43 +3959,66 @@ spawn(function()
 end)
 end
 Farm:AddSection({"Collect"})
+
 Farm:AddToggle({
     Name = "Auto Collect Chest",
-    Description = "tự động nhặt rương",
+    Description = "Tự động nhặt rương",
     Default = GetSetting("AutoFarmChest_Save", false),
-    Callback = function(I)
-        _G.AutoFarmChest = I
-        _G.SaveData["AutoFarmChest_Save"] = I
+    Callback = function(Value)
+        _G.AutoFarmChest = Value
+        _G.SaveData["AutoFarmChest_Save"] = Value
         SaveSettings()
     end,
 })
+
 spawn(function()
+    local CollectionService = game:GetService("CollectionService")
+    local Players = game:GetService("Players")
+
     while wait(Sec) do
         if _G.AutoFarmChest then
             pcall(function()
-                local CollectionService = game:GetService("CollectionService")
-                local Players = game:GetService("Players")
-                local plrChar = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
-                local d = plrChar:GetPivot().Position
-                local Chests = CollectionService:GetTagged("_ChestTagged")
-                local minDist, nearestChest = math.huge, nil
-                for _, chest in pairs(Chests) do
-                    local dist = (chest:GetPivot().Position - d).Magnitude
-                    if not SelectedIsland or chest:IsDescendantOf(SelectedIsland) then
-                        if not chest:GetAttribute("IsDisabled") and dist < minDist then
-                            minDist = dist
-                            nearestChest = chest
+                local Character = Players.LocalPlayer.Character
+                if not Character or not Character:FindFirstChild("HumanoidRootPart") then
+                    return
+                end
+
+                local Root = Character.HumanoidRootPart
+                local NearestChest = nil
+                local MinDist = math.huge
+
+                for _, Chest in ipairs(CollectionService:GetTagged("_ChestTagged")) do
+                    if Chest and Chest.Parent and not Chest:GetAttribute("IsDisabled") then
+                        local Pos
+
+                        if Chest:IsA("Model") then
+                            Pos = Chest:GetPivot().Position
+                        elseif Chest:IsA("BasePart") then
+                            Pos = Chest.Position
+                        end
+
+                        if Pos then
+                            local Dist = (Root.Position - Pos).Magnitude
+                            if Dist < MinDist then
+                                MinDist = Dist
+                                NearestChest = Chest
+                            end
                         end
                     end
                 end
-                if nearestChest then
-                    _tp(nearestChest:GetPivot())
+
+                if NearestChest then
+                    if NearestChest:IsA("Model") then
+                        _tp(NearestChest:GetPivot())
+                    else
+                        _tp(NearestChest.CFrame)
+                    end
                 end
             end)
         end
     end
 end)
-
+end)
 -- Botão Auto Collect Berry
 Farm:AddToggle({
 	Name = "Auto Collect Berry",
@@ -11465,35 +11488,43 @@ Get:AddToggle({
         _G.AutoKeyRen = I
     end,
 })
-
 spawn(function()
-    while wait(0.1) do
+    while task.wait(0.1) do
         pcall(function()
-            if _G.AutoKeyRen then
-                -- Checa se já tem a chave
-                if plr.Backpack:FindFirstChild(K[3]) or plr.Character:FindFirstChild(K[3]) then
-                    EquipWeapon(K[3])
-                    wait(0.1)
-                    -- Vai pegar a chave no ponto específico
-                    _tp(CFrame.new(6571.1201171875, 299.23028564453, -6967.841796875))
-                else
-                    -- Procura inimigos
-                    local enemy = GetConnectionEnemies("Awakened Ice Admiral")
-                    if enemy then
-                        repeat
-                            task.wait()
-                            -- Mata o inimigo
-                            G.Kill(enemy, _G.AutoKeyRen)
-                        until plr.Backpack:FindFirstChild(K[3]) 
-                            or not enemy.Parent 
-                            or enemy.Humanoid.Health <= 0 
-                            or _G.AutoKeyRen == false
-                    else
-                        -- Teleporta para o spawn do inimigo caso não encontre
-                        _tp(CFrame.new(5439.716796875, 84.420944213867, -6715.1635742188))
-                        wait(1)
-                    end
-                end
+            if not _G.AutoKeyRen then
+                return
+            end
+
+            local char = plr.Character
+            if not char then
+                return
+            end
+
+            -- Đã có Hidden Key
+            if plr.Backpack:FindFirstChild(K[3]) or char:FindFirstChild(K[3]) then
+                EquipWeapon(K[3])
+                task.wait(0.2)
+                _tp(CFrame.new(6571.1201,299.2303,-6967.8418))
+                return
+            end
+
+            -- Tìm Awakened Ice Admiral
+            local enemy = GetConnectionEnemies("Awakened Ice Admiral")
+
+            if enemy and enemy.Parent and enemy:FindFirstChild("Humanoid") then
+                repeat
+                    task.wait()
+                    G.Kill(enemy, _G.AutoKeyRen)
+                until not _G.AutoKeyRen
+                    or not enemy.Parent
+                    or not enemy:FindFirstChild("Humanoid")
+                    or enemy.Humanoid.Health <= 0
+                    or plr.Backpack:FindFirstChild(K[3])
+                    or char:FindFirstChild(K[3])
+            else
+                -- Đến khu vực boss để chờ spawn
+                _tp(CFrame.new(5439.7168,84.4209,-6715.1636))
+                task.wait(1)
             end
         end)
     end
