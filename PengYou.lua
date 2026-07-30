@@ -12080,6 +12080,7 @@ end;
 Fruit:AddButton({ Name = "Buy Mirage Stock", Description = "", Callback = function()
 		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", SelectF_Adv);
 	end });
+local replicated = game:GetService("ReplicatedStorage")
 Fruit:AddToggle({
 	Name  = "Auto Random Fruit",
     Description = "Automatic random devil fruit",
@@ -12095,15 +12096,21 @@ Fruit:AddToggle({
         SaveSettings()
     end,
 })
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Random_Auto then
-				replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy");
-			end;
-		end);
-	end;
-end);
+task.spawn(function()
+    while task.wait(1) do
+        if _G.Random_Auto then
+            local ok, result = pcall(function()
+                return replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy")
+            end)
+
+            if ok then
+                print("Buy Result:", result)
+            else
+                warn("Buy Error:", result)
+            end
+        end
+    end
+end)
 Fruit:AddToggle({
 	Name = "Auto Drop Fruit",
 	Description = "Automatic drop devil fruit",
