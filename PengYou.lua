@@ -3972,47 +3972,26 @@ Farm:AddToggle({
 })
 
 spawn(function()
-    local CollectionService = game:GetService("CollectionService")
-    local Players = game:GetService("Players")
-
     while wait(Sec) do
         if _G.AutoFarmChest then
             pcall(function()
-                local Character = Players.LocalPlayer.Character
-                if not Character or not Character:FindFirstChild("HumanoidRootPart") then
-                    return
-                end
-
-                local Root = Character.HumanoidRootPart
-                local NearestChest = nil
-                local MinDist = math.huge
-
-                for _, Chest in ipairs(CollectionService:GetTagged("_ChestTagged")) do
-                    if Chest and Chest.Parent and not Chest:GetAttribute("IsDisabled") then
-                        local Pos
-
-                        if Chest:IsA("Model") then
-                            Pos = Chest:GetPivot().Position
-                        elseif Chest:IsA("BasePart") then
-                            Pos = Chest.Position
-                        end
-
-                        if Pos then
-                            local Dist = (Root.Position - Pos).Magnitude
-                            if Dist < MinDist then
-                                MinDist = Dist
-                                NearestChest = Chest
-                            end
+                local CollectionService = game:GetService("CollectionService")
+                local Players = game:GetService("Players")
+                local plrChar = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
+                local d = plrChar:GetPivot().Position
+                local Chests = CollectionService:GetTagged("_ChestTagged")
+                local minDist, nearestChest = math.huge, nil
+                for _, chest in pairs(Chests) do
+                    local dist = (chest:GetPivot().Position - d).Magnitude
+                    if not SelectedIsland or chest:IsDescendantOf(SelectedIsland) then
+                        if not chest:GetAttribute("IsDisabled") and dist < minDist then
+                            minDist = dist
+                            nearestChest = chest
                         end
                     end
                 end
-
-                if NearestChest then
-                    if NearestChest:IsA("Model") then
-                        _tp(NearestChest:GetPivot())
-                    else
-                        _tp(NearestChest.CFrame)
-                    end
+                if nearestChest then
+                    _tp(nearestChest:GetPivot())
                 end
             end)
         end
