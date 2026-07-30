@@ -4018,7 +4018,6 @@ spawn(function()
         end
     end
 end)
-end)
 -- Botão Auto Collect Berry
 Farm:AddToggle({
 	Name = "Auto Collect Berry",
