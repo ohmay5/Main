@@ -12080,7 +12080,6 @@ end;
 Fruit:AddButton({ Name = "Buy Mirage Stock", Description = "", Callback = function()
 		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", SelectF_Adv);
 	end });
-local replicated = game:GetService("ReplicatedStorage")
 Fruit:AddToggle({
 	Name  = "Auto Random Fruit",
     Description = "Automatic random devil fruit",
@@ -12096,24 +12095,12 @@ Fruit:AddToggle({
         SaveSettings()
     end,
 })
-task.spawn(function()
-    while true do
-        if _G.Random_Auto then
-            local ok, result = pcall(function()
-                return replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy")
-            end)
-
-            if ok then
-                print("Buy Success:", result)
-                -- Thêm một khoảng nghỉ ngẫu nhiên hoặc dài hơn nếu cần tránh spam
-                task.wait(2) 
-            else
-                warn("Buy Error:", result)
-                task.wait(5) -- Đợi lâu hơn nếu có lỗi xảy ra
-            end
-        end
-        task.wait(1) -- Nghỉ 1 giây nếu không chạy lệnh mua
-    end
+spawn(function()
+     while task.wait(0.2) do
+         if _G.Random_Auto then
+              game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Cousin","Buy")
+          end 
+     end
 end)
 
 Fruit:AddToggle({
