@@ -4304,7 +4304,7 @@ local function setupAutoExecute()
         if _G.SaveData["AutoExecute_Save"] and not executed then
             executed = true
             queue([[
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/pingguo.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/PengYou.lua"))()
             ]])
         end
     end)
@@ -12097,20 +12097,25 @@ Fruit:AddToggle({
     end,
 })
 task.spawn(function()
-    while task.wait(1) do
+    while true do
         if _G.Random_Auto then
             local ok, result = pcall(function()
                 return replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy")
             end)
 
             if ok then
-                print("Buy Result:", result)
+                print("Buy Success:", result)
+                -- Thêm một khoảng nghỉ ngẫu nhiên hoặc dài hơn nếu cần tránh spam
+                task.wait(2) 
             else
                 warn("Buy Error:", result)
+                task.wait(5) -- Đợi lâu hơn nếu có lỗi xảy ra
             end
         end
+        task.wait(1) -- Nghỉ 1 giây nếu không chạy lệnh mua
     end
 end)
+
 Fruit:AddToggle({
 	Name = "Auto Drop Fruit",
 	Description = "Automatic drop devil fruit",
