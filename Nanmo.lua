@@ -2379,24 +2379,18 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	local Library = loadstring(game:HttpGet("https://pastefy.app/kyYdSx0A/raw"))()
+	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/raw.txt"))()
 if not Library then
     Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/UI_Libraries/UiLib.lua"))()
 end
 
 -- ============================================
 -- PHẦN 3: TẠO GUI CHÍNH
--- ============================================
+-- ===========================================
 local Window = Library:CreateWindow({
-    Title = "Universal Hub",
+    Title = "青龙 Hub",
     Subtitle = "- Multi Game Ready",
-    Image = "rbxassetid://5009915795"
-})
-
-local Window = Library:CreateWindow({
-    Title = "Universal Hub",
-    Subtitle = "- Multi Game Ready",
-    Image = "rbxassetid://5009915795"
+    Image = "rbxassetid://114476175638281"
 })
 
 local Status = Window:AddTab("Info & Server")
