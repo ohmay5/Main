@@ -674,8 +674,50 @@ QuestNeta = function()
 end
 
 local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
-local Window = Fluent:CreateWindow({Title = "Banana Hub [Freemium] ",SubTitle = "by Obii",TabWidth = 155,Size = UDim2.fromOffset(555, 320),Acrylic = false,Theme = "Black",MinimizeKey = Enum.KeyCode.End})
 
+local Window = Fluent:CreateWindow({
+    Title = "Banana Hub [Freemium]",
+    SubTitle = "by Obii",
+    TabWidth = 155,
+    Size = UDim2.fromOffset(555, 320),
+    Acrylic = false,
+    Theme = "Black",
+    MinimizeKey = Enum.KeyCode.End
+})
+
+-- Logo bật/tắt UI
+local CoreGui = game:GetService("CoreGui")
+
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "BananaHubToggle"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = CoreGui
+
+local Toggle = Instance.new("ImageButton")
+Toggle.Name = "Toggle"
+Toggle.Parent = ScreenGui
+Toggle.Size = UDim2.new(0, 55, 0, 55)
+Toggle.Position = UDim2.new(0, 15, 0.5, -27)
+Toggle.BackgroundTransparency = 1
+Toggle.Image = "rbxassetid://114476175638281" -- Thay bằng Asset ID logo của bạn
+
+Instance.new("UICorner", Toggle).CornerRadius = UDim.new(1, 0)
+
+local Open = true
+
+Toggle.MouseButton1Click:Connect(function()
+    Open = not Open
+
+    if Open then
+        pcall(function()
+            Window:Maximize()
+        end)
+    else
+        pcall(function()
+            Window:Minimize()
+        end)
+    end
+end)
 local Tabs = {
   Main = Window:AddTab({Title = "Farm", Icon = ""}),
   Settings = Window:AddTab({Title = "Config", Icon = ""}),
