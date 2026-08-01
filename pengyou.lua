@@ -655,7 +655,7 @@ _B = false
 PosMon = nil
 
 _G.BringRange = _G.BringRange or 250
-_G.MaxBringMobs = _G.MaxBringMobs or 15 -- LIMITE DE MOBS
+_G.MaxBringMobs = _G.MaxBringMobs or 5 -- LIMITE DE MOBS
 
 _G.FarmPriorityElf = _G.FarmPriorityElf or false
 _G.FarmMastery_S   = _G.FarmMastery_S or false
@@ -750,11 +750,13 @@ end
         local hum = mob:FindFirstChild("Humanoid")  
         local root = mob:FindFirstChild("HumanoidRootPart")  
 
-        if hum and root and hum.Health > 0 and not IsRaidMob(mob) then  
+        if hum and root and hum.Health > 0
+            and mob.Name == Mon
+              and not IsRaidMob(mob) then  
             local dist = (root.Position - targetPos).Magnitude  
 
             if dist <= _G.BringRange and not root:GetAttribute("Tweening") then  
-                count += 2  
+                count += 1
                 root:SetAttribute("Tweening", true)  
 
                 local tween = TweenService:Create(  
