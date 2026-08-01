@@ -13,7 +13,7 @@ local Settings = {
     MinCooldown = 0.28,
     MaxCooldown = 0.45,
     Radius = 50,
-    MaxTargets = 3
+    MaxTargets = 2
 }
 
 local LastAttack = 0
