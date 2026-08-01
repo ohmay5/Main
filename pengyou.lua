@@ -471,10 +471,6 @@ G.Kill = function(I, e)
 	-- posição alvo do bring
 	PosMon = (I:GetAttribute("Locked")).Position
 
-	-- >>> FORÇA O BRING <<<
-	_B = true
-	BringEnemy()
-
 	-- equipa arma
 	EquipWeapon(_G.SelectWeapon)
 
@@ -483,36 +479,11 @@ G.Kill = function(I, e)
 
 	-- TP acima do mob (altura única)
 	_tp(hrp.CFrame * CFrame.new(0, _G.MobHeight, 0))
+     task.wait(0.05)
+	-- Gọi bring sau khi đã cầm vũ khí và TP
+	_B = true
+	BringEnemy()
 end
-G.Kill2 = function(I, e)
-		if I and e then
-			if not I:GetAttribute("Locked") then
-				I:SetAttribute("Locked", I.HumanoidRootPart.CFrame);
-			end;
-			PosMon = (I:GetAttribute("Locked")).Position;
-			BringEnemy();
-			EquipWeapon(_G.SelectWeapon);
-			local e = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool");
-			local K = e.ToolTip;
-			if K == "Blox Fruit" then
-				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
-			else
-				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 20, 8)) * CFrame.Angles(0, math.rad(180), 0));
-			end;
-			if RandomCFrame then
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25));
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(25, 30, 0));
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0));
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25));
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0));
-			end;
-		end;
-	end;
 G.KillSea = function(I, e)
 		if I and e then
 			if not I:GetAttribute("Locked") then
