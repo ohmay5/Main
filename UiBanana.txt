@@ -1,0 +1,193 @@
+repeat
+    wait()
+until game:IsLoaded() and game.Players.LocalPlayer
+
+-- ============================================
+-- PHẦN 1: SERVICE VÀ BIẾN CƠ BẢN
+-- ============================================
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local VirtualUser = game:GetService("VirtualUser")
+local Lighting = game:GetService("Lighting")
+local CollectionService = game:GetService("CollectionService")
+local Stats = game:GetService("Stats")
+local UserInputService = game:GetService("UserInputService")
+
+local Player = Players.LocalPlayer
+local PlayerGui = Player:WaitForChild("PlayerGui", 5)
+
+-- ============================================
+-- PHẦN 2: TẢI THƯ VIỆN UI (LIBRARY)
+-- ============================================
+local Library = loadstring(game:HttpGet("https://pastefy.app/kyYdSx0A/raw"))()
+if not Library then
+    Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/UI_Libraries/UiLib.lua"))()
+end
+
+-- ============================================
+-- PHẦN 3: TẠO GUI CHÍNH
+-- ============================================
+local Window = Library:CreateWindow({
+    Title = "Universal Hub",
+    Subtitle = "- Multi Game Ready",
+    Image = "rbxassetid://5009915795"
+})
+
+-- Tab chính: Thông tin
+local MainTab = Window:AddTab("Main")
+
+-- Groupbox: Thông tin người chơi
+local InfoGroup = MainTab:AddLeftGroupbox("Player Info")
+local PlayerNameLabel = InfoGroup:AddLabel("Player: " .. Player.Name)
+
+local gameName = "Unknown"
+pcall(function()
+    gameName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name
+end)
+local GameNameLabel = InfoGroup:AddLabel("Game: " .. gameName)
+
+-- Groupbox: Công cụ cơ bản
+local ToolsGroup = MainTab:AddLeftGroupbox("Basic Tools")
+
+ToolsGroup:AddButton({
+    Title = "Copy Game ID",
+    Callback = function()
+        if setclipboard then
+            setclipboard(tostring(game.PlaceId))
+            print("Game ID copied!")
+        end
+    end
+})
+
+ToolsGroup:AddButton({
+    Title = "Copy Job ID",
+    Callback = function()
+        if setclipboard then
+            setclipboard(tostring(game.JobId))
+            print("Job ID copied!")
+        end
+    end
+})
+
+ToolsGroup:AddButton({
+    Title = "Rejoin Server",
+    Callback = function()
+        TeleportService:Teleport(game.PlaceId, Player)
+    end
+})
+
+ToolsGroup:AddButton({
+    Title = "Hop Server",
+    Callback = function()
+        local AllIDs = {}
+        local foundAnything = ""
+        local actualHour = os.date("!*t").hour
+        
+        local function TPReturner()
+            local Site
+            if foundAnything == "" then
+                Site = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+            else
+                Site = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100&cursor=" .. foundAnything))
+            end
+            local ID = ""
+            if Site.nextPageCursor and Site.nextPageCursor ~= "null" and Site.nextPageCursor ~= nil then
+                foundAnything = Site.nextPageCursor
+            end
+            local num = 0
+            for i, v in pairs(Site.data) do
+                local Possible = true
+                ID = tostring(v.id)
+                if tonumber(v.maxPlayers) > tonumber(v.playing) then
+                    for _, Existing in pairs(AllIDs) do
+                        if num ~= 0 then
+                            if ID == tostring(Existing) then
+                                Possible = false
+                            end
+                        else
+                            if tonumber(actualHour) ~= tonumber(Existing) then
+                                pcall(function()
+                                    AllIDs = {}
+                                    table.insert(AllIDs, actualHour)
+                                end)
+                            end
+                        end
+                        num = num + 1
+                    end
+                    if Possible then
+                        table.insert(AllIDs, ID)
+                        wait(.1)
+                        pcall(function()
+                            TeleportService:TeleportToPlaceInstance(game.PlaceId, ID, Player)
+                        end)
+                        wait(1)
+                        break
+                    end
+                end
+            end
+        end
+        
+        local function Teleport()
+            while true do
+                pcall(function()
+                    TPReturner()
+                    if foundAnything ~= "" then
+                        TPReturner()
+                    end
+                end)
+                wait(2)
+            end
+        end
+        Teleport()
+    end
+})
+
+-- Tab: Cài đặt giao diện
+local SettingsTab = Window:AddTab("Settings")
+
+local SettingsGroup = SettingsTab:AddLeftGroupbox("UI Settings")
+
+SettingsGroup:AddToggle("ToggleKeybind", {
+    Title = "Toggle GUI with 'V' Key",
+    Default = true,
+    Callback = function(Value)
+        _G.ToggleKeybind = Value
+    end
+})
+
+SettingsGroup:AddButton({
+    Title = "Destroy GUI",
+    Callback = function()
+        Window:Destroy()
+        print("GUI destroyed!")
+    end
+})
+
+-- ============================================
+-- PHẦN 4: CHỨC NĂNG HIỂN THỊ GUI
+-- ============================================
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.V then
+        if _G.ToggleKeybind ~= false then
+            local gui = PlayerGui:FindFirstChild("MainGUI")
+            if gui then
+                gui.Enabled = not gui.Enabled
+            end
+        end
+    end
+end)
+
+Library:Notify({
+    Title = "Universal Hub",
+    Description = "GUI loaded successfully!\nPress V to toggle.",
+    Duration = 5
+})
+
+print("Universal Hub loaded successfully!")
