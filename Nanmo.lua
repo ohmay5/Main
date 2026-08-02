@@ -1,6 +1,4 @@
-repeat task.wait() until game:IsLoaded()
 
--- Cache Services
 local Services = setmetatable({}, {
     __index = function(self, serviceName)
         local service = game:GetService(serviceName)
@@ -8,64 +6,6 @@ local Services = setmetatable({}, {
         return service
     end
 })
-
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local VirtualUser = game:GetService("VirtualUser")
-local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
-local Player = Players.LocalPlayer
-local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5)
-local CommF = Remotes:WaitForChild("CommF_", 5) 
-local PlayerGui = Player:WaitForChild("PlayerGui", 5)
-local MainGui = PlayerGui:WaitForChild("Main", 5)
-local lastNotificationTime = 0
-local notificationCooldown = 10
-local currentTime = tick()
-if currentTime - lastNotificationTime >= notificationCooldown then
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "青龙脚本 hub",
-        Text = "Loading...",
-        Duration = 5
-    })
-    lastNotificationTime = currentTime
-end
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local EffectContainer = ReplicatedStorage:FindFirstChild("Effect") and ReplicatedStorage.Effect:FindFirstChild("Container")
-if EffectContainer then
-    local Death = EffectContainer:FindFirstChild("Death")
-    if Death then
-        local success, result = pcall(require, Death)
-        if success and type(result) == "function" then
-            hookfunction(result, function() end)
-        end
-    end
-    local Respawn = EffectContainer:FindFirstChild("Respawn")
-    if Respawn then
-        local success, result = pcall(require, Respawn)
-        if success and type(result) == "function" then
-            hookfunction(result, function() end)
-        end
-    end
-end
-local GuideModule = ReplicatedStorage:FindFirstChild("GuideModule")
-if GuideModule then
-    local success, module = pcall(require, GuideModule)
-    if success and module and type(module.ChangeDisplayedNPC) == "function" then
-        hookfunction(module.ChangeDisplayedNPC, function() end)
-    end
-end
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Util = ReplicatedStorage:WaitForChild("Util", 5)
-if Util then
-    local CameraShaker = Util:FindFirstChild("CameraShaker")
-    if CameraShaker then
-        require(CameraShaker):Stop()
-    end
-end
 
 local HttpService = Services.HttpService
 local FolderName = "青龙脚本 Hub"
@@ -2380,13 +2320,6 @@ QuestNeta = function()
 		};
 	end;
 	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/raw.txt"))()
-if not Library then
-    Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/main/UI_Libraries/UiLib.lua"))()
-end
-
--- ============================================
--- PHẦN 3: TẠO GUI CHÍNH
--- ===========================================
 local Window = Library:CreateWindow({
     Title = "青龙 Hub",
     Subtitle = "- Multi Game Ready",
@@ -2407,14 +2340,7 @@ local Shop = Window:AddTab("Local Shop")
 local Esp = Window:AddTab("Stats & ESP")
 local Teleport = Window:AddTab("Tab Teleport")
 local Setting = Window:AddTab("Setting & UI")
-Status:AddDiscordInvite({
-    Name = "ThanhLong Hub",
-    Description = "",
-    Logo = "rbxassetid://114476175638281",
-    Invite = ""
-})
-
-Shop:AddSection("Fighting Shop")
+local Shop = Shop:AddSection("Fighting Shop")
 Shop:AddButton({
     Name = "Black Leg",
     Callback = function()
@@ -2426,7 +2352,7 @@ Shop:AddButton({
     Callback = function()
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyFishmanKarate")
     end
-})
+}) 
 Shop:AddButton({
     Name = "Electro",
     Callback = function()
@@ -2484,7 +2410,7 @@ Shop:AddButton({
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt")
     end
 })
-Shop:AddSection("Sword")
+local Shop = Shop:AddSection("Sword")
 Shop:AddButton({
     Name = "Cutlass [ 1,000 Beli ]",
     Callback = function()
@@ -2545,7 +2471,7 @@ Shop:AddButton({
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ThunderGodTalk")
     end
 })
-Shop:AddSection("Gun")
+local Shop = Shop:AddSection("Gun")
 Shop:AddButton({
     Name = "Slingshot [ 5,000 Beli ]",
     Callback = function()
@@ -2605,7 +2531,7 @@ Shop:AddButton({
         Remote:InvokeServer(unpack(args))
     end
 })
-Shop:AddSection("Abilities Shop")
+local Shop = Shop:AddSection("Abilities Shop")
 Shop:AddButton({
     Name = "Skyjump [ $10,000 Beli ]",
     Callback = function()
@@ -2630,7 +2556,7 @@ Shop:AddButton({
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Soru")
     end
 })
-Shop:AddSection("Misc Shop")
+local Shop = Shop:AddSection("Misc Shop")
 Shop:AddButton({
     Name = "Buy Refund Stat (2500F)",
     Callback = function()
@@ -2954,8 +2880,8 @@ Status:AddTextBox({
         getgenv().Job = Value
     end
 })
-Status:AddToggle({
-    Name = "Spam Join",
+Main:AddToggle("SpamJoin", {
+    Title = "Spam Join",
     Default = false,
     Callback = function(Value)
         getgenv().Join = Value
@@ -3011,7 +2937,7 @@ Status:AddButton({
 })
 
 
-Farm:AddSection({"Local Main"})
+local Farm = Farm:AddSection("Local Main")
 
 Farm:AddDropdown({
     Name = "Select Weapon",
@@ -3071,7 +2997,7 @@ end
 ----------------------------------------------------------------------------
 -- 1. UI: DROPDOWN + TOGGLES (Coloque isso na seção da sua UI)
 ----------------------------------------------------------------------------
-Farm:AddSection({"Auto Farm"})
+local Farm = Farm:AddSection({"Auto Farm"})
 Farm:AddDropdown({
     Name = "Select Farm Mode",
     Description = "chọn chế độ farm",
@@ -3616,7 +3542,7 @@ spawn(function()
 end)
 
 
-Farm:AddSection({"Other"})
+local Farm = Farm:AddSection({"Other"})
 
 -- Configuração da Distância Máxima (em studs)
 -- Aumente se quiser pegar mobs um pouco mais longe, diminua se quiser bem perto.
@@ -3830,7 +3756,7 @@ spawn(function()
     end
 end)
 end
-Farm:AddSection({"Collect"})
+local Farm= Farm:AddSection({"Collect"})
 
 Farm:AddToggle({
     Name = "Auto Collect Chest",
@@ -3916,7 +3842,7 @@ spawn(function()
 end);
 
 if World3 then
-Farm:AddSection({"Bone"})
+local Farm = Farm:AddSection({"Bone"})
 -- AUTO RANDOM BONES
 Farm:AddToggle({
     Name = "Auto Random Bone",
@@ -3977,7 +3903,7 @@ spawn(function()
 end)
 end
 
-Farm:AddSection({"Material"})
+local Farm = Farm:AddSection({"Material"})
 -- Dropdown de Selecionar Material
 Farm:AddDropdown({
 	Name = "Select Material",
@@ -4052,7 +3978,7 @@ end);
 
 
 if World3 then
-Farm:AddSection({"Dark Dragger + Valkyrie"})
+local Farm = Farm:AddSection({"Dark Dragger + Valkyrie"})
 Farm:AddToggle({
     Name = "Auto Kill Rip Indra",
     Description = "tự động đánh rip indra",
@@ -4143,7 +4069,7 @@ spawn(function()
 	end;
 end);
 end
-Setting:AddSection({"Manual Save"})
+local Setting = Setting:AddSection({"Manual Save"})
 
 if _G.SaveData["AutoExecute_Save"] == nil then
     _G.SaveData["AutoExecute_Save"] = false
@@ -4232,7 +4158,7 @@ Setting:AddButton({
         end
     end
 })
-Setting:AddSection({"Setting Farm"})
+local Setting = Setting:AddSection({"Setting Farm"})
 Setting:AddToggle({
 	Name = "Bring Mob",
 	Description = "gom quái",
@@ -4380,7 +4306,7 @@ spawn(function()
 		end);
 	end;
 end);
-Setting:AddSection({"Select"})
+local Setting = Setting:AddSection({"Select"})
 _G.BringRange = _G.SaveData["BringRange_Save"] or 250
 
 Setting:AddSlider({
@@ -4427,7 +4353,7 @@ Setting:AddSlider({
         SaveSettings()
     end
 });
-Others:AddSection({"Fishing"})
+local Others = Others:AddSection({"Fishing"})
 -- =========================================================
 -- NOVO SISTEMA DE PESCA (COM SAVE SYSTEM INTEGRADO)
 -- =========================================================
@@ -4880,7 +4806,7 @@ end
 -- =====================
 -- UI
 -- =====================
-Others:AddSection({"Boss Farm"})
+local Others = Others:AddSection({"Boss Farm"})
 
 local BossDropdown = Others:AddDropdown({
     Name = "Select Boss",
@@ -5062,7 +4988,7 @@ spawn(function()
         end
     end
 end)
-Others:AddSection({"Quests"})
+local Others = Others:AddSection({"Quests"})
  Others:AddToggle({
     Name = "Auto Farm Observation",
     Description = "tự động farm haki quan sát",
@@ -5314,7 +5240,7 @@ spawn(function()
 		end);
 	end;
 end);
-Others:AddSection({"Cursed Swords"});
+local Others = Others:AddSection({"Cursed Swords"});
 local r = Others:AddParagraph({ Title = "Elites Process ", Content = "" });
 spawn(function()
 	while wait(Sec) do
@@ -5495,7 +5421,7 @@ end);
 end
 if World2 or World3 then
 -- SECTION BUSO/AURA COLOURS
-Others:AddSection({"Buso/Aura Colours"});
+local Others = Others:AddSection({"Buso/Aura Colours"});
 
  Others:AddToggle({
     Name = "Teleport Barista Haki",
@@ -5653,7 +5579,7 @@ end
     end,
 })
 
-Event:AddSection({"Sea Event / Setting Sail"})
+local Event = Event:AddSection({"Sea Event / Setting Sail"})
 local z5 = {
         "Guardian",
         "PirateGrandBrigade",
@@ -5816,7 +5742,7 @@ task.spawn(function()
 end)
 
 if World2 then
-    Event:AddSection({"Select what you will farm."})
+   local Event = Event:AddSection({"Select what you will farm."})
 
     Event:AddToggle({
         Name = "Auto Attack Sea Beast",
@@ -5834,7 +5760,7 @@ if World2 then
 end -- Đây là nơi đóng lại khối if
 
 if World3 then
-    Event:AddSection({"Select Sea 3 Mobs to Farm"})
+   local Event = Event:AddSection({"Select Sea 3 Mobs to Farm"})
     
     local mobs = {"Shark", "Piranha","Sea Beast"," Pirate GrandBrigade","Terror Shark", "Fish Crew Member", "Haunted Crew Member", "Fish Boat"}
     
@@ -5862,9 +5788,9 @@ end
 
 -- 3. Thông báo chỉ dẫn nếu chưa tới Sea 3
 if World2 then
-    Event:AddSection({"Go to Sea 3 for more options."})
+    local Event = Event:AddSection({"Go to Sea 3 for more options."})
 elseif not World2 and not World3 then
-    Event:AddSection({"Go to Sea 2 or Sea 3 for Farm maritime events"})
+    local Event = Event:AddSection({"Go to Sea 2 or Sea 3 for Farm maritime events"})
 end
 -- [[ CONFIGURAÇÕES DE SKILLS ]]
 _G.SelectedSkills = {
@@ -6014,7 +5940,7 @@ task.spawn(function()
     end
 end)
 if game.PlaceId == 7449423635 or game.PlaceId == 100117331123089 then
-Event:AddSection({"Frozen Dimension"})
+local Event = Event:AddSection({"Frozen Dimension"})
 Event:AddButton({
 	Name = "Buy Spy",
 	Description = "mua điệp viên để tìm kiếm Leviathan",
@@ -6057,7 +5983,7 @@ Event:AddToggle({
 		_G.Leviathan1 = I;
 	end,
 });
-Event:AddSection({"Kitsune Island / Event"});
+local Event = Event:AddSection({"Kitsune Island / Event"});
 Event:AddToggle({
     Name = "Auto Find Kitsune Island",
     Description = "bật tính năng tìm kiếm và chuyển động của đảo Kitsune",
@@ -6201,7 +6127,7 @@ Event:AddButton({ Name = "Trade Items Azure", Description = "", Callback = funct
 Event:AddButton({ Name = "Talk with kitsune statue", Description = "", Callback = function()
 		(replicated.Modules.Net:FindFirstChild("RE/TouchKitsuneStatue")):FireServer();
 	end });
-	Event:AddSection({"Mystic Island / Full Moon"});
+	local Event = Event:AddSection({"Mystic Island / Full Moon"});
 Event:AddToggle({
 	Name = "Auto Find Mirage Island",
     Description = "bật tính năng tìm kiếm đảo ảo bí ẩn",
@@ -6452,7 +6378,7 @@ spawn(function()
 		end;
 	end;
 end);
-	Event:AddSection({"Volcanic Magnet"});
+	local Event = Event:AddSection({"Volcanic Magnet"});
 -- Configurações de UI e Toggle
 Event:AddToggle({
     Name = "Auto Craft Volcanic Magnet",
@@ -6518,7 +6444,7 @@ spawn(function()
         end);
     end;
 end);
-Event:AddSection({"Prehistoric Island"});
+local Event = Event:AddSection({"Prehistoric Island"});
 Event:AddToggle({
     Name = "Auto Find Prehistoric Island",
     Description = "",
@@ -6916,7 +6842,7 @@ task.spawn(function()
 end)
 end
 if World2 or World3 then
-Event:AddSection({"configures skills for maritime events (Melee)"})
+local Event = Event:AddSection({"configures skills for maritime events (Melee)"})
 -- [[ TOGGLES MELEE ]]
 Event:AddToggle({
     Name = "Skill Z",
@@ -6948,7 +6874,7 @@ Event:AddToggle({
     end
 })
 
-Event:AddSection({"Sword"})
+local Event = Event:AddSection({"Sword"})
 
 -- [[ TOGGLES SWORD ]]
 Event:AddToggle({
@@ -6971,7 +6897,7 @@ Event:AddToggle({
     end
 })
 
-Event:AddSection({"Gun"})
+local Event = Event:AddSection({"Gun"})
 
 -- [[ TOGGLES GUN ]]
 Event:AddToggle({
@@ -6994,7 +6920,7 @@ Event:AddToggle({
     end
 })
 
-Event:AddSection({"Blox Fruit"})
+local Event = Event:AddSection({"Blox Fruit"})
 
 -- [[ TOGGLES BLOX FRUIT ]]
 Event:AddToggle({
@@ -7047,7 +6973,7 @@ Event:AddToggle({
     end
 })
 end
-Maestry:AddSection({"Mastery"})
+local Event = Event:AddSection({"Mastery"})
 
 local islands = { "Cake", "Bone" }
 Maestry:AddDropdown({
@@ -7275,7 +7201,7 @@ Maestry:AddToggle({
     end,
 })
 if World2 then
-Race:AddSection({"Upgrade Races"});
+local Race = Race:AddSection({"Upgrade Races"});
 
 Race:AddToggle({
     Name = "Auto Race V2",
@@ -7542,13 +7468,13 @@ spawn(function()
         end)
     end
 end)
-Race:AddSection({"Race upgrade v4 only in Sea 3"});
+local Race = Race:AddSection({"Race upgrade v4 only in Sea 3"});
 end
 if World1 then
-Race:AddSection({"only in Sea 2 or 3 to upgrade to Race"});
+local Race = Race:AddSection({"only in Sea 2 or 3 to upgrade to Race"});
 end
 if World3 then
-Race:AddSection({"Trials Quests / Misc V4"});
+local Race = Race:AddSection({"Trials Quests / Misc V4"});
 local K5 = Race:AddParagraph({ Title = " Tiers V4 Status ", Content = "" });
 spawn(function()
 	pcall(function()
@@ -7837,7 +7763,7 @@ spawn(function()
 end);
 end
 if World3 then
-Dojo:AddSection({"Dojo Quest & Drago Race"});
+local Dojo = Dojo:AddSection({"Dojo Quest & Drago Race"});
 Dojo:AddToggle({
 	Name = "Auto Dojo Trainer",
 	Description = "turn on for do dojo belt quest white to black",
@@ -8069,7 +7995,7 @@ spawn(function()
 		end;
 	end;
 end);
-Dojo:AddSection({"Draco Trial"});
+local Dojo = Dojo:AddSection({"Draco Trial"});
 GetQuestDracoLevel = function()
 		local I = { [1] = { NPC = "Dragon Wizard", Command = "Upgrade" } };
 		return (replicated.Modules.Net:FindFirstChild("RF/InteractDragonQuest")):InvokeServer(unpack(I));
@@ -8445,7 +8371,7 @@ spawn(function()
 end);
 end
 if World1 or World2 then
-Dojo:AddSection({"only in Sea 3"});
+local Dojo = Dojo:AddSection({"only in Sea 3"});
 end
 function isnil(I)
 	return I == nil;
@@ -9031,7 +8957,7 @@ if World3 then
 end
 
 
-Esp:AddSection({"Fontes"});
+local Esp = Esp:AddSection({"Fontes"});
 
 local currentFont = Enum.Font.Arial -- Fonte padrão inicial
 
@@ -9172,7 +9098,7 @@ Esp:AddButton({
         ApplyGlobalFont(Enum.Font.Gotham)
     end
 })
-Esp:AddSection({"Stats"});
+local Esp = Esp:AddSection({"Stats"});
 
 -- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
 
@@ -9295,7 +9221,7 @@ spawn(function()
 		end);
 	end;
 end);
-Player:AddSection({"Pvp, aimbot, movement"})
+local Player = Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
 
 -- 5. Nút Refresh
@@ -9375,7 +9301,7 @@ Player:AddToggle({
 	end,
 });
 
-Player:AddSection({"Aimbot"});
+local Player = Player:AddSection({"Aimbot"});
 
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -9492,7 +9418,7 @@ game:GetService("UserInputService").JumpRequest:Connect(function()
     end
 end)
 
-Player:AddSection({"LocalPlayer Settings / Misc"});
+local Player = Player:AddSection({"LocalPlayer Settings / Misc"});
 Player:AddToggle({
 	Name = "Instance Energy [ INF ]",
 	Description = "Bật năng lượng vô hạn",
@@ -9527,7 +9453,7 @@ Player:AddToggle({
 	end,
 });
 
-Player:AddSection({"Settings Combat / Aimbot Settings"});
+local Player = Player:AddSection({"Settings Combat / Aimbot Settings"});
 local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Aimbot.lua.txt"))()
 
 local AimbotEnabled = false
@@ -9633,7 +9559,7 @@ Player:AddToggle({
     end
 })
 
-Player:AddSection({"Aimbot skill V2"})
+local Player = Player:AddSection({"Aimbot skill V2"})
 local v1 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/Aimbot.lua.txt"))()
 
 local AimbotEnabled = false
@@ -9734,7 +9660,7 @@ spawn(function()
 		end;
 	end;
 end);
-Teleport:AddSection({"Travel - Worlds"});
+local Teleport = Teleport:AddSection({"Travel - Worlds"});
 Teleport:AddButton({ Name = "Teleport Sea 1", Description = "", Callback = function()
 		replicated.Remotes.CommF_:InvokeServer("TravelMain");
 	end });
@@ -12131,7 +12057,7 @@ Setting:AddButton({
     end,
 });
 
-Setting:AddSection({"Team"});
+local Setting = Setting:AddSection({"Team"});
 Setting:AddButton({ Name = "Set Pirate Team", Description = "", Callback = function()
 		Pirates();
 	end });
