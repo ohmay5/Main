@@ -626,7 +626,7 @@ _B = false
 PosMon = nil
 
 _G.BringRange = _G.BringRange or 250
-_G.MaxBringMobs = _G.MaxBringMobs or 5 -- LIMITE DE MOBS
+_G.MaxBringMobs = _G.MaxBringMobs or 15 -- LIMITE DE MOBS
 
 _G.FarmPriorityElf = _G.FarmPriorityElf or false
 _G.FarmMastery_S   = _G.FarmMastery_S or false
@@ -700,8 +700,7 @@ BringEnemy = function()
      if not (FarmAtivo() or _G.AutoBartilo) or not _B then
     return
 end
-
-    local plr = game.Players.LocalPlayer  
+local plr = game.Players.LocalPlayer  
     local char = plr.Character  
     local hrp = char and char:FindFirstChild("HumanoidRootPart")  
     if not hrp then return end  
@@ -721,13 +720,11 @@ end
         local hum = mob:FindFirstChild("Humanoid")  
         local root = mob:FindFirstChild("HumanoidRootPart")  
 
-        if hum and root and hum.Health > 0
-            and mob.Name == Mon
-              and not IsRaidMob(mob) then  
+        if hum and root and hum.Health > 0 and not IsRaidMob(mob) then  
             local dist = (root.Position - targetPos).Magnitude  
 
             if dist <= _G.BringRange and not root:GetAttribute("Tweening") then  
-                count += 1
+                count += 2  
                 root:SetAttribute("Tweening", true)  
 
                 local tween = TweenService:Create(  
@@ -4515,7 +4512,7 @@ Setting:AddSlider({
     Description = "Điều chỉnh độ xa để gom quái",
     Default = _G.SaveData["BringRange_Save"] or 250,
     Min = 0,
-    Max = 1000,
+    Max = 400,
     Rounding = 0,
     Callback = function(Value)
         _G.BringRange = Value
