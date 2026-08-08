@@ -11964,7 +11964,7 @@ spawn(function()
                     if nextIsland then
                         if _G.KillH then
                             -- Đảo 4-5: giữ ở 80 stud
-                            _tp(nextIsland.CFrame * CFrame.new(0, 70, 0))
+                            _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
                         else
                             -- Đảo 1-3: giữ ở 50 stud
                             _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
