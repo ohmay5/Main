@@ -11983,21 +11983,35 @@ spawn(function()
     end)
 end)
 -- // 4. Loop Kill Aura (Giữ nguyên)
-task.spawn(function()
+local plr = game.Players.LocalPlayer
+local Sec = 0.5 -- Đặt thời gian chờ phù hợp
+
+Task.spawn(function()
     while true do 
         task.wait(Sec)
         if _G.KillH then
             pcall(function()
-                sethiddenproperty(plr, "SimulationRadius", math.huge)
-                for _, v in pairs(workspace.Enemies:GetChildren()) do
-                    if not _G.KillH then break end 
-                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-                        if v.Humanoid.Health > 0 and v.Parent then
-                            pcall(function()
-                                v.HumanoidRootPart.CanCollide = false
-                                v:BreakJoints()
-                                v.Humanoid.Health = 0
-                            end)
+                -- Lưu ý: sethiddenproperty hiện tại phần lớn không còn hoạt động trên Roblox
+                pcall(function()
+                    sethiddenproperty(plr, "SimulationRadius", math.huge)
+                end)
+                
+                local enemiesFolder = workspace:FindFirstChild("Enemies")
+                if enemiesFolder then
+                    for _, v in pairs(enemiesFolder:GetChildren()) do
+                        if not _G.KillH then break end 
+                        
+                        local humanoid = v:FindFirstChild("Humanoid")
+                        local rootPart = v:FindFirstChild("HumanoidRootPart")
+                        
+                        if humanoid and rootPart then
+                            if humanoid.Health > 0 and v.Parent then
+                                pcall(function()
+                                    rootPart.CanCollide = false
+                                    v:BreakJoints()
+                                    humanoid.Health = 0
+                                end)
+                            end
                         end
                     end
                 end
@@ -12005,6 +12019,7 @@ task.spawn(function()
         end
     end
 end)
+
 
 Fruit:AddToggle({
 	Name = "Auto Awakening",
