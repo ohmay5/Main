@@ -672,29 +672,28 @@ QuestNeta = function()
   }
 end
 
-local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/uibanaa.txt"))()
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/raw.txt"))()
+
 local Window = Library:CreateWindow({
     Title = "青龙 bacon Hub",
     Subtitle = "- Multi Game Ready",
     Image = "rbxassetid://114476175638281"
 })
 
-local Tabs = {
-  Main = Window:AddTab({Title = "Farm", Icon = ""}),
-  Settings = Window:AddTab({Title = "Config", Icon = ""}),
-  Melee = Window:AddTab({Title = "Fighting Style", Icon = ""}),
-  Quests = Window:AddTab({Title = "Items Farm", Icon = ""}),
-  SeaEvent = Window:AddTab({Title = "Sea Events", Icon = ""}),
-  Mirage = Window:AddTab({Title = "Mirage + RaceV4", Icon = ""}),
-  Drago = Window:AddTab({Title = "Drago Dojo", Icon = ""}),
-  Prehistoric = Window:AddTab({Title = "Prehistoric", Icon = ""}),
-  Raids = Window:AddTab({Title = "Raid", Icon = ""}),
-  Combat = Window:AddTab({Title = "Combat PVP", Icon = ""}),
-  Travel = Window:AddTab({Title = "Teleport", Icon = ""}),
-  Fruit = Window:AddTab({Title = "Fruits", Icon = ""}),
-  Shop = Window:AddTab({Title = "Shop", Icon = ""}),
-  Misc = Window:AddTab({Title = "Misc", Icon = ""})
-}
+local Main = Window:AddTab("Farm")
+local Settings = Window:AddTab("Config")
+local Melee = Window:AddTab("Fighting Style")
+local Quests = Window:AddTab("Items Farm")
+local SeaEvent = Window:AddTab("Sea Events")
+local Mirage = Window:AddTab("Mirage + RaceV4")
+local Drago = Window:AddTab("Drago Dojo")
+local Prehistoric = Window:AddTab("Prehistoric")
+local Raids = Window:AddTab("Raid")
+local Combat = Window:AddTab("Combat PVP")
+local Travel = Window:AddTab("Teleport")
+local Fruit = Window:AddTab("Fruits")
+local Shop = Window:AddTab("Shop")
+local Misc = Window:AddTab("Misc")
  
 local FarmLevel = Tabs.Main:AddToggle("FarmLevel", {Title = "Auto Farm Level", Description = "", Default = false})
 FarmLevel:OnChanged(function(Value)
