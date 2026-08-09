@@ -9275,19 +9275,21 @@ Esp:AddButton({
     end
 })
 Esp:AddSection({"Stats"});
-
--- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
-
+local StatsValue= 10
 Esp:AddSlider({
     Name = "Stats Value",
+    Description = "Kéo để chọn giá trị",
+    Default = _G.SaveData["StatsValue_Save"] or 10,
     Min = 0,
     Max = 1000,
-    Default = GetSetting("StatsValue_Save", 10),
-    Increment = 1,
+    Rounding = 0,
     Callback = function(Value)
         StatsValue = Value
         _G.SaveData["StatsValue_Save"] = Value
-        SaveSettings()
+
+        if SaveSettings then
+            SaveSettings()
+        end
     end
 })
 
