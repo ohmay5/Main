@@ -12406,11 +12406,6 @@ Setting:AddToggle({
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attachgun.txt"))()
 
 _G.Settings = _G.Settings or {}
-
--- =========================
--- AUTO ENABLE
--- =========================
-
 _G.Settings.AutoClick = true
 _G.Settings.FastAttack = true
 
