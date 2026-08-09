@@ -9278,125 +9278,123 @@ Esp:AddSection({"Stats"});
 
 -- // AUTO STATS (Adicionado à aba VI_S conforme solicitado) // --
 
-Esp:AddToggle({
-    Name = "Add Points Melee",
-    Description = "Gasta pontos automaticamente em Melee",
-    Default = GetSetting("AutoMelee_Save", false),
-    Callback = function(I)
-        _G.Auto_Melee = I
-        _G.SaveData["AutoMelee_Save"] = I
+Esp:AddSlider({
+    Name = "Stats Value",
+    Min = 0,
+    Max = 1000,
+    Default = GetSetting("StatsValue_Save", 10),
+    Increment = 1,
+    Callback = function(Value)
+        StatsValue = Value
+        _G.SaveData["StatsValue_Save"] = Value
         SaveSettings()
-    end,
+    end
 })
 
+-- Auto Melee
 Esp:AddToggle({
-    Name = "Add Points Sword",
-    Description = "Gasta pontos automaticamente em Sword",
-    Default = GetSetting("AutoSword_Save", false),
-    Callback = function(I)
-        _G.Auto_Sword = I
-        _G.SaveData["AutoSword_Save"] = I
+    Name = "Auto Melee",
+    Default = GetSetting("Auto_Melee_Save", false),
+    Callback = function(Value)
+        _G.Auto_Melee = Value
+        _G.SaveData["Auto_Melee_Save"] = Value
         SaveSettings()
-    end,
+    end
 })
 
-Esp:AddToggle({
-    Name = "Add Points Gun",
-    Description = "Gasta pontos automaticamente em Gun",
-    Default = GetSetting("AutoGun_Save", false),
-    Callback = function(I)
-        _G.Auto_Gun = I
-        _G.SaveData["AutoGun_Save"] = I
-        SaveSettings()
-    end,
-})
-
-Esp:AddToggle({
-    Name = "Add Points Fruit",
-    Description = "Gasta pontos automaticamente em Fruit",
-    Default = GetSetting("AutoFruit_Save", false),
-    Callback = function(I)
-        _G.Auto_Blox = I
-        _G.SaveData["AutoFruit_Save"] = I
-        SaveSettings()
-    end,
-})
-
-Esp:AddToggle({
-    Name = "Add Points Defense",
-    Description = "Gasta pontos automaticamente em Defense",
-    Default = GetSetting("AutoDefense_Save", false),
-    Callback = function(I)
-        _G.Auto_Defense = I
-        _G.SaveData["AutoDefense_Save"] = I
-        SaveSettings()
-    end,
-})
-
--- // LOOP DOS STATS (Execute isso uma vez no seu script) // --
-task.spawn(function()
-    while task.wait(1) do
+spawn(function()
+    while wait(0.1) do
         pcall(function()
-            local remote = game:GetService("ReplicatedStorage").Remotes.CommF_
-            if _G.Auto_Melee then remote:InvokeServer("AddPoint", "Melee", 3) end
-            if _G.Auto_Sword then remote:InvokeServer("AddPoint", "Sword", 3) end
-            if _G.Auto_Gun then remote:InvokeServer("AddPoint", "Gun", 3) end
-            if _G.Auto_Blox then remote:InvokeServer("AddPoint", "Demon Fruit", 3) end
-            if _G.Auto_Defense then remote:InvokeServer("AddPoint", "Defense", 3) end
+            if _G.Auto_Melee then
+                statsSetings("Melee", StatsValue)
+            end
         end)
     end
 end)
 
--- Usamos um valor grande (como 9999999) para simular o gasto de 'todos' os pontos disponíveis.
--- Assumimos que a função 'statsSetings' irá apenas gastar o máximo de pontos que o jogador realmente tem.
-local AllAvailablePoints = 3; 
+-- Auto Sword
+Esp:AddToggle({
+    Name = "Auto Sword",
+    Default = GetSetting("Auto_Sword_Save", false),
+    Callback = function(Value)
+        _G.Auto_Sword = Value
+        _G.SaveData["Auto_Sword_Save"] = Value
+        SaveSettings()
+    end
+})
 
 spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Melee then
-				statsSetings("Melee", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
+    while wait(0.1) do
+        pcall(function()
+            if _G.Auto_Sword then
+                statsSetings("Sword", StatsValue)
+            end
+        end)
+    end
+end)
+
+-- Auto Gun
+Esp:AddToggle({
+    Name = "Auto Gun",
+    Default = GetSetting("Auto_Gun_Save", false),
+    Callback = function(Value)
+        _G.Auto_Gun = Value
+        _G.SaveData["Auto_Gun_Save"] = Value
+        SaveSettings()
+    end
+})
+
 spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Sword then
-				statsSetings("Sword", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
+    while wait(0.1) do
+        pcall(function()
+            if _G.Auto_Gun then
+                statsSetings("Gun", StatsValue)
+            end
+        end)
+    end
+end)
+
+-- Auto Blox Fruit
+Esp:AddToggle({
+    Name = "Auto Blox Fruit",
+    Default = GetSetting("Auto_DevilFruit_Save", false),
+    Callback = function(Value)
+        _G.Auto_DevilFruit = Value
+        _G.SaveData["Auto_DevilFruit_Save"] = Value
+        SaveSettings()
+    end
+})
+
 spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Gun then
-				statsSetings("Gun", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
+    while wait(0.1) do
+        pcall(function()
+            if _G.Auto_DevilFruit then
+                statsSetings("Devil", StatsValue)
+            end
+        end)
+    end
+end)
+
+-- Auto Defense
+Esp:AddToggle({
+    Name = "Auto Defense",
+    Default = GetSetting("Auto_Defense_Save", false),
+    Callback = function(Value)
+        _G.Auto_Defense = Value
+        _G.SaveData["Auto_Defense_Save"] = Value
+        SaveSettings()
+    end
+})
+
 spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			-- Note: No seu código original era 'Auto_DevilFruit', mas no menu era 'Fruit'. Corrigi para usar a mesma variável do menu.
-			if _G.Auto_Blox then 
-				statsSetings("Devil", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Defense then
-				statsSetings("Defense", AllAvailablePoints);
-			end;
-		end);
-	end;
-end);
+    while wait(0.1) do
+        pcall(function()
+            if _G.Auto_Defense then
+                statsSetings("Defense", StatsValue)
+            end
+        end)
+    end
+end)
 Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
 
@@ -10119,19 +10117,7 @@ function getRT(I)
 		end;
 		if K then
 			return K.Z;
-		end;
-	end;
-end;
-GetFirePlacard = function(I, e)
-		if tostring(workspace.Map["Haunted Castle"]["Placard" .. I][e].Indicator.BrickColor) ~= "Pearl" then
-			fireclickdetector(workspace.Map["Haunted Castle"]["Placard" .. I][e].ClickDetector);
-		end;
-	end;
-spawn(function()
-	repeat
-		task.wait();
-	until _G.Auto_Soul_Guitar;
-	while wait(Sec) do
+		end;<do
 		pcall(function()
 			if _G.Auto_Soul_Guitar then
 				if World3 then
