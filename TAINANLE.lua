@@ -590,36 +590,7 @@ G.Masgun = function(I, e)
 			end;
 		end;
 	end;
-statsSetings = function(I, e)
-		if I == "Melee" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Melee", e);
-			end;
-		elseif I == "Defense" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Defense", e);
-			end;
-		elseif I == "Sword" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Sword", e);
-			end;
-		elseif I == "Gun" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Gun", e);
-			end;
-		elseif I == "Devil" then
-			if plr.Data.Points.Value ~= 0 then
-				replicated.Remotes.CommF_:InvokeServer("AddPoint", "Demon Fruit", e);
-			end;
-		end;
-	end;
 
-
-
-
---==================================================
--- VARIÁVEIS DE CONTROLE NECESSÁRIAS
---==================================================
 _G = _G or {}
 
 _B = false
