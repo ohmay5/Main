@@ -12078,31 +12078,60 @@ end;
 Fruit:AddButton({ Name = "Buy Mirage Stock", Description = "", Callback = function()
 		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", SelectF_Adv);
 	end });
+	
+	
+_G.Random_Auto = false
+
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+
+local function FindGachaButton()
+    local Gui = Player:FindFirstChild("PlayerGui")
+    if not Gui then
+        return nil
+    end
+
+    for _, v in ipairs(Gui:GetDescendants()) do
+        if v:IsA("TextButton") or v:IsA("ImageButton") then
+            local text = (v:IsA("TextButton") and v.Text or ""):lower()
+
+            if text:find("random")
+            or text:find("spin")
+            or text:find("gacha") then
+                if v.Visible then
+                    return v
+                end
+            end
+        end
+    end
+
+    return nil
+end
+
+task.spawn(function()
+    while task.wait(1) do
+        if _G.Random_Auto then
+            pcall(function()
+                local Button = FindGachaButton()
+
+                if Button then
+                    Button:Activate()
+                end
+            end)
+        end
+    end
+end)
 Fruit:AddToggle({
-	Name  = "Auto Random Fruit",
+    Name = "Auto Random Fruit",
     Description = "Automatic random devil fruit",
-    -- 1. Carrega se o giro automático estava ligado
     Default = GetSetting("AutoRandomFruit_Save", false),
+
     Callback = function(I)
         _G.Random_Auto = I
-        
-        -- 2. Guarda na memória de salvamento
         _G.SaveData["AutoRandomFruit_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
         SaveSettings()
     end,
 })
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Random_Auto then
-				replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy");
-			end;
-		end);
-	end;
-end);
-
 Fruit:AddToggle({
 	Name = "Auto Drop Fruit",
 	Description = "Automatic drop devil fruit",
