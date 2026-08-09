@@ -1166,8 +1166,8 @@ end);
 -- =======================
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
-getgenv().TweenSpeedFar = 370   -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 370  -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedFar = 250   -- Velocidade Padrão (Longe)
+getgenv().TweenSpeedNear = 250  -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -4519,7 +4519,7 @@ Setting:AddSlider({
         _G.SaveData["BringRange_Save"] = Value
         SaveSettings()
     end
-})
+});
 
 
 _G.MobHeight = _G.SaveData["MobHeight_Save"] or 20
@@ -4536,12 +4536,12 @@ Setting:AddSlider({
         _G.SaveData["MobHeight_Save"] = Value
         SaveSettings()
     end
-})
+});
 
 Setting:AddSlider({
     Title = "Tween Speed",
     Description = "Điều chỉnh tốc độ tween",
-    Default = _G.SaveData["TweenSpeed_Save"] or 255, -- Lấy giá trị đã lưu, nếu chưa có thì mặc định là 255
+    Default = _G.SaveData["TweenSpeed_Save"] or 250, -- Lấy giá trị đã lưu, nếu chưa có thì mặc định là 255
     Min = 50,      -- Giá trị nhỏ nhất
     Max = 500,    -- Giá trị lớn nhất
     Rounding = 0,  -- Số chữ số thập phân (0 là số nguyên)
@@ -11957,18 +11957,11 @@ spawn(function()
     pcall(function()
         while wait(Sec) do
             if _G.Raiding then
-                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible then
+                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
                     attackNearbyEnemies()
-
                     local nextIsland = getNextIsland()
                     if nextIsland then
-                        if _G.KillH then
-                            -- Đảo 4-5: giữ ở 80 stud
-                            _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-                        else
-                            -- Đảo 1-3: giữ ở 50 stud
-                            _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-                        end
+                        _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
                         NextIs = true
                     else
                         NextIs = false
@@ -11982,32 +11975,23 @@ spawn(function()
         end
     end)
 end)
-Task.spawn(function()
+
+-- // 4. Loop Kill Aura (Giữ nguyên)
+task.spawn(function()
     while true do 
         task.wait(Sec)
         if _G.KillH then
             pcall(function()
-                -- Lưu ý: sethiddenproperty hiện tại phần lớn không còn hoạt động trên Roblox
-                pcall(function()
-                    sethiddenproperty(plr, "SimulationRadius", math.huge)
-                end)
-                
-                local enemiesFolder = workspace:FindFirstChild("Enemies")
-                if enemiesFolder then
-                    for _, v in pairs(enemiesFolder:GetChildren()) do
-                        if not _G.KillH then break end 
-                        
-                        local humanoid = v:FindFirstChild("Humanoid")
-                        local rootPart = v:FindFirstChild("HumanoidRootPart")
-                        
-                        if humanoid and rootPart then
-                            if humanoid.Health > 0 and v.Parent then
-                                pcall(function()
-                                    rootPart.CanCollide = false
-                                    v:BreakJoints()
-                                    humanoid.Health = 0
-                                end)
-                            end
+                sethiddenproperty(plr, "SimulationRadius", math.huge)
+                for _, v in pairs(workspace.Enemies:GetChildren()) do
+                    if not _G.KillH then break end 
+                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                        if v.Humanoid.Health > 0 and v.Parent then
+                            pcall(function()
+                                v.HumanoidRootPart.CanCollide = false
+                                v:BreakJoints()
+                                v.Humanoid.Health = 0
+                            end)
                         end
                     end
                 end
@@ -12015,7 +11999,6 @@ Task.spawn(function()
         end
     end
 end)
-
 Fruit:AddToggle({
 	Name = "Auto Awakening",
 	Description = "",
