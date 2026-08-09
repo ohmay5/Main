@@ -4541,7 +4541,7 @@ Setting:AddSlider({
 Setting:AddSlider({
     Title = "Tween Speed",
     Description = "Điều chỉnh tốc độ tween",
-    Default = _G.SaveData["TweenSpeed_Save"] or 255, -- Lấy giá trị đã lưu, nếu chưa có thì mặc định là 255
+    Default = _G.SaveData["TweenSpeed_Save"] or 250, -- Lấy giá trị đã lưu, nếu chưa có thì mặc định là 255
     Min = 50,      -- Giá trị nhỏ nhất
     Max = 500,    -- Giá trị lớn nhất
     Rounding = 0,  -- Số chữ số thập phân (0 là số nguyên)
