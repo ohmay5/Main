@@ -9275,11 +9275,12 @@ Esp:AddButton({
     end
 })
 Esp:AddSection({"Stats"});
-local StatsValue= 10
+local StatsValue = _G.SaveData["StatsValue_Save"] or 10
+
 Esp:AddSlider({
     Name = "Stats Value",
     Description = "Kéo để chọn giá trị",
-    Default = _G.SaveData["StatsValue_Save"] or 10,
+    Default = StatsValue,
     Min = 0,
     Max = 1000,
     Rounding = 0,
@@ -9292,7 +9293,6 @@ Esp:AddSlider({
         end
     end
 })
-
 -- Auto Melee
 Esp:AddToggle({
     Name = "Auto Melee",
