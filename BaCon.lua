@@ -9846,6 +9846,56 @@ Teleport:AddButton({ Name = "Teleport Sea 2", Description = "", Callback = funct
 Teleport:AddButton({ Name = "Teleport Sea 3", Description = "", Callback = function()
 		replicated.Remotes.CommF_:InvokeServer("TravelZou");
 	end });
+	
+_G.AutoHopServer = _G.AutoHopServer or false
+_G.HopDelay = _G.HopDelay or (30 * 60)
+
+Teleport:AddSection({"Auto Hop"});
+
+Teleport:AddToggle({
+    Name = "Auto Hop Server",
+    Default = GetSetting("AutoHopServer_G_Save", false),
+    Callback = function(value)
+        _G.AutoHopServer = value
+        _G.SaveData["AutoHopServer_G_Save"] = value
+        SaveSettings()
+        if not value then
+            _G.HopTimer = nil
+        end
+    end
+})
+
+Teleport:AddSlider({
+    Name = "Hop Delay (Minutes)",
+    Min = 5,
+    Max = 120,
+    Default = GetSetting("HopDelay_G_Save", 30),
+    Increment = 1,
+    Callback = function(value)
+        _G.HopDelay = value * 60
+        _G.SaveData["HopDelay_G_Save"] = value
+        SaveSettings()
+    end
+})
+
+task.spawn(function()
+    while task.wait(1) do
+        if _G.AutoHopServer then
+            pcall(function()
+                if not _G.HopTimer then
+                    _G.HopTimer = tick()
+                end
+
+                if tick() - _G.HopTimer >= _G.HopDelay then
+                    _G.HopTimer = tick()
+                    Hop()
+                end
+            end)
+        else
+            _G.HopTimer = nil
+        end
+    end
+end)
 Teleport:AddSection({"Travel - Island"})
 
 -- Lista de Ilhas
@@ -10055,6 +10105,112 @@ task.spawn(function()
     end
 end)
 end
+if World2 then 
+Get:AddSection({"Travel To Sea 3"})
+
+    Get:AddToggle({
+        Name = "Auto Quest Sea 3",
+        Default = GetSetting("AutoZou_Save", false),
+        Callback = function(Value)
+            _G.AutoZou = Value
+            _G.SaveData["AutoZou_Save"] = Value
+            SaveSettings()
+        end
+    })
+
+    -- Logic Auto Quest Sea 3 (Đã được rút gọn và tối ưu)
+    spawn(function()
+        while wait(Sec) do
+            pcall(function()
+                if _G.AutoZou then
+                    -- Chỉ chạy khi đủ level
+                    if plr.Data.Level.Value >= 1500 then
+                        local bartiloProgress = replicated.Remotes.CommF_:InvokeServer("BartiloQuestProgress", "Bartilo")
+
+                        -- === GIAI ĐOẠN 1: LÀM QUEST "SWAN PIRATES" (BartiloProgress == 0) ===
+                        if bartiloProgress == 0 then
+                            local QuestUI = plr.PlayerGui.Main.Quest
+                            -- Nếu chưa có quest, đến chỗ Bartilo để nhận
+                            if not QuestUI.Visible then
+                                _tp(CFrame.new(-456.28952, 73.0200958, 299.895966))
+                                if (Root.Position - CFrame.new(-456.28952, 73.0200958, 299.895966).Position).Magnitude <= 5 then
+                                    wait(1)
+                                    replicated.Remotes.CommF_:InvokeServer("StartQuest", "BartiloQuest", 1)
+                                end
+                            else
+                                -- Nếu đã có quest, tìm và đánh "Swan Pirate"
+                                if string.find(QuestUI.Container.QuestTitle.Title.Text, "Swan Pirates") then
+                                    local mob = GetConnectionEnemies("Swan Pirate")
+                                    if mob then
+                                        repeat
+                                            wait()
+                                            G.Kill(mob, _G.AutoZou)
+                                        until not _G.AutoZou or not mob.Parent or mob.Humanoid.Health <= 0 or not QuestUI.Visible
+                                    else
+                                        _tp(CFrame.new(1057.92761, 137.614319, 1242.08069))
+                                    end
+                                end
+                            end
+
+                        -- === GIAI ĐOẠN 2: ĐÁNH BOSS "JEREMY" (BartiloProgress == 1) ===
+                        elseif bartiloProgress == 1 then
+                            local mob = GetConnectionEnemies("Jeremy")
+                            if mob then
+                                repeat
+                                    wait()
+                                    G.Kill(mob, _G.AutoZou)
+                                until not _G.AutoZou or not mob.Parent or mob.Humanoid.Health <= 0
+                            else
+                                _tp(CFrame.new(2099.88159, 448.931, 648.997375))
+                            end
+
+                        -- === GIAI ĐOẠN 3: HOÀN THÀNH BARTILO (BartiloProgress == 2) ===
+                        elseif bartiloProgress == 2 then
+                            _tp(CFrame.new(-1836, 11, 1714))
+                            if (Root.Position - CFrame.new(-1836, 11, 1714).Position).Magnitude <= 10 then
+                                wait(0.5)
+                                -- Chạy qua các plates
+                                notween(CFrame.new(-1850.49329, 13.1789551, 1750.89685))
+                                wait(0.1)
+                                notween(CFrame.new(-1858.87305, 19.3777466, 1712.01807))
+                                wait(0.1)
+                                notween(CFrame.new(-1803.94324, 16.5789185, 1750.89685))
+                                wait(0.1)
+                                notween(CFrame.new(-1858.55835, 16.8604317, 1724.79541))
+                                wait(0.1)
+                                notween(CFrame.new(-1869.54224, 15.987854, 1681.00659))
+                                wait(0.1)
+                                notween(CFrame.new(-1800.0979, 16.4978027, 1684.52368))
+                                wait(0.1)
+                                notween(CFrame.new(-1819.26343, 14.795166, 1717.90625))
+                                wait(0.1)
+                                notween(CFrame.new(-1813.51843, 14.8604736, 1724.79541))
+                            end
+
+                        -- === GIAI ĐOẠN 4: LẤY "FLAMINGO ACCESS" BẰNG CÁCH NÓI CHUYỆN VỚI TREVOR ===
+                        else
+                            -- Kiểm tra xem đã mở khóa FlamingoAccess chưa
+                            local unlockables = replicated.Remotes.CommF_:InvokeServer("GetUnlockables")
+                            if unlockables and unlockables.FlamingoAccess == nil then
+                                -- Nói chuyện với Trevor để mở khóa (cần có fruit 1M+ trong kho)
+                                replicated.Remotes.CommF_:InvokeServer("F_", "TalkTrevor", "1")
+                                wait(.1)
+                                replicated.Remotes.CommF_:InvokeServer("F_", "TalkTrevor", "2")
+                                wait(.1)
+                                replicated.Remotes.CommF_:InvokeServer("F_", "TalkTrevor", "3")
+                            else
+                                -- Nếu đã mở khóa, dịch chuyển đến Zou
+                                replicated.Remotes.CommF_:InvokeServer("F_", "TravelZou")
+                            end
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+end
+end
+
 if World3 then
 Get:AddSection({"Skull Guitar"});
 Get:AddToggle({
@@ -12331,6 +12487,55 @@ Setting:AddButton({
 			Lighting.FantasySky:Destroy();
 		end;
 	end });
+
+
+Setting:AddToggle({
+    Name = "Full Bright",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            I.Ambient = Color3.new(1, 1, 1)
+            I.ColorShift_Bottom = Color3.new(1, 1, 1)
+            I.ColorShift_Top = Color3.new(1, 1, 1)
+        else
+            I.Ambient = Color3.new(0, 0, 0)
+            I.ColorShift_Bottom = Color3.new(0, 0, 0)
+            I.ColorShift_Top = Color3.new(0, 0, 0)
+        end
+    end
+})
+
+Setting:AddDropdown({
+    Name = "Select Time",
+    Values = {"Day", "Night"},
+    Multi = false,
+    Default = 1,
+    Callback = function(Value)
+        _G.SelectDN = Value
+    end
+})
+
+Setting:AddToggle({
+    Name = "Turn on Time",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+        _G.daylightN = Value
+    end
+})
+
+task.spawn(function()
+    while task.wait(0.1) do
+        if _G.daylightN then
+            if _G.SelectDN == "Day" then
+                I.ClockTime = 12
+            elseif _G.SelectDN == "Night" then
+                I.ClockTime = 0
+            end
+        end
+    end
+end)
 	
 Setting:AddToggle({
 	Name = "Walk on Water",
