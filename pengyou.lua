@@ -27,7 +27,7 @@ local notificationCooldown = 10
 local currentTime = tick()
 if currentTime - lastNotificationTime >= notificationCooldown then
     game.StarterGui:SetCore("SendNotification", {
-        Title = "青龙脚本 hub",
+        Title = "BaCoNhǎo hub",
         Text = "Loading...",
         Duration = 5
     })
@@ -68,7 +68,7 @@ if Util then
 end
 
 local HttpService = Services.HttpService
-local FolderName = "青龙脚本 Hub"
+local FolderName = "BaCoNhǎo Hub"
 local FileName = "Settings.json"
 local FullPath = FolderName .. "/" .. FileName
 
@@ -1166,8 +1166,8 @@ end);
 -- =======================
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
-getgenv().TweenSpeedFar = 370   -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 370  -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedFar = 255  -- Velocidade Padrão (Longe)
+getgenv().TweenSpeedNear = 255  -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -1193,7 +1193,7 @@ local dist = (I.Position - HRP.Position).Magnitude
 --  SE ESTIVER ATÉ 15 STUDS → USA A VELOCIDADE DE PERTO
 --  CASO CONTRÁRIO → USA A VELOCIDADE PADRÃO
 -- ===============================  
-local speed = dist <= 15 and (getgenv().TweenSpeedNear or 250) or (getgenv().TweenSpeedFar or 250)
+local speed = dist <= 15 and (getgenv().TweenSpeedNear or 255) or (getgenv().TweenSpeedFar or 255)
 
 local info = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)  
 local tween = game:GetService("TweenService"):Create(C, info, { CFrame = I })  
@@ -2377,9 +2377,9 @@ QuestNeta = function()
 		};
 	end;
 	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua"))():MakeWindow({
-    Title = "青龙脚本 | Hub",
+    Title = "BaCoNhǎo | Hub",
     SubTitle = "Blox Fruit",
-    SaveFolder = "青龙脚本.json"
+    SaveFolder = "BaCoNhǎo.json"
 })
 -- Criar ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -4322,7 +4322,7 @@ Setting:AddToggle({
             
             -- Notificação Universal (Funciona sem a lib Fluent)
             game.StarterGui:SetCore("SendNotification", {
-                Title = "青龙脚本Hub",
+                Title = "BaCoNhǎoHub",
                 Text = "Done",
                 Duration = 5
             })
@@ -4343,13 +4343,13 @@ Setting:AddButton({
             
             -- Notificação Universal
             game.StarterGui:SetCore("SendNotification", {
-                Title = "青龙脚本 Hub",
+                Title = "BaCoNhǎo Hub",
                 Text = "Done",
                 Duration = 5
             })
         else
             game.StarterGui:SetCore("SendNotification", {
-                Title = "青龙脚本 Hub",
+                Title = "BaCoNhǎo Hub",
                 Text = "Done",
                 Duration = 3
             })
@@ -11957,18 +11957,11 @@ spawn(function()
     pcall(function()
         while wait(Sec) do
             if _G.Raiding then
-                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible then
+                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
                     attackNearbyEnemies()
-
                     local nextIsland = getNextIsland()
                     if nextIsland then
-                        if _G.KillH then
-                            -- Đảo 4-5: giữ ở 80 stud
-                            _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-                        else
-                            -- Đảo 1-3: giữ ở 50 stud
-                            _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-                        end
+                        _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
                         NextIs = true
                     else
                         NextIs = false
@@ -11982,36 +11975,23 @@ spawn(function()
         end
     end)
 end)
--- // 4. Loop Kill Aura (Giữ nguyên)
-local plr = game.Players.LocalPlayer
-local Sec = 0.5 -- Đặt thời gian chờ phù hợp
 
-Task.spawn(function()
+-- // 4. Loop Kill Aura (Giữ nguyên)
+task.spawn(function()
     while true do 
         task.wait(Sec)
         if _G.KillH then
             pcall(function()
-                -- Lưu ý: sethiddenproperty hiện tại phần lớn không còn hoạt động trên Roblox
-                pcall(function()
-                    sethiddenproperty(plr, "SimulationRadius", math.huge)
-                end)
-                
-                local enemiesFolder = workspace:FindFirstChild("Enemies")
-                if enemiesFolder then
-                    for _, v in pairs(enemiesFolder:GetChildren()) do
-                        if not _G.KillH then break end 
-                        
-                        local humanoid = v:FindFirstChild("Humanoid")
-                        local rootPart = v:FindFirstChild("HumanoidRootPart")
-                        
-                        if humanoid and rootPart then
-                            if humanoid.Health > 0 and v.Parent then
-                                pcall(function()
-                                    rootPart.CanCollide = false
-                                    v:BreakJoints()
-                                    humanoid.Health = 0
-                                end)
-                            end
+                sethiddenproperty(plr, "SimulationRadius", math.huge)
+                for _, v in pairs(workspace.Enemies:GetChildren()) do
+                    if not _G.KillH then break end 
+                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                        if v.Humanoid.Health > 0 and v.Parent then
+                            pcall(function()
+                                v.HumanoidRootPart.CanCollide = false
+                                v:BreakJoints()
+                                v.Humanoid.Health = 0
+                            end)
                         end
                     end
                 end
@@ -12019,6 +11999,7 @@ Task.spawn(function()
         end
     end
 end)
+
 
 
 Fruit:AddToggle({
