@@ -1318,7 +1318,7 @@ function Library:CreateWindow(Setting)
 			end)
 			local sectionFunction = {}
 			function sectionFunction:AddToggle(idk,Setting)
-				local Title = tostring(Setting.Text or Setting.Title) or ""
+				local Title = tostring(Setting.Name or Setting.Text) or ""
 				local Desc = Setting.Desc or Setting.Description
 				local Default = Setting.Default
 				if Default == nil then
