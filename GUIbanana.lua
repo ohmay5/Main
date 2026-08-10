@@ -1140,7 +1140,7 @@ function Library:CreateWindow(Setting)
 
 		local pageFunction = {}
 
-		function pageFunction:AddSection({Section_Name, Toggleable, SectionGap, SectionColor})
+		function pageFunction:AddSection(Section_Name, Toggleable, SectionGap, SectionColor)
 			local Toggleable = Toggleable or false
 			local Section = Instance.new("Frame")
 			local UICorner = Instance.new("UICorner")
