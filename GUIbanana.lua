@@ -279,7 +279,7 @@ function Library_Function.Getcolor(color)
 end
 
 local libCreateNoti = function(Setting)
-	getgenv().TitleNameNoti = Setting.Title or ""; 
+	getgenv().TitleNameNoti = Setting.Name or ""; 
 	local Description = Setting.Description or Setting.Desc or Setting.Content or ""; 
 	local Duration = Setting.Duration or Setting.Timeshow or Setting.Delay or 10;
 
@@ -443,7 +443,7 @@ function Library:Notify(Setting, bypass)
 end
 
 function Library:CreateWindow(Setting)
-    local TitleNameMain = Setting.Title or "Banana Cat Hub"
+    local TitleNameMain = Setting.Name or "Banana Cat Hub"
     getgenv().MainDesc = Setting.Desc or Setting.Subtitle or ""
     
     if Setting.Image then
@@ -2148,8 +2148,8 @@ function Library:CreateWindow(Setting)
                 return dropdownSectionFunction
             end
             
-			function sectionFunction:AddDropdown(idk, Setting)
-				local Title = tostring(Setting.Text or Setting.Title) or ""
+			function sectionFunction:AddDropdown(Setting)
+				local Title = tostring(Setting.Name or Setting.Text) or ""
 				local List = Setting.Values
 				local Search = Setting.Search or false
 				local Selected = Setting.Selected or Setting.Multi or false
@@ -3215,7 +3215,7 @@ function sectionFunction:AddKeyBind(Setting, Callback)
     return keybindFunction
 end
 			function sectionFunction:AddInput(idk, Setting)
-				local TitleText = tostring(Setting.Text or Setting.Title) or ""
+				local TitleText = tostring(Setting.Name or Setting.Text) or ""
 				local Placeholder = tostring(Setting.Placeholder) or ""
 				local Default = Setting.Default or false
 				local Number_Only = Setting.Numeric or false
