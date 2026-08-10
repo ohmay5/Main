@@ -1890,7 +1890,7 @@ function Library:CreateWindow(Setting)
                 
                 -- HÀM TẠO SLIDER (RỘNG HƠN, SÁT VIỀN)
                 function dropdownSectionFunction:AddSlider(Setting)
-                    local TitleText = tostring(Setting.Text or Setting.Title) or ""
+                    local TitleText = tostring(Setting.Name or Setting.Title) or ""
                     local minValue = tonumber(Setting.Min) or 0
                     local maxValue = tonumber(Setting.Max) or 100
                     local Precise = Setting.Precise or false
