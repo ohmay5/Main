@@ -9,7 +9,7 @@ local ShootGunEvent = Net:WaitForChild("RE/ShootGunEvent")
 
 -- CẤU HÌNH CHUNG
 local Config = {
-    MaxDistance = 100,
+    MaxDistance = 300,
     MaxTargetsPerHit = 3,
 }
 
