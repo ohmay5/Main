@@ -1,9 +1,4 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/hdanhhub/hdanhhub/refs/heads/main/fixlagbyhdanh.lua"))()
-loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDangNhoEm/TuanAnhIOS/refs/heads/main/koby"))()
 
--- ==========================================
--- SERVICES
--- ==========================================
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -64,9 +59,9 @@ local Root = HumanoidRootPart
 -- ==========================================
 
 -- ==========================================
-Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/hdanhhub/UI/refs/heads/main/ui_BananaHub_final.lua"))()
+local Library = loadstring(game:HttpGet("https://pastefy.app/kyYdSx0A/raw"))()
 
-Window = Library:CreateWindow({
+local Window = Library:CreateWindow({
     Title = "BaConHǎo Hub",
     Desc = "- Blox Fruit",
     Image = "rbxassetid://123613996022560"
