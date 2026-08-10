@@ -27,7 +27,7 @@ local notificationCooldown = 10
 local currentTime = tick()
 if currentTime - lastNotificationTime >= notificationCooldown then
     game.StarterGui:SetCore("SendNotification", {
-        Title = "青龙脚本 hub",
+        Title = "BaCoNcto hub",
         Text = "Loading...",
         Duration = 5
     })
@@ -68,7 +68,7 @@ if Util then
 end
 
 local HttpService = Services.HttpService
-local FolderName = "青龙脚本 Hub"
+local FolderName = "BaCoNcto Hub"
 local FileName = "Settings.json"
 local FullPath = FolderName .. "/" .. FileName
 
@@ -2377,9 +2377,9 @@ QuestNeta = function()
 		};
 	end;
 	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua"))():MakeWindow({
-    Title = "青龙脚本 | Hub",
+    Title = "BaCoNcto | Hub",
     SubTitle = "Blox Fruit",
-    SaveFolder = "青龙脚本.json"
+    SaveFolder = "BaCoNcto.json"
 })
 -- Criar ScreenGui
 local screenGui = Instance.new("ScreenGui")
@@ -4322,7 +4322,7 @@ Setting:AddToggle({
             
             -- Notificação Universal (Funciona sem a lib Fluent)
             game.StarterGui:SetCore("SendNotification", {
-                Title = "青龙脚本Hub",
+                Title = "BaCoNctoHub",
                 Text = "Done",
                 Duration = 5
             })
@@ -4343,13 +4343,13 @@ Setting:AddButton({
             
             -- Notificação Universal
             game.StarterGui:SetCore("SendNotification", {
-                Title = "青龙脚本 Hub",
+                Title = "BaCoNcto Hub",
                 Text = "Done",
                 Duration = 5
             })
         else
             game.StarterGui:SetCore("SendNotification", {
-                Title = "青龙脚本 Hub",
+                Title = "BaCoNcto Hub",
                 Text = "Done",
                 Duration = 3
             })
@@ -10888,8 +10888,14 @@ Get:AddToggle({
         end
     end,
 })
+Get:AddButton({
+      Name = "Buy True Triple Katana",
+      Callback = function()
+            replicated.Remotes.CommF_:InvokeServer("MysteriousMan", "2")
+        end
+    })
 Get:AddToggle({
- Name = "Teleport Legendary Sword Dealer",
+   Name = "Teleport Legendary Sword Dealer",
     Description = "",
     -- 1. Carrega o estado salvo ou false por padrão
     Default = GetSetting("TpLegendarySword_Save", false),
@@ -11463,46 +11469,30 @@ Get:AddToggle({
     end,
 })
 spawn(function()
-    while task.wait(0.1) do
-        pcall(function()
-            if not _G.AutoKeyRen then
-                return
-            end
-
-            local char = plr.Character
-            if not char then
-                return
-            end
-
-            -- Đã có Hidden Key
-            if plr.Backpack:FindFirstChild(K[3]) or char:FindFirstChild(K[3]) then
-                EquipWeapon(K[3])
-                task.wait(0.2)
-                _tp(CFrame.new(6571.1201,299.2303,-6967.8418))
-                return
-            end
-
-            -- Tìm Awakened Ice Admiral
-            local enemy = GetConnectionEnemies("Awakened Ice Admiral")
-
-            if enemy and enemy.Parent and enemy:FindFirstChild("Humanoid") then
-                repeat
-                    task.wait()
-                    G.Kill(enemy, _G.AutoKeyRen)
-                until not _G.AutoKeyRen
-                    or not enemy.Parent
-                    or not enemy:FindFirstChild("Humanoid")
-                    or enemy.Humanoid.Health <= 0
-                    or plr.Backpack:FindFirstChild(K[3])
-                    or char:FindFirstChild(K[3])
-            else
-                -- Đến khu vực boss để chờ spawn
-                _tp(CFrame.new(5439.7168,84.4209,-6715.1636))
-                task.wait(1)
-            end
-        end)
-    end
-end)
+        while wait(.1) do
+            pcall(function()
+                if _G.AutoKeysRen then
+                    if GetBP("Hidden Key") then
+                        EquipWeapon("Hidden Key")
+                        wait(.1)
+                        _tp(CFrame.new(6571.1201171875, 299.23028564453, -6967.841796875))
+                    else
+                        local mobs = {"Snow Lurker", "Arctic Warrior", "Awakened Ice Admiral"}
+                        local targetMob = GetConnectionEnemies(mobs)
+                        if targetMob then
+                            repeat
+                                task.wait()
+                                G.Kill(targetMob, _G.AutoKeysRen)
+                            until GetBP("Hidden Key") or _G.AutoKeysRen == false or not targetMob.Parent or targetMob.Humanoid.Health <= 0
+                        else
+                            _tp(CFrame.new(5439.716796875, 84.420944213867, -6715.1635742188))
+                        end
+                    end
+                end
+            end)
+        end
+    end)
+end
 Get:AddToggle({
  Name = "Auto Dragon Trident",
 	Description = "",
@@ -12381,6 +12371,55 @@ Setting:AddToggle({
 		end;
 	end,
 });
+_G.AutoHopServer = _G.AutoHopServer or false
+_G.HopDelay = _G.HopDelay or (30 * 60)
+
+Setting:AddSection({"Auto Hop"})
+
+Setting:AddToggle({
+    Name = "Auto Hop Server",
+    Default = GetSetting("AutoHopServer_G_Save", false),
+    Callback = function(value)
+        _G.AutoHopServer = value
+        _G.SaveData["AutoHopServer_G_Save"] = value
+        SaveSettings()
+        if not value then
+            _G.HopTimer = nil
+        end
+    end
+})
+
+Setting:AddSlider({
+    Name = "Hop Delay (Minutes)",
+    Min = 5,
+    Max = 120,
+    Default = GetSetting("HopDelay_G_Save", 30),
+    Increment = 1,
+    Callback = function(value)
+        _G.HopDelay = value * 60
+        _G.SaveData["HopDelay_G_Save"] = value
+        SaveSettings()
+    end
+})
+
+task.spawn(function()
+    while task.wait(1) do
+        if _G.AutoHopServer then
+            pcall(function()
+                if not _G.HopTimer then
+                    _G.HopTimer = tick()
+                end
+
+                if tick() - _G.HopTimer >= _G.HopDelay then
+                    _G.HopTimer = tick()
+                    Hop()
+                end
+            end)
+        else
+            _G.HopTimer = nil
+        end
+    end
+end)
 -- Tải các thư viện/cơ chế cần thiết
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attachgun.txt"))()
 
