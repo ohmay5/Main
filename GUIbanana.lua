@@ -3538,19 +3538,22 @@ end
 			end
 			return sectionFunction
 		end
-     local pagefunc = {}
-        function pagefunc:AddSection(name)
-            return pagefunc:AddSection(name)
-         end
-        function pagefunc:AddLeftGroupbox(name)
-            return pageFunction:AddSection(name)
-        end
-        function pagefunc:AddRightGroupbox(name)
-            return pageFunction:AddSection(name)
-        end
-		return pagefunc
-        end
+     -- ở phía trên
+local pagefunc = {}
 
+function pagefunc:AddSection(name)
+    return pageFunction:AddSection(name)
+end
+
+function pagefunc:AddLeftGroupbox(name)
+    return pageFunction:AddSection(name)
+end
+
+function pagefunc:AddRightGroupbox(name)
+    return pageFunction:AddSection(name)
+end
+
+return pagefunc
 	return Main_Function
 end
 
