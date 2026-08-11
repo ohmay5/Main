@@ -12066,9 +12066,9 @@ Fruit:AddToggle({
         end
     end,
 });
-
-task.spawn(function()
-    while task.wait(3) do -- Giảm xuống 3s để kiểm tra nhanh hơn
+-- // 1. Loop Tự động bắt đầu Raid
+Task.spawn(function()
+    while task.wait(3) do
         if _G.Auto_StartRaid then
             pcall(function()
                 local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
@@ -12091,30 +12091,18 @@ task.spawn(function()
                     _tp(oldPos)
                 end
 
-                -- Logic tự động chuyển chế độ đánh
+                -- Logic Raid
                 if raidTimer.Visible then
-                    local nextIsland = getNextIsland()
-                    if nextIsland then
-                        local islandName = nextIsland.Name
-                        _G.Raiding = true -- LUÔN BẬT ĐỂ TELEPORT HOẠT ĐỘNG
-                        
-                        -- Nếu là đảo 4 hoặc 5, bật Kill Aura và dùng biến để ưu tiên
-                        if string.find(islandName, "4") or string.find(islandName, "5") then
-                            _G.KillH = true
-                        else
-                            _G.KillH = false
-                        end
-                    end
+                    _G.Raiding = true
                 else
                     _G.Raiding = false
-                    _G.KillH = false
                 end
             end)
         end
     end
 end)
 
--- // Các hàm chức năng (Giữ nguyên)
+-- // Các hàm chức năng
 function IsIslandRaid(cu)
     local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
     if locs:FindFirstChild("Island " .. cu) then
@@ -12146,9 +12134,6 @@ function getNextIsland()
 end
 
 function attackNearbyEnemies()
-    -- Nếu đang dùng Kill Aura ở đảo 4-5 thì KHÔNG chạy G.Kill để tránh xung đột/lag
-    if _G.KillH then return end 
-    
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
             if mob.Humanoid.Health > 0 then
@@ -12164,7 +12149,7 @@ function attackNearbyEnemies()
     end
 end
 
--- // 3. Loop G.Kill (Giữ nguyên - Giờ đã có cơ chế tự né nếu KillH bật)
+-- // 3. Loop G.Kill đánh thường
 spawn(function()
     pcall(function()
         while wait(Sec) do
@@ -12173,7 +12158,7 @@ spawn(function()
                     attackNearbyEnemies()
                     local nextIsland = getNextIsland()
                     if nextIsland then
-                        _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+                        _tp(nextIsland.CFrame * CFrame.new(0, 60, 0))
                         NextIs = true
                     else
                         NextIs = false
@@ -12188,47 +12173,6 @@ spawn(function()
     end)
 end)
 
--- // Loop Kill Aura chuẩn và an toàn, không làm lỗi script
-task.spawn(function()
-    while true do 
-        task.wait(Sec)
-        if _G.KillH then
-            pcall(function()
-                -- Dùng game.Players.LocalPlayer trực tiếp để tránh lỗi biến plr chưa được khai báo
-                local LocalPlayer = game.Players.LocalPlayer
-                if LocalPlayer then
-                    sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
-                end
-                
-                local Enemies = workspace:FindFirstChild("Enemies")
-                if not Enemies then return end
-
-                for _, v in ipairs(Enemies:GetChildren()) do
-                    if not _G.KillH then break end 
-                    
-                    local Humanoid = v:FindFirstChildOfClass("Humanoid")
-                    local Root = v:FindFirstChild("HumanoidRootPart")
-
-                    if Humanoid and Root and Humanoid.Health > 0 and v.Parent then
-                        pcall(function()
-                            -- Ép máu chết ngay và xóa tức thì an toàn
-                            Humanoid.MaxHealth = 0
-                            Humanoid.Health = 0
-                            Root.CanCollide = false
-                            v:BreakJoints()
-                            
-                            task.defer(function()
-                                if v and v.Parent then
-                                    v:Destroy()
-                                end
-                            end)
-                        end)
-                    end
-                end
-            end)
-        end
-    end
-end)
 
 
 Fruit:AddToggle({
