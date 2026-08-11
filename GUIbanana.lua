@@ -1321,8 +1321,6 @@ function Library:CreateWindow(Setting)
         ):Play()
     end
 end)
-
-return Section
 			local sectionFunction = {}
 			function sectionFunction:AddToggle(Setting)
 				local Title = tostring(Setting.Name or Setting.Text) or ""
