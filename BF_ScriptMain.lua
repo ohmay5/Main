@@ -12062,7 +12062,6 @@ Fruit:AddToggle({
         _G.Auto_StartRaid = I
         if not I then
             _G.Raiding = false
-            _G.KillH = false
         end
     end,
 });
@@ -12102,37 +12101,46 @@ Task.spawn(function()
     end
 end)
 
--- // Các hàm chức năng
-function IsIslandRaid(cu)
+-- /function IsIslandRaid(cu)
     local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
     if locs:FindFirstChild("Island " .. cu) then
         local min = 4500
+
         for _, v in ipairs(locs:GetChildren()) do
             if v.Name == "Island " .. cu then
                 local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist < min then min = dist end
+                if dist < min then
+                    min = dist
+                end
             end
         end
+
         for _, v in ipairs(locs:GetChildren()) do
             if v.Name == "Island " .. cu then
                 local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist <= min then return v end
+                if dist <= min then
+                    return v
+                end
             end
         end
     end
 end
 
+-- Ordem das ilhas (5 → 1)
 function getNextIsland()
     local order = {5,4,3,2,1}
     for _, id in ipairs(order) do
         local island = IsIslandRaid(id)
         if island then
             local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-            if dist <= 4500 then return island end
+            if dist <= 4500 then
+                return island
+            end
         end
     end
 end
 
+-- Atacar inimigos usando SEU G.Kill
 function attackNearbyEnemies()
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
@@ -12149,31 +12157,38 @@ function attackNearbyEnemies()
     end
 end
 
--- // 3. Loop G.Kill đánh thường
+-- Loop principal (igual ao seu)
 spawn(function()
-    pcall(function()
-        while wait(Sec) do
-            if _G.Raiding then
-                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
-                    attackNearbyEnemies()
-                    local nextIsland = getNextIsland()
-                    if nextIsland then
-                        _tp(nextIsland.CFrame * CFrame.new(0, 60, 0))
-                        NextIs = true
-                    else
-                        NextIs = false
-                    end
-                else
-                    NextIs = false
-                end
+pcall(function()
+while wait(Sec) do
+    if _G.Raiding then
+
+        if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
+
+            -- Matar próximos
+            attackNearbyEnemies()
+
+            -- Pegar ilha certa
+            local nextIsland = getNextIsland()
+            if nextIsland then
+                -- USA SEU TELEPORTE REAL
+                _tp(nextIsland.CFrame * CFrame.new(0, 60, 0))
+
+                NextIs = true
             else
                 NextIs = false
             end
+
+        else
+            NextIs = false
         end
-    end)
+
+    else
+        NextIs = false
+    end
+end
 end)
-
-
+end)
 
 Fruit:AddToggle({
 	Name = "Auto Awakening",
