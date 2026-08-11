@@ -12168,7 +12168,7 @@ end)
 
 -- Button refresh stock
 Fruit:AddButton({
-    Name = "Refresh Stock Now",
+    Name = "Refresh Stock 1Now",
     Callback = function()
         pcall(function()
             StockParagraph:SetDesc(GetFruitStock())
