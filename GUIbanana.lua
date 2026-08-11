@@ -3546,11 +3546,11 @@ end
 			return sectionFunction
 		end
      -- ở phía trên
-local pagefunction = {}
-        function pagefunction:AddLeftGroupbox(name)
+local pagefunc = {}
+        function pagefunc:AddLeftGroupbox(name)
             return pageFunction:AddSection(name)
         end
-        function pagefunction:AddSection(name)
+        function pagefunc:AddSection(name)
             return pageFunction:AddSection(name)
         end
 		return pagefunction
