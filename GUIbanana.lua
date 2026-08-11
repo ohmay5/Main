@@ -3538,20 +3538,20 @@ end
 			end
 			return sectionFunction
 		end
-        local pagefunc = {}
+     local pagefunc = {}
+        function pagefunc:AddSection(name)
+            return pagefunc:AddSection(name)
+         end
+        function pagefunc:AddLeftGroupbox(name)
+            return pageFunction:AddSection(name)
+        end
+        function pagefunc:AddRightGroupbox(name)
+            return pageFunction:AddSection(name)
+        end
+		return pagefunc
+        end
 
-     function pagefunc:AddSection(name, Toggleable, SectionGap, SectionColor)
-    return pageFunction:AddSection(name, Toggleable, SectionGap, SectionColor)
+	return Main_Function
 end
-
-function pagefunc:AddLeftGroupbox(name)
-    return pageFunction:AddSection(name)
-end
-
-function pagefunc:AddRightGroupbox(name)
-    return pageFunction:AddSection(name)
-end
-
-return pagefunc
 
 return Library
