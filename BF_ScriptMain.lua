@@ -12017,40 +12017,39 @@ Fruit:AddToggle({
 	Callback = function(state)
 		_G.AutoBuyChip = state
 
-		task.spawn(function()
-			while _G.AutoBuyChip do
+		Task.spawn(function()
+    while _G.AutoBuyChip do
 
-				if not GetBP("Special Microchip") then
-					
-					local I = {} -- Lista de frutas válidas
+        if not GetBP("Special Microchip") then
+            
+            local I = {} -- Danh sách trái hợp lệ
 
-					for _, data in next, replicated.Remotes.CommF_:InvokeServer("GetFruits") do
-						local rarity = tostring(data.Rarity or ""):lower()
+            for _, data in next, replicated.Remotes.CommF_:InvokeServer("GetFruits") do
+                local rarity = tostring(data.Rarity or ""):lower()
 
-						-- Aceita frutas até 1.150.000 OU raridades Common/Uncommon/Rare
-						if data.Price <= 1000000
-							or rarity == "common"
-							or rarity == "uncommon"
-							or rarity == "rare"
-						then
-							table.insert(I, data.Name)
-						end
-					end
+                -- Đã sửa thành: Aceita frutas até 900.000 OU raridades Common/Uncommon/Rare
+                if data.Price <= 900000
+                    or rarity == "common"
+                    or rarity == "uncommon"
+                    or rarity == "rare"
+                then
+                    table.insert(I, data.Name)
+                end
+            end
 
-					-- Usar frutas válidas para comprar chip
-					for _, fruitName in pairs(I) do
-						if not GetBP("Special Microchip") then
-							replicated.Remotes.CommF_:InvokeServer("LoadFruit", fruitName)
-							replicated.Remotes.CommF_:InvokeServer("RaidsNpc", "Select", _G.SelectChip)
-						end
-					end
-				end
+            -- Sử dụng trái cây hợp lệ để mua chip
+            for _, fruitName in pairs(I) do
+                if not GetBP("Special Microchip") then
+                    replicated.Remotes.CommF_:InvokeServer("LoadFruit", fruitName)
+                    replicated.Remotes.CommF_:InvokeServer("RaidsNpc", "Select", _G.SelectChip)
+                end
+            end
+        end
 
-				task.wait(3)
-			end
-		end)
-	end
-})
+        task.wait(3)
+    end
+end)
+
 
 Fruit:AddSection({"Raid Farming"});
 
@@ -12067,7 +12066,7 @@ Fruit:AddToggle({
     end,
 });
 
-task.spawn(function()
+Task.spawn(function()
     while task.wait(3) do -- Giảm xuống 3s để kiểm tra nhanh hơn
         if _G.Auto_StartRaid then
             pcall(function()
@@ -12164,7 +12163,7 @@ function attackNearbyEnemies()
     end
 end
 
--- // 3. Loop G.Kill (Giữ nguyên - Giờ đã có cơ chế tự né nếu KillH bật)
+-- // 3. Loop G.Kill (Giữ nguyên)
 spawn(function()
     pcall(function()
         while wait(Sec) do
@@ -12188,31 +12187,45 @@ spawn(function()
     end)
 end)
 
--- // 4. Loop Kill Aura (Giữ nguyên)
+-- // 4. Loop Kill Aura (Đã nâng cấp phiên bản ép máu chết ngay và xóa tức thì)
 task.spawn(function()
     while true do 
         task.wait(Sec)
         if _G.KillH then
             pcall(function()
                 sethiddenproperty(plr, "SimulationRadius", math.huge)
-                for _, v in pairs(workspace.Enemies:GetChildren()) do
+                
+                local Enemies = workspace:FindFirstChild("Enemies")
+                if not Enemies then return end
+
+                for _, v in ipairs(Enemies:GetChildren()) do
                     if not _G.KillH then break end 
-                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-                        if v.Humanoid.Health > 0 and v.Parent then
-                            pcall(function()
-                                v.HumanoidRootPart.CanCollide = false
-                                v:BreakJoints()
-                                v.Humanoid.Health = 0
+                    
+                    local Humanoid = v:FindFirstChildOfClass("Humanoid")
+                    local Root = v:FindFirstChild("HumanoidRootPart")
+
+                    if Humanoid and Root and Humanoid.Health > 0 then
+                        pcall(function()
+                            -- Ép MaxHealth và Health về 0 để quái chết ngay lập tức không hồi phục
+                            Humanoid.MaxHealth = 0
+                            Humanoid.Health = 0
+                            Root.CanCollide = false
+                            
+                            -- Phá khớp và xóa đối tượng khỏi game
+                            v:BreakJoints()
+                            
+                            task.defer(function()
+                                if v and v.Parent then
+                                    v:Destroy()
+                                end
                             end)
-                        end
+                        end)
                     end
                 end
             end)
         end
     end
 end)
-
-
 
 Fruit:AddToggle({
 	Name = "Auto Awakening",
