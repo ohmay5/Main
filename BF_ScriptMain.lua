@@ -2852,6 +2852,149 @@ spawn(function()
         wait()
     end
 end)
+
+
+local function formatNumber(num)
+    local formatted = tostring(num)
+
+    while true do
+        local newFormatted, k = formatted:gsub(
+            "^(-?%d+)(%d%d%d)",
+            "%1,%2"
+        )
+
+        formatted = newFormatted
+
+        if k == 0 then
+            break
+        end
+    end
+
+    return formatted
+end
+
+-- Lấy riêng Advanced Fruit Stock
+local function GetAdvancedFruitStock()
+    local result = ""
+
+    local success, advancedStock = pcall(function()
+        return replicated.Remotes.CommF_:InvokeServer("GetFruits", true)
+    end)
+
+    if success and advancedStock then
+        local hasFruit = false
+
+        for _, fruit in pairs(advancedStock) do
+            if fruit.OnSale then
+                hasFruit = true
+
+                result = result
+                    .. fruit.Name
+                    .. " - $"
+                    .. formatNumber(fruit.Price)
+                    .. "\n"
+            end
+        end
+
+        if not hasFruit then
+            result = "- No fruit in stock."
+        end
+    else
+        result = "- Error retrieving data."
+    end
+
+    return result
+end
+
+-- Lấy riêng Normal Fruit Stock
+local function GetNormalFruitStock()
+    local result = ""
+
+    local success, normalStock = pcall(function()
+        return replicated.Remotes.CommF_:InvokeServer("GetFruits")
+    end)
+
+    if success and normalStock then
+        local hasFruit = false
+
+        for _, fruit in pairs(normalStock) do
+            if fruit.OnSale then
+                hasFruit = true
+
+                result = result
+                    .. fruit.Name
+                    .. " - $"
+                    .. formatNumber(fruit.Price)
+                    .. "\n"
+            end
+        end
+
+        if not hasFruit then
+            result = "- No fruit in stock."
+        end
+    else
+        result = "- Error retrieving data."
+    end
+
+    return result
+end
+
+
+-- =========================
+-- TẠO 2 BẢNG
+-- =========================
+
+local NormalParagraph = Status:AddParagraph({
+    Title = "Normal Fruit Stock",
+    Desc = "Loading...",
+    Side = "Left"
+})
+
+local AdvancedParagraph = Status:AddParagraph({
+    Title = "Advance Fruit Stock",
+    Desc = "Loading...",
+    Side = "Right"
+})
+
+
+-- =========================
+-- UPDATE STOCK
+-- =========================
+
+local function UpdateFruitStock()
+    local normalStock = GetNormalFruitStock()
+    local advancedStock = GetAdvancedFruitStock()
+
+    NormalParagraph:SetDesc(normalStock)
+    AdvancedParagraph:SetDesc(advancedStock)
+end
+
+
+task.spawn(function()
+    -- Update lần đầu
+    pcall(UpdateFruitStock)
+
+    -- Update mỗi 60 giây
+    while task.wait(60) do
+        pcall(UpdateFruitStock)
+    end
+end)
+
+-- Button refresh stock
+Status:AddButton({
+    Name = "Refresh Stock Now",
+    Callback = function()
+        pcall(function()
+            StockParagraph:SetDesc(GetFruitStock())
+            redzlib:Notify({
+                Title = "Fruit Stock",
+                Message = "Stock refreshed",
+                Duration = 2
+            })
+        end)
+    end
+})
+
 local Miragecheck = Status:AddParagraph({
     Title = "Mirage Island",
     Desc = "Status: "

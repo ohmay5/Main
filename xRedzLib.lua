@@ -1955,30 +1955,97 @@ function redzlib:MakeWindow(Configs)
 			return Section
 		end
 		function Tab:AddParagraph(Configs)
-			local PName = Configs[1] or Configs.Title or "Paragraph"
-			local PDesc = Configs[2] or Configs.Text or ""
-			
-			local Frame, LabelFunc = ButtonFrame(Container, PName, PDesc, UDim2.new(1, -20))
-			
-			local Paragraph = {}
-			function Paragraph:Visible(...) Funcs:ToggleVisible(Frame, ...) end
-			function Paragraph:Destroy() Frame:Destroy() end
-			function Paragraph:SetTitle(Val)
-				LabelFunc:SetTitle(GetStr(Val))
-			end
-			function Paragraph:SetDesc(Val)
-				LabelFunc:SetDesc(GetStr(Val))
-			end
-			function Paragraph:Set(Val1, Val2)
-				if Val1 and Val2 then
-					LabelFunc:SetTitle(GetStr(Val1))
-					LabelFunc:SetDesc(GetStr(Val2))
-				elseif Val1 then
-					LabelFunc:SetDesc(GetStr(Val1))
-				end
-			end
-			return Paragraph
-		end
+    local PName = Configs[1] or Configs.Title or "Paragraph"
+    local PDesc = Configs[2] or Configs.Text or ""
+    local Side = Configs.Side or "Left"
+
+    -- Tạo 2 cột một lần
+    if not Container:FindFirstChild("ParagraphColumns") then
+        local Columns = Instance.new("Frame")
+        Columns.Name = "ParagraphColumns"
+        Columns.BackgroundTransparency = 1
+        Columns.Size = UDim2.new(1, 0, 0, 0)
+        Columns.AutomaticSize = Enum.AutomaticSize.Y
+        Columns.Parent = Container
+
+        local Layout = Instance.new("UIListLayout")
+        Layout.FillDirection = Enum.FillDirection.Horizontal
+        Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+        Layout.VerticalAlignment = Enum.VerticalAlignment.Top
+        Layout.Padding = UDim.new(0, 10)
+        Layout.Parent = Columns
+
+        local Left = Instance.new("Frame")
+        Left.Name = "Left"
+        Left.BackgroundTransparency = 1
+        Left.Size = UDim2.new(0.5, -5, 0, 0)
+        Left.AutomaticSize = Enum.AutomaticSize.Y
+        Left.Parent = Columns
+
+        local LeftLayout = Instance.new("UIListLayout")
+        LeftLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        LeftLayout.Padding = UDim.new(0, 5)
+        LeftLayout.Parent = Left
+
+        local Right = Instance.new("Frame")
+        Right.Name = "Right"
+        Right.BackgroundTransparency = 1
+        Right.Size = UDim2.new(0.5, -5, 0, 0)
+        Right.AutomaticSize = Enum.AutomaticSize.Y
+        Right.Parent = Columns
+
+        local RightLayout = Instance.new("UIListLayout")
+        RightLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        RightLayout.Padding = UDim.new(0, 5)
+        RightLayout.Parent = Right
+    end
+
+    local Columns = Container:FindFirstChild("ParagraphColumns")
+
+    local TargetContainer
+
+    if Side == "Right" then
+        TargetContainer = Columns.Right
+    else
+        TargetContainer = Columns.Left
+    end
+
+    local Frame, LabelFunc = ButtonFrame(
+        TargetContainer,
+        PName,
+        PDesc,
+        UDim2.new(1, 0)
+    )
+
+    local Paragraph = {}
+
+    function Paragraph:Visible(...)
+        Funcs:ToggleVisible(Frame, ...)
+    end
+
+    function Paragraph:Destroy()
+        Frame:Destroy()
+    end
+
+    function Paragraph:SetTitle(Val)
+        LabelFunc:SetTitle(GetStr(Val))
+    end
+
+    function Paragraph:SetDesc(Val)
+        LabelFunc:SetDesc(GetStr(Val))
+    end
+
+    function Paragraph:Set(Val1, Val2)
+        if Val1 and Val2 then
+            LabelFunc:SetTitle(GetStr(Val1))
+            LabelFunc:SetDesc(GetStr(Val2))
+        elseif Val1 then
+            LabelFunc:SetDesc(GetStr(Val1))
+        end
+    end
+
+    return Paragraph
+end
 		function Tab:AddButton(Configs)
 			local BName = Configs[1] or Configs.Name or Configs.Title or "Button!"
 			local BDescription = Configs.Desc or Configs.Description or ""
