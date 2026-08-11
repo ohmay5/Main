@@ -12017,39 +12017,40 @@ Fruit:AddToggle({
 	Callback = function(state)
 		_G.AutoBuyChip = state
 
-		Task.spawn(function()
-    while _G.AutoBuyChip do
+		task.spawn(function()
+			while _G.AutoBuyChip do
 
-        if not GetBP("Special Microchip") then
-            
-            local I = {} -- Danh sách trái hợp lệ
+				if not GetBP("Special Microchip") then
+					
+					local I = {} -- Lista de frutas válidas
 
-            for _, data in next, replicated.Remotes.CommF_:InvokeServer("GetFruits") do
-                local rarity = tostring(data.Rarity or ""):lower()
+					for _, data in next, replicated.Remotes.CommF_:InvokeServer("GetFruits") do
+						local rarity = tostring(data.Rarity or ""):lower()
 
-                -- Đã sửa thành: Aceita frutas até 900.000 OU raridades Common/Uncommon/Rare
-                if data.Price <= 900000
-                    or rarity == "common"
-                    or rarity == "uncommon"
-                    or rarity == "rare"
-                then
-                    table.insert(I, data.Name)
-                end
-            end
+						-- Aceita frutas até 1.150.000 OU raridades Common/Uncommon/Rare
+						if data.Price <= 900000
+							or rarity == "common"
+							or rarity == "uncommon"
+							or rarity == "rare"
+						then
+							table.insert(I, data.Name)
+						end
+					end
 
-            -- Sử dụng trái cây hợp lệ để mua chip
-            for _, fruitName in pairs(I) do
-                if not GetBP("Special Microchip") then
-                    replicated.Remotes.CommF_:InvokeServer("LoadFruit", fruitName)
-                    replicated.Remotes.CommF_:InvokeServer("RaidsNpc", "Select", _G.SelectChip)
-                end
-            end
-        end
+					-- Usar frutas válidas para comprar chip
+					for _, fruitName in pairs(I) do
+						if not GetBP("Special Microchip") then
+							replicated.Remotes.CommF_:InvokeServer("LoadFruit", fruitName)
+							replicated.Remotes.CommF_:InvokeServer("RaidsNpc", "Select", _G.SelectChip)
+						end
+					end
+				end
 
-        task.wait(3)
-    end
-end)
-
+				task.wait(3)
+			end
+		end)
+	end
+})
 
 Fruit:AddSection({"Raid Farming"});
 
@@ -12066,7 +12067,7 @@ Fruit:AddToggle({
     end,
 });
 
-Task.spawn(function()
+task.spawn(function()
     while task.wait(3) do -- Giảm xuống 3s để kiểm tra nhanh hơn
         if _G.Auto_StartRaid then
             pcall(function()
@@ -12163,7 +12164,7 @@ function attackNearbyEnemies()
     end
 end
 
--- // 3. Loop G.Kill (Giữ nguyên)
+-- // 3. Loop G.Kill (Giữ nguyên - Giờ đã có cơ chế tự né nếu KillH bật)
 spawn(function()
     pcall(function()
         while wait(Sec) do
@@ -12186,8 +12187,6 @@ spawn(function()
         end
     end)
 end)
-
--- // 4. Loop Kill Aura (Đã nâng cấp phiên bản ép máu chết ngay và xóa tức thì)
 task.spawn(function()
     while true do 
         task.wait(Sec)
