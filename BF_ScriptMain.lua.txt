@@ -12087,66 +12087,100 @@ spawn(function()
 	end;
 end);
 Fruit:AddSection({"Fruits Options"});
-local J5 = {};
-local function i5(I)
-	local e = tostring(I);
-	while true do
-		e, k = e:gsub("^(-?%d+)(%d%d%d)", "%1,%2");
-		if k == 0 then
-			break;
-		end;
-	end;
-	return e;
-end;
-for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", true)) do
-	if e.OnSale == true then
-		local I = i5(e.Price);
-		local K = e.Name;
-		table.insert(J5, K);
-	end;
-end;
-local C5 = {};
-for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", false)) do
-	if e.OnSale == true then
-		local I = i5(e.Price);
-		local K = e.Name;
-		table.insert(C5, K);
-	end;
-end;
-Fruit:AddDropdown({
-	Name = "Select Fruit Stock",
-	Description = "",
-	Options = C5,
-	Default = false,
-	Multi = false,
-	Callback = function(I)
-		_G.SelectFruit = I;
-	end,
-});
-Fruit:AddButton({ Name = "Buy Basic Stock", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", _G.SelectFruit);
-	end });
-Fruit:AddDropdown({
-	Name = "Select Mirage Fruit",
-	Description = "",
-	Options = J5,
-	Default = false,
-	Multi = false,
-	Callback = function(I)
-		SelectF_Adv = I;
-	end,
-});
-local M5 = {};
-for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", false)) do
-	if e.OnSale == true then
-		local I = i5(e.Price);
-		local K = e.Name;
-		table.insert(M5, K);
-	end;
-end;
-Fruit:AddButton({ Name = "Buy Mirage Stock", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", SelectF_Adv);
-	end });
+local function formatNumber(num)
+    local formatted = tostring(num)
+    while true do
+        formatted, k = formatted:gsub("^(-?%d+)(%d%d%d)", "%1,%2")
+        if k == 0 then break end
+    end
+    return formatted
+end
+
+-- Hàm lấy stock fruit
+local function GetFruitStock()
+    local result = "Advance Fruit Stock\n"
+    
+    -- Lấy stock fruit advanced
+    local success, advancedStock = pcall(function()
+        return replicated.Remotes.CommF_:InvokeServer("GetFruits", true)
+    end)
+    
+    if success and advancedStock then
+        local hasFruit = false
+        for _, fruit in pairs(advancedStock) do
+            if fruit.OnSale then
+                hasFruit = true
+                result = result .. fruit.Name .. " - $" .. formatNumber(fruit.Price) .. "\n"
+            end
+        end
+        if not hasFruit then
+            result = result .. "- No fruit in stock.\n"
+        end
+    else
+        result = result .. "- Error retrieving data.\n"
+    end
+    
+    result = result .. "\nNormal Fruit Stock\n"
+    
+    -- Lấy stock fruit thường
+    local success2, normalStock = pcall(function()
+        return replicated.Remotes.CommF_:InvokeServer("GetFruits")
+    end)
+    
+    if success2 and normalStock then
+        local hasFruit = false
+        for _, fruit in pairs(normalStock) do
+            if fruit.OnSale then
+                hasFruit = true
+                result = result .. fruit.Name .. " - $" .. formatNumber(fruit.Price) .. "\n"
+            end
+        end
+        if not hasFruit then
+            result = result .. "- No fruit in stock.\n"
+        end
+    else
+        result = result .. "- Error retrieving data.\n"
+    end
+    
+    return result
+end
+
+-- Paragraph hiển thị stock
+local StockParagraph = Fruit:AddParagraph({
+    Title = "Fruit Stock",
+    Desc = "Loading..."
+})
+
+-- Update stock mỗi 60 giây
+task.spawn(function()
+    -- Update lần đầu
+    pcall(function()
+        StockParagraph:SetDesc(GetFruitStock())
+    end)
+    
+    -- Update định kỳ
+    while task.wait(60) do
+        pcall(function()
+            StockParagraph:SetDesc(GetFruitStock())
+        end)
+    end
+end)
+
+-- Button refresh stock
+Fruit:AddButton({
+    Name = "Refresh Stock Now",
+    Callback = function()
+        pcall(function()
+            StockParagraph:SetDesc(GetFruitStock())
+            redzlib:Notify({
+                Title = "Fruit Stock",
+                Message = "Stock refreshed",
+                Duration = 2
+            })
+        end)
+    end
+})
+
 Fruit:AddToggle({
 	Name  = "Auto Random Fruit",
     Description = "Automatic random devil fruit",
