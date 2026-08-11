@@ -1959,119 +1959,188 @@ function redzlib:MakeWindow(Configs)
     local PDesc = Configs[2] or Configs.Text or ""
 
     -- ==========================================
-    -- DUAL STOCK PARAGRAPH
+    -- DUAL STOCK
     -- ==========================================
     if Configs.DualStock then
 
-        -- Tạo đúng 1 bảng giống Paragraph cũ
+        -- Tạo frame chính giống Paragraph cũ
         local Frame, LabelFunc = ButtonFrame(
             Container,
-            PName,
+            "",
             "",
             UDim2.new(1, -20)
         )
 
-        -- Kích thước bảng
         Frame.Size = UDim2.new(1, -20, 0, 180)
 
         -- ==========================================
-        -- KHU VỰC 2 BÊN
+        -- TITLE: FRUIT STOCK
+        -- ==========================================
+
+        local MainTitle = Instance.new("TextLabel")
+        MainTitle.Name = "StockTitle"
+        MainTitle.BackgroundTransparency = 1
+        MainTitle.Position = UDim2.new(0, 10, 0, 6)
+        MainTitle.Size = UDim2.new(1, -20, 0, 22)
+
+        MainTitle.Text = PName
+        MainTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        MainTitle.TextTransparency = 0
+        MainTitle.TextSize = 13
+        MainTitle.Font = Enum.Font.GothamMedium
+        MainTitle.TextXAlignment = Enum.TextXAlignment.Left
+        MainTitle.TextYAlignment = Enum.TextYAlignment.Center
+
+        MainTitle.Parent = Frame
+
+
+        -- ==========================================
+        -- CONTAINER
         -- ==========================================
 
         local StockContainer = Instance.new("Frame")
         StockContainer.Name = "StockContainer"
         StockContainer.BackgroundTransparency = 1
-        StockContainer.Position = UDim2.new(0, 8, 0, 35)
-        StockContainer.Size = UDim2.new(1, -16, 1, -40)
+        StockContainer.Position = UDim2.new(0, 10, 0, 32)
+        StockContainer.Size = UDim2.new(1, -20, 1, -38)
         StockContainer.Parent = Frame
 
-        -- =========================
-        -- NORMAL - BÊN TRÁI
-        -- =========================
+
+        -- ==========================================
+        -- NORMAL STOCK - LEFT
+        -- ==========================================
 
         local NormalFrame = Instance.new("ScrollingFrame")
         NormalFrame.Name = "NormalStock"
         NormalFrame.BackgroundTransparency = 1
         NormalFrame.BorderSizePixel = 0
         NormalFrame.Position = UDim2.new(0, 0, 0, 0)
-        NormalFrame.Size = UDim2.new(0.5, -5, 1, 0)
+        NormalFrame.Size = UDim2.new(0.5, -7, 1, 0)
+
         NormalFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
         NormalFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
         NormalFrame.ScrollBarThickness = 3
-        NormalFrame.ScrollBarImageTransparency = 0.3
+        NormalFrame.ScrollBarImageTransparency = 0.15
         NormalFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+
         NormalFrame.Parent = StockContainer
 
-        -- =========================
-        -- ADVANCED - BÊN PHẢI
-        -- =========================
+
+        -- ==========================================
+        -- ADVANCED STOCK - RIGHT
+        -- ==========================================
 
         local AdvancedFrame = Instance.new("ScrollingFrame")
         AdvancedFrame.Name = "AdvancedStock"
         AdvancedFrame.BackgroundTransparency = 1
         AdvancedFrame.BorderSizePixel = 0
-        AdvancedFrame.Position = UDim2.new(0.5, 5, 0, 0)
-        AdvancedFrame.Size = UDim2.new(0.5, -5, 1, 0)
+        AdvancedFrame.Position = UDim2.new(0.5, 7, 0, 0)
+        AdvancedFrame.Size = UDim2.new(0.5, -7, 1, 0)
+
         AdvancedFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
         AdvancedFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
         AdvancedFrame.ScrollBarThickness = 3
-        AdvancedFrame.ScrollBarImageTransparency = 0.3
+        AdvancedFrame.ScrollBarImageTransparency = 0.15
         AdvancedFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+
         AdvancedFrame.Parent = StockContainer
 
+
         -- ==========================================
-        -- TITLE 2 BÊN
+        -- NORMAL TITLE
         -- ==========================================
 
         local NormalTitle = Instance.new("TextLabel")
+        NormalTitle.Name = "NormalTitle"
         NormalTitle.BackgroundTransparency = 1
-        NormalTitle.Size = UDim2.new(1, 0, 0, 20)
+        NormalTitle.Position = UDim2.new(0, 0, 0, 0)
+        NormalTitle.Size = UDim2.new(1, -5, 0, 20)
+
         NormalTitle.Text = "Normal Fruit Stock"
-        NormalTitle.TextXAlignment = Enum.TextXAlignment.Left
+        NormalTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        NormalTitle.TextTransparency = 0
         NormalTitle.TextSize = 12
         NormalTitle.Font = Enum.Font.GothamMedium
+
+        NormalTitle.TextXAlignment = Enum.TextXAlignment.Left
+        NormalTitle.TextYAlignment = Enum.TextYAlignment.Center
+
         NormalTitle.Parent = NormalFrame
 
-        local AdvancedTitle = Instance.new("TextLabel")
-        AdvancedTitle.BackgroundTransparency = 1
-        AdvancedTitle.Size = UDim2.new(1, 0, 0, 20)
-        AdvancedTitle.Text = "Advance Fruit Stock"
-        AdvancedTitle.TextXAlignment = Enum.TextXAlignment.Left
-        AdvancedTitle.TextSize = 12
-        AdvancedTitle.Font = Enum.Font.GothamMedium
-        AdvancedTitle.Parent = AdvancedFrame
 
         -- ==========================================
-        -- TEXT STOCK
+        -- ADVANCED TITLE
+        -- ==========================================
+
+        local AdvancedTitle = Instance.new("TextLabel")
+        AdvancedTitle.Name = "AdvancedTitle"
+        AdvancedTitle.BackgroundTransparency = 1
+        AdvancedTitle.Position = UDim2.new(0, 0, 0, 0)
+        AdvancedTitle.Size = UDim2.new(1, -5, 0, 20)
+
+        AdvancedTitle.Text = "Advance Fruit Stock"
+        AdvancedTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        AdvancedTitle.TextTransparency = 0
+        AdvancedTitle.TextSize = 12
+        AdvancedTitle.Font = Enum.Font.GothamMedium
+
+        AdvancedTitle.TextXAlignment = Enum.TextXAlignment.Left
+        AdvancedTitle.TextYAlignment = Enum.TextYAlignment.Center
+
+        AdvancedTitle.Parent = AdvancedFrame
+
+
+        -- ==========================================
+        -- NORMAL TEXT
         -- ==========================================
 
         local NormalText = Instance.new("TextLabel")
         NormalText.Name = "StockText"
         NormalText.BackgroundTransparency = 1
         NormalText.Position = UDim2.new(0, 0, 0, 22)
-        NormalText.Size = UDim2.new(1, -4, 0, 0)
+        NormalText.Size = UDim2.new(1, -5, 0, 0)
+
         NormalText.AutomaticSize = Enum.AutomaticSize.Y
         NormalText.Text = "Loading..."
+
+        NormalText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        NormalText.TextTransparency = 0
+        NormalText.TextSize = 11
+        NormalText.Font = Enum.Font.Gotham
+
         NormalText.TextXAlignment = Enum.TextXAlignment.Left
         NormalText.TextYAlignment = Enum.TextYAlignment.Top
         NormalText.TextWrapped = false
-        NormalText.TextSize = 11
-        NormalText.Font = Enum.Font.Gotham
+
         NormalText.Parent = NormalFrame
+
+
+        -- ==========================================
+        -- ADVANCED TEXT
+        -- ==========================================
 
         local AdvancedText = Instance.new("TextLabel")
         AdvancedText.Name = "StockText"
         AdvancedText.BackgroundTransparency = 1
         AdvancedText.Position = UDim2.new(0, 0, 0, 22)
-        AdvancedText.Size = UDim2.new(1, -4, 0, 0)
+        AdvancedText.Size = UDim2.new(1, -5, 0, 0)
+
         AdvancedText.AutomaticSize = Enum.AutomaticSize.Y
         AdvancedText.Text = "Loading..."
+
+        AdvancedText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        AdvancedText.TextTransparency = 0
+        AdvancedText.TextSize = 11
+        AdvancedText.Font = Enum.Font.Gotham
+
         AdvancedText.TextXAlignment = Enum.TextXAlignment.Left
         AdvancedText.TextYAlignment = Enum.TextYAlignment.Top
         AdvancedText.TextWrapped = false
-        AdvancedText.TextSize = 11
-        AdvancedText.Font = Enum.Font.Gotham
+
         AdvancedText.Parent = AdvancedFrame
+
 
         -- ==========================================
         -- API
@@ -2088,15 +2157,13 @@ function redzlib:MakeWindow(Configs)
         end
 
         function Paragraph:SetTitle(Val)
-            LabelFunc:SetTitle(GetStr(Val))
+            MainTitle.Text = GetStr(Val)
         end
 
         function Paragraph:SetDesc(Val)
-            -- Giữ tương thích với Paragraph cũ
             NormalText.Text = GetStr(Val)
         end
 
-        -- Set stock 2 bên
         function Paragraph:SetStock(Normal, Advanced)
             NormalText.Text = GetStr(Normal or "")
             AdvancedText.Text = GetStr(Advanced or "")
@@ -2104,6 +2171,7 @@ function redzlib:MakeWindow(Configs)
 
         return Paragraph
     end
+
 
     -- ==========================================
     -- PARAGRAPH BÌNH THƯỜNG
