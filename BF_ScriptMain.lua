@@ -12187,12 +12187,18 @@ spawn(function()
         end
     end)
 end)
+
+-- // Loop Kill Aura chuẩn và an toàn, không làm lỗi script
 task.spawn(function()
     while true do 
         task.wait(Sec)
         if _G.KillH then
             pcall(function()
-                sethiddenproperty(plr, "SimulationRadius", math.huge)
+                -- Dùng game.Players.LocalPlayer trực tiếp để tránh lỗi biến plr chưa được khai báo
+                local LocalPlayer = game.Players.LocalPlayer
+                if LocalPlayer then
+                    sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
+                end
                 
                 local Enemies = workspace:FindFirstChild("Enemies")
                 if not Enemies then return end
@@ -12203,14 +12209,12 @@ task.spawn(function()
                     local Humanoid = v:FindFirstChildOfClass("Humanoid")
                     local Root = v:FindFirstChild("HumanoidRootPart")
 
-                    if Humanoid and Root and Humanoid.Health > 0 then
+                    if Humanoid and Root and Humanoid.Health > 0 and v.Parent then
                         pcall(function()
-                            -- Ép MaxHealth và Health về 0 để quái chết ngay lập tức không hồi phục
+                            -- Ép máu chết ngay và xóa tức thì an toàn
                             Humanoid.MaxHealth = 0
                             Humanoid.Health = 0
                             Root.CanCollide = false
-                            
-                            -- Phá khớp và xóa đối tượng khỏi game
                             v:BreakJoints()
                             
                             task.defer(function()
@@ -12225,6 +12229,7 @@ task.spawn(function()
         end
     end
 end)
+
 
 Fruit:AddToggle({
 	Name = "Auto Awakening",

@@ -12043,28 +12043,48 @@ spawn(function()
 end)
 
 -- // 4. Loop Kill Aura (Giữ nguyên)
+-- // Loop Kill Aura chuẩn và an toàn, không làm lỗi script
 task.spawn(function()
     while true do 
         task.wait(Sec)
         if _G.KillH then
             pcall(function()
-                sethiddenproperty(plr, "SimulationRadius", math.huge)
-                for _, v in pairs(workspace.Enemies:GetChildren()) do
+                -- Dùng game.Players.LocalPlayer trực tiếp để tránh lỗi biến plr chưa được khai báo
+                local LocalPlayer = game.Players.LocalPlayer
+                if LocalPlayer then
+                    sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
+                end
+                
+                local Enemies = workspace:FindFirstChild("Enemies")
+                if not Enemies then return end
+
+                for _, v in ipairs(Enemies:GetChildren()) do
                     if not _G.KillH then break end 
-                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
-                        if v.Humanoid.Health > 0 and v.Parent then
-                            pcall(function()
-                                v.HumanoidRootPart.CanCollide = false
-                                v:BreakJoints()
-                                v.Humanoid.Health = 0
+                    
+                    local Humanoid = v:FindFirstChildOfClass("Humanoid")
+                    local Root = v:FindFirstChild("HumanoidRootPart")
+
+                    if Humanoid and Root and Humanoid.Health > 0 and v.Parent then
+                        pcall(function()
+                            -- Ép máu chết ngay và xóa tức thì an toàn
+                            Humanoid.MaxHealth = 0
+                            Humanoid.Health = 0
+                            Root.CanCollide = false
+                            v:BreakJoints()
+                            
+                            task.defer(function()
+                                if v and v.Parent then
+                                    v:Destroy()
+                                end
                             end)
-                        end
+                        end)
                     end
                 end
             end)
         end
     end
 end)
+
 
 
 
@@ -12168,7 +12188,7 @@ end)
 
 -- Button refresh stock
 Fruit:AddButton({
-    Name = "Refresh Stock 1Now",
+    Name = "Refresh Stock Now",
     Callback = function()
         pcall(function()
             StockParagraph:SetDesc(GetFruitStock())
