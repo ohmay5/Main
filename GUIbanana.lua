@@ -3540,20 +3540,15 @@ end
 		end
      -- ở phía trên
 local pagefunc = {}
+        function pagefunc:AddLeftGroupbox(name)
+            return pageFunction:AddSection(name)
+        end
+        function pagefunc:AddSection(name)
+            return pageFunction:AddSection(name)
+        end
+		return pagefunc
+        end
 
-function pagefunc:AddSection(name)
-    return pageFunction:AddSection(name)
-end
-
-function pagefunc:AddLeftGroupbox(name)
-    return pageFunction:AddSection(name)
-end
-
-function pagefunc:AddRightGroupbox(name)
-    return pageFunction:AddSection(name)
-end
-
-return pagefunc
 	return Main_Function
 end
 
