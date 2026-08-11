@@ -1306,16 +1306,23 @@ function Library:CreateWindow(Setting)
 			end
 
 			SectionList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-				if (not Toggleable) then
-					Section.Size = UDim2.new(1, -5, 0, SectionList.AbsoluteContentSize.Y + 5)
-				end
-				SizeSectionY = SectionList.AbsoluteContentSize.Y + 5
-				if sectionIsVisible then
-					TweenService:Create(Section, TweenInfo.new(getgenv().UIColor["Tween Animation 1 Speed"]), {
-						Size =  UDim2.new(1, -5, 0, SizeSectionY)
-					}):Play()
-				end
-			end)
+    local ContentHeight = SectionList.AbsoluteContentSize.Y + 5
+    SizeSectionY = ContentHeight
+
+    if not Toggleable then
+        Section.Size = UDim2.new(1, -5, 0, ContentHeight)
+    elseif sectionIsVisible then
+        TweenService:Create(
+            Section,
+            TweenInfo.new(getgenv().UIColor["Tween Animation 1 Speed"]),
+            {
+                Size = UDim2.new(1, -5, 0, ContentHeight)
+            }
+        ):Play()
+    end
+end)
+
+return Section
 			local sectionFunction = {}
 			function sectionFunction:AddToggle(Setting)
 				local Title = tostring(Setting.Name or Setting.Text) or ""
@@ -3539,14 +3546,14 @@ end
 			return sectionFunction
 		end
      -- ở phía trên
-local pagefunc = {}
-        function pagefunc:AddLeftGroupbox(name)
+local pagefunction = {}
+        function pagefunction:AddLeftGroupbox(name)
             return pageFunction:AddSection(name)
         end
-        function pagefunc:AddSection(name)
+        function pagefunction:AddSection(name)
             return pageFunction:AddSection(name)
         end
-		return pagefunc
+		return pagefunction
         end
 
 	return Main_Function
