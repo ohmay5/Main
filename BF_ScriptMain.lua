@@ -2873,7 +2873,10 @@ local function formatNumber(num)
     return formatted
 end
 
--- Lấy riêng Advanced Fruit Stock
+-- =========================
+-- ADVANCED FRUIT STOCK
+-- =========================
+
 local function GetAdvancedFruitStock()
     local result = ""
 
@@ -2906,7 +2909,11 @@ local function GetAdvancedFruitStock()
     return result
 end
 
--- Lấy riêng Normal Fruit Stock
+
+-- =========================
+-- NORMAL FRUIT STOCK
+-- =========================
+
 local function GetNormalFruitStock()
     local result = ""
 
@@ -2941,19 +2948,12 @@ end
 
 
 -- =========================
--- TẠO 2 BẢNG
+-- TẠO 1 BẢNG DUY NHẤT
 -- =========================
 
-local NormalParagraph = Status:AddParagraph({
-    Title = "Normal Fruit Stock",
-    Desc = "Loading...",
-    Side = "Left"
-})
-
-local AdvancedParagraph = Status:AddParagraph({
-    Title = "Advance Fruit Stock",
-    Desc = "Loading...",
-    Side = "Right"
+local StockParagraph = Status:AddParagraph({
+    Title = "Fruit Stock",
+    DualStock = true
 })
 
 
@@ -2962,15 +2962,18 @@ local AdvancedParagraph = Status:AddParagraph({
 -- =========================
 
 local function UpdateFruitStock()
-    local normalStock = GetNormalFruitStock()
-    local advancedStock = GetAdvancedFruitStock()
+    local NormalStock = GetNormalFruitStock()
+    local AdvancedStock = GetAdvancedFruitStock()
 
-    NormalParagraph:SetDesc(normalStock)
-    AdvancedParagraph:SetDesc(advancedStock)
+    StockParagraph:SetStock(
+        NormalStock,
+        AdvancedStock
+    )
 end
 
 
 task.spawn(function()
+
     -- Update lần đầu
     pcall(UpdateFruitStock)
 
@@ -2978,8 +2981,8 @@ task.spawn(function()
     while task.wait(60) do
         pcall(UpdateFruitStock)
     end
-end)
 
+end)
 -- Button refresh stock
 Status:AddButton({
     Name = "Refresh Stock Now",

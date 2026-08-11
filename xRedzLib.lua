@@ -1957,64 +1957,163 @@ function redzlib:MakeWindow(Configs)
 		function Tab:AddParagraph(Configs)
     local PName = Configs[1] or Configs.Title or "Paragraph"
     local PDesc = Configs[2] or Configs.Text or ""
-    local Side = Configs.Side or "Left"
 
-    -- Tạo 2 cột một lần
-    if not Container:FindFirstChild("ParagraphColumns") then
-        local Columns = Instance.new("Frame")
-        Columns.Name = "ParagraphColumns"
-        Columns.BackgroundTransparency = 1
-        Columns.Size = UDim2.new(1, 0, 0, 0)
-        Columns.AutomaticSize = Enum.AutomaticSize.Y
-        Columns.Parent = Container
+    -- ==========================================
+    -- DUAL STOCK PARAGRAPH
+    -- ==========================================
+    if Configs.DualStock then
 
-        local Layout = Instance.new("UIListLayout")
-        Layout.FillDirection = Enum.FillDirection.Horizontal
-        Layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-        Layout.VerticalAlignment = Enum.VerticalAlignment.Top
-        Layout.Padding = UDim.new(0, 10)
-        Layout.Parent = Columns
+        -- Tạo đúng 1 bảng giống Paragraph cũ
+        local Frame, LabelFunc = ButtonFrame(
+            Container,
+            PName,
+            "",
+            UDim2.new(1, -20)
+        )
 
-        local Left = Instance.new("Frame")
-        Left.Name = "Left"
-        Left.BackgroundTransparency = 1
-        Left.Size = UDim2.new(0.5, -5, 0, 0)
-        Left.AutomaticSize = Enum.AutomaticSize.Y
-        Left.Parent = Columns
+        -- Kích thước bảng
+        Frame.Size = UDim2.new(1, -20, 0, 180)
 
-        local LeftLayout = Instance.new("UIListLayout")
-        LeftLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        LeftLayout.Padding = UDim.new(0, 5)
-        LeftLayout.Parent = Left
+        -- ==========================================
+        -- KHU VỰC 2 BÊN
+        -- ==========================================
 
-        local Right = Instance.new("Frame")
-        Right.Name = "Right"
-        Right.BackgroundTransparency = 1
-        Right.Size = UDim2.new(0.5, -5, 0, 0)
-        Right.AutomaticSize = Enum.AutomaticSize.Y
-        Right.Parent = Columns
+        local StockContainer = Instance.new("Frame")
+        StockContainer.Name = "StockContainer"
+        StockContainer.BackgroundTransparency = 1
+        StockContainer.Position = UDim2.new(0, 8, 0, 35)
+        StockContainer.Size = UDim2.new(1, -16, 1, -40)
+        StockContainer.Parent = Frame
 
-        local RightLayout = Instance.new("UIListLayout")
-        RightLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        RightLayout.Padding = UDim.new(0, 5)
-        RightLayout.Parent = Right
+        -- =========================
+        -- NORMAL - BÊN TRÁI
+        -- =========================
+
+        local NormalFrame = Instance.new("ScrollingFrame")
+        NormalFrame.Name = "NormalStock"
+        NormalFrame.BackgroundTransparency = 1
+        NormalFrame.BorderSizePixel = 0
+        NormalFrame.Position = UDim2.new(0, 0, 0, 0)
+        NormalFrame.Size = UDim2.new(0.5, -5, 1, 0)
+        NormalFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+        NormalFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        NormalFrame.ScrollBarThickness = 3
+        NormalFrame.ScrollBarImageTransparency = 0.3
+        NormalFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+        NormalFrame.Parent = StockContainer
+
+        -- =========================
+        -- ADVANCED - BÊN PHẢI
+        -- =========================
+
+        local AdvancedFrame = Instance.new("ScrollingFrame")
+        AdvancedFrame.Name = "AdvancedStock"
+        AdvancedFrame.BackgroundTransparency = 1
+        AdvancedFrame.BorderSizePixel = 0
+        AdvancedFrame.Position = UDim2.new(0.5, 5, 0, 0)
+        AdvancedFrame.Size = UDim2.new(0.5, -5, 1, 0)
+        AdvancedFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+        AdvancedFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+        AdvancedFrame.ScrollBarThickness = 3
+        AdvancedFrame.ScrollBarImageTransparency = 0.3
+        AdvancedFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+        AdvancedFrame.Parent = StockContainer
+
+        -- ==========================================
+        -- TITLE 2 BÊN
+        -- ==========================================
+
+        local NormalTitle = Instance.new("TextLabel")
+        NormalTitle.BackgroundTransparency = 1
+        NormalTitle.Size = UDim2.new(1, 0, 0, 20)
+        NormalTitle.Text = "Normal Fruit Stock"
+        NormalTitle.TextXAlignment = Enum.TextXAlignment.Left
+        NormalTitle.TextSize = 12
+        NormalTitle.Font = Enum.Font.GothamMedium
+        NormalTitle.Parent = NormalFrame
+
+        local AdvancedTitle = Instance.new("TextLabel")
+        AdvancedTitle.BackgroundTransparency = 1
+        AdvancedTitle.Size = UDim2.new(1, 0, 0, 20)
+        AdvancedTitle.Text = "Advance Fruit Stock"
+        AdvancedTitle.TextXAlignment = Enum.TextXAlignment.Left
+        AdvancedTitle.TextSize = 12
+        AdvancedTitle.Font = Enum.Font.GothamMedium
+        AdvancedTitle.Parent = AdvancedFrame
+
+        -- ==========================================
+        -- TEXT STOCK
+        -- ==========================================
+
+        local NormalText = Instance.new("TextLabel")
+        NormalText.Name = "StockText"
+        NormalText.BackgroundTransparency = 1
+        NormalText.Position = UDim2.new(0, 0, 0, 22)
+        NormalText.Size = UDim2.new(1, -4, 0, 0)
+        NormalText.AutomaticSize = Enum.AutomaticSize.Y
+        NormalText.Text = "Loading..."
+        NormalText.TextXAlignment = Enum.TextXAlignment.Left
+        NormalText.TextYAlignment = Enum.TextYAlignment.Top
+        NormalText.TextWrapped = false
+        NormalText.TextSize = 11
+        NormalText.Font = Enum.Font.Gotham
+        NormalText.Parent = NormalFrame
+
+        local AdvancedText = Instance.new("TextLabel")
+        AdvancedText.Name = "StockText"
+        AdvancedText.BackgroundTransparency = 1
+        AdvancedText.Position = UDim2.new(0, 0, 0, 22)
+        AdvancedText.Size = UDim2.new(1, -4, 0, 0)
+        AdvancedText.AutomaticSize = Enum.AutomaticSize.Y
+        AdvancedText.Text = "Loading..."
+        AdvancedText.TextXAlignment = Enum.TextXAlignment.Left
+        AdvancedText.TextYAlignment = Enum.TextYAlignment.Top
+        AdvancedText.TextWrapped = false
+        AdvancedText.TextSize = 11
+        AdvancedText.Font = Enum.Font.Gotham
+        AdvancedText.Parent = AdvancedFrame
+
+        -- ==========================================
+        -- API
+        -- ==========================================
+
+        local Paragraph = {}
+
+        function Paragraph:Visible(...)
+            Funcs:ToggleVisible(Frame, ...)
+        end
+
+        function Paragraph:Destroy()
+            Frame:Destroy()
+        end
+
+        function Paragraph:SetTitle(Val)
+            LabelFunc:SetTitle(GetStr(Val))
+        end
+
+        function Paragraph:SetDesc(Val)
+            -- Giữ tương thích với Paragraph cũ
+            NormalText.Text = GetStr(Val)
+        end
+
+        -- Set stock 2 bên
+        function Paragraph:SetStock(Normal, Advanced)
+            NormalText.Text = GetStr(Normal or "")
+            AdvancedText.Text = GetStr(Advanced or "")
+        end
+
+        return Paragraph
     end
 
-    local Columns = Container:FindFirstChild("ParagraphColumns")
-
-    local TargetContainer
-
-    if Side == "Right" then
-        TargetContainer = Columns.Right
-    else
-        TargetContainer = Columns.Left
-    end
+    -- ==========================================
+    -- PARAGRAPH BÌNH THƯỜNG
+    -- ==========================================
 
     local Frame, LabelFunc = ButtonFrame(
-        TargetContainer,
+        Container,
         PName,
         PDesc,
-        UDim2.new(1, 0)
+        UDim2.new(1, -20)
     )
 
     local Paragraph = {}
