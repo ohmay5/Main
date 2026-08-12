@@ -1879,11 +1879,9 @@ end)
 			TIcon = false
 		end
 		
-		locallocal TabSelect = Make("Button", MainScroll, {
-    Size = UDim2.new(1, 0, 0, 24),
-    LayoutOrder = 1
-})
-		Make("Corner", TabSelect)
+		local TabSelect = Make("Button", MainScroll, {
+    Size = UDim2.new(1, 0, 0, 24)
+})	Make("Corner", TabSelect)
 		
 		local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
 			Size = UDim2.new(1, TIcon and -25 or -15, 1),
