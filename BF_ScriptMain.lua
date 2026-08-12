@@ -584,7 +584,7 @@ _G = _G or {}
 _B = false
 PosMon = nil
 
-_G.BringRange = _G.BringRange or 230
+_G.BringRange = _G.BringRange or 250
 _G.MaxBringMobs = _G.MaxBringMobs or 15 -- LIMITE DE MOBS
 
 _G.FarmPriorityElf = _G.FarmPriorityElf or false
@@ -702,6 +702,9 @@ BringEnemy = function()
     end
 end
 
+--==================================================
+-- LOOP CONTROLADOR
+--==================================================
 task.spawn(function()
     while task.wait(1) do
         if FarmAtivo() then
@@ -1959,7 +1962,6 @@ elseif I >= 2000 and I <= 2024 then
     NameMon = "Living Zombie"
     PosQ = CFrame.new(-9479.2168,141.215088,5566.09277)
     PosM = CFrame.new(-10144.131835938,138.6266784668,5838.0888671875)
-    
 elseif I >= 2025 and I <= 2049 then
     Mon = "Demonic Soul"
     Qdata = 1
@@ -1967,7 +1969,6 @@ elseif I >= 2025 and I <= 2049 then
     NameMon = "Demonic Soul"
     PosQ = CFrame.new(-9582.0224609375, 6.2515273094177, 6205.478515625)
     PosM = CFrame.new(-9500.00, 240.00, 6132.31)
-    
 elseif I >= 2050 and I <= 2074 then
     Mon = "Posessed Mummy"
     Qdata = 2
@@ -2426,6 +2427,7 @@ imageButton.MouseButton1Click:Connect(function()
     end
 end)
 
+
 local Status = Library:MakeTab({
     Title = "Info & Server",
     Icon = "rbxassetid://7040410130"
@@ -2501,6 +2503,198 @@ Status:AddDiscordInvite({
     Logo = "rbxassetid://114476175638281",
     Invite = ""
 })
+
+Shop:AddSection("Fighting Shop")
+Shop:AddButton({
+    Name = "Black Leg",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyBlackLeg")
+    end
+})
+Shop:AddButton({
+    Name = "Fishman Karate",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyFishmanKarate")
+    end
+})
+Shop:AddButton({
+    Name = "Electro",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyElectro")
+    end
+})
+Shop:AddButton({
+    Name = "Dragon Breath",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward","DragonClaw","1")
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward","DragonClaw","2")
+    end
+})
+Shop:AddButton({
+    Name = "SuperHuman",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySuperhuman")
+    end
+})
+Shop:AddButton({
+    Name = "Death Step",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyDeathStep")
+    end
+})
+Shop:AddButton({
+    Name = "Sharkman Karate",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySharkmanKarate",true)
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySharkmanKarate")
+    end
+})
+Shop:AddButton({
+    Name = "Electric Claw",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyElectricClaw")
+    end
+})
+Shop:AddButton({
+    Name = "Dragon Talon",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyDragonTalon")
+    end
+})
+Shop:AddButton({
+    Name = "God Human",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyGodhuman")
+    end
+})
+Shop:AddButton({
+    Name = "Sanguine Art",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt", true)
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt")
+    end
+})
+Shop:AddSection("Sword")
+Shop:AddButton({
+    Name = "Cutlass [ 1,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Cutlass")
+    end
+})
+Shop:AddButton({
+    Name = "Katana [ 1,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Katana")
+    end
+})
+Shop:AddButton({
+    Name = "Iron Mace [ 25,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Iron Mace")
+    end
+})
+Shop:AddButton({
+    Name = "Dual Katana [ 12,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Duel Katana")
+    end
+})
+Shop:AddButton({
+    Name = "Triple Katana [ 60,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Triple Katana")
+    end
+})
+Shop:AddButton({
+    Name = "Pipe [ 100,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Pipe")
+    end
+})
+Shop:AddButton({
+    Name = "Dual-Headed Blade [ 400,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Dual-Headed Blade")
+    end
+})
+Shop:AddButton({
+    Name = "Bisento [ 1,200,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Bisento")
+    end
+})
+Shop:AddButton({
+    Name = "Soul Cane [ 750,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Soul Cane")
+    end
+})
+Shop:AddButton({
+    Name = "Pole v.2 [ 5,000 Fragments ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ThunderGodTalk")
+    end
+})
+Shop:AddSection("Gun")
+Shop:AddButton({
+    Name = "Slingshot [ 5,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Slingshot")
+    end
+})
+Shop:AddButton({
+    Name = "Musket [ 8,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Musket")
+    end
+})
+Shop:AddButton({
+    Name = "Flintlock [ 10,500 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Flintlock")
+    end
+})
+Shop:AddButton({
+    Name = "Refined Slingshot [ 30,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Refined Flintlock")
+    end
+})
+
+Shop:AddButton({
+    Name = "Dual Flintlock [ 65,000 Beli ]",
+    Callback = function()
+        local args = {
+            [1] = "BuyItem",
+            [2] = "Dual Flintlock"
+        }
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
+    end
+})
+
+Shop:AddButton({
+    Name = "Cannon [ 100,000 Beli ]",
+    Callback = function()
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Cannon")
+    end
+})
+Shop:AddButton({
+    Name = "Kabucha [ 1,500 Fragments]",
+    Callback = function()
+        local Remote = game:GetService("ReplicatedStorage").Remotes.CommF_
+        Remote:InvokeServer("BlackbeardReward", "Slingshot", "1")
+        Remote:InvokeServer("BlackbeardReward", "Slingshot", "2")
+    end
+})
+Shop:AddButton({
+    Name = "Bizarre Rifle [ 250 Ectoplasm ]",
+    Callback = function()
+        local Remote = game:GetService("ReplicatedStorage").Remotes.CommF_
+        local args = { "Ectoplasm", "Buy", 1 }
+        Remote:InvokeServer(unpack(args))
+        Remote:InvokeServer(unpack(args))
+    end
+})
 Shop:AddSection("Abilities Shop")
 Shop:AddButton({
     Name = "Skyjump [ $10,000 Beli ]",
@@ -2526,359 +2720,6 @@ Shop:AddButton({
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Soru")
     end
 })
-local World1 = World1 or false
-local World2 = World2 or false
-local World3 = World3 or false
-
--- Section chính cho Shop
-Shop:AddSection({"Mua Melee V1"})
-
--- Danh sách Melee với tọa độ theo từng World
-local MeleeCoords = {
-    ["Dark Step (Chân Đen)"] = {
-        "BuyBlackLeg",
-        World1 and CFrame.new(-985, 13, 3988)
-        or World2 and CFrame.new(-4753, 35, -4850)
-        or World3 and CFrame.new(-5045, 371, -3181)
-    },
-
-    ["Electric (Điện)"] = {
-        "BuyElectro",
-        World1 and CFrame.new(-5384, 13, -2148)
-        or World2 and CFrame.new(-4867, 35, -4766)
-        or World3 and CFrame.new(-4995, 314, -3203)
-    },
-
-    ["Water Kung Fu (Võ Cá)"] = {
-        "BuyFishmanKarate",
-        World1 and CFrame.new(61585, 18, 987)
-        or World2 and CFrame.new(-4958, 35, -4668)
-        or World3 and CFrame.new(-5023, 371, -3190)
-    },
-
-    ["Dragon Breath (Hơi Thở Rồng)"] = {
-        "BuyDragonClaw",
-        World2 and CFrame.new(701, 187, 655)
-        or World3 and CFrame.new(-4981, 371, -3207)
-    },
-
-    ["Superhuman"] = {
-        "BuySuperhuman",
-        World2 and CFrame.new(1374, 247, -5192)
-        or World3 and CFrame.new(-5004, 371, -3198)
-    },
-
-    ["Death Step (Chân Đen V2)"] = {
-        "BuyDeathStep",
-        World2 and CFrame.new(6357, 296, -6762)
-        or World3 and CFrame.new(-4999, 314, -3221)
-    },
-
-    ["Sharkman Karate (Võ Cá V2)"] = {
-        "BuySharkmanKarate",
-        World2 and CFrame.new(-2602, 238, -10316)
-        or World3 and CFrame.new(-4972, 314, -3222)
-    },
-
-    ["Dragon Talon (Rồng V2)"] = {
-        "BuyDragonTalon",
-        World3 and CFrame.new(5661, 1211, 865)
-    },
-
-    ["Electric Claw (Điện V2)"] = {
-        "BuyElectricClaw",
-        World3 and CFrame.new(-10371, 331, -10131)
-    },
-
-    ["Godhuman"] = {
-        "BuyGodhuman",
-        World3 and CFrame.new(-13776, 334, -9879)
-    },
-
-    ["Sanguine Art (Võ Quỷ)"] = {
-        "BuySanguineArt",
-        World3 and CFrame.new(-16353, 160, 99)
-    }
-}
-
-local SelectedMelee = "Dark Step (Chân Đen)"
-
-local function GetMeleeList()
-    local list = {}
-
-    for name, data in pairs(MeleeCoords) do
-        if data[2] then
-            list[#list + 1] = name
-        end
-    end
-
-    table.sort(list)
-    return list
-end
-
-local function SetNoclip(enabled)
-    if _G.MeleeNoclip then
-        _G.MeleeNoclip:Disconnect()
-        _G.MeleeNoclip = nil
-    end
-
-    if not enabled then
-        return
-    end
-
-    _G.MeleeNoclip = game:GetService("RunService").Stepped:Connect(function()
-        if not _G.AutoBuyMelee then return end
-
-        local char = game.Players.LocalPlayer.Character
-        if char then
-            for _, v in ipairs(char:GetDescendants()) do
-                if v:IsA("BasePart") then
-                    v.CanCollide = false
-                end
-            end
-        end
-    end)
-end
-
-Shop:AddSection({"Mua Melee"})
-
-Shop:AddDropdown({
-    Name = "Chọn Melee Cần Mua",
-    Options = GetMeleeList(),
-    Default = SelectedMelee,
-
-    Callback = function(Value)
-        SelectedMelee = Value
-    end
-})
-
-Shop:AddToggle({
-    Name = "Auto Mua Melee",
-    Default = GetSetting("AutoBuyMelee_Save", false),
-
-    Callback = function(Value)
-        _G.AutoBuyMelee = Value
-        _G.SaveData["AutoBuyMelee_Save"] = Value
-        SaveSettings()
-
-        SetNoclip(Value)
-
-        if not Value then
-            return
-        end
-
-        task.spawn(function()
-            while _G.AutoBuyMelee do
-                task.wait()
-
-                local data = MeleeCoords[SelectedMelee]
-                local key, pos = data and data[1], data and data[2]
-
-                if not pos then
-                    redzlib:Notify({
-                        Title = "BaCon Hub",
-                        Message = "Melee này không có ở Sea hiện tại!",
-                        Duration = 3
-                    })
-
-                    _G.AutoBuyMelee = false
-                    break
-                end
-
-                local char = game.Players.LocalPlayer.Character
-                local hrp = char and char:FindFirstChild("HumanoidRootPart")
-
-                if hrp then
-                    if (hrp.Position - pos.Position).Magnitude > 15 then
-                        _tp(pos)
-                    else
-                        shouldTween = false
-                        hrp.CFrame = pos
-
-                        local CommF = game:GetService("ReplicatedStorage").Remotes.CommF_
-
-                        CommF:InvokeServer(key)
-                        CommF:InvokeServer("BuyItem", key)
-
-                        redzlib:Notify({
-                            Title = "BaCon Hub",
-                            Message = "Đã mua: " .. SelectedMelee,
-                            Duration = 2
-                        })
-
-                        task.wait(1)
-                    end
-                end
-            end
-        end)
-    end
-})
-
-
-Shop:AddSection("Sword")
-local Remote = game:GetService("ReplicatedStorage").Remotes.CommF_
-
-local Weapons = {
-    ["Cutlass [1,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Cutlass")
-    end,
-
-    ["Katana [1,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Katana")
-    end,
-
-    ["Iron Mace [25,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Iron Mace")
-    end,
-
-    ["Dual Katana [12,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Duel Katana")
-    end,
-
-    ["Triple Katana [60,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Triple Katana")
-    end,
-
-    ["Pipe [100,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Pipe")
-    end,
-
-    ["Dual-Headed Blade [400,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Dual-Headed Blade")
-    end,
-
-    ["Bisento [1,200,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Bisento")
-    end,
-
-    ["Soul Cane [750,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Soul Cane")
-    end,
-
-    ["Pole v.2 [5,000 Fragments]"] = function()
-        Remote:InvokeServer("ThunderGodTalk")
-    end,
-
-    ["Slingshot [5,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Slingshot")
-    end,
-
-    ["Musket [8,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Musket")
-    end,
-
-    ["Flintlock [10,500 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Flintlock")
-    end,
-
-    ["Refined Slingshot [30,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Refined Flintlock")
-    end,
-
-    ["Dual Flintlock [65,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Dual Flintlock")
-    end,
-
-    ["Cannon [100,000 Beli]"] = function()
-        Remote:InvokeServer("BuyItem", "Cannon")
-    end,
-
-    ["Kabucha [1,500 Fragments]"] = function()
-        Remote:InvokeServer("BlackbeardReward", "Slingshot", "1")
-        task.wait(.2)
-        Remote:InvokeServer("BlackbeardReward", "Slingshot", "2")
-    end,
-
-    ["Bizarre Rifle [250 Ectoplasm]"] = function()
-        local args = {"Ectoplasm", "Buy", 1}
-        Remote:InvokeServer(unpack(args))
-        Remote:InvokeServer(unpack(args))
-    end
-}
-
-local SelectedWeapon = "Cutlass [1,000 Beli]"
-
-local Options = {}
-
-for Name in pairs(Weapons) do
-    table.insert(Options, Name)
-end
-
-table.sort(Options)
-
-Shop:AddSection({"Mua Weapon"})
-
-Shop:AddDropdown({
-    Name = "Chọn Weapon",
-    Options = Options,
-    Default = SelectedWeapon,
-
-    Callback = function(Value)
-        SelectedWeapon = Value
-    end
-})
-
-Shop:AddButton({
-    Name = "Mua Weapon",
-    Callback = function()
-        local BuyFunction = Weapons[SelectedWeapon]
-
-        if BuyFunction then
-            local Success, Error = pcall(BuyFunction)
-
-            if Success then
-                redzlib:Notify({
-                    Title = "BaCon Hub",
-                    Message = "Đã gửi lệnh mua: " .. SelectedWeapon,
-                    Duration = 2
-                })
-            else
-                warn("Buy Weapon Error:", Error)
-            end
-        end
-    end
-})
-
-
-local Remote = game:GetService("ReplicatedStorage").Remotes.CommF_
-
-Shop:AddSection({"Mua Đồ Craft Sea Event"})
-
-local CraftItems = {
-    {"Craft Dragonheart", "Dragonheart"},
-    {"Craft Dragonstorm", "Dragonstorm"},
-    {"Craft DinoHood", "DinoHood"},
-    {"Craft SharkTooth", "SharkTooth"},
-    {"Craft TerrorJaw", "TerrorJaw"},
-    {"Craft SharkAnchor", "SharkAnchor"},
-    {"Craft LeviathanCrown", "LeviathanCrown"},
-    {"Craft LeviathanShield", "LeviathanShield"},
-    {"Craft LeviathanBoat", "LeviathanBoat"},
-    {"Craft LegendaryScroll", "LegendaryScroll"},
-    {"Craft MythicalScroll", "MythicalScroll"}
-}
-
-for _, Item in ipairs(CraftItems) do
-    Shop:AddButton({
-        Name = Item[1],
-        Callback = function()
-            local Success, Error = pcall(function()
-                Remote:InvokeServer("CraftItem", "Craft", Item[2])
-            end)
-
-            if Success then
-                redzlib:Notify({
-                    Title = "Craft",
-                    Message = "Đã craft " .. Item[2],
-                    Duration = 2
-                })
-            else
-                warn("Craft Error:", Error)
-            end
-        end
-    })
-end
-
 Shop:AddSection("Misc Shop")
 Shop:AddButton({
     Name = "Buy Refund Stat (2500F)",
@@ -2977,6 +2818,7 @@ spawn(function()
         wait()
     end
 end)
+
 
 local function formatNumber(num)
     local formatted = tostring(num)
@@ -3245,6 +3087,25 @@ spawn(function()
                 CheckDoughKing:SetDesc("Status : ✅️")
             else
                 CheckDoughKing:SetDesc("Status : ❌️")
+            end
+        end)
+    end
+end)
+local EliteHunter = Status:AddParagraph({
+    Title = "Elite Hunter",
+    Desc = "Status: "
+})
+spawn(function()
+    while wait() do
+        pcall(function()
+            local rs = game:GetService("ReplicatedStorage")
+            local ws = game:GetService("Workspace").Enemies
+            local progress = rs.Remotes.CommF_:InvokeServer("EliteHunter", "Progress")
+            if rs:FindFirstChild("Diablo") or rs:FindFirstChild("Deandre") or rs:FindFirstChild("Urban")
+            or ws:FindFirstChild("Diablo") or ws:FindFirstChild("Deandre") or ws:FindFirstChild("Urban") then
+                EliteHunter:SetDesc("Status : ✅️ | Killed: " .. progress)
+            else
+                EliteHunter:SetDesc("Status : ❌️ | Killed: " .. progress)
             end
         end)
     end
@@ -3894,7 +3755,7 @@ spawn(function()
                 if not plr.PlayerGui.Main.Quest.Visible then      
                     TeleportConditional(Root, Q[6], TELEPORT_DISTANCE_THRESHOLD)      
                     if (Root.Position - Q[6].Position).Magnitude <= 50 then      
-                        task.wait(0.1)  
+                        task.wait(1.9)  
                         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", Q[3], Q[2])      
                     end      
                     return      
@@ -3994,7 +3855,7 @@ Farm:AddSection({"Other"})
 
 -- Configuração da Distância Máxima (em studs)
 -- Aumente se quiser pegar mobs um pouco mais longe, diminua se quiser bem perto.
-_G.MaxFarmDistance = 500
+_G.MaxFarmDistance = 325
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -4290,70 +4151,6 @@ spawn(function()
 end);
 
 if World3 then
-
-Farm:AddSection({"Kill Elite"})
-local EliteHunter = Farm:AddParagraph({
-    Title = "Elite Hunter",
-    Desc = "Status: "
-})
-spawn(function()
-    while wait() do
-        pcall(function()
-            local rs = game:GetService("ReplicatedStorage")
-            local ws = game:GetService("Workspace").Enemies
-            local progress = rs.Remotes.CommF_:InvokeServer("EliteHunter", "Progress")
-            if rs:FindFirstChild("Diablo") or rs:FindFirstChild("Deandre") or rs:FindFirstChild("Urban")
-            or ws:FindFirstChild("Diablo") or ws:FindFirstChild("Deandre") or ws:FindFirstChild("Urban") then
-                EliteHunter:SetDesc("Status : ✅️ Có | Killed: " .. progress)
-            else
-                EliteHunter:SetDesc("Status : ❌️ Không | Killed: " .. progress)
-            end
-        end)
-    end
-end)
-Farm:AddToggle({
-	Name = "Auto Elite Quest",
-	Description = "làm nhiệm vụ đánh elite",
-	-- 1. Carrega o estado salvo ou false por padrão
-	Default = GetSetting("AutoEliteQuest_Save", false),
-	Callback = function(I)
-		_G.FarmEliteHunt = I
-        
-        -- 2. Guarda na tabela de salvamento
-        _G.SaveData["AutoEliteQuest_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-	end,
-})
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.FarmEliteHunt then
-				if plr.PlayerGui.Main.Quest.Visible == true then
-					if string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Diablo") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Urban") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Deandre") then
-						for I, e in pairs(replicated:GetChildren()) do
-							if string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre") then
-								_tp(e.HumanoidRootPart.CFrame);
-							end;
-						end;
-						for I, e in pairs(Enemies:GetChildren()) do
-							if (string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre")) and G.Alive(e) then
-								repeat
-									wait();
-									G.Kill(e, _G.FarmEliteHunt);
-								until not _G.FarmEliteHunt or plr.PlayerGui.Main.Quest.Visible == false or not e.Parent or e.Humanoid.Health <= 0;
-							end;
-						end;
-					end;
-				else
-					replicated.Remotes.CommF_:InvokeServer("EliteHunter");
-				end;
-			end;
-		end);
-	end;
-end);
-
 Farm:AddSection({"Bone"})
 -- AUTO RANDOM BONES
 Farm:AddToggle({
@@ -4696,71 +4493,6 @@ local function y5(I)
 	return e and e.Health > 0;
 end
 
-Setting:AddButton({
-    Name = "Fix Lag nhẹ",
-    Description = "Tối ưu đồ họa để giảm lag",
-    Default = false,
-
-    Callback = function(Value)
-        local Lighting = game:GetService("Lighting")
-        local Workspace = game:GetService("Workspace")
-        local Terrain = Workspace:FindFirstChildOfClass("Terrain")
-
-        if Value then
-            if Terrain then
-                Terrain.WaterWaveSize = 0
-                Terrain.WaterWaveSpeed = 0
-                Terrain.WaterReflectance = 0
-                Terrain.WaterTransparency = 0
-            end
-
-            Lighting.GlobalShadows = false
-            Lighting.FogEnd = 9e9
-            Lighting.Brightness = 1
-
-            for _, effect in pairs(Lighting:GetChildren()) do
-                if effect:IsA("BlurEffect")
-                or effect:IsA("SunRaysEffect")
-                or effect:IsA("ColorCorrectionEffect")
-                or effect:IsA("BloomEffect") then
-                    effect.Enabled = false
-                end
-            end
-
-            local function cleanObject(obj)
-                if obj:IsA("Decal") or obj:IsA("Texture") then
-                    obj.Transparency = 1
-
-                elseif obj:IsA("ParticleEmitter")
-                or obj:IsA("Trail")
-                or obj:IsA("Smoke")
-                or obj:IsA("Fire")
-                or obj:IsA("Sparkles") then
-                    obj.Enabled = false
-
-                elseif obj:IsA("MeshPart")
-                or obj:IsA("Part")
-                or obj:IsA("CornerWedgePart")
-                or obj:IsA("WedgePart") then
-                    obj.Material = Enum.Material.SmoothPlastic
-                    obj.Reflectance = 0
-                end
-            end
-
-            for _, obj in pairs(Workspace:GetDescendants()) do
-                cleanObject(obj)
-            end
-
-            _G.FixLagConnection = Workspace.DescendantAdded:Connect(cleanObject)
-
-        else
-            if _G.FixLagConnection then
-                _G.FixLagConnection:Disconnect()
-                _G.FixLagConnection = nil
-            end
-        end
-    end
-})
 Setting:AddToggle({
     Name = "Full Bright",
     Default = GetSetting("FullBright_Save", false),
@@ -4931,12 +4663,12 @@ spawn(function()
 	end;
 end);
 Setting:AddSection({"Select"})
-_G.BringRange = _G.SaveData["BringRange_Save"] or 230
+_G.BringRange = _G.SaveData["BringRange_Save"] or 250
 
 Setting:AddSlider({
     Title = "Bring Mobs Range",
     Description = "Điều chỉnh độ xa để gom quái",
-    Default = _G.SaveData["BringRange_Save"] or 230,
+    Default = _G.SaveData["BringRange_Save"] or 250,
     Min = 0,
     Max = 300,
     Rounding = 0,
@@ -5612,40 +5344,6 @@ spawn(function()
         end
     end
 end)
-if World3 then
-Others:AddToggle({
-        Name = "Auto Training Dummy",
-        Default = GetSetting("DummyMan_Save", false),
-        Callback = function(Value)
-            _G.DummyMan = Value
-            _G.SaveData["DummyMan_Save"] = Value
-            SaveSettings()
-        end
-    })
-
-    spawn(function()
-        while wait(Sec) do
-            if _G.DummyMan then
-                pcall(function()
-                    if plr.PlayerGui.Main.Quest.Visible == false then
-                        replicated.Remotes.CommF_:InvokeServer("ArenaTrainer")
-                    else
-                        local dummy = GetConnectionEnemies("Training Dummy")
-                        if dummy then
-                            repeat
-                                wait()
-                                G.Kill(dummy, _G.DummyMan)
-                            until not _G.DummyMan or not dummy.Parent or dummy.Humanoid.Health <= 0
-                        else
-                            _tp(CFrame.new(3688.0051269531, 12.746943473816, 170.20953369141))
-                        end
-                    end
-                end)
-            end
-        end
-    end)
-end
-end
 Others:AddSection({"Quests"})
  Others:AddToggle({
     Name = "Auto Farm Observation",
@@ -5899,6 +5597,82 @@ spawn(function()
 	end;
 end);
 Others:AddSection({"Cursed Swords"});
+local r = Others:AddParagraph({ Title = "Elites Process ", Content = "" });
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			r:SetDesc("Elite Procress :  " .. replicated.Remotes.CommF_:InvokeServer("EliteHunter", "Progress"));
+		end);
+	end;
+end);
+Others:AddToggle({
+	Name = "Auto Elite Quest",
+	Description = "làm nhiệm vụ đánh elite",
+	-- 1. Carrega o estado salvo ou false por padrão
+	Default = GetSetting("AutoEliteQuest_Save", false),
+	Callback = function(I)
+		_G.FarmEliteHunt = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["AutoEliteQuest_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+	end,
+})
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.FarmEliteHunt then
+				if plr.PlayerGui.Main.Quest.Visible == true then
+					if string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Diablo") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Urban") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Deandre") then
+						for I, e in pairs(replicated:GetChildren()) do
+							if string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre") then
+								_tp(e.HumanoidRootPart.CFrame);
+							end;
+						end;
+						for I, e in pairs(Enemies:GetChildren()) do
+							if (string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre")) and G.Alive(e) then
+								repeat
+									wait();
+									G.Kill(e, _G.FarmEliteHunt);
+								until not _G.FarmEliteHunt or plr.PlayerGui.Main.Quest.Visible == false or not e.Parent or e.Humanoid.Health <= 0;
+							end;
+						end;
+					end;
+				else
+					replicated.Remotes.CommF_:InvokeServer("EliteHunter");
+				end;
+			end;
+		end);
+	end;
+end);
+ Others:AddToggle({
+    Name = "Stop when got God's Chalice",
+    Description = "dừng khi có cúp",
+    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
+    Default = GetSetting("StopChalice_Save", true),
+    Callback = function(I)
+        _G.StopWhenChalice = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["StopChalice_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+spawn(function()
+	while wait(.2) do
+		if _G.StopWhenChalice and _G.FarmEliteHunt then
+			pcall(function()
+				if GetBP("God\'s Chalice") or GetBP("Sweet Chalice") or GetBP("Fist of Darkness") then
+					_G.FarmEliteHunt = false;
+				end;
+			end);
+		end;
+	end;
+end);
 Others:AddToggle({
 	Name = "Auto Tushita Sword",
 	Description = "tự động lấy kiếm tushita",
@@ -7742,69 +7516,7 @@ spawn(function()
         end
     end
 end)
-Maestry:AddToggle({
-	Name = "Auto Farm 600 In Swords",
-	Description = "",
-	Default = false,
-	Callback = function(I)
-		_G.FarmMastery_S = I
-	end,
-})
 
-spawn(function()
-	while wait(0.1) do
-		if _G.FarmMastery_S then
-			pcall(function()
-				local character = game.Players.LocalPlayer.Character
-				if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-				-- ===============================
-				-- PRIORIDADE 100000 PARA MOBS
-				-- ===============================
-				local Target = GetClosestMob()
-
-				-- Só usa o CFrame SE NÃO EXISTIR MOB
-				if not Target then
-					local distToArea = (character.HumanoidRootPart.Position - FarmPos.Position).Magnitude
-					if distToArea > 150 then
-						_tp(FarmPos)
-						wait(0.5)
-					end
-				end
-
-				-- Procura espada e farma mastery
-				for _, e in next, replicated.Remotes.CommF_:InvokeServer("getInventory") do
-					if type(e) == "table" and e.Type == "Sword" then
-						local SwordName = e.Name
-						local Mastery = tonumber(e.Mastery) or 0
-
-						if Mastery < 600 then
-							if GetBP(SwordName) then
-								if Target then
-									repeat
-										wait()
-										if _G.FarmMastery_S
-											and Target
-											and Target:FindFirstChild("HumanoidRootPart")
-											and Target.Humanoid.Health > 0 then
-
-											G.Sword(Target, _G.FarmMastery_S)
-										end
-									until not _G.FarmMastery_S
-										or not Target.Parent
-										or Target.Humanoid.Health <= 0
-								end
-							else
-								replicated.Remotes.CommF_:InvokeServer("LoadItem", SwordName)
-							end
-							break
-						end
-					end
-				end
-			end)
-		end
-	end
-end)
 Maestry:AddToggle({
     Name = "Fruit Skill Z",
     Default = false,
@@ -7844,7 +7556,6 @@ Maestry:AddToggle({
         _G.FruitSkills.F = v
     end,
 })
-
 if World2 then
 Race:AddSection({"Upgrade Races"});
 
@@ -10827,6 +10538,69 @@ local function GetClosestMob()
 	end
 	return target
 end
+Get:AddToggle({
+	Name = "Auto Farm 600 In Swords",
+	Description = "",
+	Default = false,
+	Callback = function(I)
+		_G.FarmMastery_S = I
+	end,
+})
+
+spawn(function()
+	while wait(0.1) do
+		if _G.FarmMastery_S then
+			pcall(function()
+				local character = game.Players.LocalPlayer.Character
+				if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+
+				-- ===============================
+				-- PRIORIDADE 100000 PARA MOBS
+				-- ===============================
+				local Target = GetClosestMob()
+
+				-- Só usa o CFrame SE NÃO EXISTIR MOB
+				if not Target then
+					local distToArea = (character.HumanoidRootPart.Position - FarmPos.Position).Magnitude
+					if distToArea > 150 then
+						_tp(FarmPos)
+						wait(0.5)
+					end
+				end
+
+				-- Procura espada e farma mastery
+				for _, e in next, replicated.Remotes.CommF_:InvokeServer("getInventory") do
+					if type(e) == "table" and e.Type == "Sword" then
+						local SwordName = e.Name
+						local Mastery = tonumber(e.Mastery) or 0
+
+						if Mastery < 600 then
+							if GetBP(SwordName) then
+								if Target then
+									repeat
+										wait()
+										if _G.FarmMastery_S
+											and Target
+											and Target:FindFirstChild("HumanoidRootPart")
+											and Target.Humanoid.Health > 0 then
+
+											G.Sword(Target, _G.FarmMastery_S)
+										end
+									until not _G.FarmMastery_S
+										or not Target.Parent
+										or Target.Humanoid.Health <= 0
+								end
+							else
+								replicated.Remotes.CommF_:InvokeServer("LoadItem", SwordName)
+							end
+							break
+						end
+					end
+				end
+			end)
+		end
+	end
+end)
 if World3 then
 Get:AddSection({"Cursed Dual Katana"});
 local I5 = Get:AddParagraph({ Title = " Number Cursed dual katana quests ", Content = "Quest Numbers :" });
@@ -12227,98 +12001,100 @@ Fruit:AddToggle({
 Fruit:AddSection({"Raid Farming"});
 
 Fruit:AddToggle({
-    Name = "Auto Raid",
-    Description = "Auto Start Raid + Auto Complete Raid",
+    Name  = "Auto Start Raid",
+    Description = "",
     Default = false,
-
     Callback = function(I)
         _G.Auto_StartRaid = I
-        _G.Raiding = I
-
         if not I then
-            _G.Auto_StartRaid = false
             _G.Raiding = false
-            NextIs = false
+            _G.KillH = false
         end
     end,
 });
+
 task.spawn(function()
-    while task.wait(1) do -- Dùng task.wait trực tiếp trong điều kiện vòng lặp
+    while task.wait(3) do -- Giảm xuống 3s để kiểm tra nhanh hơn
         if _G.Auto_StartRaid then
             pcall(function()
-                -- Kiểm tra Raid Timer và Microchip
                 local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
+                
+                -- Logic vào Raid
                 if not raidTimer.Visible and GetBP("Special Microchip") then
-                    
-                    -- Lưu vị trí hiện tại của người chơi để sau này quay lại
                     local oldPos = plr.Character:GetPivot()
-                    
                     if World2 then
                         _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
-                        task.wait(0.5) -- Đợi teleport hoàn tất
+                        task.wait(0.5)
                         fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
-                        
                     elseif World3 then
-                        -- Thử vào cổng nếu cần
                         replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
-                        task.wait(0.8) 
-                        
-                        -- Di chuyển đến nút bấm
+                        task.wait(0.8)
                         _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
                         task.wait(0.5)
                         fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
                     end
-                    
-                    -- Quay lại vị trí cũ sau khi đã bấm nút
                     task.wait(0.5)
                     _tp(oldPos)
-                    print("Đã kích hoạt Raid và quay trở lại vị trí cũ.")
+                end
+
+                -- Logic tự động chuyển chế độ đánh
+                if raidTimer.Visible then
+                    local nextIsland = getNextIsland()
+                    if nextIsland then
+                        local islandName = nextIsland.Name
+                        _G.Raiding = true -- LUÔN BẬT ĐỂ TELEPORT HOẠT ĐỘNG
+                        
+                        -- Nếu là đảo 4 hoặc 5, bật Kill Aura và dùng biến để ưu tiên
+                        if string.find(islandName, "4") or string.find(islandName, "5") then
+                            _G.KillH = true
+                        else
+                            _G.KillH = false
+                        end
+                    end
+                else
+                    _G.Raiding = false
+                    _G.KillH = false
                 end
             end)
         end
     end
 end)
+
+-- // Các hàm chức năng (Giữ nguyên)
 function IsIslandRaid(cu)
     local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
     if locs:FindFirstChild("Island " .. cu) then
         local min = 4500
-
         for _, v in ipairs(locs:GetChildren()) do
             if v.Name == "Island " .. cu then
                 local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist < min then
-                    min = dist
-                end
+                if dist < min then min = dist end
             end
         end
-
         for _, v in ipairs(locs:GetChildren()) do
             if v.Name == "Island " .. cu then
                 local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist <= min then
-                    return v
-                end
+                if dist <= min then return v end
             end
         end
     end
 end
 
--- Ordem das ilhas (5 → 1)
 function getNextIsland()
     local order = {5,4,3,2,1}
     for _, id in ipairs(order) do
         local island = IsIslandRaid(id)
         if island then
             local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-            if dist <= 4500 then
-                return island
-            end
+            if dist <= 4500 then return island end
         end
     end
 end
 
--- Atacar inimigos usando SEU G.Kill
 function attackNearbyEnemies()
+    -- Nếu đang dùng Kill Aura ở đảo 4-5 thì KHÔNG chạy G.Kill để tránh xung đột/lag
+    if _G.KillH then return end 
+    
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
             if mob.Humanoid.Health > 0 then
@@ -12334,38 +12110,56 @@ function attackNearbyEnemies()
     end
 end
 
--- Loop principal (igual ao seu)
+-- // 3. Loop G.Kill (Giữ nguyên - Giờ đã có cơ chế tự né nếu KillH bật)
 spawn(function()
-pcall(function()
-while wait(Sec) do
-    if _G.Raiding then
-
-        if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
-
-            -- Matar próximos
-            attackNearbyEnemies()
-
-            -- Pegar ilha certa
-            local nextIsland = getNextIsland()
-            if nextIsland then
-                -- USA SEU TELEPORTE REAL
-                _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-
-                NextIs = true
+    pcall(function()
+        while wait(Sec) do
+            if _G.Raiding then
+                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
+                    attackNearbyEnemies()
+                    local nextIsland = getNextIsland()
+                    if nextIsland then
+                        _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+                        NextIs = true
+                    else
+                        NextIs = false
+                    end
+                else
+                    NextIs = false
+                end
             else
                 NextIs = false
             end
-
-        else
-            NextIs = false
         end
+    end)
+end)
 
-    else
-        NextIs = false
+-- // 4. Loop Kill Aura (Giữ nguyên)
+task.spawn(function()
+    while true do 
+        task.wait(Sec)
+        if _G.KillH then
+            pcall(function()
+                sethiddenproperty(plr, "SimulationRadius", math.huge)
+                for _, v in pairs(workspace.Enemies:GetChildren()) do
+                    if not _G.KillH then break end 
+                    if v:FindFirstChild("Humanoid") and v:FindFirstChild("HumanoidRootPart") then
+                        if v.Humanoid.Health > 0 and v.Parent then
+                            pcall(function()
+                                v.HumanoidRootPart.CanCollide = false
+                                v:BreakJoints()
+                                v.Humanoid.Health = 0
+                            end)
+                        end
+                    end
+                end
+            end)
+        end
     end
-end
 end)
-end)
+
+
+
 Fruit:AddToggle({
 	Name = "Auto Awakening",
 	Description = "",
