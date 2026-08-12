@@ -1956,7 +1956,7 @@ elseif I >= 2025 and I <= 2049 then
     Qname = "HauntedQuest2"
     NameMon = "Demonic Soul"
     PosQ = CFrame.new(-9516.99316, 172.017181, 6078.46533, 0, 0, -1, 0, 1, 0, 1, 0, 0)
-    PosM = CFrame.new(-9507.62, 172.17, 6131.11)    
+    PosM = CFrame.new(-9582.0224609375, 6.2515273094177, 6205.478515625)
 elseif I >= 2050 and I <= 2074 then
     Mon = "Posessed Mummy"
     Qdata = 2
