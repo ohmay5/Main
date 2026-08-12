@@ -430,6 +430,10 @@ G.Kill = function(I, e)
 	-- posição alvo do bring
 	PosMon = (I:GetAttribute("Locked")).Position
 
+	-- >>> FORÇA O BRING <<<
+	_B = true
+	BringEnemy()
+
 	-- equipa arma
 	EquipWeapon(_G.SelectWeapon)
 
@@ -438,10 +442,6 @@ G.Kill = function(I, e)
 
 	-- TP acima do mob (altura única)
 	_tp(hrp.CFrame * CFrame.new(0, _G.MobHeight, 0))
-     task.wait(0.05)
-	-- Gọi bring sau khi đã cầm vũ khí và TP
-	_B = true
-	BringEnemy()
 end
 G.KillSea = function(I, e)
 		if I and e then
