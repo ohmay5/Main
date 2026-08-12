@@ -66,7 +66,6 @@ local function SafeCall(Func, ...)
     end)
 end
 
-
 local HttpService = Services.HttpService
 local FolderName = "BaCoNhǎo Hub"
 local FileName = "Settings.json"
@@ -106,6 +105,9 @@ end
 
 LoadSettings()
 
+-- ========================================
+-- AUTO KEN (Observation Haki)
+-- ========================================
 local Players = Services.Players
 local CollectionService = Services.CollectionService
 local ReplicatedStorage = Services.ReplicatedStorage
@@ -3119,25 +3121,6 @@ spawn(function()
         end)
     end
 end)
-local EliteHunter = Status:AddParagraph({
-    Title = "Elite Hunter",
-    Desc = "Status: "
-})
-spawn(function()
-    while wait() do
-        pcall(function()
-            local rs = game:GetService("ReplicatedStorage")
-            local ws = game:GetService("Workspace").Enemies
-            local progress = rs.Remotes.CommF_:InvokeServer("EliteHunter", "Progress")
-            if rs:FindFirstChild("Diablo") or rs:FindFirstChild("Deandre") or rs:FindFirstChild("Urban")
-            or ws:FindFirstChild("Diablo") or ws:FindFirstChild("Deandre") or ws:FindFirstChild("Urban") then
-                EliteHunter:SetDesc("Status : ✅️ | Killed: " .. progress)
-            else
-                EliteHunter:SetDesc("Status : ❌️ | Killed: " .. progress)
-            end
-        end)
-    end
-end)
 local Pullever = Status:AddParagraph({
     Title = "Pull Lever",
     Desc = "Status: "
@@ -4179,6 +4162,25 @@ spawn(function()
 end);
 if World3 then
 Farm:AddSection({"Kill Elite"})
+local EliteHunter = Farm:AddParagraph({
+    Title = "Elite Hunter",
+    Desc = "Status: "
+})
+spawn(function()
+    while wait() do
+        pcall(function()
+            local rs = game:GetService("ReplicatedStorage")
+            local ws = game:GetService("Workspace").Enemies
+            local progress = rs.Remotes.CommF_:InvokeServer("EliteHunter", "Progress")
+            if rs:FindFirstChild("Diablo") or rs:FindFirstChild("Deandre") or rs:FindFirstChild("Urban")
+            or ws:FindFirstChild("Diablo") or ws:FindFirstChild("Deandre") or ws:FindFirstChild("Urban") then
+                EliteHunter:SetDesc("Status : ✅️ | Killed: " .. progress)
+            else
+                EliteHunter:SetDesc("Status : ❌️ | Killed: " .. progress)
+            end
+        end)
+    end
+end)
 local r = Farm:AddParagraph({ 
      Title = "Elites Process ", 
      Content = "" });
