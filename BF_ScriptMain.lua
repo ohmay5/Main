@@ -1,4 +1,13 @@
---// Performance Optimizer
+repeat task.wait() until game:IsLoaded()
+
+-- Cache Services
+local Services = setmetatable({}, {
+    __index = function(self, serviceName)
+        local service = game:GetService(serviceName)
+        rawset(self, serviceName, service)
+        return service
+    end
+})
 pcall(function()
     -- Giảm một số hiệu ứng hình ảnh không cần thiết
     local Lighting = game:GetService("Lighting")
@@ -57,140 +66,7 @@ local function SafeCall(Func, ...)
     end)
 end
 
-repeat task.wait() until game:IsLoaded()
 
--- Cache Services
-local Services = setmetatable({}, {
-    __index = function(self, serviceName)
-        local service = game:GetService(serviceName)
-        rawset(self, serviceName, service)
-        return service
-    end
-})
-
-if not game:IsLoaded() then
-    game.Loaded:Wait()
-end
-
---// Services
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local StarterGui = game:GetService("StarterGui")
-
-local Player = Players.LocalPlayer
-local PlayerGui = Player:WaitForChild("PlayerGui", 5)
-local MainGui = PlayerGui:WaitForChild("Main", 5)
-
---// Loading UI
-local LoadingGui = Instance.new("ScreenGui")
-LoadingGui.Name = "BaCoNhaoLoading"
-LoadingGui.ResetOnSpawn = false
-LoadingGui.IgnoreGuiInset = true
-LoadingGui.Parent = PlayerGui
-
-local LoadingFrame = Instance.new("Frame")
-LoadingFrame.Size = UDim2.new(0, 280, 0, 180)
-LoadingFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
-LoadingFrame.BackgroundTransparency = 1
-LoadingFrame.Parent = LoadingGui
-
---// Logo
-local Logo = Instance.new("ImageLabel")
-Logo.Name = "Logo"
-Logo.Size = UDim2.new(0, 85, 0, 85)
-Logo.Position = UDim2.new(0.5, -42, 0, 5)
-Logo.BackgroundTransparency = 1
-Logo.Image = "rbxassetid://114476175638281"
-Logo.Parent = LoadingFrame
-
---// Title
-local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, 0, 0, 30)
-Title.Position = UDim2.new(0, 0, 0, 95)
-Title.BackgroundTransparency = 1
-Title.Text = "BaCoNhǎo Hub"
-Title.TextSize = 22
-Title.Font = Enum.Font.GothamBold
-Title.TextColor3 = Color3.new(1, 1, 1)
-Title.Parent = LoadingFrame
-
---// Status
-local Status = Instance.new("TextLabel")
-Status.Size = UDim2.new(1, 0, 0, 25)
-Status.Position = UDim2.new(0, 0, 0, 125)
-Status.BackgroundTransparency = 1
-Status.Text = "Loading..."
-Status.TextSize = 14
-Status.Font = Enum.Font.Gotham
-Status.TextColor3 = Color3.new(0.8, 0.8, 0.8)
-Status.Parent = LoadingFrame
-
---// Notification
-pcall(function()
-    StarterGui:SetCore("SendNotification", {
-        Title = "BaCoNhǎo Hub",
-        Text = "Loading...",
-        Duration = 5
-    })
-end)
-
---// Remotes
-local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5)
-local CommF = Remotes and Remotes:WaitForChild("CommF_", 5)
-
---// Disable Death / Respawn effects
-local Effect = ReplicatedStorage:FindFirstChild("Effect")
-local EffectContainer = Effect and Effect:FindFirstChild("Container")
-
-if EffectContainer then
-    for _, Name in ipairs({"Death", "Respawn"}) do
-        local Module = EffectContainer:FindFirstChild(Name)
-
-        if Module then
-            local Success, Result = pcall(require, Module)
-
-            if Success and type(Result) == "function" then
-                pcall(hookfunction, Result, function() end)
-            end
-        end
-    end
-end
-
---// Disable Guide NPC
-local GuideModule = ReplicatedStorage:FindFirstChild("GuideModule")
-
-if GuideModule then
-    local Success, Module = pcall(require, GuideModule)
-
-    if Success and Module
-        and type(Module.ChangeDisplayedNPC) == "function" then
-
-        pcall(hookfunction, Module.ChangeDisplayedNPC, function() end)
-    end
-end
-
---// Stop Camera Shake
-local Util = ReplicatedStorage:FindFirstChild("Util")
-
-if Util then
-    local CameraShaker = Util:FindFirstChild("CameraShaker")
-
-    if CameraShaker then
-        pcall(function()
-            require(CameraShaker):Stop()
-        end)
-    end
-end
-
---// Loading finished
-task.delay(1, function()
-    if LoadingGui then
-        LoadingGui:Destroy()
-    end
-end)
--- ========================================
--- AUTO KEN (Observation Haki)
--- ========================================
 local Players = Services.Players
 local CollectionService = Services.CollectionService
 local ReplicatedStorage = Services.ReplicatedStorage
@@ -4344,8 +4220,6 @@ task.spawn(function()
         end
     end
 end)
-end
-if World3 then
 Farm:AddSection({"Bone"})
 -- AUTO RANDOM BONES
 Farm:AddToggle({
