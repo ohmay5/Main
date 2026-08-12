@@ -457,9 +457,9 @@ G.KillSea = function(I, e)
 				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
 			else
 				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 50, 8));
-				wait(1);
-				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 350, 0));
 				wait(2);
+				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 350, 0));
+				wait(1);
 			end;
 		end;
 	end;
@@ -4643,7 +4643,7 @@ local function setupAutoExecute()
         if _G.SaveData["AutoExecute_Save"] and not executed then
             executed = true
             queue([[
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/BF_ScriptMain.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/BF.lua"))()
             ]])
         end
     end)
