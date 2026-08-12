@@ -457,9 +457,9 @@ G.KillSea = function(I, e)
 				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
 			else
 				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 50, 8));
-				wait(5);
-				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 300, 0));
 				wait(1);
+				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 350, 0));
+				wait(2);
 			end;
 		end;
 	end;
@@ -656,7 +656,7 @@ end
 -- FUNÇÃO PRINCIPAL: BRING
 --==================================================
 BringEnemy = function()
-    if not (FarmAtivo() or _G.AutoBartilo) or not _B then return end
+    if not (FarmAtivo() or _G.AutoBartilo or _G.AutoFarmNear) or not _B then return end
 
     local plr = game.Players.LocalPlayer  
     local char = plr.Character  
