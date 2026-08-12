@@ -1512,30 +1512,6 @@ function redzlib:MakeWindow(Configs)
 		}), "DarkText")
 	}), "Text")
 	
-	local SearchBox = Create("TextBox", Components, {
-    Size = UDim2.new(0, BaCon.Save.TabSize, 0, 28),
-    Position = UDim2.new(0, 0, 0, 0),
-    BackgroundColor3 = Theme["Color Hub 2"],
-    BackgroundTransparency = 0,
-    TextColor3 = Theme["Color Text"],
-    PlaceholderColor3 = Theme["Color Dark Text"],
-    PlaceholderText = "Tìm kiếm Tab...",
-    Text = "",
-    TextSize = 10,
-    Font = Enum.Font.Gotham,
-    ClearTextOnFocus = false,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    BorderSizePixel = 0,
-    Name = "Search"
-})
-
-Make("Corner", SearchBox, UDim.new(0, 6))
-
-Create("UIPadding", SearchBox, {
-    PaddingLeft = UDim.new(0, 10),
-    PaddingRight = UDim.new(0, 10)
-})
-
 
 --// MAIN SCROLL
 local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
@@ -1584,32 +1560,6 @@ local Containers = Create("Frame", Components, {
     ClipsDescendants = true,
     Name = "Containers"
 })
-
---// SEARCH TAB
-SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local Query = SearchBox.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
-
-    for _, TabData in ipairs(BaCon.Tabs) do
-        local TabName = tostring(TabData.TabInfo.Name or ""):lower()
-        local TabButton
-
-        for _, Object in ipairs(MainScroll:GetChildren()) do
-            if Object:IsA("TextButton") then
-                local Label = Object:FindFirstChildWhichIsA("TextLabel")
-
-                if Label and Label.Text:lower() == TabName then
-                    TabButton = Object
-                    break
-                end
-            end
-        end
-
-        if TabButton then
-            TabButton.Visible =
-                Query == "" or TabName:find(Query, 1, true) ~= nil
-        end
-    end
-end)
 	
 	local Containers = Create("Frame", Components, {
 		Size = UDim2.new(1, -MainScroll.Size.X.Offset, 1, -TopBar.Size.Y.Offset),
