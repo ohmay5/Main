@@ -1513,7 +1513,30 @@ function redzlib:MakeWindow(Configs)
 	}), "Text")
 	
 	
-	--// SEARCH BOX
+local SearchBox = Create("TextBox", MainScroll, {
+    Size = UDim2.new(1, 0, 0, 28),
+    BackgroundColor3 = Theme["Color Hub 2"],
+    BackgroundTransparency = 0,
+    TextColor3 = Theme["Color Text"],
+    PlaceholderColor3 = Theme["Color Dark Text"],
+    PlaceholderText = "Search...",
+    Text = "",
+    TextSize = 10,
+    Font = Enum.Font.Gotham,
+    ClearTextOnFocus = false,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    BorderSizePixel = 0,
+    LayoutOrder = 0,
+    Name = "Search"
+})
+
+Make("Corner", SearchBox, UDim.new(0, 6))
+
+Create("UIPadding", SearchBox, {
+    PaddingLeft = UDim.new(0, 10),
+    PaddingRight = UDim.new(0, 10)
+})
+
 local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
     Size = UDim2.new(
         0,
@@ -1545,33 +1568,6 @@ local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
         SortOrder = Enum.SortOrder.LayoutOrder
     })
 }), "ScrollBar")
-
-
---// SEARCH BOX
-local SearchBox = Create("TextBox", MainScroll, {
-    Size = UDim2.new(1, 0, 0, 28),
-    BackgroundColor3 = Theme["Color Hub 2"],
-    BackgroundTransparency = 0,
-    TextColor3 = Theme["Color Text"],
-    PlaceholderColor3 = Theme["Color Dark Text"],
-    PlaceholderText = "Search...",
-    Text = "",
-    TextSize = 10,
-    Font = Enum.Font.Gotham,
-    ClearTextOnFocus = false,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    BorderSizePixel = 0,
-    LayoutOrder = 0,
-    Name = "Search"
-})
-
-Make("Corner", SearchBox, UDim.new(0, 6))
-
-Create("UIPadding", SearchBox, {
-    PaddingLeft = UDim.new(0, 10),
-    PaddingRight = UDim.new(0, 10)
-})
-
 
 --// CONTAINERS
 local Containers = Create("Frame", Components, {
