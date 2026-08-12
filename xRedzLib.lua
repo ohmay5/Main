@@ -1707,159 +1707,113 @@ end)
 	})
 	
 	local CloseButton = Create("ImageButton", {
-		Size = UDim2.new(0, 14, 0, 14),
-		Position = UDim2.new(1, -10, 0.5),
-		AnchorPoint = Vector2.new(1, 0.5),
-		BackgroundTransparency = 1,
-		Image = "rbxassetid://10747384394",
-		AutoButtonColor = false,
-		Name = "Close"
-	})
-	
-	local MinimizeButton = SetProps(CloseButton:Clone(), {
-		Position = UDim2.new(1, -35, 0.5),
-		Image = "rbxassetid://10734896206",
-		Name = "Minimize"
-	})
-	
-	SetChildren(ButtonsFolder, {
-		CloseButton,
-		MinimizeButton
-	})
-	
-	local Minimized, SaveSize, WaitClick
-	local Window, FirstTab = {}, false
-	function Window:CloseBtn()
-		local Dialog = Window:Dialog({
-			Title = "Close",
-			Text = "You Want Close Ui?",
-			Options = {
-				{"Confirm", function()
-					ScreenGui:Destroy()
-				end},
-				{"Cancel"}
-			}
-		})
-	end
-	function Window:MinimizeBtn()
-		if WaitClick then return end
-		WaitClick = true
-		
-		local CloseButton = Create("ImageButton", {
-    Size = UDim2.new(0, 14, 0, 14),
-    Position = UDim2.new(1, -10, 0.5),
-    AnchorPoint = Vector2.new(1, 0.5),
-    BackgroundTransparency = 1,
-    Image = "rbxassetid://10747384394",
-    AutoButtonColor = false,
-    Name = "Close"
+	Size = UDim2.new(0, 14, 0, 14),
+	Position = UDim2.new(1, -10, 0.5),
+	AnchorPoint = Vector2.new(1, 0.5),
+	BackgroundTransparency = 1,
+	Image = "rbxassetid://10747384394",
+	AutoButtonColor = false,
+	Name = "Close"
 })
 
 local MinimizeButton = SetProps(CloseButton:Clone(), {
-    Position = UDim2.new(1, -35, 0.5),
-    Image = "rbxassetid://10734896206",
-    Name = "Minimize"
+	Position = UDim2.new(1, -35, 0.5),
+	Image = "rbxassetid://10734896206",
+	Name = "Minimize"
 })
 
--- SETTINGS BUTTON
-local SettingsButton = Create("TextButton", {
-    Size = UDim2.new(0, 18, 0, 18),
-    Position = UDim2.new(1, -60, 0.5),
-    AnchorPoint = Vector2.new(1, 0.5),
-    BackgroundTransparency = 1,
-    Text = "⚙",
-    TextColor3 = Theme["Color Text"],
-    TextSize = 15,
-    Font = Enum.Font.GothamBold,
-    AutoButtonColor = false,
-    Name = "Settings"
+-- SETTINGS
+local SettingsButton = Create("TextButton", ButtonsFolder, {
+	Size = UDim2.new(0, 18, 0, 18),
+	Position = UDim2.new(1, -60, 0.5),
+	AnchorPoint = Vector2.new(1, 0.5),
+	BackgroundTransparency = 1,
+	Text = "⚙",
+	TextColor3 = Theme["Color Text"],
+	TextSize = 14,
+	Font = Enum.Font.GothamBold,
+	AutoButtonColor = false,
+	Name = "Settings"
 })
 
 SetChildren(ButtonsFolder, {
-    CloseButton,
-    MinimizeButton,
-    SettingsButton
+	CloseButton,
+	MinimizeButton
 })
 
 local Minimized, SaveSize, WaitClick
 local Window, FirstTab = {}, false
 
--- THEME POPUP
-local ThemePopup = Create("Frame", ScreenGui, {
-    Size = UDim2.fromOffset(155, 0),
-    AutomaticSize = Enum.AutomaticSize.Y,
-    BackgroundColor3 = Theme["Color Hub 2"],
-    BackgroundTransparency = 0,
-    Visible = false,
-    ZIndex = 100,
-    Name = "ThemePopup"
+-- THEME MENU
+local ThemePopup = Create("Frame", MainFrame, {
+	Size = UDim2.fromOffset(150, 0),
+	AutomaticSize = Enum.AutomaticSize.Y,
+	Position = UDim2.new(1, -160, 0, 32),
+	BackgroundColor3 = Theme["Color Hub 2"],
+	BackgroundTransparency = 0,
+	Visible = false,
+	ZIndex = 50,
+	Name = "ThemePopup"
 })
 
-Make("Corner", ThemePopup, UDim.new(0, 8))
-Make("Stroke", ThemePopup)
-
-Create("UIPadding", ThemePopup, {
-    PaddingTop = UDim.new(0, 7),
-    PaddingBottom = UDim.new(0, 7),
-    PaddingLeft = UDim.new(0, 7),
-    PaddingRight = UDim.new(0, 7)
-})
+Make("Corner", ThemePopup, UDim.new(0, 7))
 
 Create("UIListLayout", ThemePopup, {
-    Padding = UDim.new(0, 4),
-    SortOrder = Enum.SortOrder.LayoutOrder
+	Padding = UDim.new(0, 3),
+	SortOrder = Enum.SortOrder.LayoutOrder
+})
+
+Create("UIPadding", ThemePopup, {
+	PaddingTop = UDim.new(0, 6),
+	PaddingBottom = UDim.new(0, 6),
+	PaddingLeft = UDim.new(0, 6),
+	PaddingRight = UDim.new(0, 6)
 })
 
 local ThemeNames = {
-    "Dark +",
-    "Dark",
-    "Clear",
-    "Purple",
-    "Red",
-    "Yellow",
-    "Green",
-    "Pink",
-    "Blue"
+	"Dark +",
+	"Dark",
+	"Clear",
+	"Purple",
+	"Red",
+	"Yellow",
+	"Green",
+	"Pink",
+	"Blue"
 }
 
 for _, ThemeName in ipairs(ThemeNames) do
 
-    local ThemeButton = Make("Button", ThemePopup, {
-        Size = UDim2.new(1, 0, 0, 25),
-        ZIndex = 101
-    })
+	local ThemeButton = Create("TextButton", ThemePopup, {
+		Size = UDim2.new(1, 0, 0, 25),
+		BackgroundColor3 = Theme["Color Hub 2"],
+		BackgroundTransparency = 0,
+		Text = ThemeName,
+		TextColor3 = Theme["Color Text"],
+		TextSize = 10,
+		Font = Enum.Font.GothamMedium,
+		AutoButtonColor = false,
+		ZIndex = 51
+	})
 
-    Make("Corner", ThemeButton, UDim.new(0, 5))
+	Make("Corner", ThemeButton, UDim.new(0, 5))
 
-    InsertTheme(Create("TextLabel", ThemeButton, {
-        Size = UDim2.new(1, -10, 1, 0),
-        Position = UDim2.fromOffset(8, 0),
-        BackgroundTransparency = 1,
-        Text = ThemeName,
-        TextSize = 10,
-        Font = Enum.Font.GothamMedium,
-        TextXAlignment = Enum.TextXAlignment.Left,
-        TextColor3 = Theme["Color Text"],
-        ZIndex = 102
-    }), "Text")
+	ThemeButton.MouseEnter:Connect(function()
+		ThemeButton.BackgroundTransparency = 0.4
+	end)
 
-    ThemeButton.Activated:Connect(function()
-        redzlib:SetTheme(ThemeName)
-        ThemePopup.Visible = false
-    end)
+	ThemeButton.MouseLeave:Connect(function()
+		ThemeButton.BackgroundTransparency = 0
+	end)
+
+	ThemeButton.Activated:Connect(function()
+		redzlib:SetTheme(ThemeName)
+		ThemePopup.Visible = false
+	end)
 end
 
 SettingsButton.Activated:Connect(function()
-    ThemePopup.Visible = not ThemePopup.Visible
-
-    if ThemePopup.Visible then
-        ThemePopup.Position = UDim2.new(
-            1,
-            -165,
-            0,
-            35
-        )
-    end
+	ThemePopup.Visible = not ThemePopup.Visible
 end)
 		
 		local DTitle = Configs[1] or Configs.Title or "Dialog"
