@@ -1541,6 +1541,7 @@ Create("UIPadding", SearchBox, {
 	
 
 --// SEARCH BOX
+--// SEARCH TAB - BÊN TRÁI
 local SearchBox = Create("TextBox", Components, {
     Size = UDim2.new(0, redzlib.Save.TabSize, 0, 28),
     Position = UDim2.new(0, 0, 0, 0),
@@ -1548,7 +1549,7 @@ local SearchBox = Create("TextBox", Components, {
     BackgroundTransparency = 0,
     TextColor3 = Theme["Color Text"],
     PlaceholderColor3 = Theme["Color Dark Text"],
-    PlaceholderText = "Tìm kiếm...",
+    PlaceholderText = "Search...",
     Text = "",
     TextSize = 10,
     Font = Enum.Font.Gotham,
@@ -1565,7 +1566,8 @@ Create("UIPadding", SearchBox, {
     PaddingRight = UDim.new(0, 10)
 })
 
--- MainScroll nằm dưới Search
+
+--// MAIN SCROLL
 local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
     Size = UDim2.new(
         0,
@@ -1596,72 +1598,96 @@ local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
         Padding = UDim.new(0, 5)
     })
 }), "ScrollBar")
-	
-	local Containers = Create("Frame", Components, {
-		Size = UDim2.new(1, -MainScroll.Size.X.Offset, 1, -TopBar.Size.Y.Offset),
-		AnchorPoint = Vector2.new(1, 1),
-		Position = UDim2.new(1, 0, 1, 0),
-		BackgroundTransparency = 1,
-		ClipsDescendants = true,
-		Name = "Containers"
-	})
-	--// SEARCH TAB
+
+
+--// CONTAINERS
+local Containers = Create("Frame", Components, {
+    Size = UDim2.new(
+        1,
+        -MainScroll.Size.X.Offset,
+        1,
+        -TopBar.Size.Y.Offset
+    ),
+    AnchorPoint = Vector2.new(1, 1),
+    Position = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1,
+    ClipsDescendants = true,
+    Name = "Containers"
+})
+
+
+--// SEARCH FUNCTION - BÊN PHẢI
+local AddSearchBox = Create("TextBox", Containers, {
+    Size = UDim2.new(1, -20, 0, 28),
+    Position = UDim2.new(0, 10, 0, 10),
+    BackgroundColor3 = Theme["Color Hub 2"],
+    BackgroundTransparency = 0,
+    TextColor3 = Theme["Color Text"],
+    PlaceholderColor3 = Theme["Color Dark Text"],
+    PlaceholderText = "Tìm chức năng...",
+    Text = "",
+    TextSize = 10,
+    Font = Enum.Font.Gotham,
+    ClearTextOnFocus = false,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    BorderSizePixel = 0,
+    Name = "SearchAdd"
+})
+
+Make("Corner", AddSearchBox, UDim.new(0, 6))
+
+Create("UIPadding", AddSearchBox, {
+    PaddingLeft = UDim.new(0, 10),
+    PaddingRight = UDim.new(0, 10)
+})
+
+
 --// SEARCH TAB
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     local Query = SearchBox.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
 
     for _, TabData in ipairs(redzlib.Tabs) do
-        local TabName = tostring(TabData.TabInfo.Name or "")
-        local Container = TabData.Cont
+        local TabName = tostring(TabData.TabInfo.Name or ""):lower()
         local TabButton
-        local HasMatch = false
 
-        -- Tìm Tab Button
         for _, Object in ipairs(MainScroll:GetChildren()) do
             if Object:IsA("TextButton") then
                 local Label = Object:FindFirstChildWhichIsA("TextLabel")
 
-                if Label and Label.Text == TabName then
+                if Label and Label.Text:lower() == TabName then
                     TabButton = Object
                     break
                 end
             end
         end
 
-        if Query == "" then
+        if TabButton then
+            TabButton.Visible =
+                Query == "" or TabName:find(Query, 1, true) ~= nil
+        end
+    end
+end)
 
-            if TabButton then
-                TabButton.Visible = true
-            end
 
-            for _, Object in ipairs(Container:GetChildren()) do
-                if Object:GetAttribute("SearchText") then
-                    Object.Visible = true
-                end
-            end
+--// SEARCH FUNCTION
+AddSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local Query = AddSearchBox.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
 
-        else
+    for _, TabData in ipairs(redzlib.Tabs) do
+        local Container = TabData.Cont
 
-            local TabMatch =
-                TabName:lower():find(Query, 1, true) ~= nil
+        for _, Object in ipairs(Container:GetChildren()) do
+            if Object:IsA("GuiObject") then
 
-            for _, Object in ipairs(Container:GetChildren()) do
                 local SearchText = Object:GetAttribute("SearchText")
 
                 if SearchText then
-                    local Match =
-                        tostring(SearchText):lower():find(Query, 1, true) ~= nil
+                    SearchText = tostring(SearchText):lower()
 
-                    Object.Visible = Match
-
-                    if Match then
-                        HasMatch = true
-                    end
+                    Object.Visible =
+                        Query == ""
+                        or SearchText:find(Query, 1, true) ~= nil
                 end
-            end
-
-            if TabButton then
-                TabButton.Visible = TabMatch or HasMatch
             end
         end
     end
