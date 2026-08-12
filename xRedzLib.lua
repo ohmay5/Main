@@ -8,7 +8,7 @@ local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local PlayerMouse = Player:GetMouse()
 
-local redzlib = {
+local BaCon = {
 	Themes = {
 		["Dark +"] = {
 			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(25, 25, 25)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 25, 25))}),
@@ -918,8 +918,7 @@ local redzlib = {
 			["xoctagon"] = "rbxassetid://10747384037",
 			["xsquare"] = "rbxassetid://10747384217",
 			["zoomin"] = "rbxassetid://10747384552",
-			["zoomout"] = "rbxassetid://10747384679",
-			["ABC"] = "rbxassetid://6031280882"
+			["zoomout"] = "rbxassetid://10747384679"
 		}
 	end)()
 }
@@ -927,12 +926,12 @@ local redzlib = {
 local ViewportSize = workspace.CurrentCamera.ViewportSize
 local UIScale = ViewportSize.Y / 450
 
-local Settings = redzlib.Settings
-local Flags = redzlib.Flags
+local Settings = BaCon.Settings
+local Flags = BaCon.Flags
 
 local SetProps, SetChildren, InsertTheme, Create do
 	InsertTheme = function(Instance, Type)
-		table.insert(redzlib.Instances, {
+		table.insert(BaCon.Instances, {
 			Instance = Instance,
 			Type = Type
 		})
@@ -981,14 +980,14 @@ local SetProps, SetChildren, InsertTheme, Create do
 			local decode = HttpService:JSONDecode(readfile(file))
 			
 			if type(decode) == "table" then
-				if rawget(decode, "UISize") then redzlib.Save["UISize"] = decode["UISize"] end
-				if rawget(decode, "TabSize") then redzlib.Save["TabSize"] = decode["TabSize"] end
-				if rawget(decode, "Theme") and VerifyTheme(decode["Theme"]) then redzlib.Save["Theme"] = decode["Theme"] end
+				if rawget(decode, "UISize") then BaCon.Save["UISize"] = decode["UISize"] end
+				if rawget(decode, "TabSize") then BaCon.Save["TabSize"] = decode["TabSize"] end
+				if rawget(decode, "Theme") and VerifyTheme(decode["Theme"]) then BaCon.Save["Theme"] = decode["Theme"] end
 			end
 		end
 	end
 	
-	pcall(Save, "redz library V5.json")
+	pcall(Save, "BaCon library V5.json")
 end
 
 local Funcs = {} do
@@ -1048,7 +1047,7 @@ local Funcs = {} do
 	end
 end
 
-local Connections, Connection = {}, redzlib.Connection do
+local Connections, Connection = {}, BaCon.Connection do
 	local function NewConnectionList(List)
 		if type(List) ~= "table" then return end
 		
@@ -1130,7 +1129,7 @@ local GetFlag, SetFlag, CheckFlag do
 end
 
 local ScreenGui = Create("ScreenGui", CoreGui, {
-	Name = "redz Library V5",
+	Name = "BaCon Library V5",
 }, {
 	Create("UIScale", {
 		Scale = UIScale,
@@ -1213,7 +1212,7 @@ local function MakeDrag(Instance)
 end
 
 local function VerifyTheme(Theme)
-	for name,_ in pairs(redzlib.Themes) do
+	for name,_ in pairs(BaCon.Themes) do
 		if name == Theme then
 			return true
 		end
@@ -1227,14 +1226,14 @@ local function SaveJson(FileName, save)
 	end
 end
 
-local Theme = redzlib.Themes[redzlib.Save.Theme]
+local Theme = BaCon.Themes[BaCon.Save.Theme]
 
 local function AddEle(Name, Func)
-	redzlib.Elements[Name] = Func
+	BaCon.Elements[Name] = Func
 end
 
 local function Make(Ele, Instance, props, ...)
-	local Element = redzlib.Elements[Ele](Instance, props, ...)
+	local Element = BaCon.Elements[Ele](Instance, props, ...)
 	return Element
 end
 
@@ -1381,7 +1380,7 @@ local function GetColor(Instance)
 end
 
 -- /////////// --
-function redzlib:GetIcon(index)
+function BaCon:GetIcon(index)
 	if type(index) ~= "string" or index:find("rbxassetid://") or #index == 0 then
 		return index
 	end
@@ -1404,15 +1403,15 @@ function redzlib:GetIcon(index)
 	return firstMatch or index
 end
 
-function redzlib:SetTheme(NewTheme)
+function BaCon:SetTheme(NewTheme)
 	if not VerifyTheme(NewTheme) then return end
 	
-	redzlib.Save.Theme = NewTheme
-	SaveJson("redz library V5.json", redzlib.Save)
-	Theme = redzlib.Themes[NewTheme]
+	BaCon.Save.Theme = NewTheme
+	SaveJson("BaCon library V5.json", BaCon.Save)
+	Theme = BaCon.Themes[NewTheme]
 	
 	Comnection:FireConnection("ThemeChanged", NewTheme)
-	table.foreach(redzlib.Instances, function(_,Val)
+	table.foreach(BaCon.Instances, function(_,Val)
 		if Val.Type == "Gradient" then
 			Val.Instance.Color = Theme["Color Hub 1"]
 		elseif Val.Type == "Frame" then
@@ -1431,13 +1430,13 @@ function redzlib:SetTheme(NewTheme)
 	end)
 end
 
-function redzlib:SetScale(NewScale)
+function BaCon:SetScale(NewScale)
 	NewScale = ViewportSize.Y / math.clamp(NewScale, 300, 2000)
 	UIScale, ScreenGui.Scale.Scale = NewScale, NewScale
 end
 
-function redzlib:MakeWindow(Configs)
-	local WTitle = Configs[1] or Configs.Name or Configs.Title or "redz Library V5"
+function BaCon:MakeWindow(Configs)
+	local WTitle = Configs[1] or Configs.Name or Configs.Title or "BaCon Library V5"
 	local WMiniText = Configs[2] or Configs.SubTitle or "By 青龙脚本"
 	
 	Settings.ScriptFile = Configs[3] or Configs.SaveFolder or false
@@ -1458,7 +1457,7 @@ function redzlib:MakeWindow(Configs)
 		end
 	end;LoadFile()
 	
-	local UISizeX, UISizeY = unpack(redzlib.Save.UISize)
+	local UISizeX, UISizeY = unpack(BaCon.Save.UISize)
 	local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
 		Size = UDim2.fromOffset(UISizeX, UISizeY),
 		Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
@@ -1516,7 +1515,7 @@ function redzlib:MakeWindow(Configs)
 	
 	--// SEARCH BOX
 local SearchBox = Create("TextBox", Components, {
-    Size = UDim2.new(0, redzlib.Save.TabSize, 0, 28),
+    Size = UDim2.new(0, BaCon.Save.TabSize, 0, 28),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundColor3 = Theme["Color Hub 2"],
     BackgroundTransparency = 0,
@@ -1540,7 +1539,7 @@ Create("UIPadding", SearchBox, {
 })
 	
 local SearchBox = Create("TextBox", Components, {
-    Size = UDim2.new(0, redzlib.Save.TabSize, 0, 28),
+    Size = UDim2.new(0, BaCon.Save.TabSize, 0, 28),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundColor3 = Theme["Color Hub 2"],
     BackgroundTransparency = 0,
@@ -1568,7 +1567,7 @@ Create("UIPadding", SearchBox, {
 local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
     Size = UDim2.new(
         0,
-        redzlib.Save.TabSize,
+        BaCon.Save.TabSize,
         1,
         -TopBar.Size.Y.Offset - 33
     ),
@@ -1616,7 +1615,7 @@ local Containers = Create("Frame", Components, {
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     local Query = SearchBox.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
 
-    for _, TabData in ipairs(redzlib.Tabs) do
+    for _, TabData in ipairs(BaCon.Tabs) do
         local TabName = tostring(TabData.TabInfo.Name or ""):lower()
         local TabButton
 
@@ -1643,7 +1642,7 @@ end)
 AddSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     local Query = AddSearchBox.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
 
-    for _, TabData in ipairs(redzlib.Tabs) do
+    for _, TabData in ipairs(BaCon.Tabs) do
         local Container = TabData.Cont
 
         for _, Object in ipairs(Container:GetChildren()) do
@@ -1693,14 +1692,14 @@ end)
 	
 	ConnectSave(ControlSize1, function()
 		if not Minimized then
-			redzlib.Save.UISize = {MainFrame.Size.X.Offset, MainFrame.Size.Y.Offset}
-			SaveJson("redz library V5.json", redzlib.Save)
+			BaCon.Save.UISize = {MainFrame.Size.X.Offset, MainFrame.Size.Y.Offset}
+			SaveJson("BaCon library V5.json", BaCon.Save)
 		end
 	end)
 	
 	ConnectSave(ControlSize2, function()
-		redzlib.Save.TabSize = MainScroll.Size.X.Offset
-		SaveJson("redz library V5.json", redzlib.Save)
+		BaCon.Save.TabSize = MainScroll.Size.X.Offset
+		SaveJson("BaCon library V5.json", BaCon.Save)
 	end)
 	
 	local ButtonsFolder = Create("Folder", TopBar, {
@@ -1708,208 +1707,105 @@ end)
 	})
 	
 	local CloseButton = Create("ImageButton", {
-	Size = UDim2.new(0, 14, 0, 14),
-	Position = UDim2.new(1, -10, 0.5),
-	AnchorPoint = Vector2.new(1, 0.5),
-	BackgroundTransparency = 1,
-	Image = "rbxassetid://10747384394",
-	AutoButtonColor = false,
-	Name = "Close"
-})
-
-local MinimizeButton = SetProps(CloseButton:Clone(), {
-	Position = UDim2.new(1, -35, 0.5),
-	Image = "rbxassetid://10734896206",
-	Name = "Minimize"
-})
-
-local SettingsButton = SetProps(CloseButton:Clone(), {
-	Position = UDim2.new(1, -60, 0.5),
-	Image = "rbxassetid://6031280882",
-	Name = "Settings"
-})
-
-SetChildren(ButtonsFolder, {
-	CloseButton,
-	MinimizeButton,
-	SettingsButton
-})
-
-local Minimized, SaveSize, WaitClick
-local Window, FirstTab = {}, false
-
---// THEME MENU
-local ThemePopup = Create("Frame", MainFrame, {
-	Size = UDim2.fromOffset(150, 0),
-	AutomaticSize = Enum.AutomaticSize.Y,
-	Position = UDim2.new(1, -160, 0, 32),
-	BackgroundColor3 = Theme["Color Hub 2"],
-	BackgroundTransparency = 0,
-	Visible = false,
-	ZIndex = 100,
-	Name = "ThemePopup"
-})
-
-Make("Corner", ThemePopup, UDim.new(0, 7))
-
-Create("UIPadding", ThemePopup, {
-	PaddingTop = UDim.new(0, 7),
-	PaddingBottom = UDim.new(0, 7),
-	PaddingLeft = UDim.new(0, 7),
-	PaddingRight = UDim.new(0, 7)
-})
-
-Create("UIListLayout", ThemePopup, {
-	Padding = UDim.new(0, 4),
-	SortOrder = Enum.SortOrder.LayoutOrder
-})
-
-local ThemeNames = {
-	"Dark +",
-	"Dark",
-	"Clear",
-	"Purple",
-	"Red",
-	"Yellow",
-	"Green",
-	"Pink",
-	"Blue"
-}
-
-for _, ThemeName in ipairs(ThemeNames) do
-	local ThemeButton = Create("TextButton", ThemePopup, {
-		Size = UDim2.new(1, 0, 0, 25),
-		BackgroundColor3 = Theme["Color Hub 2"],
-		BackgroundTransparency = 0,
-		Text = ThemeName,
-		TextColor3 = Theme["Color Text"],
-		TextSize = 10,
-		Font = Enum.Font.GothamMedium,
-		AutoButtonColor = false,
-		ZIndex = 101
-	})
-
-	Make("Corner", ThemeButton, UDim.new(0, 5))
-
-	ThemeButton.Activated:Connect(function()
-		redzlib:SetTheme(ThemeName)
-		ThemePopup.Visible = false
-	end)
-end
-
-SettingsButton.Activated:Connect(function()
-	ThemePopup.Visible = not ThemePopup.Visible
-end)
-
-function Window:CloseBtn()
-	local Dialog = Window:Dialog({
-		Title = "Close",
-		Text = "You Want Close Ui?",
-		Options = {
-			{"Confirm", function()
-				ScreenGui:Destroy()
-			end},
-			{"Cancel"}
-		}
-	})
-end
-
-function Window:MinimizeBtn()
-	if WaitClick then return end
-	WaitClick = true
-
-	if Minimized then
-		MinimizeButton.Image = "rbxassetid://10734896206"
-
-		CreateTween({
-			MainFrame,
-			"Size",
-			SaveSize,
-			0.25,
-			true
-		})
-
-		ControlSize1.Visible = true
-		ControlSize2.Visible = true
-		Minimized = false
-	else
-		MinimizeButton.Image = "rbxassetid://10734924532"
-
-		SaveSize = MainFrame.Size
-
-		ControlSize1.Visible = false
-		ControlSize2.Visible = false
-		ThemePopup.Visible = false
-
-		CreateTween({
-			MainFrame,
-			"Size",
-			UDim2.fromOffset(
-				MainFrame.Size.X.Offset,
-				28
-			),
-			0.25,
-			true
-		})
-
-		Minimized = true
-	end
-
-	WaitClick = false
-end
-
-function Window:Minimize()
-	MainFrame.Visible = not MainFrame.Visible
-end
-
-function Window:AddMinimizeButton(Configs)
-	local Button = MakeDrag(Create("ImageButton", ScreenGui, {
-		Size = UDim2.fromOffset(35, 35),
-		Position = UDim2.fromScale(0.15, 0.15),
+		Size = UDim2.new(0, 14, 0, 14),
+		Position = UDim2.new(1, -10, 0.5),
+		AnchorPoint = Vector2.new(1, 0.5),
 		BackgroundTransparency = 1,
-		BackgroundColor3 = Theme["Color Hub 2"],
-		AutoButtonColor = false
-	}))
-
-	local Stroke, Corner
-
-	if Configs.Corner then
-		Corner = Make("Corner", Button)
-		SetProps(Corner, Configs.Corner)
+		Image = "rbxassetid://10747384394",
+		AutoButtonColor = false,
+		Name = "Close"
+	})
+	
+	local MinimizeButton = SetProps(CloseButton:Clone(), {
+		Position = UDim2.new(1, -35, 0.5),
+		Image = "rbxassetid://10734896206",
+		Name = "Minimize"
+	})
+	
+	SetChildren(ButtonsFolder, {
+		CloseButton,
+		MinimizeButton
+	})
+	
+	local Minimized, SaveSize, WaitClick
+	local Window, FirstTab = {}, false
+	function Window:CloseBtn()
+		local Dialog = Window:Dialog({
+			Title = "Close",
+			Text = "You Want Close Ui?",
+			Options = {
+				{"Confirm", function()
+					ScreenGui:Destroy()
+				end},
+				{"Cancel"}
+			}
+		})
 	end
-
-	if Configs.Stroke then
-		Stroke = Make("Stroke", Button)
-		SetProps(Stroke, Configs.Corner)
+	function Window:MinimizeBtn()
+		if WaitClick then return end
+		WaitClick = true
+		
+		if Minimized then
+			MinimizeButton.Image = "rbxassetid://10734896206"
+			CreateTween({MainFrame, "Size", SaveSize, 0.25, true})
+			ControlSize1.Visible = true
+			ControlSize2.Visible = true
+			Minimized = false
+		else
+			MinimizeButton.Image = "rbxassetid://10734924532"
+			SaveSize = MainFrame.Size
+			ControlSize1.Visible = false
+			ControlSize2.Visible = false
+			CreateTween({MainFrame, "Size", UDim2.fromOffset(MainFrame.Size.X.Offset, 28), 0.25, true})
+			Minimized = true
+		end
+		
+		WaitClick = false
 	end
-
-	SetProps(Button, Configs.Button)
-	Button.Activated:Connect(Window.Minimize)
-
-	return {
-		Stroke = Stroke,
-		Corner = Corner,
-		Button = Button
-	}
-end
-
-function Window:Set(Val1, Val2)
-	if type(Val1) == "string" and type(Val2) == "string" then
-		Title.Text = Val1
-		Title.SubTitle.Text = Val2
-	elseif type(Val1) == "string" then
-		Title.Text = Val1
+	function Window:Minimize()
+		MainFrame.Visible = not MainFrame.Visible
 	end
-end
-
-function Window:Dialog(Configs)
-	if MainFrame:FindFirstChild("Dialog") then
-		return
+	function Window:AddMinimizeButton(Configs)
+		local Button = MakeDrag(Create("ImageButton", ScreenGui, {
+			Size = UDim2.fromOffset(35, 35),
+			Position = UDim2.fromScale(0.15, 0.15),
+			BackgroundTransparency = 1,
+			BackgroundColor3 = Theme["Color Hub 2"],
+			AutoButtonColor = false
+		}))
+		
+		local Stroke, Corner
+		if Configs.Corner then
+			Corner = Make("Corner", Button)
+			SetProps(Corner, Configs.Corner)
+		end
+		if Configs.Stroke then
+			Stroke = Make("Stroke", Button)
+			SetProps(Stroke, Configs.Corner)
+		end
+		
+		SetProps(Button, Configs.Button)
+		Button.Activated:Connect(Window.Minimize)
+		
+		return {
+			Stroke = Stroke,
+			Corner = Corner,
+			Button = Button
+		}
 	end
-
-	if Minimized then
-		Window:MinimizeBtn()
+	function Window:Set(Val1, Val2)
+		if type(Val1) == "string" and type(Val2) == "string" then
+			Title.Text = Val1
+			Title.SubTitle.Text = Val2
+		elseif type(Val1) == "string" then
+			Title.Text = Val1
+		end
 	end
+	function Window:Dialog(Configs)
+		if MainFrame:FindFirstChild("Dialog") then return end
+		if Minimized then
+			Window:MinimizeBtn()
+		end
 		
 		local DTitle = Configs[1] or Configs.Title or "Dialog"
 		local DText = Configs[2] or Configs.Text or "This is a Dialog"
@@ -2011,9 +1907,9 @@ function Window:Dialog(Configs)
 	end
 	function Window:SelectTab(TabSelect)
 		if type(TabSelect) == "number" then
-			redzlib.Tabs[TabSelect].func:Enable()
+			BaCon.Tabs[TabSelect].func:Enable()
 		else
-			for _,Tab in pairs(redzlib.Tabs) do
+			for _,Tab in pairs(BaCon.Tabs) do
 				if Tab.Cont == TabSelect.Cont then
 					Tab.func:Enable()
 				end
@@ -2027,7 +1923,7 @@ function Window:Dialog(Configs)
 		local TName = Configs[1] or Configs.Title or "Tab!"
 		local TIcon = Configs[2] or Configs.Icon or ""
 		
-		TIcon = redzlib:GetIcon(TIcon)
+		TIcon = BaCon:GetIcon(TIcon)
 		if not TIcon:find("rbxassetid://") or TIcon:gsub("rbxassetid://", ""):len() < 6 then
 			TIcon = false
 		end
@@ -2103,7 +1999,7 @@ function Window:Dialog(Configs)
 			end
 			Container.Parent = Containers
 			Container.Size = UDim2.new(1, 0, 1, 150)
-			table.foreach(redzlib.Tabs, function(_,Tab)
+			table.foreach(BaCon.Tabs, function(_,Tab)
 				if Tab.Cont ~= Container then
 					Tab.func:Disable()
 				end
@@ -2118,7 +2014,7 @@ function Window:Dialog(Configs)
 		
 		FirstTab = true
 		local Tab = {}
-		table.insert(redzlib.Tabs, {TabInfo = {Name = TName, Icon = TIcon}, func = Tab, Cont = Container})
+		table.insert(BaCon.Tabs, {TabInfo = {Name = TName, Icon = TIcon}, func = Tab, Cont = Container})
 		Tab.Cont = Container
 		
 		function Tab:Disable()
@@ -2159,7 +2055,7 @@ function Window:Dialog(Configs)
 			}), "Text")
 			
 			local Section = {}
-			table.insert(redzlib.Options, {type = "Section", Name = SectionName, func = Section})
+			table.insert(BaCon.Options, {type = "Section", Name = SectionName, func = Section})
 			function Section:Visible(Bool)
 				if Bool == nil then SectionFrame.Visible = not SectionFrame.Visible return end
 				SectionFrame.Visible = Bool
@@ -3189,4 +3085,4 @@ end
 	return Window
 end
 
-return redzlib
+return BaCon
