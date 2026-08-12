@@ -12759,9 +12759,10 @@ Setting:AddToggle({
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attachgun.txt"))()
 
 _G.Settings = _G.Settings or {}
+_G.Settings.AutoClick = true
 _G.Settings.FastAttack = true
 
--- Tốc độ FastAttack
+-- Chỉ dùng 1 tốc độ
 local AttackDelay = 0.2
 
 -- =========================
@@ -12770,6 +12771,7 @@ local AttackDelay = 0.2
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local VirtualUser = game:GetService("VirtualUser")
 
 local Player = Players.LocalPlayer
 
@@ -12781,9 +12783,8 @@ end
 -- NET
 -- =========================
 
-local Net = ReplicatedStorage
-    :WaitForChild("Modules")
-    :WaitForChild("Net")
+local Modules = ReplicatedStorage:WaitForChild("Modules")
+local Net = Modules:WaitForChild("Net")
 
 local RegisterAttack =
     Net:WaitForChild("RE/RegisterAttack")
@@ -12802,18 +12803,30 @@ local Characters =
     workspace:FindFirstChild("Characters")
 
 -- =========================
--- CHECK
+-- CHECK ALIVE
 -- =========================
 
 local function IsAlive(Character)
-    local Humanoid =
-        Character and Character:FindFirstChildOfClass("Humanoid")
 
-    return Humanoid and Humanoid.Health > 0
+    if not Character then
+        return false
+    end
+
+    local Humanoid =
+        Character:FindFirstChildOfClass("Humanoid")
+
+    return Humanoid
+        and Humanoid.Health > 0
 end
 
+-- =========================
+-- GET CHARACTER
+-- =========================
+
 local function GetCharacter()
-    local Character = Player.Character
+
+    local Character =
+        Player.Character
 
     if Character and IsAlive(Character) then
         return Character
@@ -12832,21 +12845,24 @@ local FastAttack = {
 
 function FastAttack:GetTargets()
 
-    local Character = GetCharacter()
+    local Character =
+        GetCharacter()
 
     if not Character then
         return {}, nil
     end
 
     local Root =
-        Character:FindFirstChild("HumanoidRootPart")
+        Character:FindFirstChild(
+            "HumanoidRootPart"
+        )
 
     if not Root then
         return {}, nil
     end
 
     local Targets = {}
-    local BasePart
+    local BasePart = nil
 
     local function Scan(Folder)
 
@@ -12854,34 +12870,38 @@ function FastAttack:GetTargets()
             return
         end
 
-        for _, Enemy in ipairs(Folder:GetChildren()) do
+        for _, Enemy in
+            ipairs(Folder:GetChildren()) do
 
-            if Enemy ~= Character then
+            if Enemy ~= Character
+                and IsAlive(Enemy) then
 
-                local Humanoid =
-                    Enemy:FindFirstChildOfClass("Humanoid")
+                local Part =
+                    Enemy:FindFirstChild("Head")
+                    or Enemy:FindFirstChild(
+                        "HumanoidRootPart"
+                    )
 
-                if Humanoid and Humanoid.Health > 0 then
+                if Part then
 
-                    local Part =
-                        Enemy:FindFirstChild("HumanoidRootPart")
-                        or Enemy:FindFirstChild("Head")
+                    local Distance =
+                        (
+                            Root.Position
+                            - Part.Position
+                        ).Magnitude
 
-                    if Part then
+                    if Distance <=
+                        self.Distance then
 
-                        local Offset =
-                            Root.Position - Part.Position
-
-                        if Offset:Dot(Offset)
-                            <= self.Distance * self.Distance then
-
-                            Targets[#Targets + 1] = {
+                        table.insert(
+                            Targets,
+                            {
                                 Enemy,
                                 Part
                             }
+                        )
 
-                            BasePart = Part
-                        end
+                        BasePart = Part
                     end
                 end
             end
@@ -12899,7 +12919,11 @@ function FastAttack:Attack()
     local Targets, BasePart =
         self:GetTargets()
 
-    if not BasePart or #Targets == 0 then
+    if not BasePart then
+        return
+    end
+
+    if #Targets == 0 then
         return
     end
 
@@ -12916,22 +12940,28 @@ function FastAttack:Attack()
 end
 
 -- =========================
--- LOOP
+-- FAST ATTACK LOOP
 -- =========================
 
 task.spawn(function()
 
     while _G.Settings.FastAttack do
 
-        local Character = GetCharacter()
+        local Character =
+            GetCharacter()
 
         if Character then
 
             local Tool =
-                Character:FindFirstChildOfClass("Tool")
+                Character:FindFirstChildOfClass(
+                    "Tool"
+                )
 
-            if Tool and Tool.ToolTip ~= "Gun" then
+            if Tool
+                and Tool.ToolTip ~= "Gun" then
+
                 FastAttack:Attack()
+
             end
         end
 
@@ -12939,4 +12969,48 @@ task.spawn(function()
     end
 end)
 
-print("[FastAttack] Started | Delay:", AttackDelay)
+-- =========================
+-- AUTO CLICK
+-- =========================
+
+task.spawn(function()
+
+    while _G.Settings.AutoClick do
+
+        local Character =
+            GetCharacter()
+
+        if Character then
+
+            local Tool =
+                Character:FindFirstChildOfClass(
+                    "Tool"
+                )
+
+            if Tool then
+
+                pcall(function()
+
+                    VirtualUser:
+                        CaptureController()
+
+                    VirtualUser:
+                        Button1Down(
+                            Vector2.new(
+                                1280,
+                                672
+                            )
+                        )
+
+                end)
+            end
+        end
+
+        task.wait(0.1)
+    end
+end)
+
+print(
+    "[FastAttack] Started | Delay:",
+    AttackDelay
+)
