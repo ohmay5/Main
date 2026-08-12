@@ -1,0 +1,1106 @@
+local F = {};
+local n = {};
+repeat
+	task.wait();
+	F[1] = game:IsLoaded();
+until F[1];
+n[1] = (getgenv()).NightMysticConfig;
+if not n[1] then
+	F[2] = { SelectTeam = "Pirates" };
+	F[3] = {
+			AutoBounty = true,
+			AutoAttack = true,
+			AttackSpeed = 12,
+			AttackRange = 45,
+			HitboxSize = 30,
+		};
+	F[4] = { SafeHealth = 4500, ReturnHealth = 9000, SafeHeight = 2500 };
+	F[5] = {
+			Z = { Enabled = true, Hold = .1, Wait = .4 },
+			X = { Enabled = true, Hold = .1, Wait = .4 },
+			C = { Enabled = true, Hold = .1, Wait = .4 },
+			V = { Enabled = true, Hold = .1, Wait = .4 },
+		};
+	F[6] = { Z = { Enabled = true, Hold = .05, Wait = .3 }, X = { Enabled = true, Hold = .05, Wait = .3 } };
+	F[9] = { Enabled = true, Hold = .05, Wait = .3 };
+	F[10] = { Enabled = true, Hold = .05, Wait = .3 };
+	F[7] = { Z = F[9], X = F[10] };
+	F[11] = {
+			Melee = { Z = { Enabled = true, Hold = .05, Wait = .3 }, X = { Enabled = true, Hold = .05, Wait = .3 }, C = { Enabled = true, Hold = .05, Wait = .3 } },
+			Fruit = F[5],
+			Sword = F[6],
+			Gun = F[7],
+		};
+	F[8] = {
+			AutoRace = true,
+			AutoAwakenV4 = true,
+			AutoHaki = true,
+			AutoKen = true,
+			AutoRandomFruit = true,
+			AutoStoreFruit = true,
+		};
+	n[1] = {
+			TeamSettings = F[2],
+			CombatSettings = F[3],
+			SafetySettings = F[4],
+			SkillSettings = F[11],
+			MiscSettings = F[8],
+		};
+end;
+if not (game:GetService("Players")).LocalPlayer.Team then
+	pcall(function()
+		(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("SetTeam", n[1].TeamSettings.SelectTeam);
+	end);
+	task.wait(1);
+end;
+n[2] = game:GetService("Players");
+F[1] = game;
+F[7] = {};
+local B = F[1]:GetService("CoreGui");
+n[3] = game:GetService("TweenService");
+local Y = game:GetService("RunService");
+n[4] = game:GetService("Workspace");
+local V = game:GetService("Lighting");
+n[5] = game:GetService("HttpService");
+n[6] = game:GetService("TeleportService");
+n[7] = game:GetService("VirtualInputManager");
+n[8] = game:GetService("ReplicatedStorage");
+n[9] = game:GetService("VirtualUser");
+n[10] = n[2].LocalPlayer;
+_G.KilledPlayers = F[7];
+_G.CurrentTarget = nil;
+F[1] = _G;
+F[9] = n[1].CombatSettings.AutoBounty;
+local T = n[1].CombatSettings.AutoAttack;
+local O = n[1].CombatSettings.AttackSpeed;
+local m = n[1].CombatSettings.HitboxSize;
+local i = n[1].CombatSettings.AttackRange;
+local S = n[1].SafetySettings.SafeHealth;
+local C = n[1].SafetySettings.ReturnHealth;
+local Q = n[1].MiscSettings.AutoRace;
+local G = n[1].MiscSettings.AutoAwakenV4;
+local z = n[1].MiscSettings.AutoHaki;
+local l = n[1].MiscSettings.AutoKen;
+local b = n[1].MiscSettings.AutoRandomFruit;
+local A = n[1].MiscSettings.AutoStoreFruit;
+F[10] = {
+		AuraAttack = T,
+		FastAttackSpeed = O,
+		HitboxSize = m,
+		AttackRange = i,
+		SafeHealth = S,
+		ReturnHealth = C,
+		AutoRace = Q,
+		AutoAwakenV4 = G,
+		AutoHaki = z,
+		AutoKen = l,
+		AutoRandomFruit = b,
+		AutoStoreFruit = A,
+	};
+local D = n[1].SafetySettings.SafeHeight;
+local a = n[1].SkillSettings;
+F[1].AutoBounty = {
+		Enabled = F[9],
+		Combat = F[10],
+		Movement = { FlySpeed = 350, SkyHeight = D },
+		Stick = { Back = 3.5, Height = 1.2, Smooth = .6 },
+		Target = { MaxDistance = 30000 },
+		Skill = a,
+	};
+n[11] = Instance.new("BlurEffect");
+n[11].Name = "NightMysticBlur";
+n[11].Parent = V;
+n[11].Size = 24;
+n[12] = Instance.new("ScreenGui");
+local E = Instance.new("Frame");
+F[9] = Instance.new("UICorner");
+local d = Instance.new("ImageLabel");
+F[10] = Instance.new("TextLabel");
+n[13] = Instance.new("TextLabel");
+local I = Instance.new("Frame");
+local X = Instance.new("UIGradient");
+local v = Instance.new("TextLabel");
+n[14] = Instance.new("TextLabel");
+local K = Instance.new("Frame");
+local Z = Instance.new("UIGradient");
+local g = Instance.new("Frame");
+local J = Instance.new("UIListLayout");
+local p = Instance.new("ImageButton");
+n[15] = Instance.new("TextLabel");
+local P = Instance.new("ImageButton");
+n[16] = Instance.new("TextLabel");
+local w = Instance.new("ImageButton");
+n[17] = Instance.new("TextLabel");
+F[1] = n[12];
+F[1].Name = "NightMysticUI";
+if identifyexecutor then
+	F[1] = n[12];
+	F[1].Parent = B;
+else
+	F[1] = n[12];
+	local B = n[10]:WaitForChild("PlayerGui");
+	F[1].Parent = B;
+end;
+n[12].ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
+E.Name = "MainFrame";
+E.Parent = n[12];
+E.AnchorPoint = Vector2.new(.5, .5);
+E.BackgroundColor3 = Color3.fromRGB(0, 0, 0);
+E.Position = UDim2.new(.5, 0, .42, 0);
+E.Size = UDim2.new(0, 300, 0, 380);
+E.Active = true;
+E.Draggable = false;
+F[9].CornerRadius = UDim.new(0, 10);
+F[9].Parent = E;
+d.Name = "Logo";
+d.Parent = E;
+d.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+d.BackgroundTransparency = 1;
+d.Position = UDim2.new(.5, -140, .05, 0);
+d.Size = UDim2.new(0, 280, 0, 110);
+d.Image = "rbxassetid://134827121069757";
+d.ScaleType = Enum.ScaleType.Fit;
+F[10].Name = "BountyLabel";
+F[10].Parent = E;
+local y = Color3.fromRGB(255, 255, 255);
+F[10].BackgroundColor3 = y;
+F[10].BackgroundTransparency = 1;
+F[10].Position = UDim2.new(0, 0, .32, 0);
+F[10].Size = UDim2.new(1, 0, 0, 25);
+F[10].Font = Enum.Font.GothamMedium;
+F[10].Text = "Bounty Earned";
+F[10].TextColor3 = Color3.fromRGB(255, 255, 255);
+F[10].TextSize = 22;
+n[13].Name = "BountyValue";
+n[13].Parent = E;
+F[1] = n[13];
+F[1].BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+n[13].BackgroundTransparency = 1;
+F[1] = n[13];
+F[1].Position = UDim2.new(0, 0, .39, 0);
+F[1] = n[13];
+F[1].Size = UDim2.new(1, 0, 0, 25);
+n[13].Font = Enum.Font.Gotham;
+n[13].Text = "0";
+F[1] = n[13];
+F[1].TextColor3 = Color3.fromRGB(200, 200, 200);
+n[13].TextSize = 18;
+I.Name = "Sep1";
+I.Parent = E;
+I.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+I.BorderSizePixel = 0;
+I.Position = UDim2.new(.2, 0, .47, 0);
+I.Size = UDim2.new(.6, 0, 0, 2);
+X.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(.5, Color3.fromRGB(180, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)) });
+X.Parent = I;
+v.Name = "TotalLabel";
+v.Parent = E;
+v.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+v.BackgroundTransparency = 1;
+v.Position = UDim2.new(0, 0, .53, 0);
+v.Size = UDim2.new(1, 0, 0, 25);
+v.Font = Enum.Font.GothamMedium;
+v.Text = "Total Bounty";
+v.TextColor3 = Color3.fromRGB(255, 255, 255);
+v.TextSize = 22;
+n[14].Name = "TotalValue";
+n[14].Parent = E;
+F[1] = n[14];
+F[1].BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+n[14].BackgroundTransparency = 1;
+F[1] = n[14];
+F[1].Position = UDim2.new(0, 0, .6, 0);
+F[1] = n[14];
+F[1].Size = UDim2.new(1, 0, 0, 25);
+n[14].Font = Enum.Font.Gotham;
+n[14].Text = "Loading...";
+F[1] = n[14];
+F[1].TextColor3 = Color3.fromRGB(200, 200, 200);
+n[14].TextSize = 18;
+K.Name = "Sep2";
+K.Parent = E;
+K.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+K.BorderSizePixel = 0;
+K.Position = UDim2.new(.2, 0, .68, 0);
+K.Size = UDim2.new(.6, 0, 0, 2);
+Z.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(.5, Color3.fromRGB(180, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)) });
+Z.Parent = K;
+g.Name = "ButtonContainer";
+g.Parent = E;
+g.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+g.BackgroundTransparency = 1;
+g.Position = UDim2.new(0, 0, .78, 0);
+g.Size = UDim2.new(1, 0, 0, 50);
+J.Parent = g;
+J.FillDirection = Enum.FillDirection.Horizontal;
+J.HorizontalAlignment = Enum.HorizontalAlignment.Center;
+J.SortOrder = Enum.SortOrder.LayoutOrder;
+J.VerticalAlignment = Enum.VerticalAlignment.Center;
+J.Padding = UDim.new(0, 30);
+P.Name = "HopButton";
+P.Parent = g;
+P.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+P.BackgroundTransparency = 1;
+P.LayoutOrder = 1;
+P.Size = UDim2.new(0, 35, 0, 35);
+P.Image = "rbxassetid://15000801352";
+P.ImageColor3 = Color3.fromRGB(255, 255, 255);
+n[16].Name = "Label";
+n[16].Parent = P;
+F[1] = n[16];
+F[1].AnchorPoint = Vector2.new(.5, 0);
+F[1] = n[16];
+F[1].BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+n[16].BackgroundTransparency = 1;
+F[1] = n[16];
+F[1].Position = UDim2.new(.5, 0, 1, 2);
+F[1] = n[16];
+F[1].Size = UDim2.new(0, 50, 0, 15);
+n[16].Font = Enum.Font.Gotham;
+n[16].Text = "Server Hop";
+F[1] = n[16];
+F[1].TextColor3 = Color3.fromRGB(200, 200, 200);
+n[16].TextSize = 10;
+p.Name = "DiscordButton";
+p.Parent = g;
+p.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+p.BackgroundTransparency = 1;
+p.LayoutOrder = 2;
+p.Size = UDim2.new(0, 35, 0, 35);
+p.Image = "rbxassetid://101192191207677";
+p.ImageColor3 = Color3.fromRGB(255, 255, 255);
+n[15].Name = "Label";
+n[15].Parent = p;
+F[1] = n[15];
+F[1].AnchorPoint = Vector2.new(.5, 0);
+F[1] = n[15];
+F[1].BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+n[15].BackgroundTransparency = 1;
+F[1] = n[15];
+F[1].Position = UDim2.new(.5, 0, 1, 2);
+F[1] = n[15];
+F[1].Size = UDim2.new(0, 50, 0, 15);
+n[15].Font = Enum.Font.Gotham;
+n[15].Text = "Discord";
+F[1] = n[15];
+F[1].TextColor3 = Color3.fromRGB(200, 200, 200);
+n[15].TextSize = 10;
+w.Name = "SkipButton";
+w.Parent = g;
+w.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+w.BackgroundTransparency = 1;
+w.LayoutOrder = 3;
+w.Size = UDim2.new(0, 35, 0, 35);
+w.Image = "rbxassetid://15480040231";
+w.ImageColor3 = Color3.fromRGB(255, 255, 255);
+n[17].Name = "Label";
+n[17].Parent = w;
+F[1] = n[17];
+F[1].AnchorPoint = Vector2.new(.5, 0);
+F[1] = n[17];
+F[1].BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+n[17].BackgroundTransparency = 1;
+F[1] = n[17];
+F[1].Position = UDim2.new(.5, 0, 1, 2);
+F[1] = n[17];
+F[1].Size = UDim2.new(0, 50, 0, 15);
+n[17].Font = Enum.Font.Gotham;
+n[17].Text = "Skip Player";
+F[1] = n[17];
+F[1].TextColor3 = Color3.fromRGB(200, 200, 200);
+n[17].TextSize = 10;
+n[18] = Instance.new("ScreenGui");
+local j = Instance.new("Frame");
+local N = Instance.new("UICorner");
+local r = Instance.new("Frame");
+local x = Instance.new("UICorner");
+local u = Instance.new("TextLabel");
+local t = Instance.new("TextButton");
+local c = Instance.new("Frame");
+local M = Instance.new("UIGradient");
+n[19] = Instance.new("Frame");
+local R = Instance.new("UIListLayout");
+local H = Instance.new("UIPadding");
+F[1] = n[18];
+F[1].Name = "NightMysticDebug";
+if identifyexecutor then
+	F[1] = n[18];
+	F[1].Parent = B;
+else
+	F[1] = n[18];
+	F[12] = n[10]:WaitForChild("PlayerGui");
+	F[1].Parent = F[12];
+end;
+n[18].ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
+j.Name = "MainFrame";
+j.Parent = n[18];
+j.BackgroundColor3 = Color3.fromRGB(5, 0, 0);
+j.BackgroundTransparency = .15;
+j.Position = UDim2.new(0, 15, 1, -180);
+j.Size = UDim2.new(0, 210, 0, 140);
+j.Active = true;
+j.Draggable = true;
+N.CornerRadius = UDim.new(0, 6);
+N.Parent = j;
+r.Name = "TopBar";
+r.Parent = j;
+r.BackgroundColor3 = Color3.fromRGB(15, 15, 15);
+r.BackgroundTransparency = 0;
+r.Size = UDim2.new(1, 0, 0, 24);
+r.BorderSizePixel = 0;
+x.CornerRadius = UDim.new(0, 6);
+x.Parent = r;
+F[1] = Instance.new;
+local k = F[1]("Frame");
+k.Name = "BottomCover";
+k.Parent = r;
+k.BackgroundColor3 = Color3.fromRGB(15, 15, 15);
+k.BorderSizePixel = 0;
+k.Position = UDim2.new(0, 0, 1, -6);
+k.Size = UDim2.new(1, 0, 0, 6);
+u.Name = "Title";
+u.Parent = r;
+u.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+u.BackgroundTransparency = 1;
+u.Position = UDim2.new(0, 8, 0, 0);
+u.Size = UDim2.new(0, 180, 1, 0);
+u.Font = Enum.Font.GothamBold;
+u.Text = "Night Mystic - Status";
+u.TextColor3 = Color3.fromRGB(255, 255, 255);
+u.TextSize = 11;
+u.TextXAlignment = Enum.TextXAlignment.Left;
+t.Name = "CloseButton";
+t.Parent = r;
+t.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+t.BackgroundTransparency = 1;
+t.Position = UDim2.new(1, -24, 0, 0);
+t.Size = UDim2.new(0, 24, 1, 0);
+t.Font = Enum.Font.GothamBold;
+t.Text = "X";
+t.TextColor3 = Color3.fromRGB(255, 0, 0);
+t.TextSize = 11;
+c.Name = "Separator";
+c.Parent = j;
+c.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+c.BorderSizePixel = 0;
+c.Position = UDim2.new(0, 0, 0, 24);
+c.Size = UDim2.new(1, 0, 0, 1);
+M.Color = ColorSequence.new({ ColorSequenceKeypoint.new(0, Color3.fromRGB(0, 0, 0)), ColorSequenceKeypoint.new(.5, Color3.fromRGB(255, 0, 0)), ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0)) });
+M.Parent = c;
+n[19].Name = "ContentFrame";
+n[19].Parent = j;
+F[1] = n[19];
+F[1].BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+n[19].BackgroundTransparency = 1;
+F[1] = n[19];
+F[1].Position = UDim2.new(0, 0, 0, 26);
+F[1] = n[19];
+F[1].Size = UDim2.new(1, 0, 1, -26);
+R.Parent = n[19];
+R.SortOrder = Enum.SortOrder.LayoutOrder;
+R.Padding = UDim.new(0, 2);
+H.Parent = n[19];
+H.PaddingLeft = UDim.new(0, 8);
+H.PaddingTop = UDim.new(0, 4);
+local function L(F, B, Y)
+	local V = Instance.new("Frame");
+	local T = Instance.new("ImageLabel");
+	local O = Instance.new("TextLabel");
+	V.Name = "Row";
+	V.Parent = n[19];
+	V.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+	V.BackgroundTransparency = 1;
+	V.Size = UDim2.new(1, -16, 0, 16);
+	T.Name = "Icon";
+	T.Parent = V;
+	T.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+	T.BackgroundTransparency = 1;
+	T.Size = UDim2.new(0, 14, 0, 14);
+	T.Image = B;
+	if not Y then
+		Y = Color3.fromRGB(255, 0, 0);
+	end;
+	T.ImageColor3 = Y;
+	T.Position = UDim2.new(0, 0, 0, 1);
+	O.Name = "Label";
+	O.Parent = V;
+	O.BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+	O.BackgroundTransparency = 1;
+	O.Position = UDim2.new(0, 20, 0, 0);
+	O.Size = UDim2.new(1, -20, 1, 0);
+	O.Font = Enum.Font.Gotham;
+	O.Text = F;
+	O.TextColor3 = Color3.fromRGB(220, 220, 220);
+	O.TextSize = 10;
+	O.TextXAlignment = Enum.TextXAlignment.Left;
+	return O;
+end;
+local f = Color3.fromRGB(255, 0, 0);
+n[20] = L("Target: None", "rbxassetid://11419719540", f);
+n[21] = L("Target Bounty: 0", "rbxassetid://11419719540", f);
+n[22] = L("My Bounty: 0", "rbxassetid://11419719540", f);
+n[23] = L("Fps: 0 Ping: 0 ms", "rbxassetid://11419719540", f);
+n[24] = L("Time Played: 00:00:00", "rbxassetid://11419719540", f);
+n[25] = L("Server Uptime: 00:00:00", "rbxassetid://11419719540", f);
+t.MouseButton1Click:Connect(function()
+	n[18]:Destroy();
+end);
+n[26] = os.time();
+n[27] = 0;
+local o = n[10];
+local U = o;
+if o then
+	U = o:FindFirstChild("leaderstats") and o.leaderstats:FindFirstChild("Bounty/Honor");
+end;
+n[28] = not U and 0 or o.leaderstats["Bounty/Honor"].Value;
+Y.Heartbeat:Connect(function(F)
+	n[27] = n[27] + F;
+	if n[27] >= 1 then
+		n[27] = 0;
+		local B = math.floor(1 / F);
+		local Y = math.floor(n[10]:GetNetworkPing() * 1000);
+		n[23].Text = string.format("Fps: %d Ping: %d ms", B, Y);
+		local V = os.time() - n[26];
+		local T = math.floor(V / 3600);
+		local O = math.floor((V % 3600) / 60);
+		n[24].Text = string.format("Time Played: %02d:%02d:%02d", T, O, V % 60);
+		local m = n[4].DistributedGameTime;
+		local i = math.floor(m / 3600);
+		local S = math.floor((m % 3600) / 60);
+		local C = math.floor(m % 60);
+		n[25].Text = string.format("Server Uptime: %02d:%02d:%02d", i, S, C);
+		if _G.CurrentTarget then
+			local F = _G.CurrentTarget.Name;
+			n[20].Text = "Target: " .. F;
+			local B = n[21];
+			local Y = _G.CurrentTarget;
+			local V = Y;
+			if Y then
+				V = Y:FindFirstChild("leaderstats") and Y.leaderstats:FindFirstChild("Bounty/Honor");
+			end;
+			B.Text = "Target Bounty: " .. (not V and 0 or Y.leaderstats["Bounty/Honor"].Value);
+		else
+			local F = os.time() - _G.LastCombatTime;
+			if F < 33 then
+				n[20].Text = "Status: COMBAT WAIT (" .. (33 - F .. "s)");
+			elseif isHopping then
+				n[20].Text = "Status: Hopping...";
+			else
+				n[20].Text = "Target: None";
+			end;
+			n[21].Text = "Target Bounty: 0";
+		end;
+		local Q = n[10];
+		local G = Q;
+		if Q then
+			G = Q:FindFirstChild("leaderstats") and Q.leaderstats:FindFirstChild("Bounty/Honor");
+		end;
+		local z = not G and 0 or Q.leaderstats["Bounty/Honor"].Value;
+		n[22].Text = "My Bounty: " .. z;
+		n[14].Text = tostring(z);
+		n[13].Text = tostring(z - n[28]);
+	end;
+end);
+local e = Instance.new("ScreenGui");
+local q = Instance.new("Frame");
+local s = Instance.new("UICorner");
+n[29] = Instance.new("ImageLabel");
+local W = Instance.new("TextButton");
+e.Name = "Night Mystic";
+if identifyexecutor then
+	e.Parent = B;
+else
+	F[13] = n[10]:WaitForChild("PlayerGui");
+	e.Parent = F[13];
+end;
+e.ZIndexBehavior = Enum.ZIndexBehavior.Sibling;
+e.DisplayOrder = 10;
+e.ResetOnSpawn = false;
+q.Name = "dut dit";
+q.Parent = e;
+q.AnchorPoint = Vector2.new(.1, .1);
+q.BackgroundColor3 = Color3.fromRGB(45, 45, 45);
+q.BackgroundTransparency = .3;
+q.Position = UDim2.new(0, 20, .1, -6);
+q.Size = UDim2.new(0, 50, 0, 50);
+q.Active = true;
+q.Draggable = true;
+s.CornerRadius = UDim.new(1, 0);
+s.Parent = q;
+n[29].Parent = q;
+F[1] = n[29];
+F[1].AnchorPoint = Vector2.new(.5, .5);
+n[29].BackgroundTransparency = 1;
+F[1] = n[29];
+F[1].Position = UDim2.new(.5, 0, .5, 0);
+F[1] = n[29];
+local h = UDim2.new(0, 40, 0, 40);
+F[1].Size = h;
+n[29].Image = "rbxassetid://105245380363493";
+W.Parent = q;
+W.BackgroundTransparency = 1;
+W.Size = UDim2.new(1, 0, 1, 0);
+W.Font = Enum.Font.SourceSans;
+W.Text = "";
+F[13] = Color3.fromRGB(27, 42, 53);
+W.TextColor3 = F[13];
+n[30] = false;
+n[31] = UDim2.new(0, 40, 0, 40);
+n[32] = UDim2.new(0, 30, 0, 30);
+F[1] = TweenInfo.new;
+local Fv = Enum;
+n[33] = F[1](.25, Fv.EasingStyle.Quad, Enum.EasingDirection.Out);
+n[34] = false;
+n[35] = n[3]:Create(q, n[33], { BackgroundTransparency = .5 });
+n[36] = n[3]:Create(q, n[33], { BackgroundTransparency = .3 });
+W.MouseButton1Down:Connect(function()
+	if n[30] then
+		local F = n[29];
+		local B = n[33];
+		local Y = { Size = n[31] };
+		(n[3]:Create(F, B, Y)):Play();
+	else
+		(n[3]:Create(n[29], n[33], { Size = n[32] })):Play();
+	end;
+	n[30] = not n[30];
+	if n[34] then
+		n[36]:Play();
+	else
+		n[35]:Play();
+	end;
+	n[34] = not n[34];
+	n[12].Enabled = not n[12].Enabled;
+	if n[12].Enabled then
+		n[11].Size = 24;
+		return;
+	end;
+	n[11].Size = 0;
+end);
+F[1] = p.MouseButton1Click;
+F[1]:Connect(function()
+	setclipboard("https://discord.gg/night-mystic");
+	n[15].Text = "Discord link copied";
+	task.wait(1);
+	n[15].Text = "Discord";
+end);
+F[1] = P.MouseButton1Click;
+F[1]:Connect(function()
+	n[16].Text = "Searching...";
+	local F, B = pcall(function()
+			return game:HttpGet("https://games.roblox.com/v1/games/" .. (game.PlaceId .. "/servers/Public?sortOrder=Desc&limit=100"));
+		end);
+	if F then
+		local F = n[5]:JSONDecode(B);
+		for F, B in pairs(F.data) do
+			if B.playing < B.maxPlayers and B.id ~= game.JobId then
+				n[6]:TeleportToPlaceInstance(game.PlaceId, B.id, n[10]);
+				return;
+			end;
+		end;
+	end;
+	n[16].Text = "Failed";
+	task.wait(1);
+	n[16].Text = "Server Hop";
+end);
+w.MouseButton1Click:Connect(function()
+	if _G.CurrentTarget then
+		_G.KilledPlayers[_G.CurrentTarget.Name] = true;
+		_G.CurrentTarget = nil;
+		n[17].Text = "Skipped!";
+		task.wait(1);
+		n[17].Text = "Skip Player";
+		return;
+	end;
+	n[17].Text = "No Target";
+	task.wait(1);
+	n[17].Text = "Skip Player";
+end);
+pcall(function()
+	(require(n[8].Util.CameraShaker)):Stop();
+end);
+n[37] = function()
+		local F = game.Players.LocalPlayer;
+		local n = F.Backpack;
+		local function B(F)
+			if not F then
+				return;
+			end;
+			for F, n in pairs(F:GetChildren()) do
+				local B = n;
+				if B:IsA("Tool") and B:FindFirstChild("EatRemote", true) then
+					pcall(function()
+						local F = B:GetAttribute("OriginalName") or B.Name;
+						(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("StoreFruit", F, B);
+					end);
+				end;
+			end;
+		end;
+		B(F.Character);
+		B(n);
+	end;
+local function nv()
+	local F = n[10].Character:FindFirstChildOfClass("Tool");
+	local B = not F;
+	if not B then
+		local n = F.ToolTip == "Melee";
+		if not n then
+			n = F.ToolTip == "Sword" or F.ToolTip == "Blox Fruit";
+		end;
+		B = not n;
+	end;
+	if B then
+		return;
+	end;
+	local Y = n[8].Modules.Net;
+	local V = Y["RE/RegisterAttack"];
+	local T = Y["RE/RegisterHit"];
+	for n = 1, _G.AutoBounty.Combat.FastAttackSpeed, 1 do
+		pcall(function()
+			V:FireServer(0);
+			if _G.CurrentTarget and _G.CurrentTarget.Character then
+				local F = _G.CurrentTarget.Character:FindFirstChild("HumanoidRootPart");
+				if F then
+					T:FireServer(F, { { _G.CurrentTarget.Character, F } });
+				end;
+			end;
+			if F.ToolTip == "Blox Fruit" and F:FindFirstChild("LeftClickRemote") then
+				F.LeftClickRemote:FireServer(Vector3.new(0, 0, 0), 1);
+			end;
+			F:Activate();
+		end);
+	end;
+end;
+n[38] = function()
+ 
+	end;
+task.spawn(function()
+	while task.wait(.25) do
+		pcall(function()
+			local F = n[10].Character;
+			if F then
+				F = n[10].Character:FindFirstChild("HumanoidRootPart");
+				if F then
+					F = n[10].Character:FindFirstChild("Humanoid") and n[10].Character.Humanoid.Health > 0;
+				end;
+			end;
+			if F then
+				if _G.AutoBounty.Combat.AutoHaki and not n[10].Character:FindFirstChild("HasBuso") then
+					n[8].Remotes.CommF_:InvokeServer("Buso");
+				end;
+				if _G.AutoBounty.Combat.AutoKen then
+					(game:GetService("ReplicatedStorage")).Remotes.CommE:FireServer("Ken", true);
+				end;
+				if _G.AutoBounty.Combat.AutoRandomFruit then
+					(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("Cousin", "Buy");
+				end;
+				if _G.AutoBounty.Combat.AutoStoreFruit then
+					n[37]();
+				end;
+			end;
+		end);
+	end;
+end);
+_G.LastCombatTime = 0;
+n[39] = false;
+local function Bv(F)
+	if not F.Character or not F.Character:FindFirstChild("HumanoidRootPart") then
+		return false;
+	end;
+	if F.Character:FindFirstChild("InSafeZone") and F.Character.InSafeZone.Value then
+		return true;
+	end;
+	if F.Character:FindFirstChildOfClass("ForceField") then
+		return true;
+	end;
+	local n = workspace:FindFirstChild("_WorldOrigin") and workspace._WorldOrigin:FindFirstChild("SafeZones");
+	if n then
+		for n, B in pairs(n:GetChildren()) do
+			if not B:IsA("BasePart") then
+				continue;
+			end;
+			local Y = B.CFrame:PointToObjectSpace(F.Character.HumanoidRootPart.Position);
+			local V = math.abs(Y.X) <= B.Size.X / 2;
+			if V then
+				V = math.abs(Y.Y) <= B.Size.Y / 2 and math.abs(Y.Z) <= B.Size.Z / 2;
+			end;
+			if V then
+				return true;
+			end;
+		end;
+	end;
+	return false;
+end;
+local function Yv(F)
+	local B = n[10].Character:FindFirstChild("HumanoidRootPart");
+	if not B or not F then
+		return;
+	end;
+	local Y = F.CFrame * CFrame.new(0, _G.AutoBounty.Stick.Height, _G.AutoBounty.Stick.Back);
+	local V = (B.Position - F.Position).Magnitude;
+	B.Velocity = Vector3.new(0, 0, 0);
+	if V > 150 then
+		(n[3]:Create(B, TweenInfo.new(V / _G.AutoBounty.Movement.FlySpeed, Enum.EasingStyle.Linear), { CFrame = Y })):Play();
+		return;
+	end;
+	B.CFrame = B.CFrame:Lerp(Y, _G.AutoBounty.Stick.Smooth);
+	B.CFrame = CFrame.new(B.Position, Vector3.new(F.Position.X, B.Position.Y, F.Position.Z));
+end;
+n[40] = false;
+local function Vv(F)
+	local B = not F;
+	if not B then
+		B = not F.Character or n[40];
+	end;
+	if B then
+		return;
+	end;
+	n[40] = true;
+	for B, Y in ipairs({
+		"Melee",
+		"Fruit",
+		"Sword",
+		"Gun",
+	}) do
+		local V = n[10].Backpack:FindFirstChild(Y) or n[10].Character:FindFirstChild(Y);
+		if not V then
+			for F, n in pairs(n[10].Backpack:GetChildren()) do
+				if n.ToolTip:find(Y) then
+					V = n;
+					break;
+				end;
+			end;
+		end;
+		if V and F == _G.CurrentTarget then
+			n[10].Character.Humanoid:EquipTool(V);
+			for B, Y in pairs(_G.AutoBounty.Skill[Y]) do
+				local V = B;
+				if Y.Enabled and F == _G.CurrentTarget then
+					local F = Enum;
+					n[7]:SendKeyEvent(true, F.KeyCode[V], false, game);
+					task.wait(Y.Hold);
+					n[7]:SendKeyEvent(false, Enum.KeyCode[V], false, game);
+					task.wait(Y.Wait);
+				end;
+			end;
+		end;
+	end;
+	n[40] = false;
+end;
+local function Tv()
+	local F = _G.AutoBounty.Target.MaxDistance;
+	local B;
+	local Y = false;
+	for V, T in pairs(n[2]:GetPlayers()) do
+		local O = T ~= n[10];
+		if O then
+			O = T.Character;
+			if O then
+				O = T.Character:FindFirstChild("Humanoid");
+				if O then
+					O = T.Character:FindFirstChild("HumanoidRootPart");
+					if O then
+						local F;
+						if not T or T.Team == n[10].Team then
+							F = true;
+						else
+							local B, Y = pcall(function()
+									return n[10].Data.Crew.Value ~= "" and n[10].Data.Crew.Value == T.Data.Crew.Value;
+								end);
+							F = B and Y;
+						end;
+						O = not F;
+					end;
+				end;
+			end;
+		end;
+		if O and (not Bv(T) and not _G.KilledPlayers[T.Name]) then
+			Y = true;
+			local V = (n[10].Character.HumanoidRootPart.Position - T.Character.HumanoidRootPart.Position).Magnitude;
+			if V < F then
+				F = V;
+				B = T;
+			end;
+		end;
+	end;
+	if not Y then
+		if n[39] then
+			return B;
+		end;
+		n[39] = true;
+		task.spawn(function()
+			while os.time() - _G.LastCombatTime < 33 do
+				local F = n[10].Character;
+				local B = F and F:FindFirstChild("HumanoidRootPart");
+				if B then
+					B.Velocity = Vector3.new(0, 0, 0);
+					B.CFrame = CFrame.new(B.Position.X, _G.AutoBounty.Movement.SkyHeight, B.Position.Z);
+				end;
+				task.wait();
+			end;
+			local F = game.PlaceId;
+			while true do
+				local B, Y = pcall(function()
+						return game:HttpGet("https://games.roblox.com/v1/games/" .. (F .. "/servers/Public?sortOrder=Desc&limit=100"));
+					end);
+				if B then
+					local B = n[5]:JSONDecode(Y);
+					for B, Y in pairs(B.data) do
+						local V = Y;
+						if V.playing < V.maxPlayers - 2 and V.id ~= game.JobId then
+							pcall(function()
+								n[6]:TeleportToPlaceInstance(F, V.id, n[10]);
+							end);
+							task.wait(8);
+						end;
+					end;
+				end;
+				pcall(function()
+					n[6]:Teleport(F, n[10]);
+				end);
+				task.wait(5);
+			end;
+		end);
+	end;
+	return B;
+end;
+n[41] = false;
+n[42] = os.time();
+n[43] = 0;
+n[44] = 0;
+_G.LastCombatTime = 0;
+task.spawn(function()
+	while task.wait() do
+		if not _G.AutoBounty.Enabled then
+			continue;
+		end;
+		local F = n[10].Character;
+		local B = F and F:FindFirstChild("Humanoid");
+		local Y = F and F:FindFirstChild("HumanoidRootPart");
+		if not B or not Y then
+			continue;
+		end;
+		local V = false;
+		if n[43] == 0 then
+			n[43] = B.Health;
+		end;
+		if B.Health < n[43] then
+			_G.LastCombatTime = os.time();
+			V = true;
+		end;
+		n[43] = B.Health;
+		if B.Health < _G.AutoBounty.Combat.SafeHealth then
+			n[41] = true;
+		end;
+		if n[41] then
+			if not (B.Health >= _G.AutoBounty.Combat.ReturnHealth) then
+				Y.CFrame = CFrame.new(Y.Position.X, _G.AutoBounty.Movement.SkyHeight, Y.Position.Z);
+				continue;
+			end;
+			n[41] = false;
+		end;
+		if not _G.CurrentTarget then
+			_G.CurrentTarget = Tv();
+			if not _G.CurrentTarget then
+				task.wait(2);
+				if not n[39] then
+					n[39] = true;
+					task.spawn(function()
+						while os.time() - _G.LastCombatTime < 33 do
+							local F = n[10].Character;
+							local B = F and F:FindFirstChild("HumanoidRootPart");
+							if B then
+								B.Velocity = Vector3.new(0, 0, 0);
+								B.CFrame = CFrame.new(B.Position.X, _G.AutoBounty.Movement.SkyHeight, B.Position.Z);
+							end;
+							task.wait();
+						end;
+						local F = game.PlaceId;
+						while true do
+							local B, Y = pcall(function()
+									return game:HttpGet("https://games.roblox.com/v1/games/" .. (F .. "/servers/Public?sortOrder=Desc&limit=100"));
+								end);
+							if B then
+								local B = n[5]:JSONDecode(Y);
+								for B, Y in pairs(B.data) do
+									local V = Y;
+									if V.playing < V.maxPlayers - 2 and V.id ~= game.JobId then
+										pcall(function()
+											n[6]:TeleportToPlaceInstance(F, V.id, n[10]);
+										end);
+										task.wait(8);
+									end;
+								end;
+							end;
+							pcall(function()
+								n[6]:Teleport(F, n[10]);
+							end);
+							task.wait(5);
+						end;
+					end);
+				end;
+			end;
+			n[42] = os.time();
+			continue;
+		end;
+		local T = Bv(_G.CurrentTarget);
+		if not T then
+			T = not n[2]:FindFirstChild(_G.CurrentTarget.Name);
+		end;
+		if T then
+			_G.CurrentTarget = nil;
+			task.wait(.1);
+			continue;
+		end;
+		local O = _G.CurrentTarget.Character:FindFirstChild("Humanoid");
+		local m = _G.CurrentTarget.Character:FindFirstChild("HumanoidRootPart");
+		if not O or O.Health <= 0 then
+			if O and O.Health <= 0 then
+				_G.KilledPlayers[_G.CurrentTarget.Name] = true;
+				task.delay(10, function()
+					_G.KilledPlayers[_G.CurrentTarget.Name] = nil;
+				end);
+			end;
+			_G.CurrentTarget = nil;
+			continue;
+		end;
+		local i = (Y.Position - m.Position).Magnitude;
+		if i < 50 then
+			local F = n[10].PlayerGui.Main.BottomHUDList:FindFirstChild("SafeZone");
+			if F and F.Visible then
+				_G.KilledPlayers[_G.CurrentTarget.Name] = true;
+				task.delay(5, function()
+					_G.KilledPlayers[_G.CurrentTarget.Name] = nil;
+				end);
+				_G.CurrentTarget = nil;
+				continue;
+			end;
+		end;
+		if i < 350 then
+			if V or O.Health ~= n[44] then
+				if O.Health < n[44] then
+					_G.LastCombatTime = os.time();
+				end;
+				n[42] = os.time();
+				n[44] = O.Health;
+			elseif os.time() - n[42] > 5 then
+				_G.KilledPlayers[_G.CurrentTarget.Name] = true;
+				task.delay(15, function()
+					_G.KilledPlayers[_G.CurrentTarget.Name] = nil;
+				end);
+				_G.CurrentTarget = nil;
+				n[42] = os.time();
+				continue;
+			end;
+		else
+			n[42] = os.time();
+		end;
+		m.Size = Vector3.new(_G.AutoBounty.Combat.HitboxSize, _G.AutoBounty.Combat.HitboxSize, _G.AutoBounty.Combat.HitboxSize);
+		m.CanCollide = false;
+		Yv(m);
+		if (Y.Position - m.Position).Magnitude < _G.AutoBounty.Combat.AttackRange then
+			n[38]();
+			if _G.AutoBounty.Combat.AuraAttack then
+				task.spawn(nv);
+			end;
+			if _G.AutoBounty.Combat.AutoAwakenV4 then
+				pcall(function()
+					local F = n[10].Character:FindFirstChild("RaceEnergy");
+					if F and F.Value >= 1 then
+						local F = Enum.KeyCode;
+						n[7]:SendKeyEvent(true, F.Y, false, game);
+						task.wait(.05);
+						n[7]:SendKeyEvent(false, Enum.KeyCode.Y, false, game);
+					end;
+					local B = n[10].PlayerGui:FindFirstChild("Main");
+					local Y = B and B:FindFirstChild("AwakeningBar");
+					if Y then
+						Y = Y.Visible and Y.Fill.Size.X.Scale >= 1;
+					end;
+					if Y then
+						local F = Enum.KeyCode;
+						n[7]:SendKeyEvent(true, F.Y, false, game);
+						task.wait(.05);
+						n[7]:SendKeyEvent(false, Enum.KeyCode.Y, false, game);
+					end;
+				end);
+			end;
+			if _G.AutoBounty.Combat.AutoRace then
+				n[7]:SendKeyEvent(true, Enum.KeyCode.T, false, game);
+			end;
+			if not n[40] then
+				task.spawn(function()
+					Vv(_G.CurrentTarget);
+				end);
+			end;
+		end;
+	end;
+end);
+Y.Stepped:Connect(function()
+	if n[10].Character then
+		for F, n in pairs(n[10].Character:GetDescendants()) do
+			if n:IsA("BasePart") then
+				n.CanCollide = false;
+			end;
+		end;
+	end;
+end);
+F[1] = n[10].Idled;
+F[1]:Connect(function()
+	n[9]:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame);
+	task.wait(1);
+	n[9]:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame);
+end);
+n[45] = function()
+		pcall(function()
+			(game:GetService("ReplicatedStorage")).Remotes.CommF_:InvokeServer("EnablePvp");
+		end);
+	end;
+n[45]();
+F[1] = (game:GetService("Players")).LocalPlayer.CharacterAdded;
+F[1]:Connect(function(F)
+	F:WaitForChild("HumanoidRootPart", 9000000000);
+	task.wait(1);
+	n[45]();
+end);
+task.spawn(function()
+	(settings()).Rendering.QualityLevel = Enum.QualityLevel.Level01;
+	local F = game:GetService("Lighting");
+	F.GlobalShadows = false;
+	F.FogEnd = 8999999488;
+	F.Brightness = 1;
+	for F, n in pairs(F:GetChildren()) do
+		local B = n:IsA("BlurEffect");
+		if not B then
+			B = n:IsA("SunRaysEffect");
+			if not B then
+				B = n:IsA("ColorCorrectionEffect");
+				if not B then
+					B = n:IsA("BloomEffect") or n:IsA("DepthOfFieldEffect");
+				end;
+			end;
+		end;
+		if B and n.Name ~= "NightMysticBlur" then
+			n.Enabled = false;
+		end;
+	end;
+	for F, n in pairs(n[4]:GetDescendants()) do
+		local B = n:IsA("Part");
+		if not B then
+			B = n:IsA("CornerWedgePart");
+			if not B then
+				B = n:IsA("TrussPart") or n:IsA("WedgePart");
+			end;
+		end;
+		if B then
+			n.Material = Enum.Material.SmoothPlastic;
+			n.Reflectance = 0;
+		elseif n:IsA("Decal") or n:IsA("Texture") then
+			n.Transparency = 1;
+		elseif n:IsA("ParticleEmitter") or n:IsA("Trail") then
+			n.Enabled = false;
+		end;
+	end;
+	pcall(function()
+		sethiddenproperty(workspace.Terrain, "Decoration", false);
+	end);
+end);
