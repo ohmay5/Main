@@ -1,6 +1,6 @@
 repeat task.wait() until game:IsLoaded()
 
--- Cache Services
+
 local Services = setmetatable({}, {
     __index = function(self, serviceName)
         local service = game:GetService(serviceName)
@@ -8,63 +8,13 @@ local Services = setmetatable({}, {
         return service
     end
 })
-pcall(function()
-    -- Giảm một số hiệu ứng hình ảnh không cần thiết
-    local Lighting = game:GetService("Lighting")
-    local Terrain = workspace:FindFirstChildOfClass("Terrain")
-
-    if Terrain then
-        Terrain.WaterWaveSize = 0
-        Terrain.WaterWaveSpeed = 0
-        Terrain.WaterReflectance = 0
-    end
-
-    -- Tắt một số hiệu ứng hậu kỳ
-    for _, v in ipairs(Lighting:GetChildren()) do
-        if v:IsA("PostEffect") then
-            v.Enabled = false
-        end
-    end
-
-    -- Giảm chất lượng rendering
-    pcall(function()
-        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-    end)
-end)
-
---// Cache Services
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
-local TweenService = game:GetService("TweenService")
-local VirtualInputManager = game:GetService("VirtualInputManager")
-
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character
-local Camera = workspace.CurrentCamera
-
---// Cache Character
-LocalPlayer.CharacterAdded:Connect(function(Char)
-    Character = Char
-end)
-
---// GC / Cleanup helper
-local function SafeDestroy(Object)
-    if Object then
+task.spawn(function()
+    while task.wait(60) do
         pcall(function()
-            Object:Destroy()
+            collectgarbage("collect")
         end)
     end
-end
-
---// Safe call
-local function SafeCall(Func, ...)
-    local Args = {...}
-
-    return pcall(function()
-        return Func(table.unpack(Args))
-    end)
-end
+end)
 
 local HttpService = Services.HttpService
 local FolderName = "BaCoNhǎo Hub"
@@ -2603,116 +2553,315 @@ Shop:AddButton({
         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt")
     end
 })
+
+
+
+
+
+local World1 = World1 or false
+local World2 = World2 or false
+local World3 = World3 or false
+
+-- Section chính cho Shop
+Shop:AddSection({"Mua Melee V1"})
+
+-- Danh sách Melee với tọa độ theo từng World
+local MeleeCoords = {
+    ["Dark Step (Chân Đen)"] = {
+        "BuyBlackLeg",
+        World1 and CFrame.new(-985, 13, 3988)
+        or World2 and CFrame.new(-4753, 35, -4850)
+        or World3 and CFrame.new(-5045, 371, -3181)
+    },
+
+    ["Electric (Điện)"] = {
+        "BuyElectro",
+        World1 and CFrame.new(-5384, 13, -2148)
+        or World2 and CFrame.new(-4867, 35, -4766)
+        or World3 and CFrame.new(-4995, 314, -3203)
+    },
+
+    ["Water Kung Fu (Võ Cá)"] = {
+        "BuyFishmanKarate",
+        World1 and CFrame.new(61585, 18, 987)
+        or World2 and CFrame.new(-4958, 35, -4668)
+        or World3 and CFrame.new(-5023, 371, -3190)
+    },
+
+    ["Dragon Breath (Hơi Thở Rồng)"] = {
+        "BuyDragonClaw",
+        World2 and CFrame.new(701, 187, 655)
+        or World3 and CFrame.new(-4981, 371, -3207)
+    },
+
+    ["Superhuman"] = {
+        "BuySuperhuman",
+        World2 and CFrame.new(1374, 247, -5192)
+        or World3 and CFrame.new(-5004, 371, -3198)
+    },
+
+    ["Death Step (Chân Đen V2)"] = {
+        "BuyDeathStep",
+        World2 and CFrame.new(6357, 296, -6762)
+        or World3 and CFrame.new(-4999, 314, -3221)
+    },
+
+    ["Sharkman Karate (Võ Cá V2)"] = {
+        "BuySharkmanKarate",
+        World2 and CFrame.new(-2602, 238, -10316)
+        or World3 and CFrame.new(-4972, 314, -3222)
+    },
+
+    ["Dragon Talon (Rồng V2)"] = {
+        "BuyDragonTalon",
+        World3 and CFrame.new(5661, 1211, 865)
+    },
+
+    ["Electric Claw (Điện V2)"] = {
+        "BuyElectricClaw",
+        World3 and CFrame.new(-10371, 331, -10131)
+    },
+
+    ["Godhuman"] = {
+        "BuyGodhuman",
+        World3 and CFrame.new(-13776, 334, -9879)
+    },
+
+    ["Sanguine Art (Võ Quỷ)"] = {
+        "BuySanguineArt",
+        World3 and CFrame.new(-16353, 160, 99)
+    }
+}
+
+local SelectedMelee = "Dark Step (Chân Đen)"
+
+local function GetMeleeList()
+    local list = {}
+
+    for name, data in pairs(MeleeCoords) do
+        if data[2] then
+            list[#list + 1] = name
+        end
+    end
+
+    table.sort(list)
+    return list
+end
+
+local function SetNoclip(enabled)
+    if _G.MeleeNoclip then
+        _G.MeleeNoclip:Disconnect()
+        _G.MeleeNoclip = nil
+    end
+
+    if not enabled then
+        return
+    end
+
+    _G.MeleeNoclip = game:GetService("RunService").Stepped:Connect(function()
+        if not _G.AutoBuyMelee then return end
+
+        local char = game.Players.LocalPlayer.Character
+        if char then
+            for _, v in ipairs(char:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
+                end
+            end
+        end
+    end)
+end
+
+Shop:AddSection({"Mua Melee"})
+
+Shop:AddDropdown({
+    Name = "Chọn Melee Cần Mua",
+    Options = GetMeleeList(),
+    Default = SelectedMelee,
+
+    Callback = function(Value)
+        SelectedMelee = Value
+    end
+})
+
+Shop:AddToggle({
+    Name = "Auto Mua Melee",
+    Default = GetSetting("AutoBuyMelee_Save", false),
+
+    Callback = function(Value)
+        _G.AutoBuyMelee = Value
+        _G.SaveData["AutoBuyMelee_Save"] = Value
+        SaveSettings()
+
+        SetNoclip(Value)
+
+        if not Value then
+            return
+        end
+
+        task.spawn(function()
+            while _G.AutoBuyMelee do
+                task.wait()
+
+                local data = MeleeCoords[SelectedMelee]
+                local key, pos = data and data[1], data and data[2]
+
+                if not pos then
+                    redzlib:Notify({
+                        Title = "BaCon Hub",
+                        Message = "Melee này không có ở Sea hiện tại!",
+                        Duration = 3
+                    })
+
+                    _G.AutoBuyMelee = false
+                    break
+                end
+
+                local char = game.Players.LocalPlayer.Character
+                local hrp = char and char:FindFirstChild("HumanoidRootPart")
+
+                if hrp then
+                    if (hrp.Position - pos.Position).Magnitude > 15 then
+                        _tp(pos)
+                    else
+                        shouldTween = false
+                        hrp.CFrame = pos
+
+                        local CommF = game:GetService("ReplicatedStorage").Remotes.CommF_
+
+                        CommF:InvokeServer(key)
+                        CommF:InvokeServer("BuyItem", key)
+
+                        redzlib:Notify({
+                            Title = "BaCon Hub",
+                            Message = "Đã mua: " .. SelectedMelee,
+                            Duration = 2
+                        })
+
+                        task.wait(1)
+                    end
+                end
+            end
+        end)
+    end
+})
+
+
 Shop:AddSection("Sword")
-Shop:AddButton({
-    Name = "Cutlass [ 1,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Cutlass")
-    end
-})
-Shop:AddButton({
-    Name = "Katana [ 1,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Katana")
-    end
-})
-Shop:AddButton({
-    Name = "Iron Mace [ 25,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Iron Mace")
-    end
-})
-Shop:AddButton({
-    Name = "Dual Katana [ 12,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Duel Katana")
-    end
-})
-Shop:AddButton({
-    Name = "Triple Katana [ 60,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Triple Katana")
-    end
-})
-Shop:AddButton({
-    Name = "Pipe [ 100,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Pipe")
-    end
-})
-Shop:AddButton({
-    Name = "Dual-Headed Blade [ 400,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Dual-Headed Blade")
-    end
-})
-Shop:AddButton({
-    Name = "Bisento [ 1,200,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Bisento")
-    end
-})
-Shop:AddButton({
-    Name = "Soul Cane [ 750,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Soul Cane")
-    end
-})
-Shop:AddButton({
-    Name = "Pole v.2 [ 5,000 Fragments ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("ThunderGodTalk")
-    end
-})
-Shop:AddSection("Gun")
-Shop:AddButton({
-    Name = "Slingshot [ 5,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Slingshot")
-    end
-})
-Shop:AddButton({
-    Name = "Musket [ 8,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Musket")
-    end
-})
-Shop:AddButton({
-    Name = "Flintlock [ 10,500 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Flintlock")
-    end
-})
-Shop:AddButton({
-    Name = "Refined Slingshot [ 30,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Refined Flintlock")
-    end
-})
+local Remote = game:GetService("ReplicatedStorage").Remotes.CommF_
 
-Shop:AddButton({
-    Name = "Dual Flintlock [ 65,000 Beli ]",
-    Callback = function()
-        local args = {
-            [1] = "BuyItem",
-            [2] = "Dual Flintlock"
-        }
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(unpack(args))
-    end
-})
+local Weapons = {
+    ["Cutlass [1,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Cutlass")
+    end,
 
-Shop:AddButton({
-    Name = "Cannon [ 100,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", "Cannon")
-    end
-})
-Shop:AddButton({
-    Name = "Kabucha [ 1,500 Fragments]",
-    Callback = function()
-        local Remote = game:GetService("ReplicatedStorage").Remotes.CommF_
+    ["Katana [1,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Katana")
+    end,
+
+    ["Iron Mace [25,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Iron Mace")
+    end,
+
+    ["Dual Katana [12,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Duel Katana")
+    end,
+
+    ["Triple Katana [60,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Triple Katana")
+    end,
+
+    ["Pipe [100,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Pipe")
+    end,
+
+    ["Dual-Headed Blade [400,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Dual-Headed Blade")
+    end,
+
+    ["Bisento [1,200,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Bisento")
+    end,
+
+    ["Soul Cane [750,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Soul Cane")
+    end,
+
+    ["Pole v.2 [5,000 Fragments]"] = function()
+        Remote:InvokeServer("ThunderGodTalk")
+    end,
+
+    ["Slingshot [5,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Slingshot")
+    end,
+
+    ["Musket [8,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Musket")
+    end,
+
+    ["Flintlock [10,500 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Flintlock")
+    end,
+
+    ["Refined Slingshot [30,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Refined Flintlock")
+    end,
+
+    ["Dual Flintlock [65,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Dual Flintlock")
+    end,
+
+    ["Cannon [100,000 Beli]"] = function()
+        Remote:InvokeServer("BuyItem", "Cannon")
+    end,
+
+    ["Kabucha [1,500 Fragments]"] = function()
         Remote:InvokeServer("BlackbeardReward", "Slingshot", "1")
+        task.wait(.2)
         Remote:InvokeServer("BlackbeardReward", "Slingshot", "2")
+    end
+}
+
+local SelectedWeapon = "Cutlass [1,000 Beli]"
+
+local Options = {}
+
+for Name in pairs(Weapons) do
+    table.insert(Options, Name)
+end
+
+table.sort(Options)
+
+Shop:AddSection({"Mua Weapon"})
+
+Shop:AddDropdown({
+    Name = "Chọn Weapon",
+    Options = Options,
+    Default = SelectedWeapon,
+
+    Callback = function(Value)
+        SelectedWeapon = Value
+    end
+})
+
+Shop:AddButton({
+    Name = "Mua Weapon",
+    Callback = function()
+        local BuyFunction = Weapons[SelectedWeapon]
+
+        if BuyFunction then
+            local Success, Error = pcall(BuyFunction)
+
+            if Success then
+                redzlib:Notify({
+                    Title = "BaCon Hub",
+                    Message = "Đã gửi lệnh mua: " .. SelectedWeapon,
+                    Duration = 2
+                })
+            else
+                warn("Buy Weapon Error:", Error)
+            end
+        end
     end
 })
 Shop:AddButton({
