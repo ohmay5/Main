@@ -2848,7 +2848,6 @@ spawn(function()
     end
 end)
 
-
 local function formatNumber(num)
     local formatted = tostring(num)
 
@@ -2992,7 +2991,6 @@ Status:AddButton({
         end)
     end
 })
-
 local Miragecheck = Status:AddParagraph({
     Title = "Mirage Island",
     Desc = "Status: "
@@ -4160,7 +4158,9 @@ spawn(function()
 		end;
 	end;
 end);
+
 if World3 then
+
 Farm:AddSection({"Kill Elite"})
 local EliteHunter = Farm:AddParagraph({
     Title = "Elite Hunter",
@@ -4233,6 +4233,7 @@ spawn(function()
 		end);
 	end;
 end);
+
 Farm:AddSection({"Bone"})
 -- AUTO RANDOM BONES
 Farm:AddToggle({
@@ -4494,7 +4495,7 @@ local function setupAutoExecute()
         if _G.SaveData["AutoExecute_Save"] and not executed then
             executed = true
             queue([[
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/PengYou.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/BF_ScriptMain.lua"))()
             ]])
         end
     end)
@@ -5698,7 +5699,6 @@ spawn(function()
 	end;
 end);
 Others:AddSection({"Cursed Swords"});
-
 Others:AddToggle({
 	Name = "Auto Tushita Sword",
 	Description = "tự động lấy kiếm tushita",
@@ -8104,7 +8104,7 @@ Race:AddToggle({
 spawn(function()
 	while task.wait(Sec) do
 		pcall(function()
-			if _G.Defeating 
+			if _G.Defeating then
 				for I, e in pairs(workspace.Characters:GetChildren()) do
 					if e.Name ~= plr.Name then
 						if e.Humanoid.Health > 0 and (e:FindFirstChild("HumanoidRootPart") and (e.Parent and (Root.Position - e.HumanoidRootPart.Position).Magnitude <= 250)) then
@@ -12027,97 +12027,85 @@ Fruit:AddToggle({
 Fruit:AddSection({"Raid Farming"});
 
 Fruit:AddToggle({
-    Name = "Auto Raid",
-    Description = "Auto Start Raid + Auto Complete Raid",
+    Name  = "Auto Start Raid",
+    Description = "",
     Default = false,
-
     Callback = function(I)
         _G.Auto_StartRaid = I
-        _G.Raiding = I
-
         if not I then
-            _G.Auto_StartRaid = false
             _G.Raiding = false
-            NextIs = false
+            _G.KillH = false
         end
     end,
 });
-task.spawn(function()
-    while task.wait(10) do -- Dùng task.wait trực tiếp trong điều kiện vòng lặp
+
+-- // 1. Loop Tự động bắt đầu Raid
+Task.spawn(function()
+    while task.wait(3) do
         if _G.Auto_StartRaid then
             pcall(function()
-                -- Kiểm tra Raid Timer và Microchip
                 local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
+                
+                -- Logic vào Raid
                 if not raidTimer.Visible and GetBP("Special Microchip") then
-                    
-                    -- Lưu vị trí hiện tại của người chơi để sau này quay lại
                     local oldPos = plr.Character:GetPivot()
-                    
                     if World2 then
                         _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
-                        task.wait(0.5) -- Đợi teleport hoàn tất
+                        task.wait(0.5)
                         fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
-                        
                     elseif World3 then
-                        -- Thử vào cổng nếu cần
                         replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
-                        task.wait(0.8) 
-                        
-                        -- Di chuyển đến nút bấm
+                        task.wait(0.8)
                         _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
                         task.wait(0.5)
                         fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
                     end
-                    
-                    -- Quay lại vị trí cũ sau khi đã bấm nút
                     task.wait(0.5)
                     _tp(oldPos)
-                    print("Đã kích hoạt Raid và quay trở lại vị trí cũ.")
+                end
+
+                -- Logic Raid
+                if raidTimer.Visible then
+                    _G.Raiding = true
+                else
+                    _G.Raiding = false
                 end
             end)
         end
     end
 end)
+
+-- // Các hàm chức năng
 function IsIslandRaid(cu)
     local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
     if locs:FindFirstChild("Island " .. cu) then
         local min = 4500
-
         for _, v in ipairs(locs:GetChildren()) do
             if v.Name == "Island " .. cu then
                 local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist < min then
-                    min = dist
-                end
+                if dist < min then min = dist end
             end
         end
-
         for _, v in ipairs(locs:GetChildren()) do
             if v.Name == "Island " .. cu then
                 local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist <= min then
-                    return v
-                end
+                if dist <= min then return v end
             end
         end
     end
 end
 
--- Ordem das ilhas (5 → 1)
 function getNextIsland()
     local order = {5,4,3,2,1}
     for _, id in ipairs(order) do
         local island = IsIslandRaid(id)
         if island then
             local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-            if dist <= 4500 then
-                return island
-            end
+            if dist <= 4500 then return island end
         end
     end
 end
 
--- Atacar inimigos usando SEU G.Kill
 function attackNearbyEnemies()
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
@@ -12134,38 +12122,34 @@ function attackNearbyEnemies()
     end
 end
 
--- Loop principal (igual ao seu)
+-- // 3. Loop G.Kill đánh thường
 spawn(function()
-pcall(function()
-while wait(Sec) do
-    if _G.Raiding then
-
-        if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
-
-            -- Matar próximos
-            attackNearbyEnemies()
-
-            -- Pegar ilha certa
-            local nextIsland = getNextIsland()
-            if nextIsland then
-                -- USA SEU TELEPORTE REAL
-                _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-
-                NextIs = true
+    pcall(function()
+        while wait(Sec) do
+            if _G.Raiding then
+                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
+                    attackNearbyEnemies()
+                    local nextIsland = getNextIsland()
+                    if nextIsland then
+                        _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+                        NextIs = true
+                    else
+                        NextIs = false
+                    end
+                else
+                    NextIs = false
+                end
             else
                 NextIs = false
             end
-
-        else
-            NextIs = false
         end
+    end)
+end)
 
-    else
-        NextIs = false
-    end
-end
-end)
-end)
+
+
+
+
 Fruit:AddToggle({
 	Name = "Auto Awakening",
 	Description = "",
@@ -12185,66 +12169,100 @@ spawn(function()
 	end;
 end);
 Fruit:AddSection({"Fruits Options"});
-local J5 = {};
-local function i5(I)
-	local e = tostring(I);
-	while true do
-		e, k = e:gsub("^(-?%d+)(%d%d%d)", "%1,%2");
-		if k == 0 then
-			break;
-		end;
-	end;
-	return e;
-end;
-for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", true)) do
-	if e.OnSale == true then
-		local I = i5(e.Price);
-		local K = e.Name;
-		table.insert(J5, K);
-	end;
-end;
-local C5 = {};
-for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", false)) do
-	if e.OnSale == true then
-		local I = i5(e.Price);
-		local K = e.Name;
-		table.insert(C5, K);
-	end;
-end;
-Fruit:AddDropdown({
-	Name = "Select Fruit Stock",
-	Description = "",
-	Options = C5,
-	Default = false,
-	Multi = false,
-	Callback = function(I)
-		_G.SelectFruit = I;
-	end,
-});
-Fruit:AddButton({ Name = "Buy Basic Stock", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", _G.SelectFruit);
-	end });
-Fruit:AddDropdown({
-	Name = "Select Mirage Fruit",
-	Description = "",
-	Options = J5,
-	Default = false,
-	Multi = false,
-	Callback = function(I)
-		SelectF_Adv = I;
-	end,
-});
-local M5 = {};
-for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", false)) do
-	if e.OnSale == true then
-		local I = i5(e.Price);
-		local K = e.Name;
-		table.insert(M5, K);
-	end;
-end;
-Fruit:AddButton({ Name = "Buy Mirage Stock", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", SelectF_Adv);
-	end });
+local function formatNumber(num)
+    local formatted = tostring(num)
+    while true do
+        formatted, k = formatted:gsub("^(-?%d+)(%d%d%d)", "%1,%2")
+        if k == 0 then break end
+    end
+    return formatted
+end
+
+-- Hàm lấy stock fruit
+local function GetFruitStock()
+    local result = "Advance Fruit Stock\n"
+    
+    -- Lấy stock fruit advanced
+    local success, advancedStock = pcall(function()
+        return replicated.Remotes.CommF_:InvokeServer("GetFruits", true)
+    end)
+    
+    if success and advancedStock then
+        local hasFruit = false
+        for _, fruit in pairs(advancedStock) do
+            if fruit.OnSale then
+                hasFruit = true
+                result = result .. fruit.Name .. " - $" .. formatNumber(fruit.Price) .. "\n"
+            end
+        end
+        if not hasFruit then
+            result = result .. "- No fruit in stock.\n"
+        end
+    else
+        result = result .. "- Error retrieving data.\n"
+    end
+    
+    result = result .. "\nNormal Fruit Stock\n"
+    
+    -- Lấy stock fruit thường
+    local success2, normalStock = pcall(function()
+        return replicated.Remotes.CommF_:InvokeServer("GetFruits")
+    end)
+    
+    if success2 and normalStock then
+        local hasFruit = false
+        for _, fruit in pairs(normalStock) do
+            if fruit.OnSale then
+                hasFruit = true
+                result = result .. fruit.Name .. " - $" .. formatNumber(fruit.Price) .. "\n"
+            end
+        end
+        if not hasFruit then
+            result = result .. "- No fruit in stock.\n"
+        end
+    else
+        result = result .. "- Error retrieving data.\n"
+    end
+    
+    return result
+end
+
+-- Paragraph hiển thị stock
+local StockParagraph = Fruit:AddParagraph({
+    Title = "Fruit Stock",
+    Desc = "Loading..."
+})
+
+-- Update stock mỗi 60 giây
+task.spawn(function()
+    -- Update lần đầu
+    pcall(function()
+        StockParagraph:SetDesc(GetFruitStock())
+    end)
+    
+    -- Update định kỳ
+    while task.wait(60) do
+        pcall(function()
+            StockParagraph:SetDesc(GetFruitStock())
+        end)
+    end
+end)
+
+-- Button refresh stock
+Fruit:AddButton({
+    Name = "Refresh Stock Now",
+    Callback = function()
+        pcall(function()
+            StockParagraph:SetDesc(GetFruitStock())
+            redzlib:Notify({
+                Title = "Fruit Stock",
+                Message = "Stock refreshed",
+                Duration = 2
+            })
+        end)
+    end
+})
+
 Fruit:AddToggle({
 	Name  = "Auto Random Fruit",
     Description = "Automatic random devil fruit",
