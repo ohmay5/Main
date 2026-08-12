@@ -12028,7 +12028,7 @@ Fruit:AddToggle({
 						local rarity = tostring(data.Rarity or ""):lower()
 
 						-- Aceita frutas até 1.150.000 OU raridades Common/Uncommon/Rare
-						if data.Price <= 900000
+						if data.Price <= 1000000
 							or rarity == "common"
 							or rarity == "uncommon"
 							or rarity == "rare"
@@ -12055,53 +12055,58 @@ Fruit:AddToggle({
 Fruit:AddSection({"Raid Farming"});
 
 Fruit:AddToggle({
-    Name  = "Auto Start Raid",
-    Description = "",
+    Name = "Auto Raid",
+    Description = "Auto Start Raid + Auto Complete Raid",
     Default = false,
+
     Callback = function(I)
         _G.Auto_StartRaid = I
+        _G.Raiding = I
+
         if not I then
+            _G.Auto_StartRaid = false
             _G.Raiding = false
+            NextIs = false
         end
     end,
 });
--- // 1. Loop Tự động bắt đầu Raid
-Task.spawn(function()
-    while task.wait(3) do
+task.spawn(function()
+    while task.wait(10) do -- Dùng task.wait trực tiếp trong điều kiện vòng lặp
         if _G.Auto_StartRaid then
             pcall(function()
+                -- Kiểm tra Raid Timer và Microchip
                 local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
-                
-                -- Logic vào Raid
                 if not raidTimer.Visible and GetBP("Special Microchip") then
+                    
+                    -- Lưu vị trí hiện tại của người chơi để sau này quay lại
                     local oldPos = plr.Character:GetPivot()
+                    
                     if World2 then
                         _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
-                        task.wait(0.5)
+                        task.wait(0.5) -- Đợi teleport hoàn tất
                         fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
+                        
                     elseif World3 then
+                        -- Thử vào cổng nếu cần
                         replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
-                        task.wait(0.8)
+                        task.wait(0.8) 
+                        
+                        -- Di chuyển đến nút bấm
                         _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
                         task.wait(0.5)
                         fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
                     end
+                    
+                    -- Quay lại vị trí cũ sau khi đã bấm nút
                     task.wait(0.5)
                     _tp(oldPos)
-                end
-
-                -- Logic Raid
-                if raidTimer.Visible then
-                    _G.Raiding = true
-                else
-                    _G.Raiding = false
+                    print("Đã kích hoạt Raid và quay trở lại vị trí cũ.")
                 end
             end)
         end
     end
 end)
-
--- /function IsIslandRaid(cu)
+function IsIslandRaid(cu)
     local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
     if locs:FindFirstChild("Island " .. cu) then
         local min = 4500
@@ -12172,7 +12177,7 @@ while wait(Sec) do
             local nextIsland = getNextIsland()
             if nextIsland then
                 -- USA SEU TELEPORTE REAL
-                _tp(nextIsland.CFrame * CFrame.new(0, 60, 0))
+                _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
 
                 NextIs = true
             else
@@ -12189,7 +12194,6 @@ while wait(Sec) do
 end
 end)
 end)
-
 Fruit:AddToggle({
 	Name = "Auto Awakening",
 	Description = "",
