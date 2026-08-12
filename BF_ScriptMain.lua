@@ -1956,7 +1956,7 @@ elseif I >= 2025 and I <= 2049 then
     Qname = "HauntedQuest2"
     NameMon = "Demonic Soul"
     PosQ = CFrame.new(-9582.0224609375, 6.2515273094177, 6205.478515625)
-    PosM = CFrame.new(-9500.00, 250.50, 6132.31)
+    PosM = CFrame.new(-9500.00, 240.00, 6132.31)
     
 elseif I >= 2050 and I <= 2074 then
     Mon = "Posessed Mummy"
@@ -3884,7 +3884,7 @@ spawn(function()
                 if not plr.PlayerGui.Main.Quest.Visible then      
                     TeleportConditional(Root, Q[6], TELEPORT_DISTANCE_THRESHOLD)      
                     if (Root.Position - Q[6].Position).Magnitude <= 50 then      
-                        task.wait(1.9)  
+                        task.wait(0.1)  
                         game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("StartQuest", Q[3], Q[2])      
                     end      
                     return      
@@ -3984,7 +3984,7 @@ Farm:AddSection({"Other"})
 
 -- Configuração da Distância Máxima (em studs)
 -- Aumente se quiser pegar mobs um pouco mais longe, diminua se quiser bem perto.
-_G.MaxFarmDistance = 325
+_G.MaxFarmDistance = 500
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
