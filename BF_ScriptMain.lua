@@ -1,3 +1,62 @@
+--// Performance Optimizer
+pcall(function()
+    -- Giảm một số hiệu ứng hình ảnh không cần thiết
+    local Lighting = game:GetService("Lighting")
+    local Terrain = workspace:FindFirstChildOfClass("Terrain")
+
+    if Terrain then
+        Terrain.WaterWaveSize = 0
+        Terrain.WaterWaveSpeed = 0
+        Terrain.WaterReflectance = 0
+    end
+
+    -- Tắt một số hiệu ứng hậu kỳ
+    for _, v in ipairs(Lighting:GetChildren()) do
+        if v:IsA("PostEffect") then
+            v.Enabled = false
+        end
+    end
+
+    -- Giảm chất lượng rendering
+    pcall(function()
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+    end)
+end)
+
+--// Cache Services
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local TweenService = game:GetService("TweenService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character
+local Camera = workspace.CurrentCamera
+
+--// Cache Character
+LocalPlayer.CharacterAdded:Connect(function(Char)
+    Character = Char
+end)
+
+--// GC / Cleanup helper
+local function SafeDestroy(Object)
+    if Object then
+        pcall(function()
+            Object:Destroy()
+        end)
+    end
+end
+
+--// Safe call
+local function SafeCall(Func, ...)
+    local Args = {...}
+
+    return pcall(function()
+        return Func(table.unpack(Args))
+    end)
+end
+
 repeat task.wait() until game:IsLoaded()
 
 -- Cache Services
@@ -12,100 +71,123 @@ local Services = setmetatable({}, {
 if not game:IsLoaded() then
     game.Loaded:Wait()
 end
+
+--// Services
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local VirtualUser = game:GetService("VirtualUser")
-local RunService = game:GetService("RunService")
-local HttpService = game:GetService("HttpService")
+local StarterGui = game:GetService("StarterGui")
+
 local Player = Players.LocalPlayer
-local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5)
-local CommF = Remotes:WaitForChild("CommF_", 5) 
 local PlayerGui = Player:WaitForChild("PlayerGui", 5)
 local MainGui = PlayerGui:WaitForChild("Main", 5)
-local lastNotificationTime = 0
-local notificationCooldown = 10
-local currentTime = tick()
-if currentTime - lastNotificationTime >= notificationCooldown then
-    game.StarterGui:SetCore("SendNotification", {
-        Title = "BaCoNhǎo hub",
+
+--// Loading UI
+local LoadingGui = Instance.new("ScreenGui")
+LoadingGui.Name = "BaCoNhaoLoading"
+LoadingGui.ResetOnSpawn = false
+LoadingGui.IgnoreGuiInset = true
+LoadingGui.Parent = PlayerGui
+
+local LoadingFrame = Instance.new("Frame")
+LoadingFrame.Size = UDim2.new(0, 280, 0, 180)
+LoadingFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
+LoadingFrame.BackgroundTransparency = 1
+LoadingFrame.Parent = LoadingGui
+
+--// Logo
+local Logo = Instance.new("ImageLabel")
+Logo.Name = "Logo"
+Logo.Size = UDim2.new(0, 85, 0, 85)
+Logo.Position = UDim2.new(0.5, -42, 0, 5)
+Logo.BackgroundTransparency = 1
+Logo.Image = "rbxassetid://114476175638281"
+Logo.Parent = LoadingFrame
+
+--// Title
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 95)
+Title.BackgroundTransparency = 1
+Title.Text = "BaCoNhǎo Hub"
+Title.TextSize = 22
+Title.Font = Enum.Font.GothamBold
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.Parent = LoadingFrame
+
+--// Status
+local Status = Instance.new("TextLabel")
+Status.Size = UDim2.new(1, 0, 0, 25)
+Status.Position = UDim2.new(0, 0, 0, 125)
+Status.BackgroundTransparency = 1
+Status.Text = "Loading..."
+Status.TextSize = 14
+Status.Font = Enum.Font.Gotham
+Status.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+Status.Parent = LoadingFrame
+
+--// Notification
+pcall(function()
+    StarterGui:SetCore("SendNotification", {
+        Title = "BaCoNhǎo Hub",
         Text = "Loading...",
         Duration = 5
     })
-    lastNotificationTime = currentTime
-end
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local EffectContainer = ReplicatedStorage:FindFirstChild("Effect") and ReplicatedStorage.Effect:FindFirstChild("Container")
+end)
+
+--// Remotes
+local Remotes = ReplicatedStorage:WaitForChild("Remotes", 5)
+local CommF = Remotes and Remotes:WaitForChild("CommF_", 5)
+
+--// Disable Death / Respawn effects
+local Effect = ReplicatedStorage:FindFirstChild("Effect")
+local EffectContainer = Effect and Effect:FindFirstChild("Container")
+
 if EffectContainer then
-    local Death = EffectContainer:FindFirstChild("Death")
-    if Death then
-        local success, result = pcall(require, Death)
-        if success and type(result) == "function" then
-            hookfunction(result, function() end)
-        end
-    end
-    local Respawn = EffectContainer:FindFirstChild("Respawn")
-    if Respawn then
-        local success, result = pcall(require, Respawn)
-        if success and type(result) == "function" then
-            hookfunction(result, function() end)
+    for _, Name in ipairs({"Death", "Respawn"}) do
+        local Module = EffectContainer:FindFirstChild(Name)
+
+        if Module then
+            local Success, Result = pcall(require, Module)
+
+            if Success and type(Result) == "function" then
+                pcall(hookfunction, Result, function() end)
+            end
         end
     end
 end
+
+--// Disable Guide NPC
 local GuideModule = ReplicatedStorage:FindFirstChild("GuideModule")
+
 if GuideModule then
-    local success, module = pcall(require, GuideModule)
-    if success and module and type(module.ChangeDisplayedNPC) == "function" then
-        hookfunction(module.ChangeDisplayedNPC, function() end)
+    local Success, Module = pcall(require, GuideModule)
+
+    if Success and Module
+        and type(Module.ChangeDisplayedNPC) == "function" then
+
+        pcall(hookfunction, Module.ChangeDisplayedNPC, function() end)
     end
 end
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Util = ReplicatedStorage:WaitForChild("Util", 5)
+
+--// Stop Camera Shake
+local Util = ReplicatedStorage:FindFirstChild("Util")
+
 if Util then
     local CameraShaker = Util:FindFirstChild("CameraShaker")
+
     if CameraShaker then
-        require(CameraShaker):Stop()
+        pcall(function()
+            require(CameraShaker):Stop()
+        end)
     end
 end
 
-local HttpService = Services.HttpService
-local FolderName = "BaCoNhǎo Hub"
-local FileName = "Settings.json"
-local FullPath = FolderName .. "/" .. FileName
-
-if makefolder and not isfolder(FolderName) then 
-    makefolder(FolderName) 
-end
-
-_G.SaveData = _G.SaveData or {}
-
-function SaveSettings()
-    if not writefile then return false end
-    local success = pcall(function()
-        local json = HttpService:JSONEncode(_G.SaveData)
-        writefile(FullPath, json)
-    end)
-    return success
-end
-
-function LoadSettings()
-    if not (isfile and isfile(FullPath)) then return false end
-    local success, result = pcall(function()
-        local content = readfile(FullPath)
-        return HttpService:JSONDecode(content)
-    end)
-    if success and result then 
-        _G.SaveData = result
-        return true
+--// Loading finished
+task.delay(1, function()
+    if LoadingGui then
+        LoadingGui:Destroy()
     end
-    return false
-end
-
-function GetSetting(name, default)
-    return _G.SaveData[name] ~= nil and _G.SaveData[name] or default
-end
-
-LoadSettings()
-
+end)
 -- ========================================
 -- AUTO KEN (Observation Haki)
 -- ========================================
@@ -4180,7 +4262,89 @@ spawn(function()
 		end;
 	end;
 end);
+if World3 then
+Farm:AddSection({"Kill Elite"});
+local r = Others:AddParagraph({ Title = "Elites Process ", Content = "" });
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			r:SetDesc("Elite Procress :  " .. replicated.Remotes.CommF_:InvokeServer("EliteHunter", "Progress"));
+		end);
+	end;
+end);
+Farm:AddToggle({
+	Name = "Auto Elite Quest",
+	Description = "làm nhiệm vụ đánh elite",
+	-- 1. Carrega o estado salvo ou false por padrão
+	Default = GetSetting("AutoEliteQuest_Save", false),
+	Callback = function(I)
+		_G.FarmEliteHunt = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["AutoEliteQuest_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+	end,
+})
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.FarmEliteHunt then
+				if plr.PlayerGui.Main.Quest.Visible == true then
+					if string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Diablo") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Urban") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Deandre") then
+						for I, e in pairs(replicated:GetChildren()) do
+							if string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre") then
+								_tp(e.HumanoidRootPart.CFrame);
+							end;
+						end;
+						for I, e in pairs(Enemies:GetChildren()) do
+							if (string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre")) and G.Alive(e) then
+								repeat
+									wait();
+									G.Kill(e, _G.FarmEliteHunt);
+								until not _G.FarmEliteHunt or plr.PlayerGui.Main.Quest.Visible == false or not e.Parent or e.Humanoid.Health <= 0;
+							end;
+						end;
+					end;
+				else
+					replicated.Remotes.CommF_:InvokeServer("EliteHunter");
+				end;
+			end;
+		end);
+	end;
+end);
+ Farm:AddToggle({
+    Name = "Stop when got God's Chalice",
+    Description = "dừng khi có cúp",
+    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
+    Default = GetSetting("StopChalice_Save", true),
+    Callback = function(I)
+        _G.StopWhenChalice = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["StopChalice_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+task.spawn(function()
+    while task.wait(0.2) do
+        if _G.StopWhenChalice and (_G.FarmEliteHunt or _G.AutoFarmChest) then
+            pcall(function()
+                if GetBP("God's Chalice")
+                    or GetBP("Sweet Chalice")
+                    or GetBP("Fist of Darkness") then
 
+                    _G.FarmEliteHunt = false
+                    _G.AutoFarmChest = false
+                end
+            end)
+        end
+    end
+end)
+end
 if World3 then
 Farm:AddSection({"Bone"})
 -- AUTO RANDOM BONES
@@ -5647,82 +5811,7 @@ spawn(function()
 	end;
 end);
 Others:AddSection({"Cursed Swords"});
-local r = Others:AddParagraph({ Title = "Elites Process ", Content = "" });
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			r:SetDesc("Elite Procress :  " .. replicated.Remotes.CommF_:InvokeServer("EliteHunter", "Progress"));
-		end);
-	end;
-end);
-Others:AddToggle({
-	Name = "Auto Elite Quest",
-	Description = "làm nhiệm vụ đánh elite",
-	-- 1. Carrega o estado salvo ou false por padrão
-	Default = GetSetting("AutoEliteQuest_Save", false),
-	Callback = function(I)
-		_G.FarmEliteHunt = I
-        
-        -- 2. Guarda na tabela de salvamento
-        _G.SaveData["AutoEliteQuest_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-	end,
-})
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.FarmEliteHunt then
-				if plr.PlayerGui.Main.Quest.Visible == true then
-					if string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Diablo") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Urban") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Deandre") then
-						for I, e in pairs(replicated:GetChildren()) do
-							if string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre") then
-								_tp(e.HumanoidRootPart.CFrame);
-							end;
-						end;
-						for I, e in pairs(Enemies:GetChildren()) do
-							if (string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre")) and G.Alive(e) then
-								repeat
-									wait();
-									G.Kill(e, _G.FarmEliteHunt);
-								until not _G.FarmEliteHunt or plr.PlayerGui.Main.Quest.Visible == false or not e.Parent or e.Humanoid.Health <= 0;
-							end;
-						end;
-					end;
-				else
-					replicated.Remotes.CommF_:InvokeServer("EliteHunter");
-				end;
-			end;
-		end);
-	end;
-end);
- Others:AddToggle({
-    Name = "Stop when got God's Chalice",
-    Description = "dừng khi có cúp",
-    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
-    Default = GetSetting("StopChalice_Save", true),
-    Callback = function(I)
-        _G.StopWhenChalice = I
-        
-        -- 2. Guarda na tabela de salvamento
-        _G.SaveData["StopChalice_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
-spawn(function()
-	while wait(.2) do
-		if _G.StopWhenChalice and _G.FarmEliteHunt then
-			pcall(function()
-				if GetBP("God\'s Chalice") or GetBP("Sweet Chalice") or GetBP("Fist of Darkness") then
-					_G.FarmEliteHunt = false;
-				end;
-			end);
-		end;
-	end;
-end);
+
 Others:AddToggle({
 	Name = "Auto Tushita Sword",
 	Description = "tự động lấy kiếm tushita",
@@ -8128,7 +8217,7 @@ Race:AddToggle({
 spawn(function()
 	while task.wait(Sec) do
 		pcall(function()
-			if _G.Defeating then
+			if _G.Defeating 
 				for I, e in pairs(workspace.Characters:GetChildren()) do
 					if e.Name ~= plr.Name then
 						if e.Humanoid.Health > 0 and (e:FindFirstChild("HumanoidRootPart") and (e.Parent and (Root.Position - e.HumanoidRootPart.Position).Magnitude <= 250)) then
@@ -10127,12 +10216,13 @@ elseif World2 then
 	Location_Portal = { "SwanRoom", "Cursed Ship" };
 elseif World3 then
 	Location_Portal = {
-			"Castle On The Sea",
-			"Mansion Cafe",
-			"Hydra Teleport",
-			"Canvendish Room",
-			"Temple of Time",
-		};
+    "Castle On The Sea",
+    "Mansion Cafe",
+    "Hydra Teleport",
+    "Canvendish Room",
+    "Temple of Time",
+    "Tiki Outpost",
+};
 end;
 Teleport:AddDropdown({
 	Title = "Select Portal",
@@ -10144,7 +10234,10 @@ Teleport:AddDropdown({
 		_G.Island_PT = I;
 	end,
 });
-Teleport:AddButton({ Name = "requestEntrance", Description = "", Callback = function()
+Teleport:AddButton({ 
+    Name = "requestEntrance", 
+    Description = "", 
+    Callback = function()
 		if _G.Island_PT == "Sky" then
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-7894, 5547, -380));
 		elseif _G.Island_PT == "UnderWater" then
@@ -10163,6 +10256,9 @@ Teleport:AddButton({ Name = "requestEntrance", Description = "", Callback = func
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(5314.5463867188, 22.562219619751, -127.06755065918));
 		elseif _G.Island_PT == "Temple of Time" then
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28310.0234, 14895.1123, 109.456741, -0.469690144, -2.85620132e-08, -0.882831335, -3.23509219e-08, 1, -1.51411736e-08, .882831335, 2.14487486e-08, -0.469690144));
+	    elseif _G.Island_PT == "Tiki Outpost" then
+    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-16280, 11, 547)
+    );
 		end;
 	end });
 Teleport:AddSection("Travel - NPCs");
