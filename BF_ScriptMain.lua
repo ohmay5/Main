@@ -6127,68 +6127,120 @@ spawn(function()
     while wait() do
         if _G.SailBoats then
             pcall(function()
-                local I = CheckBoat();
-                -- CORREÇÃO: Compra barco mesmo se houver inimigos, para não travar no spawn
+                local I = CheckBoat()
+
                 if not I then
-                    local BoatDealerPos = CFrame.new(-16927.451, 9.086, 433.864);
-                    TeleportToTarget(BoatDealerPos);
+                    local BoatDealerPos = CFrame.new(-16927.451, 9.086, 433.864)
+
+                    TeleportToTarget(BoatDealerPos)
+
                     if (BoatDealerPos.Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 10 then
-                        replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat);
-                    end;
-                elseif I and (not (CheckShark() and _G.Shark or CheckTerrorShark() and _G.TerrorShark or CheckFishCrew() and _G.MobCrew or CheckPiranha() and _G.Piranha) and (not (CheckEnemiesBoat() and _G.FishBoat) and (not (CheckSeaBeast() and _G.SeaBeast1) and (not (_G.PGB and CheckPirateGrandBrigade()) and (not (_G.HCM and CheckHauntedCrew()) and not (_G.Leviathan1 and CheckLeviathan())))))) then
+                        replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat)
+                    end
+
+                elseif I and (
+                    not (
+                        CheckShark() and _G.Shark
+                        or CheckTerrorShark() and _G.TerrorShark
+                        or CheckFishCrew() and _G.MobCrew
+                        or CheckPiranha() and _G.Piranha
+                    )
+                    and not (
+                        CheckEnemiesBoat() and _G.FishBoat
+                        or CheckSeaBeast() and _G.SeaBeast1
+                        or _G.PGB and CheckPirateGrandBrigade()
+                        or _G.HCM and CheckHauntedCrew()
+                        or _G.Leviathan1 and CheckLeviathan()
+                    )
+                ) then
+
                     if plr.Character.Humanoid.Sit == false then
-                        local e = I.VehicleSeat.CFrame * CFrame.new(0, 1, 0);
-                        _tp(e);
+                        local e = I.VehicleSeat.CFrame * CFrame.new(0, 1, 0)
+                        _tp(e)
+
                     else
                         if _G.DangerSc == "Lv 1" then
-                            CFrameSelectedZone = CFrame.new(-21998.375, 30.0006084, -682.309143);
+                            CFrameSelectedZone = CFrame.new(-21998.375, 30.0006084, -682.309143)
+
                         elseif _G.DangerSc == "Lv 2" then
-                            CFrameSelectedZone = CFrame.new(-26779.5215, 30.0005474, -822.858032);
+                            CFrameSelectedZone = CFrame.new(-26779.5215, 30.0005474, -822.858032)
+
                         elseif _G.DangerSc == "Lv 3" then
-                            CFrameSelectedZone = CFrame.new(-31171.957, 30.0001011, -2256.93774);
+                            CFrameSelectedZone = CFrame.new(-31171.957, 30.0001011, -2256.93774)
+
                         elseif _G.DangerSc == "Lv 4" then
-                            CFrameSelectedZone = CFrame.new(-34054.6875, 30.2187767, -2560.12012);
+                            CFrameSelectedZone = CFrame.new(-34054.6875, 30.2187767, -2560.12012)
+
                         elseif _G.DangerSc == "Lv 5" then
-                            CFrameSelectedZone = CFrame.new(-38887.5547, 30.0004578, -2162.99023);
+                            CFrameSelectedZone = CFrame.new(-38887.5547, 30.0004578, -2162.99023)
+
                         elseif _G.DangerSc == "Lv 6" then
-                            CFrameSelectedZone = CFrame.new(-44541.7617, 30.0003204, -1244.8584);
+                            CFrameSelectedZone = CFrame.new(-44541.7617, 30.0003204, -1244.8584)
+
                         elseif _G.DangerSc == "Lv Infinite" then
-                            CFrameSelectedZone = CFrame.new(-10000000, 31, 37016.25);
-                        end;
+                            CFrameSelectedZone = CFrame.new(-10000000, 31, 37016.25)
+                        end
+
                         repeat
-                            wait();
-                            if not _G.FishBoat and CheckEnemiesBoat() or not _G.PGB and CheckPirateGrandBrigade() or not _G.TerrorShark and CheckTerrorShark() then
-                                _tp(CFrameSelectedZone * CFrame.new(0, 150, 0));
+                            wait()
+
+                            if not _G.FishBoat and CheckEnemiesBoat()
+                                or not _G.PGB and CheckPirateGrandBrigade()
+                                or not _G.TerrorShark and CheckTerrorShark() then
+
+                                -- Né quái: GIỮ NGUYÊN +150
+                                _tp(CFrameSelectedZone * CFrame.new(0, 150, 0))
+
                             else
-                                _tp(CFrameSelectedZone);
-                            end;
-                        until _G.SailBoats == false or CheckShark() and _G.Shark or CheckTerrorShark() and _G.TerrorShark or CheckFishCrew() and _G.MobCrew or CheckPiranha() and _G.Piranha or CheckSeaBeast() and _G.SeaBeast1 or CheckEnemiesBoat() and _G.FishBoat or _G.Leviathan1 and CheckLeviathan() or _G.HCM and CheckHauntedCrew() or _G.PGB and CheckPirateGrandBrigade() or (plr.Character:WaitForChild("Humanoid")).Sit == false;
-                        plr.Character.Humanoid.Sit = false;
-                    end;
-                end;
-            end);
-        end;
-    end;
-end);
+
+                                -- Bình thường: BAY +60
+                                _tp(CFrameSelectedZone * CFrame.new(0, 60, 0))
+
+                            end
+
+                        until _G.SailBoats == false
+                            or CheckShark() and _G.Shark
+                            or CheckTerrorShark() and _G.TerrorShark
+                            or CheckFishCrew() and _G.MobCrew
+                            or CheckPiranha() and _G.Piranha
+                            or CheckSeaBeast() and _G.SeaBeast1
+                            or CheckEnemiesBoat() and _G.FishBoat
+                            or _G.Leviathan1 and CheckLeviathan()
+                            or _G.HCM and CheckHauntedCrew()
+                            or _G.PGB and CheckPirateGrandBrigade()
+                            or plr.Character:WaitForChild("Humanoid").Sit == false
+
+                        plr.Character.Humanoid.Sit = false
+                    end
+                end
+            end)
+        end
+    end
+end)
+
 
 spawn(function()
     while wait(Sec) do
         pcall(function()
-            for I, e in pairs(workspace.Boats:GetChildren()) do
-                for I, e in pairs(workspace.Boats[e.Name]:GetDescendants()) do
-                    if e:IsA("BasePart") then
-                        if _G.SailBoats or _G.Prehis_Find or _G.FindMirage or _G.SailBoat_Hydra or _G.AutofindKitIs then
-                            e.CanCollide = false;
-                        else
-                            e.CanCollide = true;
-                        end;
-                    end;
-                end;
-            end;
-        end);
-    end;
-end);
+            for _, boat in pairs(workspace.Boats:GetChildren()) do
+                for _, part in pairs(boat:GetDescendants()) do
+                    if part:IsA("BasePart") then
+                        if _G.SailBoats
+                            or _G.Prehis_Find
+                            or _G.FindMirage
+                            or _G.SailBoat_Hydra
+                            or _G.AutofindKitIs then
 
+                            part.CanCollide = false
+                        else
+                            part.CanCollide = true
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
 -- // VARIÁVEL DE VELOCIDADE PADRÃO // --
 _G.SetSpeedBoat = 300
 
