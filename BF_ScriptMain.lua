@@ -4742,7 +4742,7 @@ Setting:AddButton({
         end
     end
 })
-v15:AddToggle({
+Setting:AddToggle({
     Name = "Full Bright",
     Default = GetSetting("FullBright_Save", false),
     Callback = function(Value)
