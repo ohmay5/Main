@@ -4139,8 +4139,10 @@ spawn(function()
 	end;
 end);
 if World3 then
-Farm:AddSection({"Kill Elite"});
-local r = Others:AddParagraph({ Title = "Elites Process ", Content = "" });
+Farm:AddSection({"Kill Elite"})
+local r = Farm:AddParagraph({ 
+     Title = "Elites Process ", 
+     Content = "" });
 spawn(function()
 	while wait(Sec) do
 		pcall(function()
@@ -4190,36 +4192,6 @@ spawn(function()
 		end);
 	end;
 end);
- Farm:AddToggle({
-    Name = "Stop when got God's Chalice",
-    Description = "dừng khi có cúp",
-    -- 1. Carrega o estado salvo ou inicia como true (padrão do seu script)
-    Default = GetSetting("StopChalice_Save", true),
-    Callback = function(I)
-        _G.StopWhenChalice = I
-        
-        -- 2. Guarda na tabela de salvamento
-        _G.SaveData["StopChalice_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
-task.spawn(function()
-    while task.wait(0.2) do
-        if _G.StopWhenChalice and (_G.FarmEliteHunt or _G.AutoFarmChest) then
-            pcall(function()
-                if GetBP("God's Chalice")
-                    or GetBP("Sweet Chalice")
-                    or GetBP("Fist of Darkness") then
-
-                    _G.FarmEliteHunt = false
-                    _G.AutoFarmChest = false
-                end
-            end)
-        end
-    end
-end)
 Farm:AddSection({"Bone"})
 -- AUTO RANDOM BONES
 Farm:AddToggle({
