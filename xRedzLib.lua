@@ -1513,8 +1513,10 @@ function redzlib:MakeWindow(Configs)
 	}), "Text")
 	
 	
-local SearchBox = Create("TextBox", MainScroll, {
-    Size = UDim2.new(1, 0, 0, 28),
+--// SEARCH BOX
+local SearchBox = Create("TextBox", Components, {
+    Size = UDim2.new(0, redzlib.Save.TabSize, 0, 28),
+    Position = UDim2.new(0, 0, 0, 0),
     BackgroundColor3 = Theme["Color Hub 2"],
     BackgroundTransparency = 0,
     TextColor3 = Theme["Color Text"],
@@ -1526,7 +1528,6 @@ local SearchBox = Create("TextBox", MainScroll, {
     ClearTextOnFocus = false,
     TextXAlignment = Enum.TextXAlignment.Left,
     BorderSizePixel = 0,
-    LayoutOrder = 0,
     Name = "Search"
 })
 
@@ -1538,56 +1539,40 @@ Create("UIPadding", SearchBox, {
 })
 
 local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
-    Size = UDim2.new(
-        0,
-        redzlib.Save.TabSize,
-        1,
-        -TopBar.Size.Y.Offset
-    ),
-    ScrollBarImageColor3 = Theme["Color Theme"],
-    Position = UDim2.new(0, 0, 1, 0),
-    AnchorPoint = Vector2.new(0, 1),
-    ScrollBarThickness = 1.5,
-    BackgroundTransparency = 1,
-    ScrollBarImageTransparency = 0.2,
-    CanvasSize = UDim2.new(),
-    AutomaticCanvasSize = "Y",
-    ScrollingDirection = "Y",
-    BorderSizePixel = 0,
-    Name = "Tab Scroll"
-}, {
-    Create("UIPadding", {
-        PaddingLeft = UDim.new(0, 10),
-        PaddingRight = UDim.new(0, 10),
-        PaddingTop = UDim.new(0, 10),
-        PaddingBottom = UDim.new(0, 10)
-    }),
-
-    Create("UIListLayout", {
-        Padding = UDim.new(0, 5),
-        SortOrder = Enum.SortOrder.LayoutOrder
-    })
-}), "ScrollBar")
-
---// CONTAINERS
-local Containers = Create("Frame", Components, {
-    Size = UDim2.new(
-        1,
-        -MainScroll.Size.X.Offset,
-        1,
-        -TopBar.Size.Y.Offset
-    ),
-    AnchorPoint = Vector2.new(1, 1),
-    Position = UDim2.new(1, 0, 1, 0),
-    BackgroundTransparency = 1,
-    ClipsDescendants = true,
-    Name = "Containers"
-})
-
-
---// SEARCH TAB
+		Size = UDim2.new(0, redzlib.Save.TabSize, 1, -TopBar.Size.Y.Offset),
+		ScrollBarImageColor3 = Theme["Color Theme"],
+		Position = UDim2.new(0, 0, 1, 0),
+		AnchorPoint = Vector2.new(0, 1),
+		ScrollBarThickness = 1.5,
+		BackgroundTransparency = 1,
+		ScrollBarImageTransparency = 0.2,
+		CanvasSize = UDim2.new(),
+		AutomaticCanvasSize = "Y",
+		ScrollingDirection = "Y",
+		BorderSizePixel = 0,
+		Name = "Tab Scroll"
+	}, {
+		Create("UIPadding", {
+			PaddingLeft = UDim.new(0, 10),
+			PaddingRight = UDim.new(0, 10),
+			PaddingTop = UDim.new(0, 10),
+			PaddingBottom = UDim.new(0, 10)
+		}), Create("UIListLayout", {
+			Padding = UDim.new(0, 5)
+		})
+	}), "ScrollBar")
+	
+	local Containers = Create("Frame", Components, {
+		Size = UDim2.new(1, -MainScroll.Size.X.Offset, 1, -TopBar.Size.Y.Offset),
+		AnchorPoint = Vector2.new(1, 1),
+		Position = UDim2.new(1, 0, 1, 0),
+		BackgroundTransparency = 1,
+		ClipsDescendants = true,
+		Name = "Containers"
+	})
+	--// SEARCH TAB
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local Query = SearchBox.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
+    local Query = SearchBox.Text:lower()
 
     for _, TabData in ipairs(redzlib.Tabs) do
         local TabName = tostring(TabData.TabInfo.Name or "")
@@ -1610,7 +1595,6 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
         end
     end
 end)
-	
 	
 	local ControlSize1, ControlSize2 = MakeDrag(Create("ImageButton", MainFrame, {
 		Size = UDim2.new(0, 35, 0, 35),
@@ -1880,8 +1864,8 @@ end)
 		end
 		
 		local TabSelect = Make("Button", MainScroll, {
-    Size = UDim2.new(1, 0, 0, 24)
-})	Make("Corner", TabSelect)
+			Size = UDim2.new(1, 0, 0, 24)
+		})Make("Corner", TabSelect)
 		
 		local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
 			Size = UDim2.new(1, TIcon and -25 or -15, 1),
