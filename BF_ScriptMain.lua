@@ -2482,82 +2482,31 @@ Status:AddDiscordInvite({
     Logo = "rbxassetid://114476175638281",
     Invite = ""
 })
-
-Shop:AddSection("Fighting Shop")
+Shop:AddSection("Abilities Shop")
 Shop:AddButton({
-    Name = "Black Leg",
+    Name = "Skyjump [ $10,000 Beli ]",
     Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyBlackLeg")
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Geppo")
     end
 })
 Shop:AddButton({
-    Name = "Fishman Karate",
+    Name = "Buso Haki [ $25,000 Beli ]",
     Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyFishmanKarate")
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Buso")
     end
 })
 Shop:AddButton({
-    Name = "Electro",
+    Name = "Observation haki [ $750,000 Beli ]",
     Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyElectro")
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("KenTalk", "Buy")
     end
 })
 Shop:AddButton({
-    Name = "Dragon Breath",
+    Name = "Soru [ $100,000 Beli ]",
     Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward","DragonClaw","1")
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward","DragonClaw","2")
+        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Soru")
     end
 })
-Shop:AddButton({
-    Name = "SuperHuman",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySuperhuman")
-    end
-})
-Shop:AddButton({
-    Name = "Death Step",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyDeathStep")
-    end
-})
-Shop:AddButton({
-    Name = "Sharkman Karate",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySharkmanKarate",true)
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySharkmanKarate")
-    end
-})
-Shop:AddButton({
-    Name = "Electric Claw",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyElectricClaw")
-    end
-})
-Shop:AddButton({
-    Name = "Dragon Talon",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyDragonTalon")
-    end
-})
-Shop:AddButton({
-    Name = "God Human",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyGodhuman")
-    end
-})
-Shop:AddButton({
-    Name = "Sanguine Art",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt", true)
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt")
-    end
-})
-
-
-
-
-
 local World1 = World1 or false
 local World2 = World2 or false
 local World3 = World3 or false
@@ -2819,6 +2768,12 @@ local Weapons = {
         Remote:InvokeServer("BlackbeardReward", "Slingshot", "1")
         task.wait(.2)
         Remote:InvokeServer("BlackbeardReward", "Slingshot", "2")
+    end,
+
+    ["Bizarre Rifle [250 Ectoplasm]"] = function()
+        local args = {"Ectoplasm", "Buy", 1}
+        Remote:InvokeServer(unpack(args))
+        Remote:InvokeServer(unpack(args))
     end
 }
 
@@ -2864,40 +2819,47 @@ Shop:AddButton({
         end
     end
 })
-Shop:AddButton({
-    Name = "Bizarre Rifle [ 250 Ectoplasm ]",
-    Callback = function()
-        local Remote = game:GetService("ReplicatedStorage").Remotes.CommF_
-        local args = { "Ectoplasm", "Buy", 1 }
-        Remote:InvokeServer(unpack(args))
-        Remote:InvokeServer(unpack(args))
-    end
-})
-Shop:AddSection("Abilities Shop")
-Shop:AddButton({
-    Name = "Skyjump [ $10,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Geppo")
-    end
-})
-Shop:AddButton({
-    Name = "Buso Haki [ $25,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Buso")
-    end
-})
-Shop:AddButton({
-    Name = "Observation haki [ $750,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("KenTalk", "Buy")
-    end
-})
-Shop:AddButton({
-    Name = "Soru [ $100,000 Beli ]",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyHaki", "Soru")
-    end
-})
+
+
+local Remote = game:GetService("ReplicatedStorage").Remotes.CommF_
+
+Shop:AddSection({"Mua Đồ Craft Sea Event"})
+
+local CraftItems = {
+    {"Craft Dragonheart", "Dragonheart"},
+    {"Craft Dragonstorm", "Dragonstorm"},
+    {"Craft DinoHood", "DinoHood"},
+    {"Craft SharkTooth", "SharkTooth"},
+    {"Craft TerrorJaw", "TerrorJaw"},
+    {"Craft SharkAnchor", "SharkAnchor"},
+    {"Craft LeviathanCrown", "LeviathanCrown"},
+    {"Craft LeviathanShield", "LeviathanShield"},
+    {"Craft LeviathanBoat", "LeviathanBoat"},
+    {"Craft LegendaryScroll", "LegendaryScroll"},
+    {"Craft MythicalScroll", "MythicalScroll"}
+}
+
+for _, Item in ipairs(CraftItems) do
+    Shop:AddButton({
+        Name = Item[1],
+        Callback = function()
+            local Success, Error = pcall(function()
+                Remote:InvokeServer("CraftItem", "Craft", Item[2])
+            end)
+
+            if Success then
+                redzlib:Notify({
+                    Title = "Craft",
+                    Message = "Đã craft " .. Item[2],
+                    Duration = 2
+                })
+            else
+                warn("Craft Error:", Error)
+            end
+        end
+    })
+end
+
 Shop:AddSection("Misc Shop")
 Shop:AddButton({
     Name = "Buy Refund Stat (2500F)",
@@ -4780,6 +4742,52 @@ Setting:AddButton({
         end
     end
 })
+v15:AddToggle({
+    Name = "Full Bright",
+    Default = GetSetting("FullBright_Save", false),
+    Callback = function(Value)
+        _G.FullBright = Value
+        _G.SaveData["FullBright_Save"] = Value
+        SaveSettings()
+        if Value then
+            Lighting.Ambient = Color3.new(1,1,1)
+            Lighting.ColorShift_Bottom = Color3.new(1,1,1)
+            Lighting.ColorShift_Top = Color3.new(1,1,1)
+        else
+            Lighting.Ambient = Color3.new(0,0,0)
+            Lighting.ColorShift_Bottom = Color3.new(0,0,0)
+            Lighting.ColorShift_Top = Color3.new(0,0,0)
+        end
+    end
+})
+
+-- Time Changer (Day/Night)
+local TimeOptions = {"Day", "Night"}
+Setting:AddDropdown({
+    Name = "Select Time",
+    Options = TimeOptions,
+    Default = "Day",
+    Callback = function(Value)
+        _G.SelectDN = Value
+    end
+})
+Setting:AddToggle({
+    Name = "Auto Set Time",
+    Default = GetSetting("AutoTime_Save", false),
+    Callback = function(Value)
+        _G.AutoTime = Value
+        _G.SaveData["AutoTime_Save"] = Value
+        SaveSettings()
+    end
+})
+task.spawn(function()
+    while task.wait(1) do
+        if _G.AutoTime then
+            Lighting.ClockTime = (_G.SelectDN == "Day") and 12 or 0
+        end
+    end
+end)
+
 Setting:AddToggle({
 	Name = "Auto Active Haki",
 	Description = "tự động kích hoạt haki",

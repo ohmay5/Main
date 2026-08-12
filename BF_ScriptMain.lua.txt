@@ -2565,7 +2565,28 @@ Status:AddDiscordInvite({
     Logo = "rbxassetid://114476175638281",
     Invite = ""
 })
-
+Shop:AddToggle({
+    Name = "Unlock All Portals (WIP)",
+    Default = GetSetting("PortalUnLock_Save", false),
+    Callback = function(Value)
+        _G.PortalUnLock = Value
+        _G.SaveData["PortalUnLock_Save"] = Value
+        SaveSettings()
+    end
+})
+task.spawn(function()
+    while task.wait(3) do
+        if _G.PortalUnLock and World3 then
+            pcall(function()
+                if (Root.Position - CFrame.new(-5097.93, 316.44, -3142.66).Position).Magnitude < 8 then
+                    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-12471.16, 374.94, -7551.67))
+                elseif (Root.Position - CFrame.new(-12471.16, 374.94, -7551.67).Position).Magnitude < 8 then
+                    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5072.08, 314.54, -3151.10))
+                end
+            end)
+        end
+    end
+end)
 local World1 = World1 or false
 local World2 = World2 or false
 local World3 = World3 or false
