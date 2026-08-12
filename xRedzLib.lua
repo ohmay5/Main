@@ -1513,7 +1513,7 @@ function redzlib:MakeWindow(Configs)
 	}), "Text")
 	
 	
---// SEARCH BOX
+	--// SEARCH BOX
 local SearchBox = Create("TextBox", Components, {
     Size = UDim2.new(0, redzlib.Save.TabSize, 0, 28),
     Position = UDim2.new(0, 0, 0, 0),
@@ -1522,6 +1522,33 @@ local SearchBox = Create("TextBox", Components, {
     TextColor3 = Theme["Color Text"],
     PlaceholderColor3 = Theme["Color Dark Text"],
     PlaceholderText = "Search...",
+    Text = "",
+    TextSize = 10,
+    Font = Enum.Font.Gotham,
+    ClearTextOnFocus = false,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    BorderSizePixel = 0,
+    Name = "Search"
+})
+
+Make("Corner", SearchBox, UDim.new(0, 6))
+
+Create("UIPadding", SearchBox, {
+    PaddingLeft = UDim.new(0, 10),
+    PaddingRight = UDim.new(0, 10)
+})
+	
+	
+
+--// SEARCH BOX
+local SearchBox = Create("TextBox", Components, {
+    Size = UDim2.new(0, redzlib.Save.TabSize, 0, 28),
+    Position = UDim2.new(0, 0, 0, 0),
+    BackgroundColor3 = Theme["Color Hub 2"],
+    BackgroundTransparency = 0,
+    TextColor3 = Theme["Color Text"],
+    PlaceholderColor3 = Theme["Color Dark Text"],
+    PlaceholderText = "Tìm kiếm...",
     Text = "",
     TextSize = 10,
     Font = Enum.Font.Gotham,
@@ -1581,30 +1608,64 @@ local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
 	--// SEARCH TAB
 --// SEARCH TAB
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local Query = SearchBox.Text:lower()
+    local Query = SearchBox.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
 
     for _, TabData in ipairs(redzlib.Tabs) do
-        local Name = tostring(TabData.TabInfo.Name or ""):lower()
+        local TabName = tostring(TabData.TabInfo.Name or "")
+        local Container = TabData.Cont
+        local TabButton
+        local HasMatch = false
 
-        local TabButton = nil
-
+        -- Tìm Tab Button
         for _, Object in ipairs(MainScroll:GetChildren()) do
             if Object:IsA("TextButton") then
                 local Label = Object:FindFirstChildWhichIsA("TextLabel")
-                if Label and Label.Text == TabData.TabInfo.Name then
+
+                if Label and Label.Text == TabName then
                     TabButton = Object
                     break
                 end
             end
         end
 
-        if TabButton then
-            TabButton.Visible =
-                Query == "" or Name:find(Query, 1, true) ~= nil
+        if Query == "" then
+
+            if TabButton then
+                TabButton.Visible = true
+            end
+
+            for _, Object in ipairs(Container:GetChildren()) do
+                if Object:GetAttribute("SearchText") then
+                    Object.Visible = true
+                end
+            end
+
+        else
+
+            local TabMatch =
+                TabName:lower():find(Query, 1, true) ~= nil
+
+            for _, Object in ipairs(Container:GetChildren()) do
+                local SearchText = Object:GetAttribute("SearchText")
+
+                if SearchText then
+                    local Match =
+                        tostring(SearchText):lower():find(Query, 1, true) ~= nil
+
+                    Object.Visible = Match
+
+                    if Match then
+                        HasMatch = true
+                    end
+                end
+            end
+
+            if TabButton then
+                TabButton.Visible = TabMatch or HasMatch
+            end
         end
     end
 end)
-	
 	local ControlSize1, ControlSize2 = MakeDrag(Create("ImageButton", MainFrame, {
 		Size = UDim2.new(0, 35, 0, 35),
 		Position = MainFrame.Size,
