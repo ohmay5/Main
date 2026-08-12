@@ -12070,43 +12070,38 @@ Fruit:AddToggle({
     end,
 });
 
--- // 1. Loop Tự động bắt đầu Raid
-Task.spawn(function()
-    while task.wait(3) do
+--task.spawn(function()
+    while task.wait(1) do
         if _G.Auto_StartRaid then
             pcall(function()
                 local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
-                
-                -- Logic vào Raid
-                if not raidTimer.Visible and GetBP("Special Microchip") then
-                    local oldPos = plr.Character:GetPivot()
-                    if World2 then
-                        _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
-                        task.wait(0.5)
-                        fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
-                    elseif World3 then
-                        replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
-                        task.wait(0.8)
-                        _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
-                        task.wait(0.5)
-                        fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
-                    end
-                    task.wait(0.5)
-                    _tp(oldPos)
-                end
 
-                -- Logic Raid
-                if raidTimer.Visible then
-                    _G.Raiding = true
-                else
-                    _G.Raiding = false
+                if not raidTimer.Visible and GetBP("Special Microchip") then
+
+                    if World2 then
+                        local detector =
+                            workspace.Map.CircleIsland.RaidSummon2
+                            .Button.Main.ClickDetector
+
+                        if detector then
+                            fireclickdetector(detector)
+                        end
+
+                    elseif World3 then
+                        local detector =
+                            workspace.Map["Boat Castle"].RaidSummon2
+                            .Button.Main.ClickDetector
+
+                        if detector then
+                            fireclickdetector(detector)
+                        end
+                    end
+
                 end
             end)
         end
     end
 end)
-
--- // Các hàm chức năng
 function IsIslandRaid(cu)
     local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
     if locs:FindFirstChild("Island " .. cu) then
