@@ -1514,38 +1514,12 @@ function redzlib:MakeWindow(Configs)
 	
 	
 	--// SEARCH BOX
-local SearchBox = Create("TextBox", Components, {
-    Size = UDim2.new(0, redzlib.Save.TabSize, 0, 28),
-    Position = UDim2.new(0, 0, 0, 0),
-    BackgroundColor3 = Theme["Color Hub 2"],
-    BackgroundTransparency = 0,
-    TextColor3 = Theme["Color Text"],
-    PlaceholderColor3 = Theme["Color Dark Text"],
-    PlaceholderText = "Search...",
-    Text = "",
-    TextSize = 10,
-    Font = Enum.Font.Gotham,
-    ClearTextOnFocus = false,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    BorderSizePixel = 0,
-    Name = "Search"
-})
-
-Make("Corner", SearchBox, UDim.new(0, 6))
-
-Create("UIPadding", SearchBox, {
-    PaddingLeft = UDim.new(0, 10),
-    PaddingRight = UDim.new(0, 10)
-})
-
-
---// MAIN SCROLL
 local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
     Size = UDim2.new(
         0,
         redzlib.Save.TabSize,
         1,
-        -TopBar.Size.Y.Offset - 33
+        -TopBar.Size.Y.Offset
     ),
     ScrollBarImageColor3 = Theme["Color Theme"],
     Position = UDim2.new(0, 0, 1, 0),
@@ -1567,9 +1541,36 @@ local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
     }),
 
     Create("UIListLayout", {
-        Padding = UDim.new(0, 5)
+        Padding = UDim.new(0, 5),
+        SortOrder = Enum.SortOrder.LayoutOrder
     })
 }), "ScrollBar")
+
+
+--// SEARCH BOX
+local SearchBox = Create("TextBox", MainScroll, {
+    Size = UDim2.new(1, 0, 0, 28),
+    BackgroundColor3 = Theme["Color Hub 2"],
+    BackgroundTransparency = 0,
+    TextColor3 = Theme["Color Text"],
+    PlaceholderColor3 = Theme["Color Dark Text"],
+    PlaceholderText = "Search...",
+    Text = "",
+    TextSize = 10,
+    Font = Enum.Font.Gotham,
+    ClearTextOnFocus = false,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    BorderSizePixel = 0,
+    LayoutOrder = 0,
+    Name = "Search"
+})
+
+Make("Corner", SearchBox, UDim.new(0, 6))
+
+Create("UIPadding", SearchBox, {
+    PaddingLeft = UDim.new(0, 10),
+    PaddingRight = UDim.new(0, 10)
+})
 
 
 --// CONTAINERS
@@ -1590,21 +1591,26 @@ local Containers = Create("Frame", Components, {
 
 --// SEARCH TAB
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local Query = SearchBox.Text:lower()
+    local Query = SearchBox.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
 
     for _, TabData in ipairs(redzlib.Tabs) do
-        local Name = tostring(TabData.TabInfo.Name or ""):lower()
+        local TabName = tostring(TabData.TabInfo.Name or "")
+        local TabButton
 
         for _, Object in ipairs(MainScroll:GetChildren()) do
-            if Object:IsA("TextButton") then
+            if Object:IsA("TextButton") and Object.Name == "Option" then
                 local Label = Object:FindFirstChildWhichIsA("TextLabel")
 
-                if Label and Label.Text == TabData.TabInfo.Name then
-                    Object.Visible =
-                        Query == ""
-                        or Name:find(Query, 1, true) ~= nil
+                if Label and Label.Text == TabName then
+                    TabButton = Object
+                    break
                 end
             end
+        end
+
+        if TabButton then
+            TabButton.Visible =
+                Query == "" or TabName:lower():find(Query, 1, true) ~= nil
         end
     end
 end)
@@ -1877,9 +1883,11 @@ end)
 			TIcon = false
 		end
 		
-		local TabSelect = Make("Button", MainScroll, {
-			Size = UDim2.new(1, 0, 0, 24)
-		})Make("Corner", TabSelect)
+		locallocal TabSelect = Make("Button", MainScroll, {
+    Size = UDim2.new(1, 0, 0, 24),
+    LayoutOrder = 1
+})
+		Make("Corner", TabSelect)
 		
 		local LabelTitle = InsertTheme(Create("TextLabel", TabSelect, {
 			Size = UDim2.new(1, TIcon and -25 or -15, 1),
