@@ -12609,7 +12609,7 @@ end
 -- =========================
 
 local FastAttack = {
-    Distance = 60
+    Distance = 55
 }
 
 function FastAttack:GetTargets()
