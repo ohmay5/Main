@@ -10103,13 +10103,12 @@ elseif World2 then
 	Location_Portal = { "SwanRoom", "Cursed Ship" };
 elseif World3 then
 	Location_Portal = {
-    "Castle On The Sea",
-    "Mansion Cafe",
-    "Hydra Teleport",
-    "Canvendish Room",
-    "Temple of Time",
-    "Tiki Outpost",
-};
+			"Castle On The Sea",
+			"Mansion Cafe",
+			"Hydra Teleport",
+			"Canvendish Room",
+			"Temple of Time",
+		};
 end;
 Teleport:AddDropdown({
 	Title = "Select Portal",
@@ -10121,10 +10120,7 @@ Teleport:AddDropdown({
 		_G.Island_PT = I;
 	end,
 });
-Teleport:AddButton({ 
-    Name = "requestEntrance", 
-    Description = "", 
-    Callback = function()
+Teleport:AddButton({ Name = "requestEntrance", Description = "", Callback = function()
 		if _G.Island_PT == "Sky" then
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-7894, 5547, -380));
 		elseif _G.Island_PT == "UnderWater" then
@@ -10143,9 +10139,6 @@ Teleport:AddButton({
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(5314.5463867188, 22.562219619751, -127.06755065918));
 		elseif _G.Island_PT == "Temple of Time" then
 			replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(28310.0234, 14895.1123, 109.456741, -0.469690144, -2.85620132e-08, -0.882831335, -3.23509219e-08, 1, -1.51411736e-08, .882831335, 2.14487486e-08, -0.469690144));
-	    elseif _G.Island_PT == "Tiki Outpost" then
-    replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-16280, 11, 547)
-    );
 		end;
 	end });
 Teleport:AddSection("Travel - NPCs");
