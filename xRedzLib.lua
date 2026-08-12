@@ -1512,29 +1512,7 @@ function redzlib:MakeWindow(Configs)
 		}), "DarkText")
 	}), "Text")
 	
-	local SearchBox = Create("TextBox", Components, {
-    Size = UDim2.new(0, BaCon.Save.TabSize, 0, 28),
-    Position = UDim2.new(0, 0, 0, 0),
-    BackgroundColor3 = Theme["Color Hub 2"],
-    BackgroundTransparency = 0,
-    TextColor3 = Theme["Color Text"],
-    PlaceholderColor3 = Theme["Color Dark Text"],
-    PlaceholderText = "Search...",
-    Text = "",
-    TextSize = 10,
-    Font = Enum.Font.Gotham,
-    ClearTextOnFocus = false,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    BorderSizePixel = 0,
-    Name = "Search"
-})
 
-Make("Corner", SearchBox, UDim.new(0, 6))
-
-Create("UIPadding", SearchBox, {
-    PaddingLeft = UDim.new(0, 10),
-    PaddingRight = UDim.new(0, 10)
-})
 	
 local SearchBox = Create("TextBox", Components, {
     Size = UDim2.new(0, BaCon.Save.TabSize, 0, 28),
