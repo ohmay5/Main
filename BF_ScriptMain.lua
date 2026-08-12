@@ -16,6 +16,16 @@ task.spawn(function()
     end
 end)
 
+local CommF = game:GetService("ReplicatedStorage").Remotes.CommF_
+
+task.spawn(function()
+    local Team = math.random(1, 2) == 1 and "Pirates" or "Marines"
+
+    pcall(function()
+        CommF:InvokeServer("SetTeam", Team)
+    end)
+end)
+
 local HttpService = Services.HttpService
 local FolderName = "BaCoNhǎo Hub"
 local FileName = "Settings.json"
