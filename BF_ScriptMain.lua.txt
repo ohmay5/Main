@@ -1281,7 +1281,7 @@ end;
 spawn(function()
 	while task.wait() do
 		pcall(function()
-			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Human or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoNewWorld or getgenv().UpgradeRaceV2 or getgenv().AutoRaceV2 or getgenv().AutoCyborg or _G.AutoBartilo or G.AutoRaceV3 or _G.Greybeard or _G.AutoKeyRen then
+			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.DummyMan or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Human or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoNewWorld or getgenv().UpgradeRaceV2 or getgenv().AutoRaceV2 or getgenv().AutoCyborg or _G.AutoBartilo or G.AutoRaceV3 or _G.Greybeard or _G.AutoKeyRen or _G.AutoBuyMelee then
 				shouldTween = true;
 				if not plr.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
 					local I = Instance.new("BodyVelocity");
@@ -2566,74 +2566,195 @@ Status:AddDiscordInvite({
     Invite = ""
 })
 
-Shop:AddSection("Fighting Shop")
-Shop:AddButton({
-    Name = "Black Leg",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyBlackLeg")
+local World1 = World1 or false
+local World2 = World2 or false
+local World3 = World3 or false
+
+-- Section chính cho Shop
+Shop:AddSection({"Mua Melee V1"})
+
+-- Danh sách Melee với tọa độ theo từng World
+local MeleeCoords = {
+    ["Dark Step (Chân Đen)"] = {
+        Key = "BuyBlackLeg",
+        NPC = "Dark Step Teacher",
+        Pos = World1 and CFrame.new(-985, 13, 3988) 
+            or World2 and CFrame.new(-4753, 35, -4850) 
+            or World3 and CFrame.new(-5045, 371, -3181) 
+            or nil
+    },
+    ["Electric (Điện)"] = {
+        Key = "BuyElectro",
+        NPC = "Mad Scientist",
+        Pos = World1 and CFrame.new(-5384, 13, -2148) 
+            or World2 and CFrame.new(-4867, 35, -4766) 
+            or World3 and CFrame.new(-4995, 314, -3203) 
+            or nil
+    },
+    ["Water Kung Fu (Võ Cá)"] = {
+        Key = "BuyFishmanKarate",
+        NPC = "Water Kung Fu Teacher",
+        Pos = World1 and CFrame.new(61585, 18, 987) 
+            or World2 and CFrame.new(-4958, 35, -4668) 
+            or World3 and CFrame.new(-5023, 371, -3190) 
+            or nil
+    },
+    ["Dragon Breath (Hơi Thở Rồng)"] = {
+        Key = "BuyDragonClaw",
+        NPC = "Sabi",
+        Pos = World2 and CFrame.new(701, 187, 655) 
+            or World3 and CFrame.new(-4981, 371, -3207) 
+            or nil
+    },
+    ["Superhuman"] = {
+        Key = "BuySuperhuman",
+        NPC = "Martial Arts Master",
+        Pos = World2 and CFrame.new(1374, 247, -5192) 
+            or World3 and CFrame.new(-5004, 371, -3198) 
+            or nil
+    },
+    ["Death Step (Chân Đen V2)"] = {
+        Key = "BuyDeathStep",
+        NPC = "Phoeyu, the Reformed",
+        Pos = World2 and CFrame.new(6357, 296, -6762) 
+            or World3 and CFrame.new(-4999, 314, -3221) 
+            or nil
+    },
+    ["Sharkman Karate (Võ Cá V2)"] = {
+        Key = "BuySharkmanKarate",
+        NPC = "Daigrock, the Sharkman",
+        Pos = World2 and CFrame.new(-2602, 238, -10316) 
+            or World3 and CFrame.new(-4972, 314, -3222) 
+            or nil
+    },
+    ["Dragon Talon (Rồng V2)"] = {
+        Key = "BuyDragonTalon",
+        NPC = "Uzoth",
+        Pos = World3 and CFrame.new(5661, 1211, 865) or nil
+    },
+    ["Electric Claw (Điện V2)"] = {
+        Key = "BuyElectricClaw",
+        NPC = "Previous Hero",
+        Pos = World3 and CFrame.new(-10371, 331, -10131) or nil
+    },
+    ["Godhuman"] = {
+        Key = "BuyGodhuman",
+        NPC = "Ancient Monk",
+        Pos = World3 and CFrame.new(-13776, 334, -9879) or nil
+    },
+    ["Sanguine Art (Võ Quỷ)"] = {
+        Key = "BuySanguineArt",
+        NPC = "Shafi",
+        Pos = World3 and CFrame.new(-16353, 160, 99) or nil
+    }
+}
+
+local SelectedMelee = "Dark Step (Chân Đen)"
+
+-- Hàm lấy danh sách Melee có ở Sea hiện tại
+local function GetAvailableMeleeOptions()
+    local list = {}
+    for name, data in pairs(MeleeCoords) do
+        if data.Pos then 
+            table.insert(list, name) 
+        end
+    end
+    table.sort(list)
+    return list
+end
+
+-- Dropdown chọn Melee
+Shop:AddDropdown({
+    Name = "Chọn Melee Cần Mua",
+    Options = GetAvailableMeleeOptions(),
+    Default = "Dark Step (Chân Đen)",
+    Callback = function(Value)
+        SelectedMelee = Value
     end
 })
-Shop:AddButton({
-    Name = "Fishman Karate",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyFishmanKarate")
-    end
-})
-Shop:AddButton({
-    Name = "Electro",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyElectro")
-    end
-})
-Shop:AddButton({
-    Name = "Dragon Breath",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward","DragonClaw","1")
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BlackbeardReward","DragonClaw","2")
-    end
-})
-Shop:AddButton({
-    Name = "SuperHuman",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySuperhuman")
-    end
-})
-Shop:AddButton({
-    Name = "Death Step",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyDeathStep")
-    end
-})
-Shop:AddButton({
-    Name = "Sharkman Karate",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySharkmanKarate",true)
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySharkmanKarate")
-    end
-})
-Shop:AddButton({
-    Name = "Electric Claw",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyElectricClaw")
-    end
-})
-Shop:AddButton({
-    Name = "Dragon Talon",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyDragonTalon")
-    end
-})
-Shop:AddButton({
-    Name = "God Human",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyGodhuman")
-    end
-})
-Shop:AddButton({
-    Name = "Sanguine Art",
-    Callback = function()
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt", true)
-        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuySanguineArt")
+
+-- Toggle Auto Mua Melee
+Shop:AddToggle({
+    Name = "Auto Mua (Bật/Tắt)",
+    Default = GetSetting("AutoBuyMelee_Save", false),
+    Callback = function(Value)
+        _G.AutoBuyMelee = Value
+        _G.SaveData["AutoBuyMelee_Save"] = Value
+        SaveSettings()
+        
+        -- QUẢN LÝ NOCLIP
+        if Value then
+            _G.MeleeNoclip = game:GetService("RunService").Stepped:Connect(function()
+                if not _G.AutoBuyMelee then 
+                    if _G.MeleeNoclip then _G.MeleeNoclip:Disconnect() end
+                    return 
+                end
+                local char = game.Players.LocalPlayer.Character
+                if char then
+                    for _, v in pairs(char:GetDescendants()) do
+                        if v:IsA("BasePart") and v.CanCollide then
+                            v.CanCollide = false
+                        end
+                    end
+                end
+            end)
+        else
+            if _G.MeleeNoclip then 
+                _G.MeleeNoclip:Disconnect()
+                _G.MeleeNoclip = nil
+            end
+            local char = game.Players.LocalPlayer.Character
+            if char then
+                for _, v in pairs(char:GetDescendants()) do
+                    if v:IsA("BasePart") then v.CanCollide = true end
+                end
+            end
+        end
+
+        -- LOGIC CHÍNH
+        task.spawn(function()
+            while _G.AutoBuyMelee do
+                task.wait()
+                if not _G.AutoBuyMelee then break end
+
+                local data = MeleeCoords[SelectedMelee]
+                if not data or not data.Pos then
+                    redzlib:Notify({
+                        Title = "Bear Hub",
+                        Message = "Lỗi: Không tìm thấy toạ độ cho Melee này ở Sea hiện tại!",
+                        Duration = 3
+                    })
+                    _G.AutoBuyMelee = false
+                    break
+                end
+
+                local lp = game.Players.LocalPlayer
+                if lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") then
+                    local hrp = lp.Character.HumanoidRootPart
+                    local dist = (hrp.Position - data.Pos.Position).Magnitude
+
+                    if dist > 15 then
+                        -- Sử dụng hàm _tp từ file text
+                        _tp(data.Pos)
+                    else
+                        -- Dừng tween nếu đang chạy
+                        shouldTween = false
+                        hrp.CFrame = data.Pos
+                        
+                        -- Mua Melee
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer(data.Key)
+                        game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("BuyItem", data.Key)
+                        
+                        redzlib:Notify({
+                            Title = "Bear Hub",
+                            Message = "Đã mua: " .. SelectedMelee,
+                            Duration = 2
+                        })
+                        task.wait(1)
+                    end
+                end
+            end
+        end)
     end
 })
 Shop:AddSection("Sword")
