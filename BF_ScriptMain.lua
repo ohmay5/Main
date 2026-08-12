@@ -7557,87 +7557,67 @@ Event:AddToggle({
 end
 Maestry:AddSection({"Mastery"})
 
-local CAKE_MOBS = X or {"Cookie Crafter", "Cake Guard", "Baking Staff", "Head Baker"}
-local BONE_MOBS = P or {"Reborn Skeleton", "Living Zombie", "Demonic Soul", "Posessed Mummy"}
+local islands = { "Cake", "Bone" }
+Maestry:AddDropdown({
+    Title = "Select Method",
+    Description = "",
+    Options= islands,
+    Default = "Cake",
+    Callback = function(I)
+        SelectIsland = I
+    end
+})
 
--- Biến lưu lựa chọn đảo
-_G.SelectedIsland = "Cake" -- Mặc định là "Cake"
-
--- Hàm lấy quái gần nhất từ danh sách
-local function GetNearestMobFromList(mobList)
+-- FUNÇÃO: pegar inimigo mais próximo dentro de uma lista
+local function GetNearestMobFromList(list)
     local plr = game.Players.LocalPlayer
-    local hrp = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return nil end
-    local closestMob, shortestDist = nil, math.huge
+    local root = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+    if not root then return nil end
+
+    local nearest, dist = nil, math.huge
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
-        if G.Alive(mob) and table.find(mobList, mob.Name) and mob:FindFirstChild("HumanoidRootPart") then
-            local dist = (mob.HumanoidRootPart.Position - hrp.Position).Magnitude
-            if dist < shortestDist then
-                shortestDist = dist
-                closestMob = mob
+        if table.find(list, mob.Name)
+        and mob:FindFirstChild("HumanoidRootPart")
+        and mob:FindFirstChild("Humanoid")
+        and mob.Humanoid.Health > 0 then
+            local d = (mob.HumanoidRootPart.Position - root.Position).Magnitude
+            if d < dist then
+                dist = d
+                nearest = mob
             end
         end
     end
-    return closestMob
+    return nearest
 end
 
-local function HasAliveMob(mobList)
+-- FUNÇÃO: verificar se ainda existe mob vivo
+local function HasAliveMob(list)
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
-        if G.Alive(mob) and table.find(mobList, mob.Name) then
+        if table.find(list, mob.Name)
+        and mob:FindFirstChild("Humanoid")
+        and mob.Humanoid.Health > 0 then
             return true
         end
     end
     return false
 end
 
--- UI Dropdown chọn đảo
-Maestry:AddDropdown({
-    Name = "Select Island For Mastery",
-    Options = {"Cake", "Bone"},
-    Default = GetSetting("SelectedIsland_Save", "Cake"),
-    Callback = function(I)
-        _G.SelectedIsland = I
-        _G.SaveData["SelectedIsland_Save"] = I
-        SaveSettings()
-    end,
-})
 
--- ========================================
--- MASTERY FRUIT
--- ========================================
+
+-- CÓDIGO MODIFICADO COM SAVE
 Maestry:AddToggle({
     Name = "Auto Farm Mastery Fruit",
-    Default = GetSetting("FarmMastery_Dev_Save", false),
+    Description = "",
+    -- 1. Usa GetSetting para pegar o valor salvo (ou false se não tiver salvo)
+    Default = GetSetting("FarmMastery_Dev", false), 
     Callback = function(I)
         _G.FarmMastery_Dev = I
-        _G.SaveData["FarmMastery_Dev_Save"] = I
+        
+        -- 2. Salva o valor na tabela e escreve no arquivo
+        _G.SaveData["FarmMastery_Dev"] = I 
         SaveSettings()
     end
 })
-
--- Skill Control cho Fruit Mastery
-_G.FruitSkills = _G.FruitSkills or { Z = false, X = false, C = false, V = false, F = false }
-
-Maestry:AddToggle({ Name = "Use Skill Z (Fruit)", Default = false, Callback = function(v) _G.FruitSkills.Z = v end })
-Maestry:AddToggle({ Name = "Use Skill X (Fruit)", Default = false, Callback = function(v) _G.FruitSkills.X = v end })
-Maestry:AddToggle({ Name = "Use Skill C (Fruit)", Default = false, Callback = function(v) _G.FruitSkills.C = v end })
-Maestry:AddToggle({ Name = "Use Skill V (Fruit)", Default = false, Callback = function(v) _G.FruitSkills.V = v end })
-Maestry:AddToggle({ Name = "Use Skill F (Fruit)", Default = false, Callback = function(v) _G.FruitSkills.F = v end })
-
--- Hàm sử dụng skill Fruit dựa trên cài đặt
-local function UseFruitSkills()
-    weaponSc("Blox Fruit")
-    if _G.FruitSkills.Z then Useskills("Blox Fruit", "Z") end
-    if _G.FruitSkills.X then Useskills("Blox Fruit", "X") end
-    if _G.FruitSkills.C then Useskills("Blox Fruit", "C") end
-    if _G.FruitSkills.V then Useskills("Blox Fruit", "V") end
-    if _G.FruitSkills.F then
-        vim1:SendKeyEvent(true, "F", false, game)
-        vim1:SendKeyEvent(false, "F", false, game)
-    end
-end
-
--- Logic Farm Mastery Fruit
 spawn(function()
     RunSer.RenderStepped:Connect(function()
         if _G.FarmMastery_Dev then
@@ -7656,7 +7636,8 @@ spawn(function()
     while task.wait(Sec) do
         if _G.FarmMastery_Dev then
             pcall(function()
-                local list = (_G.SelectedIsland == "Cake" and CAKE_MOBS or BONE_MOBS)
+
+                local list = (SelectIsland == "Cake" and X or P)
                 local mob = GetNearestMobFromList(list)
 
                 if mob then
@@ -7665,55 +7646,43 @@ spawn(function()
                     repeat
                         task.wait()
 
-                        if not mob.Parent or not mob:FindFirstChild("Humanoid") or mob.Humanoid.Health <= 0 or not mob:FindFirstChild("HumanoidRootPart") then
+                        if not mob.Parent
+                        or not mob:FindFirstChild("Humanoid")
+                        or mob.Humanoid.Health <= 0
+                        or not mob:FindFirstChild("HumanoidRootPart") then
                             mob = GetNearestMobFromList(list)
                             if not mob then break end
                         end
 
                         MousePos = mob.HumanoidRootPart.Position
-
-                        -- Sử dụng logic từ G.Mas của Gravity Hub nhưng đã được sửa lỗi
-                        if not mob:GetAttribute("Locked") then
-                            mob:SetAttribute("Locked", mob.HumanoidRootPart.CFrame)
-                        end
-                        PosMon = (mob:GetAttribute("Locked")).Position
-                        BringEnemy()
-                        EquipWeapon(_G.SelectWeapon)
-
-                        if mob.Humanoid.Health <= HealthM then
-                            _tp(mob.HumanoidRootPart.CFrame * CFrame.new(0, 20, 0))
-                            UseFruitSkills()
-                        else
-                            weaponSc("Melee")
-                            _tp(mob.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
-                        end
+                        G.Mas(mob, _G.FarmMastery_Dev)
 
                         if not HasAliveMob(list) then break end
 
                     until not _G.FarmMastery_Dev
 
                 else
-                    if _G.SelectedIsland == "Cake" then
+                    if SelectIsland == "Cake" then
                         _tp(CFrame.new(-1943.6765, 251.5095, -12337.8808))
                     else
                         _tp(CFrame.new(-9495.6806, 453.5862, 5977.3486))
                     end
                 end
+
             end)
         end
     end
 end)
 
--- ========================================
--- MASTERY GUN
--- ========================================
+
+
+-- AUTO FARM MASTERY GUN
 Maestry:AddToggle({
     Name = "Auto Farm Mastery Gun",
-    Default = GetSetting("FarmMastery_G_Save", false),
+    Description = "",
+    Default = false,
     Callback = function(I)
         _G.FarmMastery_G = I
-        _G.SaveData["FarmMastery_G_Save"] = I
-        SaveSettings()
     end
 })
 
@@ -7721,7 +7690,8 @@ spawn(function()
     while task.wait(Sec) do
         if _G.FarmMastery_G then
             pcall(function()
-                local list = (_G.SelectedIsland == "Cake" and CAKE_MOBS or BONE_MOBS)
+
+                local list = (SelectIsland == "Cake" and X or P)
                 local mob = GetNearestMobFromList(list)
 
                 if mob then
@@ -7730,42 +7700,26 @@ spawn(function()
                     repeat
                         task.wait()
 
-                        if not mob.Parent or not mob:FindFirstChild("Humanoid") or mob.Humanoid.Health <= 0 or not mob:FindFirstChild("HumanoidRootPart") then
+                        if not mob.Parent
+                        or not mob:FindFirstChild("Humanoid")
+                        or mob.Humanoid.Health <= 0
+                        or not mob:FindFirstChild("HumanoidRootPart") then
                             mob = GetNearestMobFromList(list)
                             if not mob then break end
                         end
 
                         MousePos = mob.HumanoidRootPart.Position
+                        G.Masgun(mob, _G.FarmMastery_G)
 
-                        -- Sử dụng logic từ G.Masgun của Gravity Hub
-                        if not mob:GetAttribute("Locked") then
-                            mob:SetAttribute("Locked", mob.HumanoidRootPart.CFrame)
-                        end
-                        PosMon = (mob:GetAttribute("Locked")).Position
-                        BringEnemy()
-                        EquipWeapon(_G.SelectWeapon)
-
-                        if mob.Humanoid.Health <= HealthM then
-                            _tp(mob.HumanoidRootPart.CFrame * CFrame.new(0, 35, 8))
-                            Useskills("Gun", "Z")
-                            Useskills("Gun", "X")
-                        else
-                            weaponSc("Melee")
-                            _tp(mob.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
-                        end
-
-                        -- Xử lý bắn súng đặc biệt (Skull Guitar)
                         local modules = replicated:FindFirstChild("Modules")
-                        local K = modules and modules:FindFirstChild("Net")
-                        local shoot = K and K:FindFirstChild("RE/ShootGunEvent")
-                        local tool = plr.Character and plr.Character:FindFirstChildOfClass("Tool")
+                        local K = modules:FindFirstChild("Net")
+                        local shoot = K:FindFirstChild("RE/ShootGunEvent")
+                        local tool = plr.Character:FindFirstChildOfClass("Tool")
 
                         if tool and tool.Name == "Skull Guitar" then
                             SoulGuitar = true
-                            if tool:FindFirstChild("RemoteEvent") then
-                                tool.RemoteEvent:FireServer("TAP", MousePos)
-                            end
-                        elseif tool and shoot then
+                            tool.RemoteEvent:FireServer("TAP", MousePos)
+                        elseif tool then
                             SoulGuitar = false
                             shoot:FireServer(MousePos, { mob.HumanoidRootPart })
                         end
@@ -7777,91 +7731,119 @@ spawn(function()
                     SoulGuitar = false
 
                 else
-                    if _G.SelectedIsland == "Cake" then
+                    if SelectIsland == "Cake" then
                         _tp(CFrame.new(-1943.6765, 251.5095, -12337.8808))
                     else
                         _tp(CFrame.new(-9495.6806, 453.5862, 5977.3486))
                     end
                 end
+
             end)
         end
     end
 end)
-
--- ========================================
--- MASTERY SWORD
--- ========================================
-_G.FarmMastery_S = _G.FarmMastery_S or false
-
 Maestry:AddToggle({
-    Name = "Auto Farm Mastery All Sword",
-    Default = GetSetting("FarmMastery_S_Save", false),
-    Callback = function(I)
-        _G.FarmMastery_S = I
-        _G.SaveData["FarmMastery_S_Save"] = I
-        SaveSettings()
-    end
+	Name = "Auto Farm 600 In Swords",
+	Description = "",
+	Default = false,
+	Callback = function(I)
+		_G.FarmMastery_S = I
+	end,
 })
 
 spawn(function()
-    while wait(Sec) do
-        pcall(function()
-            if _G.FarmMastery_S then
-                local list = (_G.SelectedIsland == "Cake" and CAKE_MOBS or BONE_MOBS)
-                local mob = GetNearestMobFromList(list)
+	while wait(0.1) do
+		if _G.FarmMastery_S then
+			pcall(function()
+				local character = game.Players.LocalPlayer.Character
+				if not character or not character:FindFirstChild("HumanoidRootPart") then return end
 
-                -- Lấy tất cả các kiếm trong inventory
-                local inventory = replicated.Remotes.CommF_:InvokeServer("getInventory")
-                for _, item in next, inventory do
-                    if type(item) == "table" and item.Type == "Sword" then
-                        local swordName = item.Name
-                        if tonumber(item.Mastery) >= 1 and tonumber(item.Mastery) <= 599 then
-                            if GetBP(swordName) then
-                                if mob then
-                                    repeat
-                                        wait()
-                                        -- Sử dụng logic từ G.Sword của Gravity Hub
-                                        if not mob:GetAttribute("Locked") then
-                                            mob:SetAttribute("Locked", mob.HumanoidRootPart.CFrame)
-                                        end
-                                        PosMon = (mob:GetAttribute("Locked")).Position
-                                        BringEnemy()
-                                        weaponSc("Sword")
-                                        _tp(mob.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
-                                        if RandomCFrame then
-                                            wait(.1)
-                                            _tp(mob.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25))
-                                            wait(.1)
-                                            _tp(mob.HumanoidRootPart.CFrame * CFrame.new(25, 30, 0))
-                                            wait(.1)
-                                            _tp(mob.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0))
-                                            wait(.1)
-                                            _tp(mob.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25))
-                                            wait(.1)
-                                            _tp(mob.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0))
-                                        end
-                                    until _G.FarmMastery_S == false or not mob.Parent or mob.Humanoid.Health <= 0
-                                else
-                                    if _G.SelectedIsland == "Cake" then
-                                        _tp(CFrame.new(-1943.6765, 251.5095, -12337.8808))
-                                    else
-                                        _tp(CFrame.new(-9495.6806, 453.5862, 5977.3486))
-                                    end
-                                end
-                            else
-                                replicated.Remotes.CommF_:InvokeServer("LoadItem", swordName)
-                            end
-                            break -- Chỉ farm một cây kiếm một lúc
-                        elseif tonumber(item.Mastery) >= 600 then
-                            -- Bỏ qua nếu mastery đã max
-                        end
-                        break
-                    end
-                end
-            end
-        end)
-    end
+				-- ===============================
+				-- PRIORIDADE 100000 PARA MOBS
+				-- ===============================
+				local Target = GetClosestMob()
+
+				-- Só usa o CFrame SE NÃO EXISTIR MOB
+				if not Target then
+					local distToArea = (character.HumanoidRootPart.Position - FarmPos.Position).Magnitude
+					if distToArea > 150 then
+						_tp(FarmPos)
+						wait(0.5)
+					end
+				end
+
+				-- Procura espada e farma mastery
+				for _, e in next, replicated.Remotes.CommF_:InvokeServer("getInventory") do
+					if type(e) == "table" and e.Type == "Sword" then
+						local SwordName = e.Name
+						local Mastery = tonumber(e.Mastery) or 0
+
+						if Mastery < 600 then
+							if GetBP(SwordName) then
+								if Target then
+									repeat
+										wait()
+										if _G.FarmMastery_S
+											and Target
+											and Target:FindFirstChild("HumanoidRootPart")
+											and Target.Humanoid.Health > 0 then
+
+											G.Sword(Target, _G.FarmMastery_S)
+										end
+									until not _G.FarmMastery_S
+										or not Target.Parent
+										or Target.Humanoid.Health <= 0
+								end
+							else
+								replicated.Remotes.CommF_:InvokeServer("LoadItem", SwordName)
+							end
+							break
+						end
+					end
+				end
+			end)
+		end
+	end
 end)
+Maestry:AddToggle({
+    Name = "Fruit Skill Z",
+    Default = false,
+    Callback = function(v)
+        _G.FruitSkills.Z = v
+    end,
+})
+
+Maestry:AddToggle({
+    Name = "Fruit Skill X",
+    Default = false,
+    Callback = function(v)
+        _G.FruitSkills.X = v
+    end,
+})
+
+Maestry:AddToggle({
+    Name = "Fruit Skill C",
+    Default = false,
+    Callback = function(v)
+        _G.FruitSkills.C = v
+    end,
+})
+
+Maestry:AddToggle({
+    Name = "Fruit Skill V",
+    Default = false,
+    Callback = function(v)
+        _G.FruitSkills.V = v
+    end,
+})
+
+Maestry:AddToggle({
+    Name = "Fruit Skill F",
+    Default = false,
+    Callback = function(v)
+        _G.FruitSkills.F = v
+    end,
+})
 
 if World2 then
 Race:AddSection({"Upgrade Races"});
