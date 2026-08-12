@@ -2389,16 +2389,10 @@ imageButton.Image = "rbxassetid://114476175638281"
 imageButton.BackgroundTransparency = 1
 imageButton.Parent = screenGui
 
--- Adicionar cantos arredondados
+-- Deixar o botão completamente redondo
 local uiCorner = Instance.new("UICorner")
-uiCorner.CornerRadius = UDim.new(0, 8)
+uiCorner.CornerRadius = UDim.new(1, 0)
 uiCorner.Parent = imageButton
-
--- Adicionar borda AMARELA
-local uiStroke = Instance.new("UIStroke", imageButton)
-uiStroke.Thickness = 2
-uiStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-uiStroke.Color = Color3.fromRGB(150, 0, 255) -- Magenta/Rosa forte
 
 -- Variáveis para arrastar
 local dragging = false
@@ -2419,11 +2413,13 @@ end
 
 -- Detectar início do arrasto
 imageButton.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+        or input.UserInputType == Enum.UserInputType.Touch then
+
         dragging = true
         dragStart = input.Position
         startPos = imageButton.Position
-        
+
         input.Changed:Connect(function()
             if input.UserInputState == Enum.UserInputState.End then
                 dragging = false
@@ -2434,7 +2430,9 @@ end)
 
 -- Detectar movimento do mouse
 imageButton.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseMovement
+        or input.UserInputType == Enum.UserInputType.Touch then
+
         dragInput = input
     end
 end)
@@ -2448,8 +2446,10 @@ end)
 
 -- Abrir/Fechar GUI (Minimize)
 local isOpen = true
+
 imageButton.MouseButton1Click:Connect(function()
     isOpen = not isOpen
+
     if isOpen then
         Library:Minimize(false)
     else
@@ -4174,23 +4174,13 @@ spawn(function()
             local progress = rs.Remotes.CommF_:InvokeServer("EliteHunter", "Progress")
             if rs:FindFirstChild("Diablo") or rs:FindFirstChild("Deandre") or rs:FindFirstChild("Urban")
             or ws:FindFirstChild("Diablo") or ws:FindFirstChild("Deandre") or ws:FindFirstChild("Urban") then
-                EliteHunter:SetDesc("Status : ✅️ | Killed: " .. progress)
+                EliteHunter:SetDesc("Status : ✅️ Có | Killed: " .. progress)
             else
-                EliteHunter:SetDesc("Status : ❌️ | Killed: " .. progress)
+                EliteHunter:SetDesc("Status : ❌️ Không | Killed: " .. progress)
             end
         end)
     end
 end)
-local r = Farm:AddParagraph({ 
-     Title = "Elites Process ", 
-     Content = "" });
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			r:SetDesc("Elite Procress :  " .. replicated.Remotes.CommF_:InvokeServer("EliteHunter", "Progress"));
-		end);
-	end;
-end);
 Farm:AddToggle({
 	Name = "Auto Elite Quest",
 	Description = "làm nhiệm vụ đánh elite",
@@ -12027,85 +12017,97 @@ Fruit:AddToggle({
 Fruit:AddSection({"Raid Farming"});
 
 Fruit:AddToggle({
-    Name  = "Auto Start Raid",
-    Description = "",
+    Name = "Auto Raid",
+    Description = "Auto Start Raid + Auto Complete Raid",
     Default = false,
+
     Callback = function(I)
         _G.Auto_StartRaid = I
+        _G.Raiding = I
+
         if not I then
+            _G.Auto_StartRaid = false
             _G.Raiding = false
-            _G.KillH = false
+            NextIs = false
         end
     end,
 });
-
--- // 1. Loop Tự động bắt đầu Raid
-Task.spawn(function()
-    while task.wait(3) do
+task.spawn(function()
+    while task.wait(10) do -- Dùng task.wait trực tiếp trong điều kiện vòng lặp
         if _G.Auto_StartRaid then
             pcall(function()
+                -- Kiểm tra Raid Timer và Microchip
                 local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
-                
-                -- Logic vào Raid
                 if not raidTimer.Visible and GetBP("Special Microchip") then
+                    
+                    -- Lưu vị trí hiện tại của người chơi để sau này quay lại
                     local oldPos = plr.Character:GetPivot()
+                    
                     if World2 then
                         _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
-                        task.wait(0.5)
+                        task.wait(0.5) -- Đợi teleport hoàn tất
                         fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
+                        
                     elseif World3 then
+                        -- Thử vào cổng nếu cần
                         replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
-                        task.wait(0.8)
+                        task.wait(0.8) 
+                        
+                        -- Di chuyển đến nút bấm
                         _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
                         task.wait(0.5)
                         fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
                     end
+                    
+                    -- Quay lại vị trí cũ sau khi đã bấm nút
                     task.wait(0.5)
                     _tp(oldPos)
-                end
-
-                -- Logic Raid
-                if raidTimer.Visible then
-                    _G.Raiding = true
-                else
-                    _G.Raiding = false
+                    print("Đã kích hoạt Raid và quay trở lại vị trí cũ.")
                 end
             end)
         end
     end
 end)
-
--- // Các hàm chức năng
 function IsIslandRaid(cu)
     local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
     if locs:FindFirstChild("Island " .. cu) then
         local min = 4500
+
         for _, v in ipairs(locs:GetChildren()) do
             if v.Name == "Island " .. cu then
                 local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist < min then min = dist end
+                if dist < min then
+                    min = dist
+                end
             end
         end
+
         for _, v in ipairs(locs:GetChildren()) do
             if v.Name == "Island " .. cu then
                 local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist <= min then return v end
+                if dist <= min then
+                    return v
+                end
             end
         end
     end
 end
 
+-- Ordem das ilhas (5 → 1)
 function getNextIsland()
     local order = {5,4,3,2,1}
     for _, id in ipairs(order) do
         local island = IsIslandRaid(id)
         if island then
             local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-            if dist <= 4500 then return island end
+            if dist <= 4500 then
+                return island
+            end
         end
     end
 end
 
+-- Atacar inimigos usando SEU G.Kill
 function attackNearbyEnemies()
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
@@ -12122,34 +12124,38 @@ function attackNearbyEnemies()
     end
 end
 
--- // 3. Loop G.Kill đánh thường
+-- Loop principal (igual ao seu)
 spawn(function()
-    pcall(function()
-        while wait(Sec) do
-            if _G.Raiding then
-                if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
-                    attackNearbyEnemies()
-                    local nextIsland = getNextIsland()
-                    if nextIsland then
-                        _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-                        NextIs = true
-                    else
-                        NextIs = false
-                    end
-                else
-                    NextIs = false
-                end
+pcall(function()
+while wait(Sec) do
+    if _G.Raiding then
+
+        if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
+
+            -- Matar próximos
+            attackNearbyEnemies()
+
+            -- Pegar ilha certa
+            local nextIsland = getNextIsland()
+            if nextIsland then
+                -- USA SEU TELEPORTE REAL
+                _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+
+                NextIs = true
             else
                 NextIs = false
             end
+
+        else
+            NextIs = false
         end
-    end)
+
+    else
+        NextIs = false
+    end
+end
 end)
-
-
-
-
-
+end)
 Fruit:AddToggle({
 	Name = "Auto Awakening",
 	Description = "",

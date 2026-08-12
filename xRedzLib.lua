@@ -87,9 +87,9 @@ local redzlib = {
 		Version = "1.1.0"
 	},
 	Save = {
-		UISize = {460, 320},
+		UISize = {480, 330},
         TabSize = 140,
-		Theme = "Purple"
+		Theme = "Red"
 	},
 	Settings = {},
 	Connection = {},
@@ -1512,38 +1512,103 @@ function redzlib:MakeWindow(Configs)
 		}), "DarkText")
 	}), "Text")
 	
-	local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
-		Size = UDim2.new(0, redzlib.Save.TabSize, 1, -TopBar.Size.Y.Offset),
-		ScrollBarImageColor3 = Theme["Color Theme"],
-		Position = UDim2.new(0, 0, 1, 0),
-		AnchorPoint = Vector2.new(0, 1),
-		ScrollBarThickness = 1.5,
-		BackgroundTransparency = 1,
-		ScrollBarImageTransparency = 0.2,
-		CanvasSize = UDim2.new(),
-		AutomaticCanvasSize = "Y",
-		ScrollingDirection = "Y",
-		BorderSizePixel = 0,
-		Name = "Tab Scroll"
-	}, {
-		Create("UIPadding", {
-			PaddingLeft = UDim.new(0, 10),
-			PaddingRight = UDim.new(0, 10),
-			PaddingTop = UDim.new(0, 10),
-			PaddingBottom = UDim.new(0, 10)
-		}), Create("UIListLayout", {
-			Padding = UDim.new(0, 5)
-		})
-	}), "ScrollBar")
 	
-	local Containers = Create("Frame", Components, {
-		Size = UDim2.new(1, -MainScroll.Size.X.Offset, 1, -TopBar.Size.Y.Offset),
-		AnchorPoint = Vector2.new(1, 1),
-		Position = UDim2.new(1, 0, 1, 0),
-		BackgroundTransparency = 1,
-		ClipsDescendants = true,
-		Name = "Containers"
-	})
+	--// SEARCH BOX
+local SearchBox = Create("TextBox", Components, {
+    Size = UDim2.new(0, redzlib.Save.TabSize, 0, 28),
+    Position = UDim2.new(0, 0, 0, 0),
+    BackgroundColor3 = Theme["Color Hub 2"],
+    BackgroundTransparency = 0,
+    TextColor3 = Theme["Color Text"],
+    PlaceholderColor3 = Theme["Color Dark Text"],
+    PlaceholderText = "Search...",
+    Text = "",
+    TextSize = 10,
+    Font = Enum.Font.Gotham,
+    ClearTextOnFocus = false,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    BorderSizePixel = 0,
+    Name = "Search"
+})
+
+Make("Corner", SearchBox, UDim.new(0, 6))
+
+Create("UIPadding", SearchBox, {
+    PaddingLeft = UDim.new(0, 10),
+    PaddingRight = UDim.new(0, 10)
+})
+
+
+--// MAIN SCROLL
+local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
+    Size = UDim2.new(
+        0,
+        redzlib.Save.TabSize,
+        1,
+        -TopBar.Size.Y.Offset - 33
+    ),
+    ScrollBarImageColor3 = Theme["Color Theme"],
+    Position = UDim2.new(0, 0, 1, 0),
+    AnchorPoint = Vector2.new(0, 1),
+    ScrollBarThickness = 1.5,
+    BackgroundTransparency = 1,
+    ScrollBarImageTransparency = 0.2,
+    CanvasSize = UDim2.new(),
+    AutomaticCanvasSize = "Y",
+    ScrollingDirection = "Y",
+    BorderSizePixel = 0,
+    Name = "Tab Scroll"
+}, {
+    Create("UIPadding", {
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        PaddingTop = UDim.new(0, 10),
+        PaddingBottom = UDim.new(0, 10)
+    }),
+
+    Create("UIListLayout", {
+        Padding = UDim.new(0, 5)
+    })
+}), "ScrollBar")
+
+
+--// CONTAINERS
+local Containers = Create("Frame", Components, {
+    Size = UDim2.new(
+        1,
+        -MainScroll.Size.X.Offset,
+        1,
+        -TopBar.Size.Y.Offset
+    ),
+    AnchorPoint = Vector2.new(1, 1),
+    Position = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1,
+    ClipsDescendants = true,
+    Name = "Containers"
+})
+
+
+--// SEARCH TAB
+SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
+    local Query = SearchBox.Text:lower()
+
+    for _, TabData in ipairs(redzlib.Tabs) do
+        local Name = tostring(TabData.TabInfo.Name or ""):lower()
+
+        for _, Object in ipairs(MainScroll:GetChildren()) do
+            if Object:IsA("TextButton") then
+                local Label = Object:FindFirstChildWhichIsA("TextLabel")
+
+                if Label and Label.Text == TabData.TabInfo.Name then
+                    Object.Visible =
+                        Query == ""
+                        or Name:find(Query, 1, true) ~= nil
+                end
+            end
+        end
+    end
+end)
+	
 	
 	local ControlSize1, ControlSize2 = MakeDrag(Create("ImageButton", MainFrame, {
 		Size = UDim2.new(0, 35, 0, 35),
