@@ -918,7 +918,8 @@ local redzlib = {
 			["xoctagon"] = "rbxassetid://10747384037",
 			["xsquare"] = "rbxassetid://10747384217",
 			["zoomin"] = "rbxassetid://10747384552",
-			["zoomout"] = "rbxassetid://10747384679"
+			["zoomout"] = "rbxassetid://10747384679",
+			["ABC"] = "rbxassetid://6031280882"
 		}
 	end)()
 }
@@ -1722,29 +1723,22 @@ local MinimizeButton = SetProps(CloseButton:Clone(), {
 	Name = "Minimize"
 })
 
--- SETTINGS
-local SettingsButton = Create("TextButton", ButtonsFolder, {
-	Size = UDim2.new(0, 18, 0, 18),
+local SettingsButton = SetProps(CloseButton:Clone(), {
 	Position = UDim2.new(1, -60, 0.5),
-	AnchorPoint = Vector2.new(1, 0.5),
-	BackgroundTransparency = 1,
-	Text = "⚙",
-	TextColor3 = Theme["Color Text"],
-	TextSize = 14,
-	Font = Enum.Font.GothamBold,
-	AutoButtonColor = false,
+	Image = "rbxassetid://6031280882",
 	Name = "Settings"
 })
 
 SetChildren(ButtonsFolder, {
 	CloseButton,
-	MinimizeButton
+	MinimizeButton,
+	SettingsButton
 })
 
 local Minimized, SaveSize, WaitClick
 local Window, FirstTab = {}, false
 
--- THEME MENU
+--// THEME MENU
 local ThemePopup = Create("Frame", MainFrame, {
 	Size = UDim2.fromOffset(150, 0),
 	AutomaticSize = Enum.AutomaticSize.Y,
@@ -1752,22 +1746,22 @@ local ThemePopup = Create("Frame", MainFrame, {
 	BackgroundColor3 = Theme["Color Hub 2"],
 	BackgroundTransparency = 0,
 	Visible = false,
-	ZIndex = 50,
+	ZIndex = 100,
 	Name = "ThemePopup"
 })
 
 Make("Corner", ThemePopup, UDim.new(0, 7))
 
-Create("UIListLayout", ThemePopup, {
-	Padding = UDim.new(0, 3),
-	SortOrder = Enum.SortOrder.LayoutOrder
+Create("UIPadding", ThemePopup, {
+	PaddingTop = UDim.new(0, 7),
+	PaddingBottom = UDim.new(0, 7),
+	PaddingLeft = UDim.new(0, 7),
+	PaddingRight = UDim.new(0, 7)
 })
 
-Create("UIPadding", ThemePopup, {
-	PaddingTop = UDim.new(0, 6),
-	PaddingBottom = UDim.new(0, 6),
-	PaddingLeft = UDim.new(0, 6),
-	PaddingRight = UDim.new(0, 6)
+Create("UIListLayout", ThemePopup, {
+	Padding = UDim.new(0, 4),
+	SortOrder = Enum.SortOrder.LayoutOrder
 })
 
 local ThemeNames = {
@@ -1783,7 +1777,6 @@ local ThemeNames = {
 }
 
 for _, ThemeName in ipairs(ThemeNames) do
-
 	local ThemeButton = Create("TextButton", ThemePopup, {
 		Size = UDim2.new(1, 0, 0, 25),
 		BackgroundColor3 = Theme["Color Hub 2"],
@@ -1793,18 +1786,10 @@ for _, ThemeName in ipairs(ThemeNames) do
 		TextSize = 10,
 		Font = Enum.Font.GothamMedium,
 		AutoButtonColor = false,
-		ZIndex = 51
+		ZIndex = 101
 	})
 
 	Make("Corner", ThemeButton, UDim.new(0, 5))
-
-	ThemeButton.MouseEnter:Connect(function()
-		ThemeButton.BackgroundTransparency = 0.4
-	end)
-
-	ThemeButton.MouseLeave:Connect(function()
-		ThemeButton.BackgroundTransparency = 0
-	end)
 
 	ThemeButton.Activated:Connect(function()
 		redzlib:SetTheme(ThemeName)
@@ -1815,6 +1800,116 @@ end
 SettingsButton.Activated:Connect(function()
 	ThemePopup.Visible = not ThemePopup.Visible
 end)
+
+function Window:CloseBtn()
+	local Dialog = Window:Dialog({
+		Title = "Close",
+		Text = "You Want Close Ui?",
+		Options = {
+			{"Confirm", function()
+				ScreenGui:Destroy()
+			end},
+			{"Cancel"}
+		}
+	})
+end
+
+function Window:MinimizeBtn()
+	if WaitClick then return end
+	WaitClick = true
+
+	if Minimized then
+		MinimizeButton.Image = "rbxassetid://10734896206"
+
+		CreateTween({
+			MainFrame,
+			"Size",
+			SaveSize,
+			0.25,
+			true
+		})
+
+		ControlSize1.Visible = true
+		ControlSize2.Visible = true
+		Minimized = false
+	else
+		MinimizeButton.Image = "rbxassetid://10734924532"
+
+		SaveSize = MainFrame.Size
+
+		ControlSize1.Visible = false
+		ControlSize2.Visible = false
+		ThemePopup.Visible = false
+
+		CreateTween({
+			MainFrame,
+			"Size",
+			UDim2.fromOffset(
+				MainFrame.Size.X.Offset,
+				28
+			),
+			0.25,
+			true
+		})
+
+		Minimized = true
+	end
+
+	WaitClick = false
+end
+
+function Window:Minimize()
+	MainFrame.Visible = not MainFrame.Visible
+end
+
+function Window:AddMinimizeButton(Configs)
+	local Button = MakeDrag(Create("ImageButton", ScreenGui, {
+		Size = UDim2.fromOffset(35, 35),
+		Position = UDim2.fromScale(0.15, 0.15),
+		BackgroundTransparency = 1,
+		BackgroundColor3 = Theme["Color Hub 2"],
+		AutoButtonColor = false
+	}))
+
+	local Stroke, Corner
+
+	if Configs.Corner then
+		Corner = Make("Corner", Button)
+		SetProps(Corner, Configs.Corner)
+	end
+
+	if Configs.Stroke then
+		Stroke = Make("Stroke", Button)
+		SetProps(Stroke, Configs.Corner)
+	end
+
+	SetProps(Button, Configs.Button)
+	Button.Activated:Connect(Window.Minimize)
+
+	return {
+		Stroke = Stroke,
+		Corner = Corner,
+		Button = Button
+	}
+end
+
+function Window:Set(Val1, Val2)
+	if type(Val1) == "string" and type(Val2) == "string" then
+		Title.Text = Val1
+		Title.SubTitle.Text = Val2
+	elseif type(Val1) == "string" then
+		Title.Text = Val1
+	end
+end
+
+function Window:Dialog(Configs)
+	if MainFrame:FindFirstChild("Dialog") then
+		return
+	end
+
+	if Minimized then
+		Window:MinimizeBtn()
+	end
 		
 		local DTitle = Configs[1] or Configs.Title or "Dialog"
 		local DText = Configs[2] or Configs.Text or "This is a Dialog"
