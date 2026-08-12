@@ -67,6 +67,45 @@ local function SafeCall(Func, ...)
 end
 
 
+local HttpService = Services.HttpService
+local FolderName = "BaCoNhǎo Hub"
+local FileName = "Settings.json"
+local FullPath = FolderName .. "/" .. FileName
+
+if makefolder and not isfolder(FolderName) then 
+    makefolder(FolderName) 
+end
+
+_G.SaveData = _G.SaveData or {}
+
+function SaveSettings()
+    if not writefile then return false end
+    local success = pcall(function()
+        local json = HttpService:JSONEncode(_G.SaveData)
+        writefile(FullPath, json)
+    end)
+    return success
+end
+
+function LoadSettings()
+    if not (isfile and isfile(FullPath)) then return false end
+    local success, result = pcall(function()
+        local content = readfile(FullPath)
+        return HttpService:JSONDecode(content)
+    end)
+    if success and result then 
+        _G.SaveData = result
+        return true
+    end
+    return false
+end
+
+function GetSetting(name, default)
+    return _G.SaveData[name] ~= nil and _G.SaveData[name] or default
+end
+
+LoadSettings()
+
 local Players = Services.Players
 local CollectionService = Services.CollectionService
 local ReplicatedStorage = Services.ReplicatedStorage
