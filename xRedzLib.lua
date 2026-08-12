@@ -1538,29 +1538,37 @@ Create("UIPadding", SearchBox, {
     PaddingRight = UDim.new(0, 10)
 })
 
+-- MainScroll nằm dưới Search
 local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
-		Size = UDim2.new(0, redzlib.Save.TabSize, 1, -TopBar.Size.Y.Offset),
-		ScrollBarImageColor3 = Theme["Color Theme"],
-		Position = UDim2.new(0, 0, 1, 0),
-		AnchorPoint = Vector2.new(0, 1),
-		ScrollBarThickness = 1.5,
-		BackgroundTransparency = 1,
-		ScrollBarImageTransparency = 0.2,
-		CanvasSize = UDim2.new(),
-		AutomaticCanvasSize = "Y",
-		ScrollingDirection = "Y",
-		BorderSizePixel = 0,
-		Name = "Tab Scroll"
-	}, {
-		Create("UIPadding", {
-			PaddingLeft = UDim.new(0, 10),
-			PaddingRight = UDim.new(0, 10),
-			PaddingTop = UDim.new(0, 10),
-			PaddingBottom = UDim.new(0, 10)
-		}), Create("UIListLayout", {
-			Padding = UDim.new(0, 5)
-		})
-	}), "ScrollBar")
+    Size = UDim2.new(
+        0,
+        redzlib.Save.TabSize,
+        1,
+        -TopBar.Size.Y.Offset - 33
+    ),
+    Position = UDim2.new(0, 0, 1, 0),
+    AnchorPoint = Vector2.new(0, 1),
+    ScrollBarImageColor3 = Theme["Color Theme"],
+    ScrollBarThickness = 1.5,
+    BackgroundTransparency = 1,
+    ScrollBarImageTransparency = 0.2,
+    CanvasSize = UDim2.new(),
+    AutomaticCanvasSize = "Y",
+    ScrollingDirection = "Y",
+    BorderSizePixel = 0,
+    Name = "Tab Scroll"
+}, {
+    Create("UIPadding", {
+        PaddingLeft = UDim.new(0, 10),
+        PaddingRight = UDim.new(0, 10),
+        PaddingTop = UDim.new(0, 10),
+        PaddingBottom = UDim.new(0, 10)
+    }),
+
+    Create("UIListLayout", {
+        Padding = UDim.new(0, 5)
+    })
+}), "ScrollBar")
 	
 	local Containers = Create("Frame", Components, {
 		Size = UDim2.new(1, -MainScroll.Size.X.Offset, 1, -TopBar.Size.Y.Offset),
@@ -1571,18 +1579,19 @@ local MainScroll = InsertTheme(Create("ScrollingFrame", Components, {
 		Name = "Containers"
 	})
 	--// SEARCH TAB
+--// SEARCH TAB
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     local Query = SearchBox.Text:lower()
 
     for _, TabData in ipairs(redzlib.Tabs) do
-        local TabName = tostring(TabData.TabInfo.Name or "")
-        local TabButton
+        local Name = tostring(TabData.TabInfo.Name or ""):lower()
+
+        local TabButton = nil
 
         for _, Object in ipairs(MainScroll:GetChildren()) do
-            if Object:IsA("TextButton") and Object.Name == "Option" then
+            if Object:IsA("TextButton") then
                 local Label = Object:FindFirstChildWhichIsA("TextLabel")
-
-                if Label and Label.Text == TabName then
+                if Label and Label.Text == TabData.TabInfo.Name then
                     TabButton = Object
                     break
                 end
@@ -1591,7 +1600,7 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
 
         if TabButton then
             TabButton.Visible =
-                Query == "" or TabName:lower():find(Query, 1, true) ~= nil
+                Query == "" or Name:find(Query, 1, true) ~= nil
         end
     end
 end)
