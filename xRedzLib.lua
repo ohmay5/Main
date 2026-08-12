@@ -8,7 +8,7 @@ local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 local PlayerMouse = Player:GetMouse()
 
-local BaCon = {
+local redzlib = {
 	Themes = {
 		["Dark +"] = {
 			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(25, 25, 25)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 25, 25))}),
@@ -87,8 +87,8 @@ local BaCon = {
 		Version = "1.1.0"
 	},
 	Save = {
-		UISize = {480, 330},
-        TabSize = 140,
+		UISize = {460, 340},
+		TabSize = 150,
 		Theme = "Red"
 	},
 	Settings = {},
@@ -926,12 +926,12 @@ local BaCon = {
 local ViewportSize = workspace.CurrentCamera.ViewportSize
 local UIScale = ViewportSize.Y / 450
 
-local Settings = BaCon.Settings
-local Flags = BaCon.Flags
+local Settings = redzlib.Settings
+local Flags = redzlib.Flags
 
 local SetProps, SetChildren, InsertTheme, Create do
 	InsertTheme = function(Instance, Type)
-		table.insert(BaCon.Instances, {
+		table.insert(redzlib.Instances, {
 			Instance = Instance,
 			Type = Type
 		})
@@ -980,14 +980,14 @@ local SetProps, SetChildren, InsertTheme, Create do
 			local decode = HttpService:JSONDecode(readfile(file))
 			
 			if type(decode) == "table" then
-				if rawget(decode, "UISize") then BaCon.Save["UISize"] = decode["UISize"] end
-				if rawget(decode, "TabSize") then BaCon.Save["TabSize"] = decode["TabSize"] end
-				if rawget(decode, "Theme") and VerifyTheme(decode["Theme"]) then BaCon.Save["Theme"] = decode["Theme"] end
+				if rawget(decode, "UISize") then redzlib.Save["UISize"] = decode["UISize"] end
+				if rawget(decode, "TabSize") then redzlib.Save["TabSize"] = decode["TabSize"] end
+				if rawget(decode, "Theme") and VerifyTheme(decode["Theme"]) then redzlib.Save["Theme"] = decode["Theme"] end
 			end
 		end
 	end
 	
-	pcall(Save, "BaCon library V5.json")
+	pcall(Save, "redz library V5.json")
 end
 
 local Funcs = {} do
@@ -1047,7 +1047,7 @@ local Funcs = {} do
 	end
 end
 
-local Connections, Connection = {}, BaCon.Connection do
+local Connections, Connection = {}, redzlib.Connection do
 	local function NewConnectionList(List)
 		if type(List) ~= "table" then return end
 		
@@ -1129,7 +1129,7 @@ local GetFlag, SetFlag, CheckFlag do
 end
 
 local ScreenGui = Create("ScreenGui", CoreGui, {
-	Name = "BaCon Library V5",
+	Name = "redz Library V5",
 }, {
 	Create("UIScale", {
 		Scale = UIScale,
@@ -1212,7 +1212,7 @@ local function MakeDrag(Instance)
 end
 
 local function VerifyTheme(Theme)
-	for name,_ in pairs(BaCon.Themes) do
+	for name,_ in pairs(redzlib.Themes) do
 		if name == Theme then
 			return true
 		end
@@ -1226,14 +1226,14 @@ local function SaveJson(FileName, save)
 	end
 end
 
-local Theme = BaCon.Themes[BaCon.Save.Theme]
+local Theme = redzlib.Themes[redzlib.Save.Theme]
 
 local function AddEle(Name, Func)
-	BaCon.Elements[Name] = Func
+	redzlib.Elements[Name] = Func
 end
 
 local function Make(Ele, Instance, props, ...)
-	local Element = BaCon.Elements[Ele](Instance, props, ...)
+	local Element = redzlib.Elements[Ele](Instance, props, ...)
 	return Element
 end
 
@@ -1380,7 +1380,7 @@ local function GetColor(Instance)
 end
 
 -- /////////// --
-function BaCon:GetIcon(index)
+function redzlib:GetIcon(index)
 	if type(index) ~= "string" or index:find("rbxassetid://") or #index == 0 then
 		return index
 	end
@@ -1403,15 +1403,15 @@ function BaCon:GetIcon(index)
 	return firstMatch or index
 end
 
-function BaCon:SetTheme(NewTheme)
+function redzlib:SetTheme(NewTheme)
 	if not VerifyTheme(NewTheme) then return end
 	
-	BaCon.Save.Theme = NewTheme
-	SaveJson("BaCon library V5.json", BaCon.Save)
-	Theme = BaCon.Themes[NewTheme]
+	redzlib.Save.Theme = NewTheme
+	SaveJson("redz library V5.json", redzlib.Save)
+	Theme = redzlib.Themes[NewTheme]
 	
 	Comnection:FireConnection("ThemeChanged", NewTheme)
-	table.foreach(BaCon.Instances, function(_,Val)
+	table.foreach(redzlib.Instances, function(_,Val)
 		if Val.Type == "Gradient" then
 			Val.Instance.Color = Theme["Color Hub 1"]
 		elseif Val.Type == "Frame" then
@@ -1430,13 +1430,13 @@ function BaCon:SetTheme(NewTheme)
 	end)
 end
 
-function BaCon:SetScale(NewScale)
+function redzlib:SetScale(NewScale)
 	NewScale = ViewportSize.Y / math.clamp(NewScale, 300, 2000)
 	UIScale, ScreenGui.Scale.Scale = NewScale, NewScale
 end
 
-function BaCon:MakeWindow(Configs)
-	local WTitle = Configs[1] or Configs.Name or Configs.Title or "BaCon Library V5"
+function redzlib:MakeWindow(Configs)
+	local WTitle = Configs[1] or Configs.Name or Configs.Title or "redz Library V5"
 	local WMiniText = Configs[2] or Configs.SubTitle or "By 青龙脚本"
 	
 	Settings.ScriptFile = Configs[3] or Configs.SaveFolder or false
@@ -1457,7 +1457,7 @@ function BaCon:MakeWindow(Configs)
 		end
 	end;LoadFile()
 	
-	local UISizeX, UISizeY = unpack(BaCon.Save.UISize)
+	local UISizeX, UISizeY = unpack(redzlib.Save.UISize)
 	local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
 		Size = UDim2.fromOffset(UISizeX, UISizeY),
 		Position = UDim2.new(0.5, -UISizeX/2, 0.5, -UISizeY/2),
@@ -1512,9 +1512,7 @@ function BaCon:MakeWindow(Configs)
 		}), "DarkText")
 	}), "Text")
 	
-	
-	--// SEARCH BOX
-local SearchBox = Create("TextBox", Components, {
+	local SearchBox = Create("TextBox", Components, {
     Size = UDim2.new(0, BaCon.Save.TabSize, 0, 28),
     Position = UDim2.new(0, 0, 0, 0),
     BackgroundColor3 = Theme["Color Hub 2"],
@@ -1637,30 +1635,7 @@ SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
     end
 end)
 
-
---// SEARCH FUNCTION
-AddSearchBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local Query = AddSearchBox.Text:lower():gsub("^%s+", ""):gsub("%s+$", "")
-
-    for _, TabData in ipairs(BaCon.Tabs) do
-        local Container = TabData.Cont
-
-        for _, Object in ipairs(Container:GetChildren()) do
-            if Object:IsA("GuiObject") then
-
-                local SearchText = Object:GetAttribute("SearchText")
-
-                if SearchText then
-                    SearchText = tostring(SearchText):lower()
-
-                    Object.Visible =
-                        Query == ""
-                        or SearchText:find(Query, 1, true) ~= nil
-                end
-            end
-        end
-    end
-end)
+	
 	local ControlSize1, ControlSize2 = MakeDrag(Create("ImageButton", MainFrame, {
 		Size = UDim2.new(0, 35, 0, 35),
 		Position = MainFrame.Size,
@@ -1692,14 +1667,14 @@ end)
 	
 	ConnectSave(ControlSize1, function()
 		if not Minimized then
-			BaCon.Save.UISize = {MainFrame.Size.X.Offset, MainFrame.Size.Y.Offset}
-			SaveJson("BaCon library V5.json", BaCon.Save)
+			redzlib.Save.UISize = {MainFrame.Size.X.Offset, MainFrame.Size.Y.Offset}
+			SaveJson("redz library V5.json", redzlib.Save)
 		end
 	end)
 	
 	ConnectSave(ControlSize2, function()
-		BaCon.Save.TabSize = MainScroll.Size.X.Offset
-		SaveJson("BaCon library V5.json", BaCon.Save)
+		redzlib.Save.TabSize = MainScroll.Size.X.Offset
+		SaveJson("redz library V5.json", redzlib.Save)
 	end)
 	
 	local ButtonsFolder = Create("Folder", TopBar, {
@@ -1907,9 +1882,9 @@ end)
 	end
 	function Window:SelectTab(TabSelect)
 		if type(TabSelect) == "number" then
-			BaCon.Tabs[TabSelect].func:Enable()
+			redzlib.Tabs[TabSelect].func:Enable()
 		else
-			for _,Tab in pairs(BaCon.Tabs) do
+			for _,Tab in pairs(redzlib.Tabs) do
 				if Tab.Cont == TabSelect.Cont then
 					Tab.func:Enable()
 				end
@@ -1923,7 +1898,7 @@ end)
 		local TName = Configs[1] or Configs.Title or "Tab!"
 		local TIcon = Configs[2] or Configs.Icon or ""
 		
-		TIcon = BaCon:GetIcon(TIcon)
+		TIcon = redzlib:GetIcon(TIcon)
 		if not TIcon:find("rbxassetid://") or TIcon:gsub("rbxassetid://", ""):len() < 6 then
 			TIcon = false
 		end
@@ -1999,7 +1974,7 @@ end)
 			end
 			Container.Parent = Containers
 			Container.Size = UDim2.new(1, 0, 1, 150)
-			table.foreach(BaCon.Tabs, function(_,Tab)
+			table.foreach(redzlib.Tabs, function(_,Tab)
 				if Tab.Cont ~= Container then
 					Tab.func:Disable()
 				end
@@ -2014,7 +1989,7 @@ end)
 		
 		FirstTab = true
 		local Tab = {}
-		table.insert(BaCon.Tabs, {TabInfo = {Name = TName, Icon = TIcon}, func = Tab, Cont = Container})
+		table.insert(redzlib.Tabs, {TabInfo = {Name = TName, Icon = TIcon}, func = Tab, Cont = Container})
 		Tab.Cont = Container
 		
 		function Tab:Disable()
@@ -2055,7 +2030,7 @@ end)
 			}), "Text")
 			
 			local Section = {}
-			table.insert(BaCon.Options, {type = "Section", Name = SectionName, func = Section})
+			table.insert(redzlib.Options, {type = "Section", Name = SectionName, func = Section})
 			function Section:Visible(Bool)
 				if Bool == nil then SectionFrame.Visible = not SectionFrame.Visible return end
 				SectionFrame.Visible = Bool
@@ -2329,41 +2304,6 @@ end)
 
     return Paragraph
 end
-		function Tab:AddButton(Configs)
-			local BName = Configs[1] or Configs.Name or Configs.Title or "Button!"
-			local BDescription = Configs.Desc or Configs.Description or ""
-			local Callback = Funcs:GetCallback(Configs, 2)
-			
-			local FButton, LabelFunc = ButtonFrame(Container, BName, BDescription, UDim2.new(1, -20))
-			
-			local ButtonIcon = Create("ImageLabel", FButton, {
-				Size = UDim2.new(0, 14, 0, 14),
-				Position = UDim2.new(1, -10, 0.5),
-				AnchorPoint = Vector2.new(1, 0.5),
-				BackgroundTransparency = 1,
-				Image = "rbxassetid://10709791437"
-			})
-			
-			FButton.Activated:Connect(function()
-				Funcs:FireCallback(Callback)
-			end)
-			
-			local Button = {}
-			function Button:Visible(...) Funcs:ToggleVisible(FButton, ...) end
-			function Button:Destroy() FButton:Destroy() end
-			function Button:Callback(...) Funcs:InsertCallback(Callback, ...) end
-			function Button:Set(Val1, Val2)
-				if type(Val1) == "string" and type(Val2) == "string" then
-					LabelFunc:SetTitle(Val1)
-					LabelFunc:SetDesc(Val2)
-				elseif type(Val1) == "string" then
-					LabelFunc:SetTitle(Val1)
-				elseif type(Val1) == "function" then
-					Callback = Val1
-				end
-			end
-			return Button
-		end
 		function Tab:AddToggle(Configs)
 			local TName = Configs[1] or Configs.Name or Configs.Title or "Toggle"
 			local TDesc = Configs.Desc or Configs.Description or ""
@@ -2417,6 +2357,7 @@ end
 			Button.Activated:Connect(function()
 				SetToggle(not Default)
 			end)
+			
 			local Toggle = {}
 			function Toggle:Visible(...) Funcs:ToggleVisible(Button, ...) end
 			function Toggle:Destroy() Button:Destroy() end
@@ -3085,4 +3026,4 @@ end
 	return Window
 end
 
-return BaCon
+return redzlib
