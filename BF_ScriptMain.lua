@@ -626,7 +626,7 @@ _B = false
 PosMon = nil
 
 _G.BringRange = _G.BringRange or 230
-_G.MaxBringMobs = _G.MaxBringMobs or 5 -- LIMITE DE MOBS
+_G.MaxBringMobs = _G.MaxBringMobs or 15 -- LIMITE DE MOBS
 
 _G.FarmPriorityElf = _G.FarmPriorityElf or false
 _G.FarmMastery_S   = _G.FarmMastery_S or false
@@ -704,6 +704,7 @@ BringEnemy = function()
     local hrp = char and char:FindFirstChild("HumanoidRootPart")  
     if not hrp then return end  
 
+    -- Simulation Radius  
     pcall(function()  
         sethiddenproperty(plr, "SimulationRadius", math.huge)  
     end)  
@@ -721,16 +722,9 @@ BringEnemy = function()
         if hum and root and hum.Health > 0 and not IsRaidMob(mob) then  
             local dist = (root.Position - targetPos).Magnitude  
 
-            if dist <= _G.BringRange and dist > 3 and not root:GetAttribute("Tweening") then  
-                count += 1  
+            if dist <= _G.BringRange and not root:GetAttribute("Tweening") then  
+                count += 2  
                 root:SetAttribute("Tweening", true)  
-
-                pcall(function()
-                    if root:IsA("BasePart") then
-                        if setscriptable then setscriptable(root, "NetworkOwner", true) end
-                        root.AssemblyLinearVelocity = Vector3.zero
-                    end
-                end)
 
                 local tween = TweenService:Create(  
                     root,  
@@ -739,30 +733,11 @@ BringEnemy = function()
                 )  
 
                 tween:Play()  
-
-                local connection
-                local finished = false
-                
-                connection = tween.Completed:Once(function()  
-                    if not finished then
-                        finished = true
-                        if root then  
-                            root:SetAttribute("Tweening", false)
-                            root.CFrame = CFrame.new(targetPos)
-                        end  
-                    end
-                end)
-
-                task.delay(0.6, function()
-                    if not finished then
-                        finished = true
-                        if connection then connection:Disconnect() end
-                        if root then
-                            root:SetAttribute("Tweening", false)
-                            root.CFrame = CFrame.new(targetPos)
-                        end
-                    end
-                end)
+                tween.Completed:Once(function()  
+                    if root then  
+                        root:SetAttribute("Tweening", false)  
+                    end  
+                end)  
             end  
         end  
     end
