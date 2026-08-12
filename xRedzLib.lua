@@ -10,39 +10,75 @@ local PlayerMouse = Player:GetMouse()
 
 local redzlib = {
 	Themes = {
-		Darker = {
-			["Color Hub 1"] = ColorSequence.new({
-				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(25, 25, 25)),
-				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)),
-				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 25, 25))
-			}),
+		["Dark +"] = {
+			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(25, 25, 25)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(25, 25, 25))}),
 			["Color Hub 2"] = Color3.fromRGB(30, 30, 30),
 			["Color Stroke"] = Color3.fromRGB(40, 40, 40),
-			["Color Theme"] = Color3.fromRGB(0, 255, 0),
+			["Color Theme"] = Color3.fromRGB(65, 150, 255),
 			["Color Text"] = Color3.fromRGB(243, 243, 243),
 			["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
 		},
 		Dark = {
-			["Color Hub 1"] = ColorSequence.new({
-				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(40, 40, 40)),
-				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(47.5, 47.5, 47.5)),
-				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(40, 40, 40))
-			}),
+			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(40, 40, 40)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(47.5, 47.5, 47.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(40, 40, 40))}),
 			["Color Hub 2"] = Color3.fromRGB(45, 45, 45),
 			["Color Stroke"] = Color3.fromRGB(65, 65, 65),
 			["Color Theme"] = Color3.fromRGB(65, 150, 255),
 			["Color Text"] = Color3.fromRGB(245, 245, 245),
 			["Color Dark Text"] = Color3.fromRGB(190, 190, 190)
 		},
+		Clear = {
+			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(230.5, 220, 210)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(230.5, 220, 210))}),
+			["Color Hub 2"] = Color3.fromRGB(230, 230, 230),
+			["Color Stroke"] = Color3.fromRGB(140, 140, 140),
+			["Color Theme"] = Color3.fromRGB(150, 150, 150),
+			["Color Text"] = Color3.fromRGB(24, 24, 24),
+			["Color Dark Text"] = Color3.fromRGB(50, 50, 50)
+		},
 		Purple = {
-			["Color Hub 1"] = ColorSequence.new({
-				ColorSequenceKeypoint.new(0.00, Color3.fromRGB(27.5, 25, 30)),
-				ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)),
-				ColorSequenceKeypoint.new(1.00, Color3.fromRGB(27.5, 25, 30))
-			}),
+			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(27.5, 25, 30)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(27.5, 25, 30))}),
 			["Color Hub 2"] = Color3.fromRGB(30, 30, 30),
 			["Color Stroke"] = Color3.fromRGB(40, 40, 40),
 			["Color Theme"] = Color3.fromRGB(150, 0, 255),
+			["Color Text"] = Color3.fromRGB(240, 240, 240),
+			["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
+		},
+		Red = {
+			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(27.5, 25, 30)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(27.5, 25, 30))}),
+			["Color Hub 2"] = Color3.fromRGB(30, 30, 30),
+			["Color Stroke"] = Color3.fromRGB(40, 40, 40),
+			["Color Theme"] = Color3.fromRGB(255, 15, 15),
+			["Color Text"] = Color3.fromRGB(240, 240, 240),
+			["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
+		},
+		Yellow = {
+			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(27.5, 25, 30)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(27.5, 25, 30))}),
+			["Color Hub 2"] = Color3.fromRGB(30, 30, 30),
+			["Color Stroke"] = Color3.fromRGB(40, 40, 40),
+			["Color Theme"] = Color3.fromRGB(255, 255, 15),
+			["Color Text"] = Color3.fromRGB(240, 240, 240),
+			["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
+		},
+		Green = {
+			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(27.5, 25, 30)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(27.5, 25, 30))}),
+			["Color Hub 2"] = Color3.fromRGB(30, 30, 30),
+			["Color Stroke"] = Color3.fromRGB(40, 40, 40),
+			["Color Theme"] = Color3.fromRGB(15, 255, 55),
+			["Color Text"] = Color3.fromRGB(240, 240, 240),
+			["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
+		},
+		Pink = {
+			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(27.5, 25, 30)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(27.5, 25, 30))}),
+			["Color Hub 2"] = Color3.fromRGB(30, 30, 30),
+			["Color Stroke"] = Color3.fromRGB(40, 40, 40),
+			["Color Theme"] = Color3.fromRGB(250, 160, 160),
+			["Color Text"] = Color3.fromRGB(240, 240, 240),
+			["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
+		},
+		Blue = {
+			["Color Hub 1"] = ColorSequence.new({ColorSequenceKeypoint.new(0.00, Color3.fromRGB(27.5, 25, 30)), ColorSequenceKeypoint.new(0.50, Color3.fromRGB(32.5, 32.5, 32.5)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(27.5, 25, 30))}),
+			["Color Hub 2"] = Color3.fromRGB(30, 30, 30),
+			["Color Stroke"] = Color3.fromRGB(40, 40, 40),
+			["Color Theme"] = Color3.fromRGB(10, 225, 250),
 			["Color Text"] = Color3.fromRGB(240, 240, 240),
 			["Color Dark Text"] = Color3.fromRGB(180, 180, 180)
 		}
@@ -51,9 +87,9 @@ local redzlib = {
 		Version = "1.1.0"
 	},
 	Save = {
-		UISize = {440, 300},
-        TabSize = 140,
-		Theme = "Darker"
+		UISize = {460, 330},
+        TabSize = 150,
+		Theme = "Red" 
 	},
 	Settings = {},
 	Connection = {},
@@ -1426,7 +1462,7 @@ function redzlib:MakeWindow(Configs)
 	local MainFrame = InsertTheme(Create("ImageButton", ScreenGui, {
 		Size = UDim2.fromOffset(UISizeX, UISizeY),
 		Position = UDim2.new(0.5, -UISizeX/2, 0.4, -UISizeY/2),
-		BackgroundTransparency = 0.7,
+		BackgroundTransparency = 0.03,
 		Name = "Hub"
 	}), "Main")
 	Make("Gradient", MainFrame, {
@@ -1920,30 +1956,264 @@ function redzlib:MakeWindow(Configs)
 			return Section
 		end
 		function Tab:AddParagraph(Configs)
-			local PName = Configs[1] or Configs.Title or "Paragraph"
-			local PDesc = Configs[2] or Configs.Text or ""
-			
-			local Frame, LabelFunc = ButtonFrame(Container, PName, PDesc, UDim2.new(1, -20))
-			
-			local Paragraph = {}
-			function Paragraph:Visible(...) Funcs:ToggleVisible(Frame, ...) end
-			function Paragraph:Destroy() Frame:Destroy() end
-			function Paragraph:SetTitle(Val)
-				LabelFunc:SetTitle(GetStr(Val))
-			end
-			function Paragraph:SetDesc(Val)
-				LabelFunc:SetDesc(GetStr(Val))
-			end
-			function Paragraph:Set(Val1, Val2)
-				if Val1 and Val2 then
-					LabelFunc:SetTitle(GetStr(Val1))
-					LabelFunc:SetDesc(GetStr(Val2))
-				elseif Val1 then
-					LabelFunc:SetDesc(GetStr(Val1))
-				end
-			end
-			return Paragraph
-		end
+    local PName = Configs[1] or Configs.Title or "Paragraph"
+    local PDesc = Configs[2] or Configs.Text or ""
+
+    -- ==========================================
+    -- DUAL STOCK
+    -- ==========================================
+    if Configs.DualStock then
+
+        -- Tạo frame chính giống Paragraph cũ
+        local Frame, LabelFunc = ButtonFrame(
+            Container,
+            "",
+            "",
+            UDim2.new(1, -20)
+        )
+
+        Frame.Size = UDim2.new(1, -20, 0, 180)
+
+        -- ==========================================
+        -- TITLE: FRUIT STOCK
+        -- ==========================================
+
+        local MainTitle = Instance.new("TextLabel")
+        MainTitle.Name = "StockTitle"
+        MainTitle.BackgroundTransparency = 1
+        MainTitle.Position = UDim2.new(0, 10, 0, 6)
+        MainTitle.Size = UDim2.new(1, -20, 0, 22)
+
+        MainTitle.Text = PName
+        MainTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        MainTitle.TextTransparency = 0
+        MainTitle.TextSize = 13
+        MainTitle.Font = Enum.Font.GothamMedium
+        MainTitle.TextXAlignment = Enum.TextXAlignment.Left
+        MainTitle.TextYAlignment = Enum.TextYAlignment.Center
+
+        MainTitle.Parent = Frame
+
+
+        -- ==========================================
+        -- CONTAINER
+        -- ==========================================
+
+        local StockContainer = Instance.new("Frame")
+        StockContainer.Name = "StockContainer"
+        StockContainer.BackgroundTransparency = 1
+        StockContainer.Position = UDim2.new(0, 10, 0, 32)
+        StockContainer.Size = UDim2.new(1, -20, 1, -38)
+        StockContainer.Parent = Frame
+
+
+        -- ==========================================
+        -- NORMAL STOCK - LEFT
+        -- ==========================================
+
+        local NormalFrame = Instance.new("ScrollingFrame")
+        NormalFrame.Name = "NormalStock"
+        NormalFrame.BackgroundTransparency = 1
+        NormalFrame.BorderSizePixel = 0
+        NormalFrame.Position = UDim2.new(0, 0, 0, 0)
+        NormalFrame.Size = UDim2.new(0.5, -7, 1, 0)
+
+        NormalFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+        NormalFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+        NormalFrame.ScrollBarThickness = 3
+        NormalFrame.ScrollBarImageTransparency = 0.15
+        NormalFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+
+        NormalFrame.Parent = StockContainer
+
+
+        -- ==========================================
+        -- ADVANCED STOCK - RIGHT
+        -- ==========================================
+
+        local AdvancedFrame = Instance.new("ScrollingFrame")
+        AdvancedFrame.Name = "AdvancedStock"
+        AdvancedFrame.BackgroundTransparency = 1
+        AdvancedFrame.BorderSizePixel = 0
+        AdvancedFrame.Position = UDim2.new(0.5, 7, 0, 0)
+        AdvancedFrame.Size = UDim2.new(0.5, -7, 1, 0)
+
+        AdvancedFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+        AdvancedFrame.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+        AdvancedFrame.ScrollBarThickness = 3
+        AdvancedFrame.ScrollBarImageTransparency = 0.15
+        AdvancedFrame.ScrollingDirection = Enum.ScrollingDirection.Y
+
+        AdvancedFrame.Parent = StockContainer
+
+
+        -- ==========================================
+        -- NORMAL TITLE
+        -- ==========================================
+
+        local NormalTitle = Instance.new("TextLabel")
+        NormalTitle.Name = "NormalTitle"
+        NormalTitle.BackgroundTransparency = 1
+        NormalTitle.Position = UDim2.new(0, 0, 0, 0)
+        NormalTitle.Size = UDim2.new(1, -5, 0, 20)
+
+        NormalTitle.Text = "Normal Fruit Stock"
+        NormalTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        NormalTitle.TextTransparency = 0
+        NormalTitle.TextSize = 12
+        NormalTitle.Font = Enum.Font.GothamMedium
+
+        NormalTitle.TextXAlignment = Enum.TextXAlignment.Left
+        NormalTitle.TextYAlignment = Enum.TextYAlignment.Center
+
+        NormalTitle.Parent = NormalFrame
+
+
+        -- ==========================================
+        -- ADVANCED TITLE
+        -- ==========================================
+
+        local AdvancedTitle = Instance.new("TextLabel")
+        AdvancedTitle.Name = "AdvancedTitle"
+        AdvancedTitle.BackgroundTransparency = 1
+        AdvancedTitle.Position = UDim2.new(0, 0, 0, 0)
+        AdvancedTitle.Size = UDim2.new(1, -5, 0, 20)
+
+        AdvancedTitle.Text = "Advance Fruit Stock"
+        AdvancedTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        AdvancedTitle.TextTransparency = 0
+        AdvancedTitle.TextSize = 12
+        AdvancedTitle.Font = Enum.Font.GothamMedium
+
+        AdvancedTitle.TextXAlignment = Enum.TextXAlignment.Left
+        AdvancedTitle.TextYAlignment = Enum.TextYAlignment.Center
+
+        AdvancedTitle.Parent = AdvancedFrame
+
+
+        -- ==========================================
+        -- NORMAL TEXT
+        -- ==========================================
+
+        local NormalText = Instance.new("TextLabel")
+        NormalText.Name = "StockText"
+        NormalText.BackgroundTransparency = 1
+        NormalText.Position = UDim2.new(0, 0, 0, 22)
+        NormalText.Size = UDim2.new(1, -5, 0, 0)
+
+        NormalText.AutomaticSize = Enum.AutomaticSize.Y
+        NormalText.Text = "Loading..."
+
+        NormalText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        NormalText.TextTransparency = 0
+        NormalText.TextSize = 11
+        NormalText.Font = Enum.Font.Gotham
+
+        NormalText.TextXAlignment = Enum.TextXAlignment.Left
+        NormalText.TextYAlignment = Enum.TextYAlignment.Top
+        NormalText.TextWrapped = false
+
+        NormalText.Parent = NormalFrame
+
+
+        -- ==========================================
+        -- ADVANCED TEXT
+        -- ==========================================
+
+        local AdvancedText = Instance.new("TextLabel")
+        AdvancedText.Name = "StockText"
+        AdvancedText.BackgroundTransparency = 1
+        AdvancedText.Position = UDim2.new(0, 0, 0, 22)
+        AdvancedText.Size = UDim2.new(1, -5, 0, 0)
+
+        AdvancedText.AutomaticSize = Enum.AutomaticSize.Y
+        AdvancedText.Text = "Loading..."
+
+        AdvancedText.TextColor3 = Color3.fromRGB(255, 255, 255)
+        AdvancedText.TextTransparency = 0
+        AdvancedText.TextSize = 11
+        AdvancedText.Font = Enum.Font.Gotham
+
+        AdvancedText.TextXAlignment = Enum.TextXAlignment.Left
+        AdvancedText.TextYAlignment = Enum.TextYAlignment.Top
+        AdvancedText.TextWrapped = false
+
+        AdvancedText.Parent = AdvancedFrame
+
+
+        -- ==========================================
+        -- API
+        -- ==========================================
+
+        local Paragraph = {}
+
+        function Paragraph:Visible(...)
+            Funcs:ToggleVisible(Frame, ...)
+        end
+
+        function Paragraph:Destroy()
+            Frame:Destroy()
+        end
+
+        function Paragraph:SetTitle(Val)
+            MainTitle.Text = GetStr(Val)
+        end
+
+        function Paragraph:SetDesc(Val)
+            NormalText.Text = GetStr(Val)
+        end
+
+        function Paragraph:SetStock(Normal, Advanced)
+            NormalText.Text = GetStr(Normal or "")
+            AdvancedText.Text = GetStr(Advanced or "")
+        end
+
+        return Paragraph
+    end
+
+
+    -- ==========================================
+    -- PARAGRAPH BÌNH THƯỜNG
+    -- ==========================================
+
+    local Frame, LabelFunc = ButtonFrame(
+        Container,
+        PName,
+        PDesc,
+        UDim2.new(1, -20)
+    )
+
+    local Paragraph = {}
+
+    function Paragraph:Visible(...)
+        Funcs:ToggleVisible(Frame, ...)
+    end
+
+    function Paragraph:Destroy()
+        Frame:Destroy()
+    end
+
+    function Paragraph:SetTitle(Val)
+        LabelFunc:SetTitle(GetStr(Val))
+    end
+
+    function Paragraph:SetDesc(Val)
+        LabelFunc:SetDesc(GetStr(Val))
+    end
+
+    function Paragraph:Set(Val1, Val2)
+        if Val1 and Val2 then
+            LabelFunc:SetTitle(GetStr(Val1))
+            LabelFunc:SetDesc(GetStr(Val2))
+        elseif Val1 then
+            LabelFunc:SetDesc(GetStr(Val1))
+        end
+    end
+
+    return Paragraph
+end
 		function Tab:AddButton(Configs)
 			local BName = Configs[1] or Configs.Name or Configs.Title or "Button!"
 			local BDescription = Configs.Desc or Configs.Description or ""
