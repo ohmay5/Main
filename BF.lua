@@ -457,8 +457,8 @@ G.KillSea = function(I, e)
 				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
 			else
 				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 50, 8));
-				wait(.85);
-				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 400, 0));
+				wait(5);
+				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 300, 0));
 				wait(1);
 			end;
 		end;
