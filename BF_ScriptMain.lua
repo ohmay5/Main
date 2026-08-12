@@ -625,8 +625,8 @@ _G = _G or {}
 _B = false
 PosMon = nil
 
-_G.BringRange = _G.BringRange or 250
-_G.MaxBringMobs = _G.MaxBringMobs or 15 -- LIMITE DE MOBS
+_G.BringRange = _G.BringRange or 230
+_G.MaxBringMobs = _G.MaxBringMobs or 5 -- LIMITE DE MOBS
 
 _G.FarmPriorityElf = _G.FarmPriorityElf or false
 _G.FarmMastery_S   = _G.FarmMastery_S or false
@@ -696,16 +696,17 @@ end
 --==================================================
 -- FUNÇÃO PRINCIPAL: BRING
 --==================================================
-===============================================
 BringEnemy = function()
-    if not FarmAtivo() or not _B then return end
+    if not (FarmAtivo() or _G.AutoBartilo) or not _B then
+    return
+end
 
     local plr = game.Players.LocalPlayer  
     local char = plr.Character  
     local hrp = char and char:FindFirstChild("HumanoidRootPart")  
     if not hrp then return end  
 
-    -- Simulation Radius  
+    -- Simulation Radius giúp kiểm soát quái ở xa tốt hơn
     pcall(function()  
         sethiddenproperty(plr, "SimulationRadius", math.huge)  
     end)  
@@ -723,9 +724,20 @@ BringEnemy = function()
         if hum and root and hum.Health > 0 and not IsRaidMob(mob) then  
             local dist = (root.Position - targetPos).Magnitude  
 
-            if dist <= _G.BringRange and not root:GetAttribute("Tweening") then  
-                count += 2  
+            -- Kiểm tra thêm khoảng cách để tránh kéo những con đã ở sát rạt gây giật cục
+            if dist <= _G.BringRange and dist > 3 and not root:GetAttribute("Tweening") then  
+                count += 1  
                 root:SetAttribute("Tweening", true)  
+
+                -- [NÂNG CẤP 1] Ép Network Ownership về client (nếu game cho phép) 
+                -- giúp server nhận diện bạn đang kiểm soát con quái này để đánh không bị hụt
+                pcall(function()
+                    if root:IsA("BasePart") then
+                        -- Một số game chặn hàm này, dùng pcall để tránh lỗi văng script
+                        if setscriptable then setscriptable(root, "NetworkOwner", true) end
+                        root.AssemblyLinearVelocity = Vector3.new(0, 0, 0) -- Triệt tiêu đà cũ
+                    end
+                end)
 
                 local tween = TweenService:Create(  
                     root,  
@@ -734,15 +746,38 @@ BringEnemy = function()
                 )  
 
                 tween:Play()  
-                tween.Completed:Once(function()  
-                    if root then  
-                        root:SetAttribute("Tweening", false)  
-                    end  
-                end)  
+
+                -- [NÂNG CẤP 2] Thêm bộ đếm thời gian dự phòng (Timeout)
+                -- Phòng hờ mạng giật khiến sự kiện Completed không chạy -> giải phóng quái sau 0.8 giây
+                local connection
+                local finished = false
+                
+                connection = tween.Completed:Once(function()  
+                    if not finished then
+                        finished = true
+                        if root then  
+                            root:SetAttribute("Tweening", false)
+                            -- Cố định vị trí ngay lập tức khi về đích để đánh chuẩn hơn
+                            root.CFrame = CFrame.new(targetPos)
+                        end  
+                    end
+                end)
+
+                -- Task bảo vệ: nếu quá 0.8s mà tween chưa xong/chưa gọi completed thì tự mở khóa
+                task.delay(0.8, function()
+                    if not finished then
+                        finished = true
+                        if connection then connection:Disconnect() end
+                        if root then
+                            root:SetAttribute("Tweening", false)
+                        end
+                    end
+                end)
             end  
         end  
     end
 end
+
 task.spawn(function()
     while task.wait(1) do
         if FarmAtivo() then
@@ -4713,14 +4748,14 @@ spawn(function()
 	end;
 end);
 Setting:AddSection({"Select"})
-_G.BringRange = _G.SaveData["BringRange_Save"] or 250
+_G.BringRange = _G.SaveData["BringRange_Save"] or 230
 
 Setting:AddSlider({
     Title = "Bring Mobs Range",
     Description = "Điều chỉnh độ xa để gom quái",
-    Default = _G.SaveData["BringRange_Save"] or 250,
+    Default = _G.SaveData["BringRange_Save"] or 230,
     Min = 0,
-    Max = 400,
+    Max = 300,
     Rounding = 0,
     Callback = function(Value)
         _G.BringRange = Value

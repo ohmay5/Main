@@ -626,7 +626,7 @@ _B = false
 PosMon = nil
 
 _G.BringRange = _G.BringRange or 250
-_G.MaxBringMobs = _G.MaxBringMobs or 15 -- LIMITE DE MOBS
+_G.MaxBringMobs = _G.MaxBringMobs or 5 -- LIMITE DE MOBS
 
 _G.FarmPriorityElf = _G.FarmPriorityElf or false
 _G.FarmMastery_S   = _G.FarmMastery_S or false
@@ -694,18 +694,19 @@ local function IsRaidMob(mob)
 end
 
 --==================================================
--- FUNÇÃO PRINCIPAL: BRING
+-- FUNÇÃO PRINCIPAL: BRING (NÃNG CẤP XỊN)
 --==================================================
 BringEnemy = function()
-     if not (FarmAtivo() or _G.AutoBartilo) or not _B then
-    return
-end
-local plr = game.Players.LocalPlayer  
+    if not (FarmAtivo() or _G.AutoBartilo) or not _B then
+        return
+    end
+
+    local plr = game.Players.LocalPlayer  
     local char = plr.Character  
     local hrp = char and char:FindFirstChild("HumanoidRootPart")  
     if not hrp then return end  
 
-    -- Simulation Radius  
+    -- Simulation Radius giúp kiểm soát quái ở xa tốt hơn
     pcall(function()  
         sethiddenproperty(plr, "SimulationRadius", math.huge)  
     end)  
@@ -723,9 +724,18 @@ local plr = game.Players.LocalPlayer
         if hum and root and hum.Health > 0 and not IsRaidMob(mob) then  
             local dist = (root.Position - targetPos).Magnitude  
 
-            if dist <= _G.BringRange and not root:GetAttribute("Tweening") then  
-                count += 2  
+            -- Kiểm tra khoảng cách hợp lý, tránh kéo con ở quá sát rạt (dist > 3)
+            if dist <= _G.BringRange and dist > 3 and not root:GetAttribute("Tweening") then  
+                count += 1  
                 root:SetAttribute("Tweening", true)  
+
+                -- Triệt tiêu lực quán tính cũ và kiểm soát NetworkOwner trên client
+                pcall(function()
+                    if root:IsA("BasePart") then
+                        if setscriptable then setscriptable(root, "NetworkOwner", true) end
+                        root.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                    end
+                end)
 
                 local tween = TweenService:Create(  
                     root,  
@@ -734,15 +744,36 @@ local plr = game.Players.LocalPlayer
                 )  
 
                 tween:Play()  
-                tween.Completed:Once(function()  
-                    if root then  
-                        root:SetAttribute("Tweening", false)  
-                    end  
-                end)  
+
+                local connection
+                local finished = false
+                
+                -- Khi tween chạy xong: mở khóa và gán cứng vị trí để chém trúng 100%
+                connection = tween.Completed:Once(function()  
+                    if not finished then
+                        finished = true
+                        if root then  
+                            root:SetAttribute("Tweening", false)
+                            root.CFrame = CFrame.new(targetPos)
+                        end  
+                    end
+                end)
+
+                -- Bộ đếm thời gian dự phòng (Timeout) tránh kẹt quái nếu mạng lag
+                task.delay(0.8, function()
+                    if not finished then
+                        finished = true
+                        if connection then connection:Disconnect() end
+                        if root then
+                            root:SetAttribute("Tweening", false)
+                        end
+                    end
+                end)
             end  
         end  
     end
 end
+
 
 --==================================================
 -- LOOP CONTROLADOR
@@ -4301,7 +4332,7 @@ local function setupAutoExecute()
         if _G.SaveData["AutoExecute_Save"] and not executed then
             executed = true
             queue([[
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/PengYou.lua"))()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/BF_ScriptMain.lua"))()
             ]])
         end
     end)
@@ -11921,8 +11952,9 @@ Fruit:AddToggle({
     end,
 });
 
-task.spawn(function()
-    while task.wait(3) do -- Giảm xuống 3s để kiểm tra nhanh hơn
+-- // 1. Loop Tự động bắt đầu Raid
+Task.spawn(function()
+    while task.wait(3) do
         if _G.Auto_StartRaid then
             pcall(function()
                 local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
@@ -11945,30 +11977,18 @@ task.spawn(function()
                     _tp(oldPos)
                 end
 
-                -- Logic tự động chuyển chế độ đánh
+                -- Logic Raid
                 if raidTimer.Visible then
-                    local nextIsland = getNextIsland()
-                    if nextIsland then
-                        local islandName = nextIsland.Name
-                        _G.Raiding = true -- LUÔN BẬT ĐỂ TELEPORT HOẠT ĐỘNG
-                        
-                        -- Nếu là đảo 4 hoặc 5, bật Kill Aura và dùng biến để ưu tiên
-                        if string.find(islandName, "4") or string.find(islandName, "5") then
-                            _G.KillH = true
-                        else
-                            _G.KillH = false
-                        end
-                    end
+                    _G.Raiding = true
                 else
                     _G.Raiding = false
-                    _G.KillH = false
                 end
             end)
         end
     end
 end)
 
--- // Các hàm chức năng (Giữ nguyên)
+-- // Các hàm chức năng
 function IsIslandRaid(cu)
     local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
     if locs:FindFirstChild("Island " .. cu) then
@@ -12000,9 +12020,6 @@ function getNextIsland()
 end
 
 function attackNearbyEnemies()
-    -- Nếu đang dùng Kill Aura ở đảo 4-5 thì KHÔNG chạy G.Kill để tránh xung đột/lag
-    if _G.KillH then return end 
-    
     for _, mob in pairs(workspace.Enemies:GetChildren()) do
         if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
             if mob.Humanoid.Health > 0 then
@@ -12018,7 +12035,7 @@ function attackNearbyEnemies()
     end
 end
 
--- // 3. Loop G.Kill (Giữ nguyên - Giờ đã có cơ chế tự né nếu KillH bật)
+-- // 3. Loop G.Kill đánh thường
 spawn(function()
     pcall(function()
         while wait(Sec) do
@@ -12042,48 +12059,6 @@ spawn(function()
     end)
 end)
 
--- // 4. Loop Kill Aura (Giữ nguyên)
--- // Loop Kill Aura chuẩn và an toàn, không làm lỗi script
-task.spawn(function()
-    while true do 
-        task.wait(Sec)
-        if _G.KillH then
-            pcall(function()
-                -- Dùng game.Players.LocalPlayer trực tiếp để tránh lỗi biến plr chưa được khai báo
-                local LocalPlayer = game.Players.LocalPlayer
-                if LocalPlayer then
-                    sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
-                end
-                
-                local Enemies = workspace:FindFirstChild("Enemies")
-                if not Enemies then return end
-
-                for _, v in ipairs(Enemies:GetChildren()) do
-                    if not _G.KillH then break end 
-                    
-                    local Humanoid = v:FindFirstChildOfClass("Humanoid")
-                    local Root = v:FindFirstChild("HumanoidRootPart")
-
-                    if Humanoid and Root and Humanoid.Health > 0 and v.Parent then
-                        pcall(function()
-                            -- Ép máu chết ngay và xóa tức thì an toàn
-                            Humanoid.MaxHealth = 0
-                            Humanoid.Health = 0
-                            Root.CanCollide = false
-                            v:BreakJoints()
-                            
-                            task.defer(function()
-                                if v and v.Parent then
-                                    v:Destroy()
-                                end
-                            end)
-                        end)
-                    end
-                end
-            end)
-        end
-    end
-end)
 
 
 
