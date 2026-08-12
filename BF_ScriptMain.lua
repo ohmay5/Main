@@ -1949,7 +1949,16 @@ elseif I >= 2000 and I <= 2024 then
     NameMon = "Living Zombie"
     PosQ = CFrame.new(-9479.2168,141.215088,5566.09277)
     PosM = CFrame.new(-10144.131835938,138.6266784668,5838.0888671875)
-		elseif I >= 2050 and I <= 2074 then
+    
+elseif I >= 2025 and I <= 2049 then
+    Mon = "Demonic Soul"
+    Qdata = 2
+    Qname = "HauntedQuest2"
+    NameMon = "Demonic Soul"
+    PosQ = CFrame.new(-9507.62, 172.17, 6131.11)
+    PosM = CFrame.new(-9582.0224609375, 6.2515273094177, 6205.478515625)
+    
+elseif I >= 2050 and I <= 2074 then
     Mon = "Posessed Mummy"
     Qdata = 2
     Qname = "HauntedQuest2"
