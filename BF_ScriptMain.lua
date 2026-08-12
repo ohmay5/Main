@@ -7042,61 +7042,79 @@ Event:AddToggle({
 })
 
 -- O Loop (spawn) deve ficar fora do AddToggle para não ser criado várias vezes
-local PrehisFindBoat = nil
-spawn(function()
-    while wait(Sec) do
-        pcall(function()
-            if _G.Prehis_Find then
-                local char = plr.Character
-                if not char then return end
-                local hrp = char:FindFirstChild("HumanoidRootPart")
-                if not hrp then return end
-                
-                local PrehistoricLoc = workspace._WorldOrigin.Locations:FindFirstChild("Prehistoric Island", true)
-                
-                if not PrehistoricLoc then
-                    local MyBoat = CheckBoat()
-                    if not MyBoat then
-                        local BoatPos = CFrame.new(-16927.451, 9.086, 433.864)
-                        TeleportToTarget(BoatPos)
-                        if (BoatPos.Position - hrp.Position).Magnitude <= 10 then
-                            replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat or "Guardian")
+task.spawn(function()
+    while task.wait() do
+        if _G.Prehis_Find then
+            pcall(function()
+                -- Se a ilha NÃO foi encontrada ainda
+                if not workspace._WorldOrigin.Locations:FindFirstChild("Prehistoric Island", true) then
+                    
+                    local I = CheckBoat()
+
+                    -- [CORREÇÃO] Verifica se o barco está muito longe
+                    if I and I:FindFirstChild("VehicleSeat") and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                        local dist = (plr.Character.HumanoidRootPart.Position - I.VehicleSeat.Position).Magnitude
+                        if dist > 2500 then 
+                            I = nil -- Força comprar um novo
                         end
-                        return
                     end
-                    
-                    if char.Humanoid.Sit == false then
-                        local SeatPos = MyBoat.VehicleSeat.CFrame * CFrame.new(0, 1, 0)
-                        _tp(SeatPos)
-                        return
-                    end
-                    
-                    PrehisFindBoat = CFrame.new(-10000000, 31, 37016.25)
-                    
-                    if CheckEnemiesBoat() or CheckTerrorShark() or CheckPirateGrandBrigade() then
-                        _tp(CFrame.new(-10000000, 150, 37016.25))
+
+                    -- Se não tem barco
+                    if not I then
+                        local DealerPos = CFrame.new(-16927.451, 9.086, 433.864)
+                        TeleportToTarget(DealerPos)
+                        
+                        if (DealerPos.Position - plr.Character.HumanoidRootPart.Position).Magnitude <= 10 then
+                            replicated.Remotes.CommF_:InvokeServer("BuyBoat", _G.SelectedBoat)
+                        end
                     else
-                        _tp(PrehisFindBoat)
+                        -- Se tem um barco PERTO, senta nele e navega
+                        if plr.Character.Humanoid.Sit == false then
+                            local seatCF = I.VehicleSeat.CFrame * CFrame.new(0, 1, 0)
+                            _tp(seatCF)
+                        else
+                            -- Lógica de navegação
+                            local TargetPos = CFrame.new(-10000000, 31, 37016.25)
+                            
+                            if CheckEnemiesBoat() or CheckTerrorShark() or CheckPirateGrandBrigade() then
+                                _tp(CFrame.new(-10000000, 150, 37016.25))
+                            else
+                                _tp(TargetPos)
+                            end
+                            
+                            -- Se a ilha aparecer ou o toggle desligar, ele para
+                            if workspace._WorldOrigin.Locations:FindFirstChild("Prehistoric Island") or not _G.Prehis_Find then
+                                plr.Character.Humanoid.Sit = false
+                            end
+                        end
                     end
                 else
-                    local TeleportPart = PrehistoricLoc:FindFirstChild("HeadTeleport", true) or PrehistoricLoc:FindFirstChild("Teleport_Head", true) or PrehistoricLoc:FindFirstChild("Head", true)
-                    if TeleportPart then
-                        local TargetPos = TeleportPart.CFrame.Position - TeleportPart.CFrame.LookVector * 40 + Vector3.new(0, 20, 0)
-                        if (TargetPos - hrp.Position).Magnitude > 30 then
-                            _tp(CFrame.new(TargetPos))
+                    -- Se a ilha JÁ EXISTE
+                    local Island = workspace._WorldOrigin.Locations:FindFirstChild("Prehistoric Island")
+                    
+                    if (Island.CFrame.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude >= 2000 then
+                        _tp(Island.CFrame)
+                    end
+
+                    -- Lógica para entrar no evento
+                    if workspace.Map:FindFirstChild("PrehistoricIsland", true) or workspace._WorldOrigin.Locations:FindFirstChild("Prehistoric Island", true) then
+                        local promptPart = workspace.Map.PrehistoricIsland.Core:FindFirstChild("ActivationPrompt")
+                        if promptPart and promptPart:FindFirstChild("ProximityPrompt") then
+                            if plr:DistanceFromCharacter(promptPart.Position) <= 150 then
+                                fireproximityprompt(promptPart.ProximityPrompt, math.huge)
+                                -- Simulação de tecla E para garantir
+                                game:GetService("VirtualInputManager"):SendKeyEvent(true, "E", false, game)
+                                task.wait(1.5)
+                                game:GetService("VirtualInputManager"):SendKeyEvent(false, "E", false, game)
+                            end
+                            _tp(promptPart.CFrame)
                         end
-                    else
-                        local CenterPos = PrehistoricLoc.CFrame.Position
-                        local DirToIsland = (CenterPos - hrp.Position).Unit
-                        local SafePos = CenterPos - DirToIsland * 250 + Vector3.new(0, 60, 0)
-                        _tp(CFrame.new(SafePos))
                     end
                 end
-            end
-        end)
+            end)
+        end
     end
 end)
-
 Event:AddToggle({
     Name = "Auto Event Prehistoric Island",
     Description = "",
