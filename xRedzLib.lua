@@ -1538,10 +1538,6 @@ Create("UIPadding", SearchBox, {
     PaddingRight = UDim.new(0, 10)
 })
 	
-	
-
---// SEARCH BOX
---// SEARCH TAB - BÊN TRÁI
 local SearchBox = Create("TextBox", Components, {
     Size = UDim2.new(0, redzlib.Save.TabSize, 0, 28),
     Position = UDim2.new(0, 0, 0, 0),
@@ -1549,7 +1545,7 @@ local SearchBox = Create("TextBox", Components, {
     BackgroundTransparency = 0,
     TextColor3 = Theme["Color Text"],
     PlaceholderColor3 = Theme["Color Dark Text"],
-    PlaceholderText = "Search...",
+    PlaceholderText = "Tìm kiếm Tab...",
     Text = "",
     TextSize = 10,
     Font = Enum.Font.Gotham,
@@ -1614,33 +1610,6 @@ local Containers = Create("Frame", Components, {
     ClipsDescendants = true,
     Name = "Containers"
 })
-
-
---// SEARCH FUNCTION - BÊN PHẢI
-local AddSearchBox = Create("TextBox", Containers, {
-    Size = UDim2.new(1, -20, 0, 28),
-    Position = UDim2.new(0, 10, 0, 10),
-    BackgroundColor3 = Theme["Color Hub 2"],
-    BackgroundTransparency = 0,
-    TextColor3 = Theme["Color Text"],
-    PlaceholderColor3 = Theme["Color Dark Text"],
-    PlaceholderText = "Tìm chức năng...",
-    Text = "",
-    TextSize = 10,
-    Font = Enum.Font.Gotham,
-    ClearTextOnFocus = false,
-    TextXAlignment = Enum.TextXAlignment.Left,
-    BorderSizePixel = 0,
-    Name = "SearchAdd"
-})
-
-Make("Corner", AddSearchBox, UDim.new(0, 6))
-
-Create("UIPadding", AddSearchBox, {
-    PaddingLeft = UDim.new(0, 10),
-    PaddingRight = UDim.new(0, 10)
-})
-
 
 --// SEARCH TAB
 SearchBox:GetPropertyChangedSignal("Text"):Connect(function()
@@ -1776,67 +1745,122 @@ end)
 		if WaitClick then return end
 		WaitClick = true
 		
-		if Minimized then
-			MinimizeButton.Image = "rbxassetid://10734896206"
-			CreateTween({MainFrame, "Size", SaveSize, 0.25, true})
-			ControlSize1.Visible = true
-			ControlSize2.Visible = true
-			Minimized = false
-		else
-			MinimizeButton.Image = "rbxassetid://10734924532"
-			SaveSize = MainFrame.Size
-			ControlSize1.Visible = false
-			ControlSize2.Visible = false
-			CreateTween({MainFrame, "Size", UDim2.fromOffset(MainFrame.Size.X.Offset, 28), 0.25, true})
-			Minimized = true
-		end
-		
-		WaitClick = false
-	end
-	function Window:Minimize()
-		MainFrame.Visible = not MainFrame.Visible
-	end
-	function Window:AddMinimizeButton(Configs)
-		local Button = MakeDrag(Create("ImageButton", ScreenGui, {
-			Size = UDim2.fromOffset(35, 35),
-			Position = UDim2.fromScale(0.15, 0.15),
-			BackgroundTransparency = 1,
-			BackgroundColor3 = Theme["Color Hub 2"],
-			AutoButtonColor = false
-		}))
-		
-		local Stroke, Corner
-		if Configs.Corner then
-			Corner = Make("Corner", Button)
-			SetProps(Corner, Configs.Corner)
-		end
-		if Configs.Stroke then
-			Stroke = Make("Stroke", Button)
-			SetProps(Stroke, Configs.Corner)
-		end
-		
-		SetProps(Button, Configs.Button)
-		Button.Activated:Connect(Window.Minimize)
-		
-		return {
-			Stroke = Stroke,
-			Corner = Corner,
-			Button = Button
-		}
-	end
-	function Window:Set(Val1, Val2)
-		if type(Val1) == "string" and type(Val2) == "string" then
-			Title.Text = Val1
-			Title.SubTitle.Text = Val2
-		elseif type(Val1) == "string" then
-			Title.Text = Val1
-		end
-	end
-	function Window:Dialog(Configs)
-		if MainFrame:FindFirstChild("Dialog") then return end
-		if Minimized then
-			Window:MinimizeBtn()
-		end
+		local CloseButton = Create("ImageButton", {
+    Size = UDim2.new(0, 14, 0, 14),
+    Position = UDim2.new(1, -10, 0.5),
+    AnchorPoint = Vector2.new(1, 0.5),
+    BackgroundTransparency = 1,
+    Image = "rbxassetid://10747384394",
+    AutoButtonColor = false,
+    Name = "Close"
+})
+
+local MinimizeButton = SetProps(CloseButton:Clone(), {
+    Position = UDim2.new(1, -35, 0.5),
+    Image = "rbxassetid://10734896206",
+    Name = "Minimize"
+})
+
+-- SETTINGS BUTTON
+local SettingsButton = Create("TextButton", {
+    Size = UDim2.new(0, 18, 0, 18),
+    Position = UDim2.new(1, -60, 0.5),
+    AnchorPoint = Vector2.new(1, 0.5),
+    BackgroundTransparency = 1,
+    Text = "⚙",
+    TextColor3 = Theme["Color Text"],
+    TextSize = 15,
+    Font = Enum.Font.GothamBold,
+    AutoButtonColor = false,
+    Name = "Settings"
+})
+
+SetChildren(ButtonsFolder, {
+    CloseButton,
+    MinimizeButton,
+    SettingsButton
+})
+
+local Minimized, SaveSize, WaitClick
+local Window, FirstTab = {}, false
+
+-- THEME POPUP
+local ThemePopup = Create("Frame", ScreenGui, {
+    Size = UDim2.fromOffset(155, 0),
+    AutomaticSize = Enum.AutomaticSize.Y,
+    BackgroundColor3 = Theme["Color Hub 2"],
+    BackgroundTransparency = 0,
+    Visible = false,
+    ZIndex = 100,
+    Name = "ThemePopup"
+})
+
+Make("Corner", ThemePopup, UDim.new(0, 8))
+Make("Stroke", ThemePopup)
+
+Create("UIPadding", ThemePopup, {
+    PaddingTop = UDim.new(0, 7),
+    PaddingBottom = UDim.new(0, 7),
+    PaddingLeft = UDim.new(0, 7),
+    PaddingRight = UDim.new(0, 7)
+})
+
+Create("UIListLayout", ThemePopup, {
+    Padding = UDim.new(0, 4),
+    SortOrder = Enum.SortOrder.LayoutOrder
+})
+
+local ThemeNames = {
+    "Dark +",
+    "Dark",
+    "Clear",
+    "Purple",
+    "Red",
+    "Yellow",
+    "Green",
+    "Pink",
+    "Blue"
+}
+
+for _, ThemeName in ipairs(ThemeNames) do
+
+    local ThemeButton = Make("Button", ThemePopup, {
+        Size = UDim2.new(1, 0, 0, 25),
+        ZIndex = 101
+    })
+
+    Make("Corner", ThemeButton, UDim.new(0, 5))
+
+    InsertTheme(Create("TextLabel", ThemeButton, {
+        Size = UDim2.new(1, -10, 1, 0),
+        Position = UDim2.fromOffset(8, 0),
+        BackgroundTransparency = 1,
+        Text = ThemeName,
+        TextSize = 10,
+        Font = Enum.Font.GothamMedium,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextColor3 = Theme["Color Text"],
+        ZIndex = 102
+    }), "Text")
+
+    ThemeButton.Activated:Connect(function()
+        redzlib:SetTheme(ThemeName)
+        ThemePopup.Visible = false
+    end)
+end
+
+SettingsButton.Activated:Connect(function()
+    ThemePopup.Visible = not ThemePopup.Visible
+
+    if ThemePopup.Visible then
+        ThemePopup.Position = UDim2.new(
+            1,
+            -165,
+            0,
+            35
+        )
+    end
+end)
 		
 		local DTitle = Configs[1] or Configs.Title or "Dialog"
 		local DText = Configs[2] or Configs.Text or "This is a Dialog"
