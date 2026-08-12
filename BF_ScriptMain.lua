@@ -697,55 +697,92 @@ end
 -- FUNÇÃO PRINCIPAL: BRING
 --==================================================
 BringEnemy = function()
-     if not (FarmAtivo() or _G.AutoBartilo) or not _B then
-    return
-end
-local plr = game.Players.LocalPlayer  
-    local char = plr.Character  
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")  
-    if not hrp then return end  
+    if not (FarmAtivo() or _G.AutoBartilo) or not _B then
+        return
+    end
 
-    -- Simulation Radius  
-    pcall(function()  
-        sethiddenproperty(plr, "SimulationRadius", math.huge)  
-    end)  
+    local Player = game.Players.LocalPlayer
+    local Character = Player.Character
+    local HRP = Character and Character:FindFirstChild("HumanoidRootPart")
 
-    local targetPos = PosMon or hrp.Position  
-    local enemies = workspace.Enemies:GetChildren()  
-    local count = 0  
+    if not HRP then
+        return
+    end
 
-    for _, mob in ipairs(enemies) do  
-        if count >= _G.MaxBringMobs then break end  
+    local Enemies = workspace:FindFirstChild("Enemies")
+    if not Enemies then
+        return
+    end
 
-        local hum = mob:FindFirstChild("Humanoid")  
-        local root = mob:FindFirstChild("HumanoidRootPart")  
+    pcall(function()
+        sethiddenproperty(Player, "SimulationRadius", math.huge)
+    end)
 
-        if hum and root and hum.Health > 0 and not IsRaidMob(mob) then  
-            local dist = (root.Position - targetPos).Magnitude  
+    local TargetPos = PosMon or HRP.Position
+    local MaxMobs = _G.MaxBringMobs or 15
+    local BringRange = _G.BringRange or 250
 
-            if dist <= _G.BringRange and not root:GetAttribute("Tweening") then  
-                count += 2  
-                root:SetAttribute("Tweening", true)  
+    local Count = 0
 
-                local tween = TweenService:Create(  
-                    root,  
-                    TweenInfoBring,  
-                    { CFrame = CFrame.new(targetPos) }  
-                )  
+    for _, Mob in ipairs(Enemies:GetChildren()) do
+        if Count >= MaxMobs then
+            break
+        end
 
-                tween:Play()  
-                tween.Completed:Once(function()  
-                    if root then  
-                        root:SetAttribute("Tweening", false)  
-                    end  
-                end)  
-            end  
-        end  
+        local Humanoid = Mob:FindFirstChildOfClass("Humanoid")
+        local Root = Mob:FindFirstChild("HumanoidRootPart")
+
+        if Humanoid
+            and Root
+            and Humanoid.Health > 0
+            and not IsRaidMob(Mob)
+        then
+            local Distance = (Root.Position - TargetPos).Magnitude
+
+            if Distance <= BringRange then
+
+                -- Không tạo tween mới nếu mob đã có tween đang chạy
+                local ExistingTween = Root:GetAttribute("BringTween")
+
+                if not ExistingTween then
+
+                    -- Đánh dấu tạm thời
+                    Root:SetAttribute("BringTween", true)
+
+                    local Success, Tween = pcall(function()
+                        return TweenService:Create(
+                            Root,
+                            TweenInfoBring,
+                            {
+                                CFrame = CFrame.new(TargetPos)
+                            }
+                        )
+                    end)
+
+                    if Success and Tween then
+
+                        Tween:Play()
+
+                        Tween.Completed:Once(function()
+                            if Root and Root.Parent then
+                                Root:SetAttribute("BringTween", nil)
+                            end
+
+                            pcall(function()
+                                Tween:Destroy()
+                            end)
+                        end)
+
+                    else
+                        Root:SetAttribute("BringTween", nil)
+                    end
+
+                    Count += 2
+                end
+            end
+        end
     end
 end
-
---==================================================
--- LOOP CONTROLADOR
 --==================================================
 task.spawn(function()
     while task.wait(1) do
