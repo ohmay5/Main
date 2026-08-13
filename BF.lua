@@ -2347,7 +2347,7 @@ screenGui.Parent = game.CoreGui
 -- Criar ImageButton
 local imageButton = Instance.new("ImageButton")
 imageButton.Size = UDim2.new(0, 50, 0, 50)
-imageButton.Position = UDim2.new(0.15, 0, 0.15, 0)
+imageButton.Position = UDim2.new(0, 15, 1, -15)
 imageButton.Image = "rbxassetid://114476175638281"
 imageButton.BackgroundTransparency = 1
 imageButton.Parent = screenGui
@@ -4377,7 +4377,7 @@ Farm:AddToggle({
 })
 
 spawn(function()
-    while wait(0.5) do
+    while wait(0.4) do
         if _G.Auto_Random_Bone then
             replicated.Remotes.CommF_:InvokeServer("Bones","Buy",1,1)
         end
@@ -12740,3 +12740,185 @@ Setting:AddToggle({
 });
 -- Tải các thư viện/cơ chế cần thiết
 loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attachgun.txt"))()
+_G.Settings = _G.Settings or {}
+_G.Settings.FastAttack = true
+
+-- Tốc độ FastAttack
+local AttackDelay = 0.2
+
+-- =========================
+-- SERVICES
+-- =========================
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Player = Players.LocalPlayer
+
+if not Player then
+    return
+end
+
+-- =========================
+-- NET
+-- =========================
+
+local Net = ReplicatedStorage
+    :WaitForChild("Modules")
+    :WaitForChild("Net")
+
+local RegisterAttack =
+    Net:WaitForChild("RE/RegisterAttack")
+
+local RegisterHit =
+    Net:WaitForChild("RE/RegisterHit")
+
+-- =========================
+-- FOLDERS
+-- =========================
+
+local Enemies =
+    workspace:FindFirstChild("Enemies")
+
+local Characters =
+    workspace:FindFirstChild("Characters")
+
+-- =========================
+-- CHECK
+-- =========================
+
+local function IsAlive(Character)
+    local Humanoid =
+        Character and Character:FindFirstChildOfClass("Humanoid")
+
+    return Humanoid and Humanoid.Health > 0
+end
+
+local function GetCharacter()
+    local Character = Player.Character
+
+    if Character and IsAlive(Character) then
+        return Character
+    end
+
+    return nil
+end
+
+-- =========================
+-- FAST ATTACK
+-- =========================
+
+local FastAttack = {
+    Distance = 55
+}
+
+function FastAttack:GetTargets()
+
+    local Character = GetCharacter()
+
+    if not Character then
+        return {}, nil
+    end
+
+    local Root =
+        Character:FindFirstChild("HumanoidRootPart")
+
+    if not Root then
+        return {}, nil
+    end
+
+    local Targets = {}
+    local BasePart
+
+    local function Scan(Folder)
+
+        if not Folder then
+            return
+        end
+
+        for _, Enemy in ipairs(Folder:GetChildren()) do
+
+            if Enemy ~= Character then
+
+                local Humanoid =
+                    Enemy:FindFirstChildOfClass("Humanoid")
+
+                if Humanoid and Humanoid.Health > 0 then
+
+                    local Part =
+                        Enemy:FindFirstChild("HumanoidRootPart")
+                        or Enemy:FindFirstChild("Head")
+
+                    if Part then
+
+                        local Offset =
+                            Root.Position - Part.Position
+
+                        if Offset:Dot(Offset)
+                            <= self.Distance * self.Distance then
+
+                            Targets[#Targets + 1] = {
+                                Enemy,
+                                Part
+                            }
+
+                            BasePart = Part
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    Scan(Enemies)
+    Scan(Characters)
+
+    return Targets, BasePart
+end
+
+function FastAttack:Attack()
+
+    local Targets, BasePart =
+        self:GetTargets()
+
+    if not BasePart or #Targets == 0 then
+        return
+    end
+
+    pcall(function()
+
+        RegisterAttack:FireServer(0)
+
+        RegisterHit:FireServer(
+            BasePart,
+            Targets
+        )
+
+    end)
+end
+
+-- =========================
+-- LOOP
+-- =========================
+
+task.spawn(function()
+
+    while _G.Settings.FastAttack do
+
+        local Character = GetCharacter()
+
+        if Character then
+
+            local Tool =
+                Character:FindFirstChildOfClass("Tool")
+
+            if Tool and Tool.ToolTip ~= "Gun" then
+                FastAttack:Attack()
+            end
+        end
+
+        task.wait(AttackDelay)
+    end
+end)
+
+print("[FastAttack] Started | Delay:", AttackDelay)
