@@ -1249,10 +1249,10 @@ spawn(function()
     local Test = Instance.new("Highlight")
     Test.Name = "highlight"
     Test.Enabled = true
-    Test.FillColor = Color3.fromRGB(255,165,0)
-    Test.OutlineColor = Color3.fromRGB(255,0,0)
-    Test.FillTransparency = 0.5
-    Test.OutlineTransparency = 0.2
+    Test.FillColor = Color3.fromRGB(255, 255, 255)
+Test.OutlineColor = Color3.fromRGB(190, 190, 190)
+    Test.FillTransparency = 0.65
+    Test.OutlineTransparency = 0
     Test.Parent = plr.Character
 end
         for _, no in pairs(plr.Character:GetDescendants()) do if no:IsA("BasePart") then no.CanCollide = false end end
@@ -2528,7 +2528,10 @@ local Esp = Library:MakeTab({
     Title = "Stats & ESP",
     Icon = "rbxassetid://11155851001"
 })
-
+local VS = Library:MakeTab({
+    Title = "Visuals",
+    Icon = "eye"
+})
 local Teleport = Library:MakeTab({
     Title = "Tab Teleport",
     Icon = "rbxassetid://10734886004"
@@ -4921,12 +4924,22 @@ Setting:AddSection({"Ngôn ngữ"})
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
-_G.AutoTranslate = false
-_G.TargetLang = "vi"
+--==================================================
+-- SAVE DATA
+--==================================================
+
+_G.SaveData = _G.SaveData or {}
+
+_G.TargetLang = _G.SaveData["TargetLang_Save"] or "en-US"
+_G.AutoTranslate = _G.SaveData["AutoTranslate_Save"] or false
 
 local TranslatedCache = {}
 local TranslationBusy = {}
 local TranslationWatcher
+
+--==================================================
+-- LANGUAGE LIST
+--==================================================
 
 local LanguageList = {
     ["Tiếng Việt"] = "vi",
@@ -4982,6 +4995,19 @@ end
 table.sort(LanguageOptions)
 
 --==================================================
+-- FIND SAVED LANGUAGE NAME
+--==================================================
+
+local DefaultLanguage = "English (US)"
+
+for Name, Code in pairs(LanguageList) do
+    if Code == _G.TargetLang then
+        DefaultLanguage = Name
+        break
+    end
+end
+
+--==================================================
 -- GOOGLE TRANSLATE
 --==================================================
 
@@ -5006,7 +5032,6 @@ local function GoogleTranslate(text, targetLang)
         return TranslatedCache[cacheKey]
     end
 
-    -- Tránh gửi cùng một request nhiều lần
     if TranslationBusy[cacheKey] then
         return nil
     end
@@ -5077,7 +5102,7 @@ local function UpdateUI(obj)
         return
     end
 
-    -- Tắt dịch → trả về text gốc ngay
+    -- Auto Translation OFF
     if not _G.AutoTranslate then
         if obj.Text ~= raw then
             obj.Text = raw
@@ -5094,9 +5119,12 @@ local function UpdateUI(obj)
             return
         end
 
-        -- Chỉ thay nếu vẫn đang bật và vẫn cùng ngôn ngữ
-        if _G.AutoTranslate and _G.TargetLang == targetLang then
-            if obj.Parent and obj.Text ~= translated then
+        -- Kiểm tra lại ngôn ngữ trước khi thay Text
+        if _G.AutoTranslate
+            and _G.TargetLang == targetLang
+            and obj.Parent then
+
+            if obj.Text ~= translated then
                 obj.Text = translated
             end
         end
@@ -5104,25 +5132,23 @@ local function UpdateUI(obj)
 end
 
 --==================================================
--- UPDATE TOÀN BỘ UI
+-- UPDATE ALL UI
 --==================================================
 
 local function UpdateAllUI()
-    local objects = CoreGui:GetDescendants()
-
-    for _, obj in ipairs(objects) do
+    for _, obj in ipairs(CoreGui:GetDescendants()) do
         UpdateUI(obj)
     end
 end
 
 --==================================================
--- DROPDOWN
+-- SELECT LANGUAGE
 --==================================================
 
 Setting:AddDropdown({
     Name = "Select Language",
     Options = LanguageOptions,
-    Default = "English (US)",
+    Default = DefaultLanguage,
 
     Callback = function(Value)
         local lang = LanguageList[Value]
@@ -5132,6 +5158,10 @@ Setting:AddDropdown({
         end
 
         _G.TargetLang = lang
+
+        -- SAVE LANGUAGE
+        _G.SaveData["TargetLang_Save"] = lang
+        SaveSettings()
 
         if _G.AutoTranslate then
             -- Đổi ngôn ngữ ngay lập tức
@@ -5146,13 +5176,17 @@ Setting:AddDropdown({
 
 Setting:AddToggle({
     Name = "Auto Translation",
-    Default = false,
+    Default = _G.AutoTranslate,
 
     Callback = function(Value)
         _G.AutoTranslate = Value
 
+        -- SAVE AUTO TRANSLATION
+        _G.SaveData["AutoTranslate_Save"] = Value
+        SaveSettings()
+
         if Value then
-            -- Bấm ON → bắt đầu dịch ngay
+            -- ON → dịch ngay
             UpdateAllUI()
 
             -- Chỉ tạo watcher một lần
@@ -5167,8 +5201,9 @@ Setting:AddToggle({
 
                 _G.TranslationWatcher = TranslationWatcher
             end
+
         else
-            -- Bấm OFF → trả UI về nguyên bản
+            -- OFF → trả UI về nguyên bản
             for _, obj in ipairs(CoreGui:GetDescendants()) do
                 if obj:IsA("TextLabel")
                     or obj:IsA("TextButton")
@@ -5184,7 +5219,6 @@ Setting:AddToggle({
         end
     end
 })
-
 Setting:AddSection({"Select"})
 _G.BringRange = _G.SaveData["BringRange_Save"] or 250
 
@@ -10081,6 +10115,504 @@ spawn(function()
 		end);
 	end;
 end);
+
+
+VS:AddSection({"Visual"})
+VS:AddButton({
+    Name = "Bật Chiêu V Control",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local player = Players.LocalPlayer
+        local character = player.Character or player.CharacterAdded:Wait()
+        local root = character:WaitForChild("HumanoidRootPart")
+        local ControlVCutscene = require(ReplicatedStorage.Effect.Container.ControlRework.V_Cutscene)
+        ControlVCutscene({
+            Stage = 2,
+            Player = player,
+            Root = root,
+            Character = character,
+            Origin = root.Position,
+            CaughtPlayers = {}
+        })
+    end
+})
+VS:AddButton({
+    Name = "Bật Chiêu V Gravity",
+    Callback = function()
+        local P   = game:GetService("Players").LocalPlayer
+        local C   = P.Character or P.CharacterAdded:Wait()
+        local R   = C:WaitForChild("HumanoidRootPart")
+        local pos = R.Position + R.CFrame.LookVector * 15
+        local hit = workspace:Raycast(pos + Vector3.yAxis * 20, Vector3.yAxis * -100)
+
+        if hit then pos = hit.Position end
+
+        local h   = Instance.new("BoolValue", C)
+        h.Name    = "Holding"
+        h.Value   = true
+
+        pcall(require(game.ReplicatedStorage.Effect.Container.Gravity.V), {
+            Stage          = 4,
+            Root           = R,
+            Origin         = R.Position,
+            Caster         = P,
+            Character      = C,
+            TargetPosition = pos,
+            CanUltimate    = true,
+            NightShift     = true,
+            CaughtCutscene = {P},
+            CaughtLighting = {P},
+            Holding        = h,
+        })
+
+        task.delay(15, function() h:Destroy() end)
+    end
+})
+local Players = game:GetService("Players")
+local RS = game:GetService("ReplicatedStorage")
+
+local plr = Players.LocalPlayer
+
+VS:AddButton({
+    Name = "Mưa Thiên Thạch",
+    Callback = function()
+        local char = plr.Character
+        if not char then return end
+        
+        local root = char:FindFirstChild("HumanoidRootPart")
+        if not root then return end
+
+        local ok, module = pcall(function()
+            return require(RS:WaitForChild("Effect"):WaitForChild("Container"):WaitForChild("UzothSpec"))
+        end)
+
+        if ok and module then
+            pcall(function()
+                module({
+                    Position = root.Position
+                })
+            end)
+        end
+    end
+})
+VS:AddButton({
+    Name = "Tensei",
+    Callback = function()
+        local player = game.Players.LocalPlayer
+        if not player then return end
+
+        local orbPart = game.ReplicatedStorage.Effect.Container.tensei.orb.Part
+        if not orbPart:FindFirstChild("sfx") then
+            local sfx = Instance.new("Sound")
+            sfx.Name = "sfx"
+            sfx.SoundId = "rbxassetid://3848081992"
+            sfx.Parent = orbPart
+        end
+
+        local effectModule = require(game.ReplicatedStorage.Effect.Container.tensei)
+
+        -- Xóa tool cũ nếu có
+        local oldTool = player.Backpack:FindFirstChild("tensei") 
+            or (player.Character and player.Character:FindFirstChild("tensei"))
+        if oldTool then oldTool:Destroy() end
+
+        local tool = Instance.new("Tool")
+        tool.Name = "tensei"
+        tool.RequiresHandle = false
+        tool.CanBeDropped = false
+        tool.Parent = player:WaitForChild("Backpack")
+
+        local mouse = player:GetMouse()
+        local equipped = false
+
+        tool.Equipped:Connect(function() equipped = true end)
+        tool.Unequipped:Connect(function() equipped = false end)
+
+        tool.Activated:Connect(function()
+            if not equipped or not mouse.Target then return end
+
+            local char = player.Character or player.CharacterAdded:Wait()
+            local hrp = char:WaitForChild("HumanoidRootPart")
+            local targetPos = mouse.Hit.Position
+
+            if (targetPos - hrp.Position).Magnitude > 350 then return end
+
+            local spawnPos = targetPos + Vector3.new(0, 115, 0)
+            local targetCF = CFrame.new(spawnPos) * CFrame.Angles(math.rad(-90), 0, 0)
+
+            effectModule({
+                char     = char,
+                target   = mouse.Target,
+                max      = 20,
+                targetCF = targetCF,
+            })
+        end)
+    end
+})
+VS:AddButton({
+    Name = "Divine Art",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local RS = game:GetService("ReplicatedStorage")
+        local Lighting = game:GetService("Lighting")
+        local LP = Players.LocalPlayer
+
+        -- Lấy module điều khiển di chuyển của Roblox
+        local PlayerScripts = LP:WaitForChild("PlayerScripts")
+        local ControlModule = require(PlayerScripts:WaitForChild("PlayerModule")):GetControls()
+
+        local ToolIconID = "rbxassetid://78757128347056" 
+
+        local originalAmbient = nil
+        local originalOutdoor = nil
+
+        -- Xóa tool + UI cũ
+        local oldTool = LP.Backpack:FindFirstChild("Divine Art")
+            or (LP.Character and LP.Character:FindFirstChild("Divine Art"))
+        if oldTool then oldTool:Destroy() end
+        local oldGui = game.CoreGui:FindFirstChild("DivineArtUI")
+        if oldGui then oldGui:Destroy() end
+
+        -- Tool
+        local tool = Instance.new("Tool")
+        tool.Name = "Divine Art"
+        tool.RequiresHandle = false
+        tool.TextureId = ToolIconID
+        tool.Parent = LP.Backpack
+
+        -- Logic ép thanh Hotbar hiển thị ảnh thay vì chữ
+        local function FixHotbarIcon()
+            task.wait(0.2)
+            local PlayerGui = LP:FindFirstChildOfClass("PlayerGui")
+            if PlayerGui then
+                for _, v in ipairs(PlayerGui:GetDescendants()) do
+                    if v:IsA("TextLabel") and v.Text == "Divine Art" then
+                        v.Text = ""
+                        if not v:FindFirstChild("CustomIcon") then
+                            local img = Instance.new("ImageLabel")
+                            img.Name = "CustomIcon"
+                            img.Size = UDim2.new(0.8, 0, 0.8, 0)
+                            img.Position = UDim2.new(0.1, 0, 0.1, 0)
+                            img.BackgroundTransparency = 1
+                            img.Image = ToolIconID
+                            img.Parent = v
+                        end
+                    end
+                end
+            end
+        end
+        task.spawn(FixHotbarIcon)
+
+        local Cont = RS.Effect.Container
+        local m1 = require(Cont.Angel.M1)
+        local m2 = require(Cont.Angel2.M1)
+        local Effect = require(RS.Effect)
+
+        local S = { cc = 0, lt = 0, db = false }
+
+        local function getHRP()
+            local c = LP.Character
+            return c and c:FindFirstChild("HumanoidRootPart")
+        end
+
+        local function getClosestEnemy(R)
+            local target, bestDist = nil, math.huge
+            for _, mob in ipairs(workspace.Enemies:GetChildren()) do
+                local hrp = mob:FindFirstChild("HumanoidRootPart")
+                local hum = mob:FindFirstChild("Humanoid")
+                if hrp and hum and hum.Health > 0 then
+                    local dist = (hrp.Position - R.Position).Magnitude
+                    if dist < bestDist then bestDist = dist target = hrp end
+                end
+            end
+            return target
+        end
+
+        local Combo = {
+            [1] = { Name = "Strike",  Action = function(hrp) for i = 1, 4 do m1({ hrp = hrp, index = i }) task.wait(0.10) end end },
+            [2] = { Name = "Rush",    Action = function(hrp) for i = 1, 4 do m2({ hrp = hrp, index = i }) task.wait(0.10) end end },
+            [3] = { Name = "Rush II", Action = function(hrp) for i = 1, 4 do m2({ hrp = hrp, index = i }) task.wait(0.08) end end },
+            [4] = { Name = "Burst",   Action = function(hrp) for i = 4, 1, -1 do m2({ hrp = hrp, index = i }) task.wait(0.07) end end },
+            [5] = { Name = "Flurry",  Action = function(hrp) for i = 1, 4 do m1({ hrp = hrp, index = i }) task.wait(0.07) m2({ hrp = hrp, index = i }) task.wait(0.07) end end },
+            [6] = { Name = "Storm",   Action = function(hrp) for i = 1, 8 do m2({ hrp = hrp, index = (i % 4) + 1 }) task.wait(0.06) end end },
+            [7] = { Name = "Finale",  Action = function(hrp)
+                for i = 1, 4 do m1({ hrp = hrp, index = i }) task.wait(0.05) end
+                for i = 1, 4 do m2({ hrp = hrp, index = i }) task.wait(0.05) end
+                for i = 4, 1, -1 do m2({ hrp = hrp, index = i }) task.wait(0.04) end
+            end },
+        }
+
+        -- UI
+        local gui = Instance.new("ScreenGui")
+        gui.Name = "DivineArtUI"
+        gui.ResetOnSpawn = false
+        gui.Enabled = false
+        gui.Parent = game.CoreGui
+
+        local function MakeBtn(name, pos, cb)
+            local btn = Instance.new("TextButton")
+            btn.Size = UDim2.new(0, 65, 0, 65)
+            btn.Position = pos
+            btn.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+            btn.BackgroundTransparency = 0.5
+            btn.BorderSizePixel = 0
+            btn.Text = name
+            btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            btn.TextScaled = true
+            btn.Font = Enum.Font.GothamBold
+            btn.Parent = gui
+
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0.5, 0)
+            corner.Parent = btn
+
+            local stroke = Instance.new("UIStroke")
+            stroke.Thickness = 2.5
+            stroke.Color = Color3.fromRGB(200, 200, 200)
+            stroke.Transparency = 0.2
+            stroke.Parent = btn
+
+            btn.MouseButton1Click:Connect(cb)
+        end
+
+        -- Skill Z
+        MakeBtn("Z", UDim2.new(1, -120, 1, -240), function()
+            local R = getHRP()
+            if not R then return end
+            local target = getClosestEnemy(R)
+
+            pcall(function()
+                local holdingVal = Instance.new("BoolValue")
+                holdingVal.Value = true
+
+                require(Cont.Angel.Z)({
+                    Root         = R,
+                    Character    = LP.Character,
+                    EnemyRoot    = target or R,
+                    ExplosionPos = target and target.Position or R.Position + R.CFrame.LookVector * 20,
+                    Hakai        = false,
+                    CFrame       = R.CFrame,
+                    Holding      = holdingVal,
+                    hrp          = R,
+                    player       = LP,
+                })
+
+                task.wait(2)
+                holdingVal.Value = false
+            end)
+        end)
+
+        -- Skill X
+        MakeBtn("X", UDim2.new(1, -165, 1, -165), function()
+            local R = getHRP()
+            if not R then return end
+
+            local args = {
+                delayUntilImpact = 1.2,
+                lastsFor         = 2.5,
+                player           = LP,
+                hrp              = R,
+                Root             = R,
+                Character        = LP.Character,
+                impactPos        = R.Position + R.CFrame.LookVector * 30,
+            }
+            pcall(function()
+                require(Cont.Angel.XCameraChains)(args)
+                require(Cont.Angel.XCharChains)(args)
+            end)
+        end)
+
+        -- Skill C (Đã thêm logic vô hiệu hóa di chuyển, nhảy, lướt hoàn toàn)
+        MakeBtn("C", UDim2.new(1, -210, 1, -90), function()
+            local R = getHRP()
+            local Char = LP.Character
+            if not R or not Char then return end
+            local Hum = Char:FindFirstChildOfClass("Humanoid")
+
+            pcall(function()
+                -- 1. KHÓA DI CHUYỂN, LƯỚT VÀ NHẢY NGAY LẬP TỨC
+                ControlModule:Disable() -- Khóa phím di chuyển WASD / Joystick trên điện thoại (chặn cả lướt)
+                local oldJumpPower = Hum.JumpPower
+                local oldJumpHeight = Hum.JumpHeight
+                Hum.JumpPower = 0 -- Khóa nhảy
+                Hum.JumpHeight = 0
+
+                Lighting.Ambient = Color3.fromRGB(100, 100, 100)
+                Lighting.OutdoorAmbient = Color3.fromRGB(100, 100, 100)
+
+                local ccEffect = Lighting:FindFirstChild("DivineArtDarkness")
+                if not ccEffect then
+                    ccEffect = Instance.new("ColorCorrectionEffect")
+                    ccEffect.Name = "DivineArtDarkness"
+                    ccEffect.Contrast = 0.25 
+                    ccEffect.Brightness = -0.05 
+                    ccEffect.Parent = Lighting
+                end
+
+                local airPart = nil
+                local raycastParams = RaycastParams.new()
+                raycastParams.FilterDescendantsInstances = {Char}
+                raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+
+                local rayResult = workspace:Raycast(R.Position, Vector3.new(0, -30, 0), raycastParams)
+                if not rayResult or (R.Position.Y - rayResult.Position.Y) > 5 then
+                    airPart = Instance.new("Part")
+                    airPart.Name = "DivineAirPlatform"
+                    airPart.Size = Vector3.new(25, 1, 25)
+                    airPart.CFrame = R.CFrame * CFrame.new(0, -3.5, 0)
+                    airPart.Transparency = 1 
+                    airPart.Anchored = true
+                    airPart.CanCollide = true
+                    airPart.Parent = workspace
+                end
+
+                local holdingVal = Instance.new("BoolValue")
+                holdingVal.Value = true
+
+                local Util = require(RS.Util)
+                local animTrack = Util.Anims:Get(Char, "AngelCStart")
+                if animTrack then animTrack:Play() end
+
+                require(Cont.Angel2.C)({
+                    Root      = R,
+                    Character = Char,
+                    hrp       = R,
+                    CFrame    = R.CFrame,
+                    player    = LP,
+                    Holding   = holdingVal,
+                    Charge    = holdingVal,
+                    Color     = Color3.fromRGB(255, 215, 0),
+                    Size      = 500, 
+                    Range     = 500,
+                    Radius    = 500,
+                })
+
+                -- Đợi 3.5 giây skill chạy xong để dọn dẹp và mở khóa nhân vật
+                task.delay(1.9, function()
+                    holdingVal.Value = false
+                    if airPart then airPart:Destroy() end
+                    if ccEffect then ccEffect:Destroy() end
+                    if animTrack then animTrack:Stop() end
+                    
+                    if originalAmbient and originalOutdoor then
+                        Lighting.Ambient = originalAmbient
+                        Lighting.OutdoorAmbient = originalOutdoor
+                    end
+
+                    -- 2. MỞ KHÓA DI CHUYỂN, LƯỚT VÀ NHẢY TRỞ LẠI BÌNH THƯỜNG
+                    ControlModule:Enable() -- Bật lại hệ thống di chuyển gốc
+                    if Hum then
+                        Hum.JumpPower = oldJumpPower
+                        Hum.JumpHeight = oldJumpHeight
+                    end
+                end)
+            end)
+        end)
+
+        tool.Equipped:Connect(function() 
+            gui.Enabled = true 
+            if Lighting.Ambient ~= Color3.fromRGB(100,100,100) and Lighting.Ambient ~= Color3.fromRGB(0,0,0) then
+                originalAmbient = Lighting.Ambient
+                originalOutdoor = Lighting.OutdoorAmbient
+            end
+        end)
+        
+        tool.Unequipped:Connect(function() 
+            gui.Enabled = false 
+            ControlModule:Enable() -- Đảm bảo không bị kẹt khóa di chuyển khi cất tool đột ngột
+            local platform = workspace:FindFirstChild("DivineAirPlatform")
+            if platform then platform:Destroy() end
+        end)
+        
+        tool.Destroying:Connect(function() 
+            if gui then gui:Destroy() end 
+            ControlModule:Enable()
+            local platform = workspace:FindFirstChild("DivineAirPlatform")
+            if platform then platform:Destroy() end
+        end)
+
+        tool.Activated:Connect(function()
+            if S.db then return end
+            local hrp = getHRP()
+            if not hrp then return end
+            local now = tick()
+            if now - S.lt > 0.5 then S.cc = 0 end
+            S.lt = now
+            S.cc = S.cc + 1
+            local cb = Combo[S.cc]
+            if not cb then S.cc = 0 return end
+            S.db = true
+            cb.Action(hrp)
+            S.db = false
+            if S.cc >= #Combo then S.cc = 0 end
+        end)
+    end
+})
+
+
+VS:AddButton({
+    Name = "View Leviathan",
+    Callback = function()
+        local Players = game:GetService("Players")
+        local plr     = Players.LocalPlayer
+        local char    = plr.Character or plr.CharacterAdded:Wait()
+        local hrp     = char:WaitForChild("HumanoidRootPart")
+        local folder  = plr.PlayerScripts:WaitForChild("LeviathanCinematicc")
+        local cine    = require(folder.Intro)()
+        local offset  = hrp.Position + hrp.CFrame.LookVector * 120
+
+        for _, v in ipairs(workspace:GetChildren()) do
+            if v.Name:match("Leviathan") then
+                local root = v:FindFirstChild("RootPart")
+                if root then v:PivotTo(CFrame.new(offset)) end
+            end
+        end
+
+        cine:Play()
+        task.delay(14, function() cine:Destroy() end)
+    end
+})
+VS:AddButton({
+    Name = "Mưa Trái Ác Quỷ",
+    Callback = function()
+        task.spawn(function()
+            local g = game
+            local plr = g.Players.LocalPlayer
+            local char = plr.Character or plr.CharacterAdded:Wait()
+            local Backpack = plr:WaitForChild("Backpack")
+            local HRP = char:WaitForChild("HumanoidRootPart")
+
+            local objs = g:GetObjects("rbxassetid://96375671161494")
+            if not objs[1] then return end
+
+            local root = objs[1]:FindFirstChildOfClass("Folder") or objs[1]:GetChildren()[1]
+            if not root then return end
+
+            for _, Fruit in ipairs(root:GetChildren()) do
+                for _, d in ipairs(Fruit:GetDescendants()) do
+                    if d:IsA("BasePart") then
+                        d.CanCollide = true
+                        d.CanTouch = true
+                    end
+                end
+
+                Fruit.Parent = workspace
+                Fruit:MoveTo(HRP.Position + Vector3.new(math.random(-50,50), 100, math.random(-50,50)))
+
+                if Fruit:FindFirstChild("Handle") then
+                    Fruit.Handle.Touched:Connect(function(hit)
+                        if hit.Parent == char then
+                            Fruit.Parent = Backpack
+                            char.Humanoid:EquipTool(Fruit)
+                        end
+                    end)
+                end
+            end
+        end)
+    end
+})
+
 Player:AddSection({"Pvp, aimbot, movement"})
 -- VARIAVEL PARA GUARDAR O MENU DE PLAYERS
 
