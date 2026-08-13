@@ -1,20 +1,13 @@
 repeat task.wait() until game:IsLoaded()
 
+
 local Services = setmetatable({}, {
-    __index = function(self, name)
-        local service = game:GetService(name)
-        rawset(self, name, service)
+    __index = function(self, serviceName)
+        local service = game:GetService(serviceName)
+        rawset(self, serviceName, service)
         return service
     end
 })
-
-task.spawn(function()
-    local Team = math.random(1, 2) == 1 and "Pirates" or "Marines"
-
-    pcall(function()
-        CommF:InvokeServer("SetTeam", Team)
-    end)
-end)
 
 local HttpService = Services.HttpService
 local FolderName = "BaCoNhǎo Hub"
@@ -59,17 +52,11 @@ LoadSettings()
 -- AUTO KEN (Observation Haki)
 -- ========================================
 local Players = Services.Players
-local ReplicatedStorage = Services.ReplicatedStorage
-local HttpService = Services.HttpService
 local CollectionService = Services.CollectionService
+local ReplicatedStorage = Services.ReplicatedStorage
 
-local LocalPlayer = Players.LocalPlayer
-
-local Remotes = ReplicatedStorage:WaitForChild("Remotes")
-local CommF = Remotes:WaitForChild("CommF_")
-local CommE = Remotes:WaitForChild("CommE")
-
-local CommF = game:GetService("ReplicatedStorage").Remotes.CommF_
+local player = Players.LocalPlayer
+local commE = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommE")
 _G.AutoKen = true
 
 local function HasKen()
@@ -152,10 +139,11 @@ end
 local plr = game.Players.LocalPlayer
 
 repeat
-    local loading = plr.PlayerGui:FindFirstChild("Main")
-    loading = loading and loading:FindFirstChild("Loading")
+    local main = plr.PlayerGui:FindFirstChild("Main")
+    local loading = main and main:FindFirstChild("Loading")
+
     task.wait()
-until game:IsLoaded() and not (loading and loading.Visible)
+until game:IsLoaded() and (not loading or not loading.Visible)
 
 World1 = false
 World2 = false
@@ -425,10 +413,6 @@ G.Kill = function(I, e)
 	-- posição alvo do bring
 	PosMon = (I:GetAttribute("Locked")).Position
 
-	-- >>> FORÇA O BRING <<<
-	_B = true
-	BringEnemy()
-
 	-- equipa arma
 	EquipWeapon(_G.SelectWeapon)
 
@@ -437,6 +421,10 @@ G.Kill = function(I, e)
 
 	-- TP acima do mob (altura única)
 	_tp(hrp.CFrame * CFrame.new(0, _G.MobHeight, 0))
+     task.wait(0.05)
+	-- Gọi bring sau khi đã cầm vũ khí và TP
+	_B = true
+	BringEnemy()
 end
 G.KillSea = function(I, e)
 		if I and e then
@@ -587,7 +575,7 @@ _G.FarmMastery_S   = _G.FarmMastery_S or false
 
 local TweenService = game:GetService("TweenService")
 local TweenInfoBring = TweenInfo.new(
-    0.50, -- velocidade do tween
+    0.6, -- velocidade do tween
     Enum.EasingStyle.Linear,
     Enum.EasingDirection.Out
 )
