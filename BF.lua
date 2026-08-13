@@ -2340,46 +2340,58 @@ QuestNeta = function()
     SaveFolder = "BaCoNhǎo.json"
 })
 -- Criar ScreenGui
+--// Banana UI = Library_Function
+--// Redz UI = Library
+
+local UIS = game:GetService("UserInputService")
+
 local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ControlGUI"
+screenGui.Name = "BaCoN Hub Btn"
+screenGui.ResetOnSpawn = false
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 screenGui.Parent = game.CoreGui
 
--- Criar ImageButton
 local imageButton = Instance.new("ImageButton")
+imageButton.Name = "ControlButton"
 imageButton.Size = UDim2.new(0, 50, 0, 50)
-imageButton.Position = UDim2.new(0, 15, 1, -15)
+imageButton.Position = UDim2.new(0, 15, 1, -65)
 imageButton.Image = "rbxassetid://114476175638281"
 imageButton.BackgroundTransparency = 1
 imageButton.Parent = screenGui
 
--- Deixar o botão completamente redondo
 local uiCorner = Instance.new("UICorner")
 uiCorner.CornerRadius = UDim.new(1, 0)
 uiCorner.Parent = imageButton
 
--- Variáveis para arrastar
+
+--// Drag
 local dragging = false
 local dragInput
 local dragStart
 local startPos
+local wasDragged = false
 
--- Função para atualizar posição
 local function update(input)
     local delta = input.Position - dragStart
+
     imageButton.Position = UDim2.new(
         startPos.X.Scale,
         startPos.X.Offset + delta.X,
         startPos.Y.Scale,
         startPos.Y.Offset + delta.Y
     )
+
+    if math.abs(delta.X) > 5 or math.abs(delta.Y) > 5 then
+        wasDragged = true
+    end
 end
 
--- Detectar início do arrasto
 imageButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1
         or input.UserInputType == Enum.UserInputType.Touch then
 
         dragging = true
+        wasDragged = false
         dragStart = input.Position
         startPos = imageButton.Position
 
@@ -2391,7 +2403,6 @@ imageButton.InputBegan:Connect(function(input)
     end
 end)
 
--- Detectar movimento do mouse
 imageButton.InputChanged:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseMovement
         or input.UserInputType == Enum.UserInputType.Touch then
@@ -2400,23 +2411,26 @@ imageButton.InputChanged:Connect(function(input)
     end
 end)
 
--- Atualizar posição durante arrasto
-game:GetService("UserInputService").InputChanged:Connect(function(input)
+UIS.InputChanged:Connect(function(input)
     if dragging and input == dragInput then
         update(input)
     end
 end)
 
--- Abrir/Fechar GUI (Minimize)
+
+--// Điều khiển Redz UI
 local isOpen = true
 
-imageButton.MouseButton1Click:Connect(function()
+imageButton.Activated:Connect(function()
+    if wasDragged then
+        wasDragged = false
+        return
+    end
+
     isOpen = not isOpen
 
-    if isOpen then
-        Library:Minimize(false)
-    else
-        Library:Minimize(true)
+    if Library and Library.Minimize then
+        Library:Minimize(not isOpen)
     end
 end)
 
