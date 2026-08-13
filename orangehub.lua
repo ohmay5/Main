@@ -867,8 +867,8 @@ block.Transparency = 1
 blockfind = workspace:FindFirstChild(block.Name)
 if blockfind and blockfind ~= block then blockfind:Destroy() end
 
-getgenv().TweenSpeedFar  = 300
-getgenv().TweenSpeedNear = 600
+getgenv().TweenSpeedFar  = 255
+getgenv().TweenSpeedNear = 400
 
 _tp = function(I)
     local e = plr.Character
@@ -891,8 +891,8 @@ _tp = function(I)
     end
 
     local speed = dist <= 15
-        and (getgenv().TweenSpeedNear or 600)
-        or  (getgenv().TweenSpeedFar  or 300)
+        and (getgenv().TweenSpeedNear or 400)
+        or  (getgenv().TweenSpeedFar  or 255)
 
     local info  = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)
     local tween = game:GetService("TweenService"):Create(HRP, info, { CFrame = I })
@@ -936,8 +936,8 @@ task.spawn(function()
     local Test = Instance.new("Highlight")
     Test.Name = "highlight"
     Test.Enabled = true
-    Test.FillColor = Color3.fromRGB(255,165,0)
-    Test.OutlineColor = Color3.fromRGB(255,0,0)
+    Test.FillColor = Color3.fromRGB(190, 190, 190)
+Test.OutlineColor = Color3.fromRGB(245, 245, 245)
     Test.FillTransparency = 0.5
     Test.OutlineTransparency = 0.2
     Test.Parent = plr.Character
@@ -1726,14 +1726,14 @@ task.spawn(function()
 end)
 
 Window = redzlib:MakeWindow({
-  Title = "Orange Hub : Blox Fruits",
+  Title = "BaCon Hub : Blox Fruits",
   SubTitle = "by_orgvip³⁶",
-  SaveFolder = "OrangeV5.lua"
+  SaveFolder = "BaConV5.lua"
 })
 
 MinimizeButton = Window:AddMinimizeButton({
     Button = { 
-        Image = "rbxassetid://104922707580804", 
+        Image = "rbxassetid://114476175638281", 
         BackgroundTransparency = 0,
         Size = UDim2.new(0, 55, 0, 55),
         BackgroundColor3 = Color3.fromRGB(30, 30, 30),
@@ -1769,16 +1769,12 @@ VS = Window:MakeTab({ Title = "Tab Visual", Icon = "eye" }),
 
 Tabs.Info:AddSection("Thông Tin Chính")
 Tabs.Info:AddDiscordInvite({
-    Name = "Orange Hub",
-    Description = "Vào Discord Để Nhận Update Mới",
-    Logo = "rbxassetid://104922707580804",
-    Invite = "https://discord.gg/6McJU8HBa"
+    Name = "BaCon Hub",
+    Description = "i",
+    Logo = "rbxassetid://114476175638281",
+    Invite = ""
 })
-Tabs.Info:AddSection("Trạng Thái Máy Chủ")
-ScriptStatus = Tabs.Info:AddParagraph({
-    Title = "Ngày Phát Hành",
-    Content = "20/5/2026"
-})
+Tabs.Info:AddSection("Trạng Thái Máy Chủ") 
 Time = Tabs.Info:AddParagraph({
     Title = "Múi Giờ",
     Content = ""
@@ -1831,6 +1827,149 @@ task.spawn(function()
         wait(1)
     end
 end)
+local function formatNumber(num)
+    local formatted = tostring(num)
+
+    while true do
+        local newFormatted, k = formatted:gsub(
+            "^(-?%d+)(%d%d%d)",
+            "%1,%2"
+        )
+
+        formatted = newFormatted
+
+        if k == 0 then
+            break
+        end
+    end
+
+    return formatted
+end
+
+-- =========================
+-- ADVANCED FRUIT STOCK
+-- =========================
+
+local function GetAdvancedFruitStock()
+    local result = ""
+
+    local success, advancedStock = pcall(function()
+        return replicated.Remotes.CommF_:InvokeServer("GetFruits", true)
+    end)
+
+    if success and advancedStock then
+        local hasFruit = false
+
+        for _, fruit in pairs(advancedStock) do
+            if fruit.OnSale then
+                hasFruit = true
+
+                result = result
+                    .. fruit.Name
+                    .. " - $"
+                    .. formatNumber(fruit.Price)
+                    .. "\n"
+            end
+        end
+
+        if not hasFruit then
+            result = "- No fruit in stock."
+        end
+    else
+        result = "- Error retrieving data."
+    end
+
+    return result
+end
+
+
+-- =========================
+-- NORMAL FRUIT STOCK
+-- =========================
+
+local function GetNormalFruitStock()
+    local result = ""
+
+    local success, normalStock = pcall(function()
+        return replicated.Remotes.CommF_:InvokeServer("GetFruits")
+    end)
+
+    if success and normalStock then
+        local hasFruit = false
+
+        for _, fruit in pairs(normalStock) do
+            if fruit.OnSale then
+                hasFruit = true
+
+                result = result
+                    .. fruit.Name
+                    .. " - $"
+                    .. formatNumber(fruit.Price)
+                    .. "\n"
+            end
+        end
+
+        if not hasFruit then
+            result = "- No fruit in stock."
+        end
+    else
+        result = "- Error retrieving data."
+    end
+
+    return result
+end
+
+
+-- =========================
+-- TẠO 1 BẢNG DUY NHẤT
+-- =========================
+
+local StockParagraph = Tabs.Info:AddParagraph({
+    Title = "Fruit Stock",
+    DualStock = true
+})
+
+
+-- =========================
+-- UPDATE STOCK
+-- =========================
+
+local function UpdateFruitStock()
+    local NormalStock = GetNormalFruitStock()
+    local AdvancedStock = GetAdvancedFruitStock()
+
+    StockParagraph:SetStock(
+        NormalStock,
+        AdvancedStock
+    )
+end
+
+
+task.spawn(function()
+
+    -- Update lần đầu
+    pcall(UpdateFruitStock)
+
+    -- Update mỗi 60 giây
+    while task.wait(60) do
+        pcall(UpdateFruitStock)
+    end
+
+end)
+-- Button refresh stock
+Tabs.Info:AddButton({
+    Name = "Refresh Stock Now",
+    Callback = function()
+        pcall(function()
+            StockParagraph:SetDesc(GetFruitStock())
+            redzlib:Notify({
+                Title = "Fruit Stock",
+                Message = "Stock refreshed",
+                Duration = 2
+            })
+        end)
+    end
+})
 Miragecheck = Tabs.Info:AddParagraph({
     Title = "Đảo Bí Ẩn",
     Content = "Status: "
@@ -2044,7 +2183,7 @@ end)
 AttackDropdown = Tabs.Main:AddDropdown({
     Name = "Chọn Tốc Độ Đánh",
     Flag = "AttackDropdown",
-    Options = {"Normal Attack","Fast Attack","Super Fast Attack","Orange Attack"},
+    Options = {"Normal Attack","Fast Attack","Super Fast Attack","BaCon Attack"},
     Default = "Fast Attack",
     Callback = function(Value)
     _G.FastAttackGravity_Mode = Value
@@ -2055,7 +2194,7 @@ DelayConfig = {
     ["Normal Attack"] = 0.25,
     ["Fast Attack"] = 0.15,
     ["Super Fast Attack"] = 0.05,
-    ["Orange Attack"] = 0.1
+    ["BaCon Attack"] = 0.1
 }
 
 task.spawn(function()
@@ -2103,7 +2242,7 @@ Tabs.Main:AddButton({
 
         local success, err = pcall(function()
             local data = HttpService:JSONEncode({
-                ["username"] = "Bug Report From Orange Hub",
+                ["username"] = "Bug Report From BaCon Hub",
                 ["embeds"] = {{
                     ["title"] = "📢 Report New Errors",
                     ["description"] = bugContent,
@@ -5085,7 +5224,18 @@ Tabs.Settings:AddSlider({
         _G.BringRange = Value
     end
 })
-
+Tabs.Settings:AddSlider({
+    Name = "Tween Speed",
+    Flag = "TweenSpeedSlider",
+    Description = "Điều chỉnh tốc độ tween",
+    Default = 255,
+    Min = 50,
+    Max = 500,
+    Rounding = 0,
+    Callback = function(Value)
+        getgenv().TweenSpeedFar = Value
+    end
+})
 
 -- 🌀 Toggle Auto Server Hop mỗi 30 phút
 HopToggle = Tabs.Settings:AddToggle({

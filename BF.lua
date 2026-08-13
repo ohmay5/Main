@@ -3968,10 +3968,6 @@ spawn(function()
     end
 end)
 
----
-
--- 5. SISTEMA CAKE PRINCE FARM
-
 spawn(function()
     while task.wait() do
         if _G.AutoFarm_Cake and _G.StartFarm then
@@ -4919,6 +4915,274 @@ spawn(function()
 		end);
 	end;
 end);
+Setting:AddSection({"Ngôn ngữ"})
+local HttpService = game:GetService("HttpService")
+local CoreGui = game:GetService("CoreGui")
+
+_G.AutoTranslate = false
+_G.TargetLang = "vi"
+
+local TranslatedCache = {}
+local TranslationBusy = {}
+local TranslationWatcher
+
+local LanguageList = {
+    ["Tiếng Việt"] = "vi",
+    ["Tieng Viet"] = "vi-nodau",
+    ["English (US)"] = "en-US",
+
+    ["ภาษาไทย"] = "th",
+    ["Indonesia"] = "id",
+    ["Filipino"] = "tl",
+    ["Melayu"] = "ms",
+    ["မြန်မာဘာသာ"] = "my",
+    ["ខ្មែរ"] = "km",
+    ["ລາວ"] = "lo",
+
+    ["日本語"] = "ja",
+    ["简体中文"] = "zh-CN",
+    ["繁體中文"] = "zh-TW",
+    ["한국어"] = "ko",
+
+    ["Português (Brasil)"] = "pt",
+    ["Español"] = "es",
+    ["Français"] = "fr",
+    ["Deutsch"] = "de",
+    ["Italiano"] = "it",
+    ["Nederlands"] = "nl",
+    ["Svenska"] = "sv",
+    ["Norsk"] = "no",
+    ["Dansk"] = "da",
+    ["Suomi"] = "fi",
+
+    ["Русский"] = "ru",
+    ["Українська"] = "uk",
+    ["Polski"] = "pl",
+    ["Türkçe"] = "tr",
+    ["Română"] = "ro",
+    ["Magyar"] = "hu",
+    ["Čeština"] = "cs",
+    ["Ελληνικά"] = "el",
+
+    ["العربية"] = "ar",
+    ["हिन्दी"] = "hi",
+    ["বাংলা"] = "bn",
+    ["اردو"] = "ur",
+    ["עברית"] = "he",
+}
+
+local LanguageOptions = {}
+
+for Name in pairs(LanguageList) do
+    table.insert(LanguageOptions, Name)
+end
+
+table.sort(LanguageOptions)
+
+--==================================================
+-- GOOGLE TRANSLATE
+--==================================================
+
+local function GoogleTranslate(text, targetLang)
+    if not text or text == "" then
+        return text
+    end
+
+    if tonumber(text) then
+        return text
+    end
+
+    if #text < 2 then
+        return text
+    end
+
+    targetLang = targetLang or _G.TargetLang
+
+    local cacheKey = targetLang .. ":" .. text
+
+    if TranslatedCache[cacheKey] then
+        return TranslatedCache[cacheKey]
+    end
+
+    -- Tránh gửi cùng một request nhiều lần
+    if TranslationBusy[cacheKey] then
+        return nil
+    end
+
+    TranslationBusy[cacheKey] = true
+
+    local url =
+        "https://translate.googleapis.com/translate_a/single" ..
+        "?client=gtx" ..
+        "&sl=auto" ..
+        "&tl=" .. HttpService:UrlEncode(targetLang) ..
+        "&dt=t" ..
+        "&q=" .. HttpService:UrlEncode(text)
+
+    local success, response = pcall(function()
+        return game:HttpGet(url)
+    end)
+
+    local result
+
+    if success and response then
+        local decodeSuccess, decoded = pcall(function()
+            return HttpService:JSONDecode(response)
+        end)
+
+        if decodeSuccess and decoded and decoded[1] then
+            local parts = {}
+
+            for _, item in ipairs(decoded[1]) do
+                if type(item) == "table" and item[1] then
+                    table.insert(parts, item[1])
+                end
+            end
+
+            if #parts > 0 then
+                result = table.concat(parts)
+                TranslatedCache[cacheKey] = result
+            end
+        end
+    end
+
+    TranslationBusy[cacheKey] = nil
+
+    return result or text
+end
+
+--==================================================
+-- UPDATE ONE OBJECT
+--==================================================
+
+local function UpdateUI(obj)
+    if not (
+        obj:IsA("TextLabel")
+        or obj:IsA("TextButton")
+        or obj:IsA("TextBox")
+    ) then
+        return
+    end
+
+    -- Lưu text gốc
+    if obj:GetAttribute("RawText") == nil then
+        obj:SetAttribute("RawText", obj.Text)
+    end
+
+    local raw = obj:GetAttribute("RawText")
+
+    if not raw or raw == "" then
+        return
+    end
+
+    -- Tắt dịch → trả về text gốc ngay
+    if not _G.AutoTranslate then
+        if obj.Text ~= raw then
+            obj.Text = raw
+        end
+        return
+    end
+
+    local targetLang = _G.TargetLang
+
+    task.spawn(function()
+        local translated = GoogleTranslate(raw, targetLang)
+
+        if not translated then
+            return
+        end
+
+        -- Chỉ thay nếu vẫn đang bật và vẫn cùng ngôn ngữ
+        if _G.AutoTranslate and _G.TargetLang == targetLang then
+            if obj.Parent and obj.Text ~= translated then
+                obj.Text = translated
+            end
+        end
+    end)
+end
+
+--==================================================
+-- UPDATE TOÀN BỘ UI
+--==================================================
+
+local function UpdateAllUI()
+    local objects = CoreGui:GetDescendants()
+
+    for _, obj in ipairs(objects) do
+        UpdateUI(obj)
+    end
+end
+
+--==================================================
+-- DROPDOWN
+--==================================================
+
+Setting:AddDropdown({
+    Name = "Select Language",
+    Options = LanguageOptions,
+    Default = "English (US)",
+
+    Callback = function(Value)
+        local lang = LanguageList[Value]
+
+        if not lang then
+            return
+        end
+
+        _G.TargetLang = lang
+
+        if _G.AutoTranslate then
+            -- Đổi ngôn ngữ ngay lập tức
+            UpdateAllUI()
+        end
+    end
+})
+
+--==================================================
+-- AUTO TRANSLATION
+--==================================================
+
+Setting:AddToggle({
+    Name = "Auto Translation",
+    Default = false,
+
+    Callback = function(Value)
+        _G.AutoTranslate = Value
+
+        if Value then
+            -- Bấm ON → bắt đầu dịch ngay
+            UpdateAllUI()
+
+            -- Chỉ tạo watcher một lần
+            if not TranslationWatcher then
+                TranslationWatcher = CoreGui.DescendantAdded:Connect(function(obj)
+                    task.defer(function()
+                        if _G.AutoTranslate then
+                            UpdateUI(obj)
+                        end
+                    end)
+                end)
+
+                _G.TranslationWatcher = TranslationWatcher
+            end
+        else
+            -- Bấm OFF → trả UI về nguyên bản
+            for _, obj in ipairs(CoreGui:GetDescendants()) do
+                if obj:IsA("TextLabel")
+                    or obj:IsA("TextButton")
+                    or obj:IsA("TextBox") then
+
+                    local raw = obj:GetAttribute("RawText")
+
+                    if raw then
+                        obj.Text = raw
+                    end
+                end
+            end
+        end
+    end
+})
+
 Setting:AddSection({"Select"})
 _G.BringRange = _G.SaveData["BringRange_Save"] or 250
 
