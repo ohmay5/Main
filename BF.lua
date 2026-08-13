@@ -426,6 +426,35 @@ G.Kill = function(I, e)
 	_B = true
 	BringEnemy()
 end
+G.Kill2 = function(I, e)
+		if I and e then
+			if not I:GetAttribute("Locked") then
+				I:SetAttribute("Locked", I.HumanoidRootPart.CFrame);
+			end;
+			PosMon = (I:GetAttribute("Locked")).Position;
+			BringEnemy();
+			EquipWeapon(_G.SelectWeapon);
+			local e = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool");
+			local K = e.ToolTip;
+			if K == "Blox Fruit" then
+				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
+			else
+				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 20, 8)) * CFrame.Angles(0, math.rad(180), 0));
+			end;
+			if RandomCFrame then
+				wait(.1);
+				_tp(I.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25));
+				wait(.1);
+				_tp(I.HumanoidRootPart.CFrame * CFrame.new(25, 30, 0));
+				wait(.1);
+				_tp(I.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0));
+				wait(.1);
+				_tp(I.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25));
+				wait(.1);
+				_tp(I.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0));
+			end;
+		end;
+	end;
 G.KillSea = function(I, e)
 		if I and e then
 			if not I:GetAttribute("Locked") then
@@ -639,69 +668,127 @@ end
 -- FUNÇÃO PRINCIPAL: BRING
 --==================================================
 BringEnemy = function()
-    if not (FarmAtivo() or _G.AutoBartilo or _G.AutoFarmNear) or not _B then return end
+    if not _B then
+        -- FIX: Tắt farm → untag tất cả mob đang giữ
+        for mobKey in pairs(FarmingMobs) do
+            FarmingMobs[mobKey] = nil
+        end
+        return
+    end
 
-    local plr = game.Players.LocalPlayer  
-    local char = plr.Character  
-    local hrp = char and char:FindFirstChild("HumanoidRootPart")  
-    if not hrp then return end  
+    local bringTarget = FarmPos or PosMon
+    if not bringTarget then return end
 
-    -- Simulation Radius  
-    pcall(function()  
-        sethiddenproperty(plr, "SimulationRadius", math.huge)  
-    end)  
+    local char   = plr.Character
+    local hrpPlr = char and char:FindFirstChild("HumanoidRootPart")
+    if not hrpPlr then return end
 
-    local targetPos = PosMon or hrp.Position  
-    local enemies = workspace.Enemies:GetChildren()  
-    local count = 0  
+    local range  = tonumber(_G.BringRange) or 350
+    local speed  = tonumber(_G.SpeedB)     or 180
+    local maxMob = tonumber(_G.MaxBringMobs) or 15
 
-    for _, mob in ipairs(enemies) do  
-        if count >= _G.MaxBringMobs then break end  
+    pcall(function()
+        if sethiddenproperty then sethiddenproperty(plr, "SimulationRadius", math.huge) end
+        if setscriptable then setscriptable(plr, "SimulationRadius", true) end
+    end)
 
-        local hum = mob:FindFirstChild("Humanoid")  
-        local root = mob:FindFirstChild("HumanoidRootPart")  
+    -- Dọn cache mob đã chết/mất
+    for mobKey in pairs(BringingMobs) do
+        local parts = string.split(mobKey, ".")
+        local found = workspace.Enemies:FindFirstChild(parts[#parts])
+        if not found then BringingMobs[mobKey] = nil end
+    end
 
-        if hum and root and hum.Health > 0 and not IsRaidMob(mob) then  
-            local dist = (root.Position - targetPos).Magnitude  
+    local list = {}
 
-            if dist <= _G.BringRange and not root:GetAttribute("Tweening") then  
-                count += 2  
-                root:SetAttribute("Tweening", true)  
+    for _, v in pairs(workspace.Enemies:GetChildren()) do
+        if isBossMob(v) then continue end
+        if not IsValidMob(v) then continue end
 
-                local tween = TweenService:Create(  
-                    root,  
-                    TweenInfoBring,  
-                    { CFrame = CFrame.new(targetPos) }  
-                )  
+        local mobKey = v:GetFullName()
+        if BringingMobs[mobKey] then continue end
 
-                tween:Play()  
-                tween.Completed:Once(function()  
-                    if root then  
-                        root:SetAttribute("Tweening", false)  
-                    end  
-                end)  
-            end  
-        end  
+        local pp = v.PrimaryPart or v:FindFirstChild("HumanoidRootPart")
+        if IsMobTaggedByOther(pp) then continue end
+
+        local dist = (pp.Position - bringTarget).Magnitude
+        if dist <= range then
+            table.insert(list, { mob = v, pp = pp, dist = dist })
+        end
+    end
+
+    table.sort(list, function(a, b) return a.dist < b.dist end)
+    if #list == 0 then return end
+
+    local count = 0
+    for _, it in ipairs(list) do
+        if count >= maxMob then break end
+
+        local v, pp = it.mob, it.pp
+        if not IsValidMob(v) then continue end
+        if IsMobTaggedByOther(pp) then continue end
+
+        count = count + 1
+
+        local mobKey = v:GetFullName()
+        BringingMobs[mobKey] = true
+        TagMob(pp)
+
+        pcall(function()
+            ResetMobPhysics(pp)
+
+            local offsetX  = math.random(-5, 5)
+            local offsetZ  = math.random(-5, 5)
+            local targetCF = CFrame.new(
+                bringTarget.X + offsetX,
+                bringTarget.Y,
+                bringTarget.Z + offsetZ
+            )
+
+            local duration  = math.max(it.dist / speed, 0.1)
+            local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
+            local move      = TS:Create(pp, tweenInfo, { CFrame = targetCF })
+            move:Play()
+
+            task.spawn(function()
+                while move.PlaybackState == Enum.PlaybackState.Playing do
+                    task.wait(0.05)
+                    if not IsValidMob(v) then
+                        move:Cancel()
+                        break
+                    end
+                    TagMob(pp)
+                    ResetMobPhysics(pp)
+                end
+
+                pcall(function()
+                    pp.CanCollide = true
+                end)
+
+                BringingMobs[mobKey] = nil
+
+                -- FIX: Sau khi bring xong → bắt đầu keep-alive tag
+                -- Mob sẽ bị giữ tag cho đến khi chết hoặc _B tắt
+                if IsValidMob(v) and _B then
+                    StartFarmTag(v, pp)
+                else
+                    UntagMob(pp)
+                end
+            end)
+
+            move.Completed:Connect(function(state)
+                pcall(function()
+                    ResetMobPhysics(pp)
+                    if state == Enum.PlaybackState.Completed then
+                        pp.CanCollide = true
+                    end
+                end)
+                BringingMobs[mobKey] = nil
+            end)
+        end)
     end
 end
 
---==================================================
--- LOOP CONTROLADOR
---==================================================
-task.spawn(function()
-    while task.wait(1) do
-        if FarmAtivo() then
-            _B = true
-            BringEnemy()
-            task.wait(1)
-            _B = false  
-            task.wait(1)  
-        else  
-            _B = false  
-            task.wait(1)  
-        end  
-    end
-end)
 Useskills = function(I, e)
 		if I == "Melee" then
 			weaponSc("Melee");
@@ -3717,7 +3804,7 @@ spawn(function()
                         if boss and boss:FindFirstChild("HumanoidRootPart") then
                             _tp(boss.HumanoidRootPart.CFrame * CFrame.new(0, FarmHeight, 0))
                             EquipWeapon(_G.SelectWeapon)
-                            G.Kill(boss, true)
+                            G.Kill2(boss, true)
                         else
                             break
                         end
@@ -3814,9 +3901,6 @@ spawn(function()
         end
     end
 end)
-
-
-
 
 
 -- 3. SISTEMA BONE FARM (CORRIGIDO)
@@ -3971,7 +4055,7 @@ spawn(function()
                         _tp(bossTarget)  
                         local bossPos = boss.PrimaryPart.CFrame * CFrame.new(0, 25, 0) * CFrame.Angles(math.rad(-90), 0, 0)  
                         _tp(bossPos)  
-                        G.Kill(boss, true)  
+                        G.Kill2(boss, true)  
                         return  
                     end  
                     if (hrp.Position - PortalEntrance.Position).Magnitude < 500000 then  
