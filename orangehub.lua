@@ -1663,7 +1663,7 @@ end
 
 
 redzlib = nil
-pcall(function() redzlib = loadstring(game:HttpGet("https://pastefy.app/MAbSfkcD/raw"))() end)
+pcall(function() redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/UIOrange.lua"))() end)
 Players=game:GetService("Players")
 lp=Players.LocalPlayer
 lastPick=0
