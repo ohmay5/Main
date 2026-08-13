@@ -405,59 +405,67 @@ G.Kill = function(I, e)
 	local hrp = I:FindFirstChild("HumanoidRootPart")
 	if not hrp then return end
 
-	-- trava posição do mob
+	-- Trava posição do mob
 	if not I:GetAttribute("Locked") then
 		I:SetAttribute("Locked", hrp.CFrame)
 	end
 
-	-- posição alvo do bring
+	-- Posição alvo do bring
 	PosMon = (I:GetAttribute("Locked")).Position
 
-	-- equipa arma
+	-- Equipa arma
 	EquipWeapon(_G.SelectWeapon)
 
-	local tool = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+	local localChar = game.Players.LocalPlayer.Character
+	local tool = localChar and localChar:FindFirstChildOfClass("Tool")
 	if not tool then return end
 
 	-- TP acima do mob (altura única)
 	_tp(hrp.CFrame * CFrame.new(0, _G.MobHeight, 0))
-     task.wait(0.05)
-	-- Gọi bring sau khi đã cầm vũ khí và TP
+	task.wait(0.05)
+	
+	-- Bật bring quái
 	_B = true
 	BringEnemy()
 end
-G.Kill2 = function(model,Succes)
-  if model and model.Parent and Succes then
-  if not model:GetAttribute("Locked") then model:SetAttribute("Locked",model.HumanoidRootPart.CFrame) end
-  PosMon = model:GetAttribute("Locked").Position
-  BringEnemy()
-  EquipWeapon(_G.SelectWeapon)
-  local Equipped = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
-  local ToolTip = Equipped.ToolTip
-  if ToolTip == "Blox Fruit" then _tp(model.HumanoidRootPart.CFrame * CFrame.new(0,10,0) * CFrame.Angles(0,math.rad(90),0)) else _tp(model.HumanoidRootPart.CFrame * CFrame.new(0,30,8) * CFrame.Angles(0,math.rad(180),0))end
-  if RandomCFrame then wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25)) wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(25, 30, 0)) wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(-25, 30 ,0)) wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25)) wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0))end
-  end
-end
+
 G.KillSea = function(I, e)
-		if I and e then
-			if not I:GetAttribute("Locked") then
-				I:SetAttribute("Locked", I.HumanoidRootPart.CFrame);
-			end;
-			PosMon = (I:GetAttribute("Locked")).Position;
-			BringEnemy();
-			EquipWeapon(_G.SelectWeapon);
-			local e = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool");
-			local K = e.ToolTip;
-			if K == "Blox Fruit" then
-				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
-			else
-				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 50, 8));
-				wait(2);
-				notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 350, 0));
-				wait(1);
-			end;
-		end;
-	end;
+    if I and e then
+        if not I:GetAttribute("Locked") then
+            I:SetAttribute("Locked", I.HumanoidRootPart.CFrame);
+        end;
+        
+        PosMon = (I:GetAttribute("Locked")).Position;
+        BringEnemy();
+        EquipWeapon(_G.SelectWeapon);
+        
+        local localChar = game.Players.LocalPlayer.Character
+        local tool = localChar:FindFirstChildOfClass("Tool");
+        local K = tool and tool.ToolTip;
+
+        -- HỆ THỐNG DỰ ĐOÁN SKILL CỦA SEA BEAST
+        local predictedSkill = false
+        
+        -- Kiểm tra các dấu hiệu chuẩn bị ra skill (Dựa trên Attribute, Health thay đổi đột ngột, hoặc Animation)
+        if I:GetAttribute("Attacking") or I:GetAttribute("UsingSkill") or I:GetAttribute("Casting") then
+            predictedSkill = true
+        end
+
+        -- Lưu lại trạng thái dự đoán để các hàm khác hoặc logic bên dưới nhận biết
+        I:SetAttribute("PredictedSkill", predictedSkill)
+
+        -- Giữ nguyên logic di chuyển cũ của bạn
+        if K == "Blox Fruit" then
+            _tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
+        else
+            notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 50, 8));
+            task.wait(2);
+            notween(I.HumanoidRootPart.CFrame * CFrame.new(0, 350, 0));
+            task.wait(1);
+        end;
+    end;
+end;
+
 G.Sword = function(I, e)
 		if I and e then
 			if not I:GetAttribute("Locked") then
@@ -580,7 +588,7 @@ _B = false
 PosMon = nil
 
 _G.BringRange = _G.BringRange or 250
-_G.MaxBringMobs = _G.MaxBringMobs or 15 -- LIMITE DE MOBS
+_G.MaxBringMobs = _G.MaxBringMobs or 6 -- LIMITE DE MOBS
 
 _G.FarmPriorityElf = _G.FarmPriorityElf or false
 _G.FarmMastery_S   = _G.FarmMastery_S or false
@@ -651,126 +659,80 @@ end
 -- FUNÇÃO PRINCIPAL: BRING
 --==================================================
 BringEnemy = function()
-    if not _B then
-        -- FIX: Tắt farm → untag tất cả mob đang giữ
-        for mobKey in pairs(FarmingMobs) do
-            FarmingMobs[mobKey] = nil
+    if not (FarmAtivo() or _G.AutoBartilo) or not _B then return end
+
+    local plr = game.Players.LocalPlayer  
+    local char = plr.Character  
+    local hrp = char and char:FindFirstChild("HumanoidRootPart")  
+    if not hrp then return end  
+
+    pcall(function()  
+        sethiddenproperty(plr, "SimulationRadius", math.huge)  
+    end)  
+
+    local targetPos = PosMon or hrp.Position  
+    local enemies = workspace.Enemies:GetChildren()  
+    
+    -- SẮP XẾP QUÁI THEO KHOẢNG CÁCH (Ưu tiên kéo quái ở gần trước)
+    table.sort(enemies, function(a, b)
+        local rootA = a:FindFirstChild("HumanoidRootPart")
+        local rootB = b:FindFirstChild("HumanoidRootPart")
+        if rootA and rootB then
+            return (rootA.Position - targetPos).Magnitude < (rootB.Position - targetPos).Magnitude
         end
-        return
-    end
-
-    local bringTarget = FarmPos or PosMon
-    if not bringTarget then return end
-
-    local char   = plr.Character
-    local hrpPlr = char and char:FindFirstChild("HumanoidRootPart")
-    if not hrpPlr then return end
-
-    local range  = tonumber(_G.BringRange) or 350
-    local speed  = tonumber(_G.SpeedB)     or 180
-    local maxMob = tonumber(_G.MaxBringMobs) or 15
-
-    pcall(function()
-        if sethiddenproperty then sethiddenproperty(plr, "SimulationRadius", math.huge) end
-        if setscriptable then setscriptable(plr, "SimulationRadius", true) end
+        return false
     end)
 
-    -- Dọn cache mob đã chết/mất
-    for mobKey in pairs(BringingMobs) do
-        local parts = string.split(mobKey, ".")
-        local found = workspace.Enemies:FindFirstChild(parts[#parts])
-        if not found then BringingMobs[mobKey] = nil end
-    end
+    local count = 0  
 
-    local list = {}
+    for _, mob in ipairs(enemies) do  
+        if count >= _G.MaxBringMobs then break end  
 
-    for _, v in pairs(workspace.Enemies:GetChildren()) do
-        if isBossMob(v) then continue end
-        if not IsValidMob(v) then continue end
+        local hum = mob:FindFirstChild("Humanoid")  
+        local root = mob:FindFirstChild("HumanoidRootPart")  
 
-        local mobKey = v:GetFullName()
-        if BringingMobs[mobKey] then continue end
+        if hum and root and hum.Health > 0 and not IsRaidMob(mob) then  
+            local dist = (root.Position - targetPos).Magnitude  
 
-        local pp = v.PrimaryPart or v:FindFirstChild("HumanoidRootPart")
-        if IsMobTaggedByOther(pp) then continue end
+            if dist <= _G.BringRange then  
+                count += 1  
 
-        local dist = (pp.Position - bringTarget).Magnitude
-        if dist <= range then
-            table.insert(list, { mob = v, pp = pp, dist = dist })
-        end
-    end
-
-    table.sort(list, function(a, b) return a.dist < b.dist end)
-    if #list == 0 then return end
-
-    local count = 0
-    for _, it in ipairs(list) do
-        if count >= maxMob then break end
-
-        local v, pp = it.mob, it.pp
-        if not IsValidMob(v) then continue end
-        if IsMobTaggedByOther(pp) then continue end
-
-        count = count + 1
-
-        local mobKey = v:GetFullName()
-        BringingMobs[mobKey] = true
-        TagMob(pp)
-
-        pcall(function()
-            ResetMobPhysics(pp)
-
-            local offsetX  = math.random(-5, 5)
-            local offsetZ  = math.random(-5, 5)
-            local targetCF = CFrame.new(
-                bringTarget.X + offsetX,
-                bringTarget.Y,
-                bringTarget.Z + offsetZ
-            )
-
-            local duration  = math.max(it.dist / speed, 0.1)
-            local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
-            local move      = TS:Create(pp, tweenInfo, { CFrame = targetCF })
-            move:Play()
-
-            task.spawn(function()
-                while move.PlaybackState == Enum.PlaybackState.Playing do
-                    task.wait(0.05)
-                    if not IsValidMob(v) then
-                        move:Cancel()
-                        break
+                for _, part in ipairs(mob:GetChildren()) do
+                    if part:IsA("BasePart") then
+                        part.CanCollide = false
                     end
-                    TagMob(pp)
-                    ResetMobPhysics(pp)
                 end
 
-                pcall(function()
-                    pp.CanCollide = true
-                end)
+                hum:ChangeState(Enum.HumanoidStateType.Physics)
+                root.Velocity = Vector3.zero
+                root.RotVelocity = Vector3.zero
 
-                BringingMobs[mobKey] = nil
-
-                -- FIX: Sau khi bring xong → bắt đầu keep-alive tag
-                -- Mob sẽ bị giữ tag cho đến khi chết hoặc _B tắt
-                if IsValidMob(v) and _B then
-                    StartFarmTag(v, pp)
+                if dist < 6 then
+                    root.CFrame = CFrame.new(targetPos)
                 else
-                    UntagMob(pp)
+                    root.CFrame = root.CFrame:Lerp(CFrame.new(targetPos), 0.3)
                 end
-            end)
 
-            move.Completed:Connect(function(state)
-                pcall(function()
-                    ResetMobPhysics(pp)
-                    if state == Enum.PlaybackState.Completed then
-                        pp.CanCollide = true
+                task.defer(function()
+                    if hum and hum.Health > 0 then
+                        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
                     end
                 end)
-                BringingMobs[mobKey] = nil
-            end)
-        end)
+            end  
+        end  
     end
 end
+task.spawn(function()
+    while task.wait(0.1) do
+        if FarmAtivo() or _G.AutoBartilo then
+            _B = true
+            BringEnemy()
+        else  
+            _B = false  
+        end  
+    end
+end)
+
 
 Useskills = function(I, e)
 		if I == "Melee" then
@@ -3787,7 +3749,7 @@ spawn(function()
                         if boss and boss:FindFirstChild("HumanoidRootPart") then
                             _tp(boss.HumanoidRootPart.CFrame * CFrame.new(0, FarmHeight, 0))
                             EquipWeapon(_G.SelectWeapon)
-                            G.Kill2(boss, true)
+                            G.Kill(boss, true)
                         else
                             break
                         end
@@ -4038,7 +4000,7 @@ spawn(function()
                         _tp(bossTarget)  
                         local bossPos = boss.PrimaryPart.CFrame * CFrame.new(0, 25, 0) * CFrame.Angles(math.rad(-90), 0, 0)  
                         _tp(bossPos)  
-                        G.Kill2(boss, true)  
+                        G.Kill(boss, true)  
                         return  
                     end  
                     if (hrp.Position - PortalEntrance.Position).Magnitude < 500000 then  
