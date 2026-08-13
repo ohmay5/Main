@@ -426,35 +426,18 @@ G.Kill = function(I, e)
 	_B = true
 	BringEnemy()
 end
-G.Kill2 = function(I, e)
-		if I and e then
-			if not I:GetAttribute("Locked") then
-				I:SetAttribute("Locked", I.HumanoidRootPart.CFrame);
-			end;
-			PosMon = (I:GetAttribute("Locked")).Position;
-			BringEnemy();
-			EquipWeapon(_G.SelectWeapon);
-			local e = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool");
-			local K = e.ToolTip;
-			if K == "Blox Fruit" then
-				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)) * CFrame.Angles(0, math.rad(90), 0));
-			else
-				_tp((I.HumanoidRootPart.CFrame * CFrame.new(0, 20, 8)) * CFrame.Angles(0, math.rad(180), 0));
-			end;
-			if RandomCFrame then
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25));
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(25, 30, 0));
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0));
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25));
-				wait(.1);
-				_tp(I.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0));
-			end;
-		end;
-	end;
+G.Kill2 = function(model,Succes)
+  if model and model.Parent and Succes then
+  if not model:GetAttribute("Locked") then model:SetAttribute("Locked",model.HumanoidRootPart.CFrame) end
+  PosMon = model:GetAttribute("Locked").Position
+  BringEnemy()
+  EquipWeapon(_G.SelectWeapon)
+  local Equipped = game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool")
+  local ToolTip = Equipped.ToolTip
+  if ToolTip == "Blox Fruit" then _tp(model.HumanoidRootPart.CFrame * CFrame.new(0,10,0) * CFrame.Angles(0,math.rad(90),0)) else _tp(model.HumanoidRootPart.CFrame * CFrame.new(0,30,8) * CFrame.Angles(0,math.rad(180),0))end
+  if RandomCFrame then wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25)) wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(25, 30, 0)) wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(-25, 30 ,0)) wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(0, 30, 25)) wait(0.1)_tp(model.HumanoidRootPart.CFrame * CFrame.new(-25, 30, 0))end
+  end
+end
 G.KillSea = function(I, e)
 		if I and e then
 			if not I:GetAttribute("Locked") then
