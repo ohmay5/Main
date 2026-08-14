@@ -2668,7 +2668,7 @@ end
 			end
 			return Dropdown
 		end
-		function Tab:AddSlider(Configs)
+				function Tab:AddSlider(Configs)
 			local SName = Configs[1] or Configs.Name or Configs.Title or "Slider!"
 			local SDesc = Configs.Desc or Configs.Description or ""
 			local Min = Configs[2] or Configs.MinValue or Configs.Min or 10
@@ -2718,7 +2718,7 @@ end
 				Position = UDim2.new(0, 0, 0.5),
 				BackgroundTransparency = 1,
 				TextColor3 = Theme["Color Text"],
-				Font = Enum.Font.FredokaOne,
+				Font = Enum.Font.GothamBold,
 				TextSize = 12
 			}), "Text")
 			
