@@ -867,8 +867,8 @@ block.Transparency = 1
 blockfind = workspace:FindFirstChild(block.Name)
 if blockfind and blockfind ~= block then blockfind:Destroy() end
 
-getgenv().TweenSpeedFar  = 255
-getgenv().TweenSpeedNear = 400
+getgenv().TweenSpeedFar  = 300
+getgenv().TweenSpeedNear = 600
 
 _tp = function(I)
     local e = plr.Character
@@ -891,8 +891,8 @@ _tp = function(I)
     end
 
     local speed = dist <= 15
-        and (getgenv().TweenSpeedNear or 400)
-        or  (getgenv().TweenSpeedFar  or 255)
+        and (getgenv().TweenSpeedNear or 600)
+        or  (getgenv().TweenSpeedFar  or 300)
 
     local info  = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)
     local tween = game:GetService("TweenService"):Create(HRP, info, { CFrame = I })
@@ -936,8 +936,8 @@ task.spawn(function()
     local Test = Instance.new("Highlight")
     Test.Name = "highlight"
     Test.Enabled = true
-    Test.FillColor = Color3.fromRGB(190, 190, 190)
-Test.OutlineColor = Color3.fromRGB(245, 245, 245)
+    Test.FillColor = Color3.fromRGB(255,165,0)
+    Test.OutlineColor = Color3.fromRGB(255,0,0)
     Test.FillTransparency = 0.5
     Test.OutlineTransparency = 0.2
     Test.Parent = plr.Character
@@ -1663,7 +1663,7 @@ end
 
 
 redzlib = nil
-pcall(function() redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/UIOrange.lua"))() end)
+pcall(function() redzlib = loadstring(game:HttpGet("https://pastefy.app/MAbSfkcD/raw"))() end)
 Players=game:GetService("Players")
 lp=Players.LocalPlayer
 lastPick=0
@@ -1726,14 +1726,14 @@ task.spawn(function()
 end)
 
 Window = redzlib:MakeWindow({
-  Title = "BaCon Hub : Blox Fruits",
+  Title = "Orange Hub : Blox Fruits",
   SubTitle = "by_orgvip³⁶",
-  SaveFolder = "BaConV5.lua"
+  SaveFolder = "OrangeV5.lua"
 })
 
 MinimizeButton = Window:AddMinimizeButton({
     Button = { 
-        Image = "rbxassetid://114476175638281", 
+        Image = "rbxassetid://104922707580804", 
         BackgroundTransparency = 0,
         Size = UDim2.new(0, 55, 0, 55),
         BackgroundColor3 = Color3.fromRGB(30, 30, 30),
@@ -1769,12 +1769,16 @@ VS = Window:MakeTab({ Title = "Tab Visual", Icon = "eye" }),
 
 Tabs.Info:AddSection("Thông Tin Chính")
 Tabs.Info:AddDiscordInvite({
-    Name = "BaCon Hub",
-    Description = "i",
-    Logo = "rbxassetid://114476175638281",
-    Invite = ""
+    Name = "Orange Hub",
+    Description = "Vào Discord Để Nhận Update Mới",
+    Logo = "rbxassetid://104922707580804",
+    Invite = "https://discord.gg/6McJU8HBa"
 })
-Tabs.Info:AddSection("Trạng Thái Máy Chủ") 
+Tabs.Info:AddSection("Trạng Thái Máy Chủ")
+ScriptStatus = Tabs.Info:AddParagraph({
+    Title = "Ngày Phát Hành",
+    Content = "20/5/2026"
+})
 Time = Tabs.Info:AddParagraph({
     Title = "Múi Giờ",
     Content = ""
@@ -1827,149 +1831,6 @@ task.spawn(function()
         wait(1)
     end
 end)
-local function formatNumber(num)
-    local formatted = tostring(num)
-
-    while true do
-        local newFormatted, k = formatted:gsub(
-            "^(-?%d+)(%d%d%d)",
-            "%1,%2"
-        )
-
-        formatted = newFormatted
-
-        if k == 0 then
-            break
-        end
-    end
-
-    return formatted
-end
-
--- =========================
--- ADVANCED FRUIT STOCK
--- =========================
-
-local function GetAdvancedFruitStock()
-    local result = ""
-
-    local success, advancedStock = pcall(function()
-        return replicated.Remotes.CommF_:InvokeServer("GetFruits", true)
-    end)
-
-    if success and advancedStock then
-        local hasFruit = false
-
-        for _, fruit in pairs(advancedStock) do
-            if fruit.OnSale then
-                hasFruit = true
-
-                result = result
-                    .. fruit.Name
-                    .. " - $"
-                    .. formatNumber(fruit.Price)
-                    .. "\n"
-            end
-        end
-
-        if not hasFruit then
-            result = "- No fruit in stock."
-        end
-    else
-        result = "- Error retrieving data."
-    end
-
-    return result
-end
-
-
--- =========================
--- NORMAL FRUIT STOCK
--- =========================
-
-local function GetNormalFruitStock()
-    local result = ""
-
-    local success, normalStock = pcall(function()
-        return replicated.Remotes.CommF_:InvokeServer("GetFruits")
-    end)
-
-    if success and normalStock then
-        local hasFruit = false
-
-        for _, fruit in pairs(normalStock) do
-            if fruit.OnSale then
-                hasFruit = true
-
-                result = result
-                    .. fruit.Name
-                    .. " - $"
-                    .. formatNumber(fruit.Price)
-                    .. "\n"
-            end
-        end
-
-        if not hasFruit then
-            result = "- No fruit in stock."
-        end
-    else
-        result = "- Error retrieving data."
-    end
-
-    return result
-end
-
-
--- =========================
--- TẠO 1 BẢNG DUY NHẤT
--- =========================
-
-local StockParagraph = Tabs.Info:AddParagraph({
-    Title = "Fruit Stock",
-    DualStock = true
-})
-
-
--- =========================
--- UPDATE STOCK
--- =========================
-
-local function UpdateFruitStock()
-    local NormalStock = GetNormalFruitStock()
-    local AdvancedStock = GetAdvancedFruitStock()
-
-    StockParagraph:SetStock(
-        NormalStock,
-        AdvancedStock
-    )
-end
-
-
-task.spawn(function()
-
-    -- Update lần đầu
-    pcall(UpdateFruitStock)
-
-    -- Update mỗi 60 giây
-    while task.wait(60) do
-        pcall(UpdateFruitStock)
-    end
-
-end)
--- Button refresh stock
-Tabs.Info:AddButton({
-    Name = "Refresh Stock Now",
-    Callback = function()
-        pcall(function()
-            StockParagraph:SetDesc(GetFruitStock())
-            redzlib:Notify({
-                Title = "Fruit Stock",
-                Message = "Stock refreshed",
-                Duration = 2
-            })
-        end)
-    end
-})
 Miragecheck = Tabs.Info:AddParagraph({
     Title = "Đảo Bí Ẩn",
     Content = "Status: "
@@ -2183,7 +2044,7 @@ end)
 AttackDropdown = Tabs.Main:AddDropdown({
     Name = "Chọn Tốc Độ Đánh",
     Flag = "AttackDropdown",
-    Options = {"Normal Attack","Fast Attack","Super Fast Attack","BaCon Attack"},
+    Options = {"Normal Attack","Fast Attack","Super Fast Attack","Orange Attack"},
     Default = "Fast Attack",
     Callback = function(Value)
     _G.FastAttackGravity_Mode = Value
@@ -2194,7 +2055,7 @@ DelayConfig = {
     ["Normal Attack"] = 0.25,
     ["Fast Attack"] = 0.15,
     ["Super Fast Attack"] = 0.05,
-    ["BaCon Attack"] = 0.1
+    ["Orange Attack"] = 0.1
 }
 
 task.spawn(function()
@@ -2242,7 +2103,7 @@ Tabs.Main:AddButton({
 
         local success, err = pcall(function()
             local data = HttpService:JSONEncode({
-                ["username"] = "Bug Report From BaCon Hub",
+                ["username"] = "Bug Report From Orange Hub",
                 ["embeds"] = {{
                     ["title"] = "📢 Report New Errors",
                     ["description"] = bugContent,
@@ -3649,33 +3510,70 @@ EliteQ = Tabs.Main:AddToggle({
     Callback = function(Value)
     _G.FarmEliteHunt = Value
 end})
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.FarmEliteHunt then
-				if plr.PlayerGui.Main.Quest.Visible == true then
-					if string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Diablo") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Urban") or string.find(plr.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, "Deandre") then
-						for I, e in pairs(replicated:GetChildren()) do
-							if string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre") then
-								_tp(e.HumanoidRootPart.CFrame);
-							end;
-						end;
-						for I, e in pairs(Enemies:GetChildren()) do
-							if (string.find(e.Name, "Diablo") or string.find(e.Name, "Urban") or string.find(e.Name, "Deandre")) and G.Alive(e) then
-								repeat
-									wait();
-									Attack.Kill(e, _G.FarmEliteHunt);
-								until not _G.FarmEliteHunt or plr.PlayerGui.Main.Quest.Visible == false or not e.Parent or e.Humanoid.Health <= 0;
-							end;
-						end;
-					end;
-				else
-					replicated.Remotes.CommF_:InvokeServer("EliteHunter");
-				end;
-			end;
-		end);
-	end;
-end);
+
+task.spawn(function()
+    while task.wait(1) do
+        pcall(function()
+            if _G.FarmEliteHunt then
+                local questGui = plr.PlayerGui.Main.Quest
+                local questTitle = questGui.Container.QuestTitle.Title.Text
+
+                -- Nếu chưa có nhiệm vụ
+                if not questGui.Visible then
+                    -- Nhận nhiệm vụ Elite
+                    local result = replicated.Remotes.CommF_:InvokeServer("EliteHunter")
+                    if result == nil or string.find(result, "Cooldown") then
+                        -- Nếu đang cooldown hoặc chưa có boss
+                        wait(10)
+                        return
+                    end
+                    task.wait(1)
+                else
+                    -- Đã có nhiệm vụ => xác định boss nào
+                    local eliteName = nil
+                    for _, name in pairs({"Diablo", "Urban", "Deandre"}) do
+                        if string.find(questTitle, name) then
+                            eliteName = name
+                            break
+                        end
+                    end
+
+                    if eliteName then
+                        local boss = nil
+                        -- Tìm boss trong Replicated hoặc Enemies
+                        for _, v in pairs(replicated:GetChildren()) do
+                            if v.Name == eliteName and v:FindFirstChild("HumanoidRootPart") then
+                                boss = v
+                                break
+                            end
+                        end
+                        for _, v in pairs(Enemies:GetChildren()) do
+                            if v.Name == eliteName and Attack.Alive(v) then
+                                boss = v
+                                break
+                            end
+                        end
+
+                        if boss and boss:FindFirstChild("HumanoidRootPart") then
+                            _tp(boss.HumanoidRootPart.CFrame * CFrame.new(0, 30, 0))
+                            repeat
+                                wait()
+                                Attack.Kill(boss, _G.FarmEliteHunt)
+                            until not _G.FarmEliteHunt or not boss.Parent or boss.Humanoid.Health <= 0 or not questGui.Visible
+                        else
+                            -- Không thấy boss → đợi boss spawn lại
+                            wait(5)
+                        end
+                    else
+                        -- Nếu quest title lỗi hoặc bug → bỏ quest
+                        replicated.Remotes.CommF_:InvokeServer("AbandonQuest")
+                    end
+                end
+            end
+        end)
+    end
+end)
+
 EliteH = Tabs.Main:AddToggle({
 	Name = "Tự Động Farm Elite + Đổi Sever",
 	Flag = "EliteH",
@@ -5224,18 +5122,7 @@ Tabs.Settings:AddSlider({
         _G.BringRange = Value
     end
 })
-Tabs.Settings:AddSlider({
-    Name = "Tween Speed",
-    Flag = "TweenSpeedSlider",
-    Description = "Điều chỉnh tốc độ tween",
-    Default = 255,
-    Min = 50,
-    Max = 500,
-    Rounding = 0,
-    Callback = function(Value)
-        getgenv().TweenSpeedFar = Value
-    end
-})
+
 
 -- 🌀 Toggle Auto Server Hop mỗi 30 phút
 HopToggle = Tabs.Settings:AddToggle({
@@ -5462,272 +5349,135 @@ task.spawn(function()
         end)
     end
 end)
-local HttpService = game:GetService("HttpService")
-local CoreGui = game:GetService("CoreGui")
+HttpService = game:GetService("HttpService")
+CoreGui = game:GetService("CoreGui")
 
 _G.AutoTranslate = false
-_G.TargetLang = "vi"
+_G.TargetLang = "vi" 
+TranslatedCache = {} 
 
-local TranslatedCache = {}
-local TranslationBusy = {}
-local TranslationWatcher
-
-local LanguageList = {
+LanguageList = {
+    -- Tiếng Việt
     ["Tiếng Việt"] = "vi",
     ["Tieng Viet"] = "vi-nodau",
     ["English (US)"] = "en-US",
+    -- Đông Nam Á
+    ["ภาษาไทย"] = "th",              -- Thái Lan
+    ["Indonesia"] = "id",            -- Indonesia
+    ["Filipino"] = "tl",             -- Philippines
+    ["Melayu"] = "ms",               -- Malaysia
+    ["မြန်မာဘာသာ"] = "my",            -- Myanmar
+    ["ខ្មែរ"] = "km",                  -- Campuchia
+    ["ລາວ"] = "lo",                    -- Lào
 
-    ["ภาษาไทย"] = "th",
-    ["Indonesia"] = "id",
-    ["Filipino"] = "tl",
-    ["Melayu"] = "ms",
-    ["မြန်မာဘာသာ"] = "my",
-    ["ខ្មែរ"] = "km",
-    ["ລາວ"] = "lo",
+    -- Đông Á
+    ["日本語"] = "ja",                -- Nhật Bản
+    ["简体中文"] = "zh-CN",            -- Trung Quốc (Giản)
+    ["繁體中文"] = "zh-TW",            -- Đài Loan (Phồn)
+    ["한국어"] = "ko",                -- Hàn Quốc
 
-    ["日本語"] = "ja",
-    ["简体中文"] = "zh-CN",
-    ["繁體中文"] = "zh-TW",
-    ["한국어"] = "ko",
+    -- Châu Âu (Tây & Bắc Âu)
+    ["Português (Brasil)"] = "pt",     -- Brazil (Rất quan trọng)
+    ["Español"] = "es",                -- Tây Ban Nha
+    ["Français"] = "fr",               -- Pháp
+    ["Deutsch"] = "de",                -- Đức
+    ["Italiano"] = "it",               -- Ý
+    ["Nederlands"] = "nl",             -- Hà Lan
+    ["Svenska"] = "sv",                -- Thụy Điển
+    ["Norsk"] = "no",                  -- Na Uy
+    ["Dansk"] = "da",                  -- Đan Mạch
+    ["Suomi"] = "fi",                  -- Phần Lan
 
-    ["Português (Brasil)"] = "pt",
-    ["Español"] = "es",
-    ["Français"] = "fr",
-    ["Deutsch"] = "de",
-    ["Italiano"] = "it",
-    ["Nederlands"] = "nl",
-    ["Svenska"] = "sv",
-    ["Norsk"] = "no",
-    ["Dansk"] = "da",
-    ["Suomi"] = "fi",
+    -- Đông Âu & Trung Á
+    ["Русский"] = "ru",                -- Nga
+    ["Українська"] = "uk",             -- Ukraine
+    ["Polski"] = "pl",                 -- Ba Lan
+    ["Türkçe"] = "tr",                 -- Thổ Nhĩ Kỳ
+    ["Română"] = "ro",                 -- Romania
+    ["Magyar"] = "hu",                 -- Hungary
+    ["Čeština"] = "cs",                -- Séc
+    ["Ελληνικά"] = "el",               -- Hy Lạp
 
-    ["Русский"] = "ru",
-    ["Українська"] = "uk",
-    ["Polski"] = "pl",
-    ["Türkçe"] = "tr",
-    ["Română"] = "ro",
-    ["Magyar"] = "hu",
-    ["Čeština"] = "cs",
-    ["Ελληνικά"] = "el",
-
-    ["العربية"] = "ar",
-    ["हिन्दी"] = "hi",
-    ["বাংলা"] = "bn",
-    ["اردو"] = "ur",
-    ["עברית"] = "he",
+    -- Trung Đông & Nam Á
+    ["العربية"] = "ar",                 -- Ả Rập
+    ["हिन्दी"] = "hi",                   -- Ấn Độ (Hindi)
+    ["বাংলা"] = "bn",                   -- Bangladesh
+    ["اردو"] = "ur",                    -- Pakistan
+    ["עברית"] = "he",                  -- Do Thái
 }
 
-local LanguageOptions = {}
-
-for Name in pairs(LanguageList) do
-    table.insert(LanguageOptions, Name)
-end
-
+LanguageOptions = {}
+for Name, _ in pairs(LanguageList) do table.insert(LanguageOptions, Name) end
 table.sort(LanguageOptions)
 
---==================================================
--- GOOGLE TRANSLATE
---==================================================
-
-local function GoogleTranslate(text, targetLang)
-    if not text or text == "" then
-        return text
-    end
-
-    if tonumber(text) then
-        return text
-    end
-
-    if #text < 2 then
-        return text
-    end
-
-    targetLang = targetLang or _G.TargetLang
-
-    local cacheKey = targetLang .. ":" .. text
-
-    if TranslatedCache[cacheKey] then
-        return TranslatedCache[cacheKey]
-    end
-
-    -- Tránh gửi cùng một request nhiều lần
-    if TranslationBusy[cacheKey] then
-        return nil
-    end
-
-    TranslationBusy[cacheKey] = true
-
-    local url =
-        "https://translate.googleapis.com/translate_a/single" ..
-        "?client=gtx" ..
-        "&sl=auto" ..
-        "&tl=" .. HttpService:UrlEncode(targetLang) ..
-        "&dt=t" ..
-        "&q=" .. HttpService:UrlEncode(text)
-
-    local success, response = pcall(function()
-        return game:HttpGet(url)
-    end)
-
-    local result
-
-    if success and response then
-        local decodeSuccess, decoded = pcall(function()
-            return HttpService:JSONDecode(response)
-        end)
-
-        if decodeSuccess and decoded and decoded[1] then
-            local parts = {}
-
-            for _, item in ipairs(decoded[1]) do
-                if type(item) == "table" and item[1] then
-                    table.insert(parts, item[1])
-                end
-            end
-
-            if #parts > 0 then
-                result = table.concat(parts)
-                TranslatedCache[cacheKey] = result
-            end
+local function GoogleTranslate(text)
+    if text == "" or tonumber(text) or #text < 2 then return text end
+    local cacheKey = _G.TargetLang .. ":" .. text
+    if TranslatedCache[cacheKey] then return TranslatedCache[cacheKey] end
+    
+    local url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=".._G.TargetLang.."&dt=t&q=" .. HttpService:UrlEncode(text)
+    local success, response = pcall(function() return game:HttpGet(url) end)
+    
+    if success then
+        local decoded = HttpService:JSONDecode(response)
+        if decoded and decoded[1] and decoded[1][1] then
+            local result = decoded[1][1][1]
+            TranslatedCache[cacheKey] = result
+            return result
         end
     end
-
-    TranslationBusy[cacheKey] = nil
-
-    return result or text
+    return text
 end
-
---==================================================
--- UPDATE ONE OBJECT
---==================================================
 
 local function UpdateUI(obj)
-    if not (
-        obj:IsA("TextLabel")
-        or obj:IsA("TextButton")
-        or obj:IsA("TextBox")
-    ) then
-        return
-    end
-
-    -- Lưu text gốc
-    if obj:GetAttribute("RawText") == nil then
-        obj:SetAttribute("RawText", obj.Text)
-    end
-
-    local raw = obj:GetAttribute("RawText")
-
-    if not raw or raw == "" then
-        return
-    end
-
-    -- Tắt dịch → trả về text gốc ngay
-    if not _G.AutoTranslate then
-        if obj.Text ~= raw then
-            obj.Text = raw
+    if obj:IsA("TextLabel") or obj:IsA("TextButton") or obj:IsA("TextBox") then
+        if not obj:GetAttribute("RawText") then
+            obj:SetAttribute("RawText", obj.Text)
         end
-        return
-    end
-
-    local targetLang = _G.TargetLang
-
-    task.spawn(function()
-        local translated = GoogleTranslate(raw, targetLang)
-
-        if not translated then
-            return
+        local raw = obj:GetAttribute("RawText")
+        
+        if _G.AutoTranslate then
+            task.spawn(function()
+                local translated = GoogleTranslate(raw)
+                if obj.Text ~= translated then obj.Text = translated end
+            end)
+        else
+            if obj.Text ~= raw then obj.Text = raw end
         end
-
-        -- Chỉ thay nếu vẫn đang bật và vẫn cùng ngôn ngữ
-        if _G.AutoTranslate and _G.TargetLang == targetLang then
-            if obj.Parent and obj.Text ~= translated then
-                obj.Text = translated
-            end
-        end
-    end)
-end
-
---==================================================
--- UPDATE TOÀN BỘ UI
---==================================================
-
-local function UpdateAllUI()
-    local objects = CoreGui:GetDescendants()
-
-    for _, obj in ipairs(objects) do
-        UpdateUI(obj)
     end
 end
 
---==================================================
--- DROPDOWN
---==================================================
 
 Tabs.Misc:AddDropdown({
     Name = "Select Language",
     Options = LanguageOptions,
-    Default = "English (US)",
-
+    Default = "English",
     Callback = function(Value)
-        local lang = LanguageList[Value]
-
-        if not lang then
-            return
-        end
-
-        _G.TargetLang = lang
-
+        _G.TargetLang = LanguageList[Value]
         if _G.AutoTranslate then
-            -- Đổi ngôn ngữ ngay lập tức
-            UpdateAllUI()
+            for _, v in ipairs(CoreGui:GetDescendants()) do UpdateUI(v) end
         end
     end
 })
-
---==================================================
--- AUTO TRANSLATION
---==================================================
 
 Tabs.Misc:AddToggle({
     Name = "Auto Translation",
     Default = false,
-
     Callback = function(Value)
         _G.AutoTranslate = Value
-
-        if Value then
-            -- Bấm ON → bắt đầu dịch ngay
-            UpdateAllUI()
-
-            -- Chỉ tạo watcher một lần
-            if not TranslationWatcher then
-                TranslationWatcher = CoreGui.DescendantAdded:Connect(function(obj)
-                    task.defer(function()
-                        if _G.AutoTranslate then
-                            UpdateUI(obj)
-                        end
-                    end)
-                end)
-
-                _G.TranslationWatcher = TranslationWatcher
-            end
-        else
-            -- Bấm OFF → trả UI về nguyên bản
-            for _, obj in ipairs(CoreGui:GetDescendants()) do
-                if obj:IsA("TextLabel")
-                    or obj:IsA("TextButton")
-                    or obj:IsA("TextBox") then
-
-                    local raw = obj:GetAttribute("RawText")
-
-                    if raw then
-                        obj.Text = raw
-                    end
-                end
-            end
+        for _, v in ipairs(CoreGui:GetDescendants()) do UpdateUI(v) end
+        if not _G.TranslationWatcher then
+            _G.TranslationWatcher = CoreGui.DescendantAdded:Connect(function(obj)
+                task.wait(0.3)
+                UpdateUI(obj)
+            end)
         end
     end
 })
+
+
+
+
 
 -- ==============================
 -- ESP CORE
