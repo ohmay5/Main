@@ -1,0 +1,500 @@
+repeat task.wait() until game:IsLoaded()
+
+
+local Services = setmetatable({}, {
+    __index = function(self, serviceName)
+        local service = game:GetService(serviceName)
+        rawset(self, serviceName, service)
+        return service
+    end
+})
+
+local Players = Services.Players
+local CollectionService = Services.CollectionService
+local ReplicatedStorage = Services.ReplicatedStorage
+
+local player = Players.LocalPlayer
+local commE = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommE")
+_G.AutoKen = true
+
+local function HasKen()
+    local char = player.Character
+    return char and CollectionService:HasTag(char, "Ken")
+end
+
+task.spawn(function()
+    while _G.AutoKen do
+        task.wait(0.2)
+        if not HasKen() then
+            pcall(function()
+                commE:FireServer("Ken", true)
+            end)
+        end
+    end
+end)
+
+-- ========================================
+-- AUTO TEAM & LIGHTING
+-- ========================================
+local desiredTeam = "Marines"
+
+if not player.Team or player.Team.Name ~= desiredTeam then
+    pcall(function()
+        ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", desiredTeam)
+    end)
+end
+
+local Lighting = Services.Lighting
+
+-- Full bright (optimized lighting)
+Lighting.Ambient = Color3.new(0.695, 0.695, 0.695)
+Lighting.ColorShift_Bottom = Color3.new(0.695, 0.695, 0.695)
+Lighting.ColorShift_Top = Color3.new(0.695, 0.695, 0.695)
+Lighting.Brightness = 2
+Lighting.FogEnd = 1e10
+
+-- ========================================
+-- GLOBAL VARIABLES (Cached & Organized)
+-- =================================
+do
+  ply = game.Players
+  plr = ply.LocalPlayer
+  Root = plr.Character.HumanoidRootPart
+  replicated = game:GetService("ReplicatedStorage")
+  Lv = game.Players.LocalPlayer.Data.Level.Value
+  TeleportService = game:GetService("TeleportService")
+  TW = game:GetService("TweenService")
+  Lighting = game:GetService("Lighting")
+  Enemies = workspace.Enemies
+  vim1 = game:GetService("VirtualInputManager")
+  vim2 = game:GetService("VirtualUser")
+  TeamSelf = plr.Team
+  RunSer = game:GetService("RunService")
+  Stats = game:GetService("Stats")
+  Energy = plr.Character.Energy.Value
+  BringConnections = {}
+  BossList = {}
+  MaterialList = {}
+  NPCList = {}
+  shouldTween = false
+  SoulGuitar = false
+  KenTest = true
+  debug = false
+  Brazier1 = false
+  Brazier2 = false
+  Brazier3 = false
+  Sec = 0.1
+  ClickState = 0
+  Num_self = 25
+end
+-- Wait for game to load
+-- Wait for game load
+local plr = game.Players.LocalPlayer
+
+repeat
+    local main = plr.PlayerGui:FindFirstChild("Main")
+    local loading = main and main:FindFirstChild("Loading")
+
+    task.wait()
+until game:IsLoaded() and (not loading or not loading.Visible)
+local placeId = game.PlaceId
+
+if placeId == 73902483975735 then
+    Dungeon = true
+    
+_G.MobHeight = _G.MobHeight or 20
+
+G.Kill = function(I, e)
+	if not (I and e) then return end
+
+	local hrp = I:FindFirstChild("HumanoidRootPart")
+	if not hrp then return end
+
+	-- Trava posição do mob
+	if not I:GetAttribute("Locked") then
+		I:SetAttribute("Locked", hrp.CFrame)
+	end
+
+	-- Posição alvo do bring
+	PosMon = (I:GetAttribute("Locked")).Position
+
+	-- Equipa arma
+	EquipWeapon(_G.SelectWeapon)
+
+	local localChar = game.Players.LocalPlayer.Character
+	local tool = localChar and localChar:FindFirstChildOfClass("Tool")
+	if not tool then return end
+
+	-- TP acima do mob (altura única)
+	_tp(hrp.CFrame * CFrame.new(0, _G.MobHeight, 0))
+	task.wait(0.05)
+	
+	-- Bật bring quái
+	_B = true
+	BringEnemy()
+end
+getgenv().TweenSpeedFar = 255  -- Velocidade Padrão (Longe)
+getgenv().TweenSpeedNear = 255  -- Velocidade Boost (Perto <= 15 studs)
+
+_tp = function(I)
+local e = plr.Character;
+if not e or not e:FindFirstChild("HumanoidRootPart") then
+return;
+end;
+
+local HRP = e.HumanoidRootPart;  
+
+-- Desativar farm enquanto tweena  
+shouldTween = true  
+getgenv().OnFarm = false  
+
+-- Garantir que não está ancorado  
+if HRP.Anchored then  
+	HRP.Anchored = false  
+	task.wait()  
+end  
+
+local dist = (I.Position - HRP.Position).Magnitude  
+
+-- ===============================  
+--  SE ESTIVER ATÉ 15 STUDS → USA A VELOCIDADE DE PERTO
+--  CASO CONTRÁRIO → USA A VELOCIDADE PADRÃO
+-- ===============================  
+local speed = dist <= 15 and (getgenv().TweenSpeedNear or 255) or (getgenv().TweenSpeedFar or 255)
+
+local info = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)  
+local tween = game:GetService("TweenService"):Create(C, info, { CFrame = I })  
+
+-- Caso esteja sentado  
+if e.Humanoid.Sit == true then  
+	C.CFrame = CFrame.new(C.Position.X, I.Y, C.Position.Z)  
+end  
+
+tween:Play()  
+
+-- Anti travamento / controle  
+task.spawn(function()  
+	while tween.PlaybackState == Enum.PlaybackState.Playing do  
+		if not shouldTween then  
+			tween:Cancel()  
+			break  
+		end  
+		task.wait(.1)  
+	end  
+
+	getgenv().OnFarm = true  
+end)
+
+end
+
+TeleportToTarget = function(I)
+_tp(I)
+end
+
+notween = function(I)
+plr.Character.HumanoidRootPart.CFrame = I
+end
+
+
+function BTP(I)
+	local e = game.Players.LocalPlayer;
+	local K = e.Character.HumanoidRootPart;
+	local n = e.Character.Humanoid;
+	local d = e.PlayerGui.Main;
+	local z = I.Position;
+	local H = K.Position;
+
+	repeat
+		n.Health = 0;
+		K.CFrame = I;
+		d.Quest.Visible = false;
+
+		if (K.Position - H).Magnitude > 1 then
+			H = K.Position;
+			K.CFrame = I;
+		end;
+
+		task.wait(.5);
+	until (I.Position - K.Position).Magnitude <= 2000;
+end;
+spawn(function()
+	while task.wait() do
+		pcall(function()
+			if  _G.Dungeonh then
+				shouldTween = true;
+				if not plr.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
+          local Noclip = Instance.new("BodyVelocity")
+          Noclip.Name = "BodyClip"
+          Noclip.Parent = plr.Character.HumanoidRootPart
+          Noclip.MaxForce = Vector3.new(100000,100000,100000)
+          Noclip.Velocity = Vector3.new(0,0,0)
+        end        
+      if not plr.Character:FindFirstChild("highlight") then
+    local Test = Instance.new("Highlight")
+    Test.Name = "highlight"
+    Test.Enabled = true
+    Test.FillColor = Color3.fromRGB(255, 255, 255)
+Test.OutlineColor = Color3.fromRGB(190, 190, 190)
+    Test.FillTransparency = 0.65
+    Test.OutlineTransparency = 0
+    Test.Parent = plr.Character
+end
+        for _, no in pairs(plr.Character:GetDescendants()) do if no:IsA("BasePart") then no.CanCollide = false end end
+      else
+        shouldTween = false
+        if plr.Character.HumanoidRootPart:FindFirstChild("BodyClip") then plr.Character.HumanoidRootPart:FindFirstChild("BodyClip"):Destroy() end
+        if plr.Character:FindFirstChild('highlight') then plr.Character:FindFirstChild('highlight'):Destroy() end	        
+      end
+    end)
+  end
+end)
+
+
+redzlib = nil
+pcall(function() redzlib = loadstring(game:HttpGet("https://pastefy.app/MAbSfkcD/raw"))() end)
+Players=game:GetService("Players")
+lp=Players.LocalPlayer
+lastPick=0
+
+local function ToSet(v)
+	if type(v)~="table" then return {} end
+	if next(v)==nil then return {} end
+	if type(next(v))=="number" then
+		local s={}
+		for _,n in ipairs(v) do
+			if type(n)=="string" and n~="" then s[n]=true end
+		end
+		return s
+	end
+	return v
+end
+
+local function IterCards(cb)
+	local pg=lp:FindFirstChildOfClass("PlayerGui")
+	if not pg then return end
+	for _,g in next,pg:GetChildren() do
+		local t=g.Name=="ScreenGui" and g:FindFirstChild("1") and g["1"]:FindFirstChild("2")
+		if t then
+			local ok,n=pcall(function() return t.DisplayName.Text end)
+			if ok and n~="" then cb(t,n) end
+		end
+	end
+end
+
+function ResetPick()
+	lastPick=0
+end
+
+local function PickSelectedCards()
+	local set=ToSet(_G.Select_Cards)
+	local has=next(set)~=nil
+	if not has then return end
+
+	local now=os.clock()
+	if now-lastPick<0.35 then return end
+
+	local picked=false
+	IterCards(function(t,n)
+		if not picked and set[n] then
+			picked=true
+			lastPick=now
+			pcall(function()
+				if firesignal and t.Activated then firesignal(t.Activated) else t:Activate() end
+			end)
+		end
+	end)
+end
+
+task.spawn(function()
+	while task.wait(0.1) do
+		if _G.Pickcard then
+			xpcall(PickSelectedCards,function() task.wait(1) end)
+		end
+	end
+end)
+
+Window = redzlib:MakeWindow({
+  Title = "BaCon Hub : Blox Fruits",
+  SubTitle = "",
+  SaveFolder = ""
+})
+
+MinimizeButton = Window:AddMinimizeButton({
+    Button = { 
+        Image = "rbxassetid://114476175638281", 
+        BackgroundTransparency = 0,
+        Size = UDim2.new(0, 55, 0, 55),
+        BackgroundColor3 = Color3.fromRGB(30, 30, 30),
+        BorderMode = Enum.BorderMode.Inset,
+        BorderSizePixel = 2,
+        BorderColor3 = Color3.fromRGB(255, 140, 0) -- Màu cam cố định
+    },
+    Corner = { 
+        CornerRadius = UDim.new(1, 0) 
+    },
+})
+-- Bỏ toàn bộ task.spawn hiệu ứng cầu vồng
+
+local Farm = Library:MakeTab({
+    Title = "Tab Farming",
+    Icon = "rbxassetid://127561653320876"
+})
+local Setting = Library:MakeTab({
+    Title = "Setting & UI",
+    Icon = "rbxassetid://7734053495"
+})
+Fruit:AddSection({"Farm Ngục tối "})
+Fruit:AddToggle({
+    Name = "Tự Động Farm Dungeon + Qua Cửa",
+    Flag = "Dungoenvp",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+        _G.Dungeonh = Value
+    end
+})
+
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/DUngeonFarm.lua"))()
+end)
+AllCards={"Lifesteal","All Cooldowns","HYPER!","Fruit M1 Speed","Armor","Sniper","Overflow","Gun","Melee","Fruit","Defense","Fortress"}
+
+_G.Select_Cards=_G.Select_Cards or {Melee=true}
+
+Farm:AddDropdown({
+	Name = "Chọn Thẻ",
+	Options=AllCards,
+	MultiSelect=true,
+	Flag="SelectCards",
+	Callback=function(v)
+		_G.Select_Cards=v
+		if ResetPick then ResetPick() end
+	end
+})
+
+Farm:AddToggle({
+	Name = "Tự Động Chọn Thẻ Dungeon",
+	Flag = "Pickcard",
+	Description = "",
+	Default = true,
+	Callback = function(Value)
+		_G.Pickcard = Value
+		if not Value then ResetPick() end
+	end
+})
+
+Setting:AddToggle({
+	Name = "Auto Active Haki",
+	Description = "tự động kích hoạt haki",
+	-- 1. Carrega o estado salvo
+	Default = GetSetting("AutoHaki_Save", true),
+	Callback = function(I)
+		Boud = I
+        -- 2. Salva
+        _G.SaveData["AutoHaki_Save"] = I
+        SaveSettings()
+	end,
+})
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if Boud then
+				local I = { "HasBuso", "Buso" };
+				if not plr.Character:FindFirstChild(I[1]) then
+					replicated.Remotes.CommF_:InvokeServer(I[2]);
+				end;
+			end;
+		end);
+	end;
+end);
+Setting:AddToggle({
+	Name = "Auto Active V3",
+	Description = "tự động dùng tộc v3",
+	-- 1. Carrega o estado salvo
+	Default = GetSetting("AutoActiveV3_Save", false),
+	Callback = function(I)
+		_G.RaceClickAutov3 = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["AutoActiveV3_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+	end,
+})
+
+Setting:AddToggle({
+	Name = "Auto Active V4",
+	Description = "tự động dùng tộc v4",
+	-- 1. Carrega o estado salvo
+	Default = GetSetting("AutoActiveV4_Save", false),
+	Callback = function(I)
+		_G.RaceClickAutov4 = I
+        
+        -- 2. Guarda na tabela de salvamento
+        _G.SaveData["AutoActiveV4_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+	end,
+})
+
+spawn(function()
+	while wait(.2) do
+		pcall(function()
+			if _G.RaceClickAutov3 then
+				repeat
+					replicated.Remotes.CommE:FireServer("ActivateAbility");
+					wait(30);
+				until not _G.RaceClickAutov3;
+			end;
+		end);
+	end;
+end);
+spawn(function()
+	while wait(.2) do
+		pcall(function()
+			if _G.RaceClickAutov4 then
+				if plr.Character:FindFirstChild("RaceEnergy") then
+					if (plr.Character:FindFirstChild("RaceEnergy")).Value == 1 then
+						Useskills("nil", "Y");
+					end;
+				end;
+			end;
+		end);
+	end;
+end);
+_G.MobHeight = _G.SaveData["MobHeight_Save"] or 20
+
+Setting:AddSlider({
+    Title = "Farm Height",
+    Description = "Độ cao farm quái",
+    Default = _G.SaveData["MobHeight_Save"] or 20,
+    Min = 0,
+    Max = 100,
+    Rounding = 1,
+    Callback = function(Value)
+        _G.MobHeight = Value
+        _G.SaveData["MobHeight_Save"] = Value
+        SaveSettings()
+    end
+})
+
+getgenv().TweenSpeedFar = _G.SaveData["TweenSpeed_Save"] or 255
+getgenv().TweenSpeedNear = _G.SaveData["TweenSpeed_Save"] or 255
+
+Setting:AddSlider({
+    Title = "Tween Speed",
+    Description = "Điều chỉnh tốc độ tween",
+    Default = _G.SaveData["TweenSpeed_Save"] or 255,
+    Min = 50,
+    Max = 500,
+    Rounding = 0,
+    Callback = function(I)
+        getgenv().TweenSpeedFar = I
+        getgenv().TweenSpeedNear = I
+
+        _G.SaveData["TweenSpeed_Save"] = I
+        SaveSettings()
+    end
+})
