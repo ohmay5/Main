@@ -1,121 +1,4 @@
-repeat task.wait() until game:IsLoaded()
 
-
-local Services = setmetatable({}, {
-    __index = function(self, serviceName)
-        local service = game:GetService(serviceName)
-        rawset(self, serviceName, service)
-        return service
-    end
-})
-task.spawn(function()
-    while task.wait(60) do
-        pcall(function()
-            collectgarbage("collect")
-        end)
-    end
-end)
-
-local CommF = game:GetService("ReplicatedStorage").Remotes.CommF_
-
-task.spawn(function()
-    local Team = math.random(1, 2) == 1 and "Pirates" or "Marines"
-
-    pcall(function()
-        CommF:InvokeServer("SetTeam", Team)
-    end)
-end)
-
-local HttpService = Services.HttpService
-local FolderName = "BaCoNhǎo Hub"
-local FileName = "Settings.json"
-local FullPath = FolderName .. "/" .. FileName
-
-if makefolder and not isfolder(FolderName) then 
-    makefolder(FolderName) 
-end
-
-_G.SaveData = _G.SaveData or {}
-
-function SaveSettings()
-    if not writefile then return false end
-    local success = pcall(function()
-        local json = HttpService:JSONEncode(_G.SaveData)
-        writefile(FullPath, json)
-    end)
-    return success
-end
-
-function LoadSettings()
-    if not (isfile and isfile(FullPath)) then return false end
-    local success, result = pcall(function()
-        local content = readfile(FullPath)
-        return HttpService:JSONDecode(content)
-    end)
-    if success and result then 
-        _G.SaveData = result
-        return true
-    end
-    return false
-end
-
-function GetSetting(name, default)
-    return _G.SaveData[name] ~= nil and _G.SaveData[name] or default
-end
-
-LoadSettings()
-
--- ========================================
--- AUTO KEN (Observation Haki)
--- ========================================
-local Players = Services.Players
-local CollectionService = Services.CollectionService
-local ReplicatedStorage = Services.ReplicatedStorage
-
-local player = Players.LocalPlayer
-local commE = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommE")
-
-_G.AutoKen = true
-
-local function HasKen()
-    local char = player.Character
-    return char and CollectionService:HasTag(char, "Ken")
-end
-
-task.spawn(function()
-    while _G.AutoKen do
-        task.wait(0.2)
-        if not HasKen() then
-            pcall(function()
-                commE:FireServer("Ken", true)
-            end)
-        end
-    end
-end)
-
--- ========================================
--- AUTO TEAM & LIGHTING
--- ========================================
-local desiredTeam = "Marines"
-
-if not player.Team or player.Team.Name ~= desiredTeam then
-    pcall(function()
-        ReplicatedStorage.Remotes.CommF_:InvokeServer("SetTeam", desiredTeam)
-    end)
-end
-
-local Lighting = Services.Lighting
-
--- Full bright (optimized lighting)
-Lighting.Ambient = Color3.new(0.695, 0.695, 0.695)
-Lighting.ColorShift_Bottom = Color3.new(0.695, 0.695, 0.695)
-Lighting.ColorShift_Top = Color3.new(0.695, 0.695, 0.695)
-Lighting.Brightness = 2
-Lighting.FogEnd = 1e10
-
--- ========================================
--- GLOBAL VARIABLES (Cached & Organized)
--- ========================================
 do
     ply = Services.Players
     plr = ply.LocalPlayer
@@ -151,42 +34,13 @@ do
     ClickState = 0
     Num_self = 25
 end
-
--- Wait for game to load
--- Wait for game load
-local plr = game.Players.LocalPlayer
-
-repeat
-    local loading = plr.PlayerGui:FindFirstChild("Main")
-    loading = loading and loading:FindFirstChild("Loading")
-    task.wait()
-until game:IsLoaded() and not (loading and loading.Visible)
-
-World2 = false
-World3 = false
 Dungeon = false
 
 local placeId = game.PlaceId
-
-if placeId == 4442272183 or placeId == 79091703265657 then
-    World2 = true
-
-elseif placeId == 7449423635 or placeId == 100117331123089 then
-    World3 = true
-
 elseif placeId == 73902483975735 then
     Dungeon = true
 end
 
-Sea = World2 or World3
-
-Marines = function()
-    replicated.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
-end
-
-Pirates = function()
-    replicated.Remotes.CommF_:InvokeServer("SetTeam", "Pirates")
-end
 EquipWeapon = function(I)
 		if not I then
 			return;
@@ -204,33 +58,6 @@ weaponSc = function(I)
 			end;
 		end;
 	end;
-hookfunction(require((game:GetService("ReplicatedStorage")).Effect.Container.Death), function()
- 
-end);
-hookfunction((require((game:GetService("ReplicatedStorage")):WaitForChild("GuideModule"))).ChangeDisplayedNPC, function()
- 
-end);
-hookfunction(error, function()
- 
-end);
-hookfunction(warn, function()
- 
-end);
-local O = workspace:FindFirstChild("Rocks");
-if O then
-	O:Destroy();
-end;
-gay = (function()
-    local I = game:GetService("Lighting");
-    local e = I:FindFirstChild("LightingLayers");
-
-    -- NÃO remover DarkFog
-
-    local K = workspace._WorldOrigin["Foam;"];
-    if K and workspace._WorldOrigin["Foam;"] then
-        K:Destroy();
-    end;
-end)();
 
 local G = {};
 G.__index = G;
@@ -650,6 +477,31 @@ Status:AddDiscordInvite({
     Logo = "rbxassetid://114476175638281",
     Invite = ""
 })
+Farm:AddDropdown({
+    Name = "Select Weapon",
+    Description = "Chọn vũ khí",
+    Options = {"Melee", "Sword", "Blox Fruit", "Gun"},
+    Default = "Melee",
+    Multi = false,
+    Callback = function(I)
+        _G.ChooseWP = I
+    end,
+})
+
+_G.ChooseWP = "Melee"
+
+spawn(function()
+    while task.wait(Sec) do
+        pcall(function()
+            for _, e in pairs(plr.Backpack:GetChildren()) do
+                if e:IsA("Tool") and e.ToolTip == _G.ChooseWP then
+                    _G.SelectWeapon = e.Name
+                    break
+                end
+            end
+        end)
+    end
+end)
 Farm:AddSection({"Farm Ngục tối "})
 Farm:AddToggle({
     Name = "Tự Động Farm Dungeon + Qua Cửa",
@@ -719,3 +571,186 @@ Setting:AddSlider({
         SaveSettings()
     end
 });
+loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attachgun.txt"))()
+_G.Settings = _G.Settings or {}
+_G.Settings.FastAttack = true
+
+-- Tốc độ FastAttack
+local AttackDelay = 0.2
+
+-- =========================
+-- SERVICES
+-- =========================
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Player = Players.LocalPlayer
+
+if not Player then
+    return
+end
+
+-- =========================
+-- NET
+-- =========================
+
+local Net = ReplicatedStorage
+    :WaitForChild("Modules")
+    :WaitForChild("Net")
+
+local RegisterAttack =
+    Net:WaitForChild("RE/RegisterAttack")
+
+local RegisterHit =
+    Net:WaitForChild("RE/RegisterHit")
+
+-- =========================
+-- FOLDERS
+-- =========================
+
+local Enemies =
+    workspace:FindFirstChild("Enemies")
+
+local Characters =
+    workspace:FindFirstChild("Characters")
+
+-- =========================
+-- CHECK
+-- =========================
+
+local function IsAlive(Character)
+    local Humanoid =
+        Character and Character:FindFirstChildOfClass("Humanoid")
+
+    return Humanoid and Humanoid.Health > 0
+end
+
+local function GetCharacter()
+    local Character = Player.Character
+
+    if Character and IsAlive(Character) then
+        return Character
+    end
+
+    return nil
+end
+
+-- =========================
+-- FAST ATTACK
+-- =========================
+
+local FastAttack = {
+    Distance = 55
+}
+
+function FastAttack:GetTargets()
+
+    local Character = GetCharacter()
+
+    if not Character then
+        return {}, nil
+    end
+
+    local Root =
+        Character:FindFirstChild("HumanoidRootPart")
+
+    if not Root then
+        return {}, nil
+    end
+
+    local Targets = {}
+    local BasePart
+
+    local function Scan(Folder)
+
+        if not Folder then
+            return
+        end
+
+        for _, Enemy in ipairs(Folder:GetChildren()) do
+
+            if Enemy ~= Character then
+
+                local Humanoid =
+                    Enemy:FindFirstChildOfClass("Humanoid")
+
+                if Humanoid and Humanoid.Health > 0 then
+
+                    local Part =
+                        Enemy:FindFirstChild("HumanoidRootPart")
+                        or Enemy:FindFirstChild("Head")
+
+                    if Part then
+
+                        local Offset =
+                            Root.Position - Part.Position
+
+                        if Offset:Dot(Offset)
+                            <= self.Distance * self.Distance then
+
+                            Targets[#Targets + 1] = {
+                                Enemy,
+                                Part
+                            }
+
+                            BasePart = Part
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    Scan(Enemies)
+    Scan(Characters)
+
+    return Targets, BasePart
+end
+
+function FastAttack:Attack()
+
+    local Targets, BasePart =
+        self:GetTargets()
+
+    if not BasePart or #Targets == 0 then
+        return
+    end
+
+    pcall(function()
+
+        RegisterAttack:FireServer(0)
+
+        RegisterHit:FireServer(
+            BasePart,
+            Targets
+        )
+
+    end)
+end
+
+-- =========================
+-- LOOP
+-- =========================
+
+task.spawn(function()
+
+    while _G.Settings.FastAttack do
+
+        local Character = GetCharacter()
+
+        if Character then
+
+            local Tool =
+                Character:FindFirstChildOfClass("Tool")
+
+            if Tool and Tool.ToolTip ~= "Gun" then
+                FastAttack:Attack()
+            end
+        end
+
+        task.wait(AttackDelay)
+    end
+end)
+
+print("[FastAttack] Started | Delay:", AttackDelay)

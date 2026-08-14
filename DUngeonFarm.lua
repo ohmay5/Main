@@ -459,8 +459,8 @@ task.spawn(function()
                 local mhrp = mob:FindFirstChild("HumanoidRootPart")
                 if not mhrp then break end
 
-task.wait(tonumber(_G.Fast_Delay) or 0.06)
-Attack.Kill(mob, true)
+task.wait(tonumber(_G.Settings.FastAttack) or 0.06)
+G.Kill(mob, true)
             until false
 
             StartBring = (_G.DungeonBring ~= false)
@@ -514,7 +514,7 @@ task.spawn(function()
             if not IsInDungeon() then break end
 
             Attack.dungeon(mob, true)
-            task.wait(tonumber(_G.Fast_Delay) or 0.06)
+            task.wait(tonumber(_G.Settings.FastAttack) or 0.06)
 
             hum = mob:FindFirstChildOfClass("Humanoid")
         end
