@@ -148,7 +148,6 @@ until game:IsLoaded() and (not loading or not loading.Visible)
 World1 = false
 World2 = false
 World3 = false
-Dungeon = false
 
 local placeId = game.PlaceId
 
@@ -160,16 +159,6 @@ elseif placeId == 4442272183 or placeId == 79091703265657 then
 
 elseif placeId == 7449423635 or placeId == 100117331123089 then
     World3 = true
-
-elseif placeId == 73902483975735 then
-    Dungeon = true
-end
-
-if Dungeon then
-    loadstring(game:HttpGet(
-        "https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/HUB.lua"
-    ))()
-else
     Sea = World1 or World2 or World3
 end
 
@@ -623,7 +612,7 @@ local function FarmAtivo()
         _G.FarmMastery_G or  
         (getgenv()).AutoMaterial or  
         _G.AutoTyrant or
-        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Human or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoCyborg or _G.AutoBartilo or G.AutoRaceV3 or _G.Greybeard or _G.AutoKeyRen
+        _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Human or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoCyborg or _G.AutoBartilo or G.AutoRaceV3 or _G.Greybeard or _G.AutoKeyRen or _G.Dungeonh or _G.AutoDoughKing
     )
 end
 
@@ -1236,7 +1225,7 @@ end;
 spawn(function()
 	while task.wait() do
 		pcall(function()
-			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Human or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoNewWorld or getgenv().UpgradeRaceV2 or getgenv().AutoRaceV2 or getgenv().AutoCyborg or _G.AutoBartilo or G.AutoRaceV3 or _G.Greybeard or _G.AutoKeyRen then
+			if _G.SailBoat_Hydra or _G.WardenBoss or _G.AutoFactory or _G.HighestMirage or _G.HCM or _G.PGB or _G.Leviathan1 or _G.UPGDrago or _G.Complete_Trials or _G.TpDrago_Prehis or _G.BuyDrago or _G.AutoFireFlowers or _G.DT_Uzoth or _G.AutoBerry or _G.Prehis_Find or _G.Prehis_Skills or _G.Prehis_DB or _G.Prehis_DE or _G.FarmBlazeEM or _G.Dojoo or _G.CollectPresent or _G.AutoLawKak or _G.TpLab or _G.AutoPhoenixF or _G.AutoFarmChest or _G.AutoHytHallow or _G.LongsWord or _G.BlackSpikey or _G.AutoHolyTorch or _G.TrainDrago or _G.AutoSaber or _G.FarmMastery_Dev or _G.CitizenQuest or _G.AutoEctoplasm or _G.KeysRen or _G.Auto_Rainbow_Haki or _G.obsFarm or _G.AutoBigmom or _G.Doughv2 or _G.AuraBoss or _G.Raiding or _G.Auto_Cavender or _G.TpPly or _G.Level or _G.FarmEliteHunt or _G.AutoZou or _G.AutoFarm_Bone or (getgenv()).AutoMaterial or _G.CraftVM or _G.FrozenTP or _G.TPDoor or _G.AcientOne or _G.AutoFarmNear or _G.AutoRaidCastle or _G.DarkBladev3 or _G.AutoFarmRaid or _G.Auto_Cake_Prince or _G.Addealer or _G.TPNpc or _G.TwinHook or _G.FindMirage or _G.FarmChestM or _G.Shark or _G.TerrorShark or _G.Piranha or _G.MobCrew or _G.SeaBeast1 or _G.FishBoat or _G.Auto or _G.AutoPoleV2 or _G.Auto_SuperHuman or _G.AutoDeathStep or _G.Auto_SharkMan_Karate or _G.Auto_Electric_Claw or _G.AutoDragonTalon or _G.Auto_Def_DarkCoat or _G.Auto_God_Human or _G.Auto_Tushita or _G.AutoMatSoul or _G.AutoKenVTWO or _G.AutoSerpentBow or _G.AutoFMon or _G.Auto_Soul_Guitar or _G.TPGEAR or _G.AutoSaw or _G.AutoTridentW2 or _G.Auto_StartRaid or _G.AutoEvoRace or _G.AutoGetQuestBounty or _G.MarinesCoat or _G.TravelDres or _G.Defeating or _G.Auto_Yama or _G.Auto_SwanGG or _G.SwanCoat or _G.AutoEcBoss or _G.Auto_Human or _G.CDK_TS or _G.CDK_YM or _G.CDK or _G.AutoFarmGodChalice or _G.AutoFistDarkness or _G.AutoMiror or _G.Teleport or _G.AutoKilo or _G.AutoGetUsoap or _G.Praying or _G.TryLucky or _G.AutoColShad or _G.AutoUnHaki or _G.Auto_DonAcces or _G.AutoRipIngay or _G.DragoV3 or _G.DragoV1 or _G.SailBoats or NextIs or _G.FarmGodChalice or _G.IceBossRen or senth or senth2 or _G.Lvthan or _G.beasthunter or _G.DangerLV or _G.Relic123 or _G.tweenKitsune or _G.Collect_Ember or _G.AutofindKitIs or _G.snaguine or _G.TwFruits or _G.tweenKitShrine or _G.Tp_LgS or _G.Tp_MasterA or _G.tweenShrine or _G.FarmMastery_G or _G.FarmMastery_S or getgenv().AutoNewWorld or getgenv().UpgradeRaceV2 or getgenv().AutoRaceV2 or getgenv().AutoCyborg or _G.AutoBartilo or G.AutoRaceV3 or _G.Greybeard or _G.AutoKeyRen or _G.Dungeonh or _G.AutoDoughKing then
 				shouldTween = true;
 				if not plr.Character.HumanoidRootPart:FindFirstChild("BodyClip") then
           local Noclip = Instance.new("BodyVelocity")
@@ -4545,6 +4534,84 @@ end);
 
 
 if World3 then
+Farm:AddToggle({
+    Name = "Tự Động Cày Bột Đế Vương",
+    Flag = "DoughKingFarm",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+    _G.AutoDoughKing = Value
+end})
+
+task.spawn(function()
+    while task.wait(Sec) do
+        pcall(function()
+            if not _G.AutoDoughKing then return end
+
+            local player = game.Players.LocalPlayer
+            local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+            if not root then return end
+
+            local map = workspace.Map.CakeLoaf
+            local enemies = workspace.Enemies
+
+            -- 1️⃣ Thiếu Cocoa => farm quái Chocolate/Cocoa
+            if GetM("Conjured Cocoa") < 10 then
+                local v = GetConnectionEnemies({"Cocoa Warrior", "Chocolate Bar Battler"})
+                if v then
+                    repeat task.wait()
+                        G.Kill(v, _G.AutoDoughKing)
+                    until not _G.AutoDoughKing or not v.Parent or v.Humanoid.Health <= 0
+                else
+                    _tp(CFrame.new(402.7, 81.06, -12259.54))
+                end
+                return
+            end
+
+            -- 2️⃣ Thiếu God's Chalice => bật farm elite
+            if not GetBP("God's Chalice") then
+                _G.FarmEliteHunt = true
+                return
+            end
+
+            -- 3️⃣ Đủ nguyên liệu => craft Sweet Chalice
+            if GetM("Conjured Cocoa") >= 10 and GetBP("God's Chalice") and not GetBP("Sweet Chalice") then
+                replicated.Remotes.CommF_:InvokeServer("SweetChaliceNpc")
+                return
+            end
+
+            -- 4️⃣ Đã có Sweet Chalice => vẫn farm Cake quái cho đến khi Mirror mở
+            local CakeMobs = {"Cookie Crafter","Cake Guard","Baking Staff","Head Baker"}
+            if not map:FindFirstChild("RedDoor") then
+                local v = GetConnectionEnemies(CakeMobs)
+                if v then
+                    repeat task.wait()
+                        G.Kill(v, _G.AutoDoughKing)
+                    until not _G.AutoDoughKing or not v.Parent or v.Humanoid.Health <= 0
+                else
+                    _tp(CFrame.new(-2077, 252, -12373))
+                end
+                return
+            end
+
+            -- 5️⃣ Nếu Mirror đã mở (tức summon được) => Equip chén và summon boss
+            if GetBP("Sweet Chalice") or player.Character:FindFirstChild("Sweet Chalice") then
+                EquipWeapon("Sweet Chalice")
+                replicated.Remotes.CommF_:InvokeServer("CakePrinceSpawner", true)
+                task.wait(1)
+                _tp(CFrame.new(-2682, 64, -12854)) -- vị trí cửa vào Dough King
+            end
+
+            -- 6️⃣ Khi boss Dough King spawn => farm boss
+            local boss = GetConnectionEnemies("Dough King")
+            if boss then
+                repeat task.wait()
+                    G.Kill(boss, _G.AutoDoughKing)
+                until not _G.AutoDoughKing or not boss.Parent or boss.Humanoid.Health <= 0
+            end
+        end)
+    end
+end)
 Farm:AddSection({"Dark Dragger + Valkyrie"})
 Farm:AddToggle({
     Name = "Auto Kill Rip Indra",
@@ -12954,6 +13021,186 @@ spawn(function()
 	end;
 end);
 end
+Fruit:AddSection({"Fruits Options"});
+local J5 = {};
+local function i5(I)
+	local e = tostring(I);
+	while true do
+		e, k = e:gsub("^(-?%d+)(%d%d%d)", "%1,%2");
+		if k == 0 then
+			break;
+		end;
+	end;
+	return e;
+end;
+for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", true)) do
+	if e.OnSale == true then
+		local I = i5(e.Price);
+		local K = e.Name;
+		table.insert(J5, K);
+	end;
+end;
+local C5 = {};
+for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", false)) do
+	if e.OnSale == true then
+		local I = i5(e.Price);
+		local K = e.Name;
+		table.insert(C5, K);
+	end;
+end;
+Fruit:AddDropdown({
+	Name = "Select Fruit Stock",
+	Description = "",
+	Options = C5,
+	Default = false,
+	Multi = false,
+	Callback = function(I)
+		_G.SelectFruit = I;
+	end,
+});
+Fruit:AddButton({ Name = "Buy Basic Stock", Description = "", Callback = function()
+		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", _G.SelectFruit);
+	end });
+Fruit:AddDropdown({
+	Name = "Select Mirage Fruit",
+	Description = "",
+	Options = J5,
+	Default = false,
+	Multi = false,
+	Callback = function(I)
+		SelectF_Adv = I;
+	end,
+});
+local M5 = {};
+for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", false)) do
+	if e.OnSale == true then
+		local I = i5(e.Price);
+		local K = e.Name;
+		table.insert(M5, K);
+	end;
+end;
+Fruit:AddButton({ Name = "Buy Mirage Stock", Description = "", Callback = function()
+		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", SelectF_Adv);
+	end });
+Fruit:AddToggle({
+	Name  = "Auto Random Fruit",
+    Description = "Automatic random devil fruit",
+    -- 1. Carrega se o giro automático estava ligado
+    Default = GetSetting("AutoRandomFruit_Save", false),
+    Callback = function(I)
+        _G.Random_Auto = I
+        
+        -- 2. Guarda na memória de salvamento
+        _G.SaveData["AutoRandomFruit_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Random_Auto then
+				replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy");
+			end;
+		end);
+	end;
+end);
+
+Fruit:AddToggle({
+	Name = "Auto Drop Fruit",
+	Description = "Automatic drop devil fruit",
+	Default = false,
+	Callback = function(I)
+		_G.DropFruit = I;
+	end,
+});
+spawn(function()
+	while wait(Sec) do
+		if _G.DropFruit then
+			pcall(function()
+				DropFruits();
+			end);
+		end;
+	end;
+end);
+Fruit:AddToggle({
+	Name  = "Auto Store Fruit",
+    Description = "Automatic store devil fruit",
+    -- 1. Carrega se o armazenamento automático estava ligado
+    Default = GetSetting("AutoStoreFruit_Save", false),
+    Callback = function(I)
+        _G.StoreF = I
+        
+        -- 2. Guarda na memória de salvamento
+        _G.SaveData["AutoStoreFruit_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+spawn(function()
+	while wait(Sec) do
+		if _G.StoreF then
+			pcall(function()
+				UpdStFruit();
+			end);
+		end;
+	end;
+end);
+Fruit:AddToggle({
+	Name  = "Auto Tween to Fruit",
+    Description = "Automatic tween to get devil fruit",
+    -- 1. Carrega o estado salvo
+    Default = GetSetting("AutoTweenFruit_Save", false),
+    Callback = function(I)
+        _G.TwFruits = I
+        
+        -- 2. Guarda na memória de salvamento
+        _G.SaveData["AutoTweenFruit_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+spawn(function()
+	while wait(Sec) do
+		if _G.TwFruits then
+			pcall(function()
+				for I, e in pairs(workspace:GetChildren()) do
+					if string.find(e.Name, "Fruit") then
+						_tp(e.Handle.CFrame);
+					end;
+				end;
+			end);
+		end;
+	end;
+end);
+
+Fruit:AddToggle({
+	Name  = "Auto Collect Fruit",
+    Description = "Automatic bring devil fruit",
+    -- 1. Carrega o estado salvo ou false por padrão
+    Default = GetSetting("AutoCollectFruit_Save", false),
+    Callback = function(I)
+        _G.InstanceF = I
+        
+        -- 2. Guarda na memória de salvamento
+        _G.SaveData["AutoCollectFruit_Save"] = I
+        
+        -- 3. Salva no arquivo Settings.json
+        SaveSettings()
+    end,
+})
+spawn(function()
+	while wait(Sec) do
+		if _G.InstanceF then
+			pcall(function()
+				collectFruits(_G.InstanceF);
+			end);
+		end;
+	end;
+end);
 Fruit:AddSection({"Raiding"});
 e = {
 		"Flame",
@@ -13216,186 +13463,50 @@ spawn(function()
 		end);
 	end;
 end);
-Fruit:AddSection({"Fruits Options"});
-local J5 = {};
-local function i5(I)
-	local e = tostring(I);
-	while true do
-		e, k = e:gsub("^(-?%d+)(%d%d%d)", "%1,%2");
-		if k == 0 then
-			break;
-		end;
-	end;
-	return e;
-end;
-for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", true)) do
-	if e.OnSale == true then
-		local I = i5(e.Price);
-		local K = e.Name;
-		table.insert(J5, K);
-	end;
-end;
-local C5 = {};
-for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", false)) do
-	if e.OnSale == true then
-		local I = i5(e.Price);
-		local K = e.Name;
-		table.insert(C5, K);
-	end;
-end;
-Fruit:AddDropdown({
-	Name = "Select Fruit Stock",
-	Description = "",
-	Options = C5,
-	Default = false,
-	Multi = false,
-	Callback = function(I)
-		_G.SelectFruit = I;
-	end,
-});
-Fruit:AddButton({ Name = "Buy Basic Stock", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", _G.SelectFruit);
-	end });
-Fruit:AddDropdown({
-	Name = "Select Mirage Fruit",
-	Description = "",
-	Options = J5,
-	Default = false,
-	Multi = false,
-	Callback = function(I)
-		SelectF_Adv = I;
-	end,
-});
-local M5 = {};
-for I, e in pairs(replicated.Remotes.CommF_:InvokeServer("GetFruits", false)) do
-	if e.OnSale == true then
-		local I = i5(e.Price);
-		local K = e.Name;
-		table.insert(M5, K);
-	end;
-end;
-Fruit:AddButton({ Name = "Buy Mirage Stock", Description = "", Callback = function()
-		replicated.Remotes.CommF_:InvokeServer("PurchaseRawFruit", SelectF_Adv);
-	end });
+Fruit:AddSection({"Farm Ngục tối "})
 Fruit:AddToggle({
-	Name  = "Auto Random Fruit",
-    Description = "Automatic random devil fruit",
-    -- 1. Carrega se o giro automático estava ligado
-    Default = GetSetting("AutoRandomFruit_Save", false),
-    Callback = function(I)
-        _G.Random_Auto = I
-        
-        -- 2. Guarda na memória de salvamento
-        _G.SaveData["AutoRandomFruit_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
+    Name = "Tự Động Farm Dungeon + Qua Cửa",
+    Flag = "Dungoenvp",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+        _G.Dungeonh = Value
+    end
 })
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Random_Auto then
-				replicated.Remotes.CommF_:InvokeServer("Cousin", "Buy");
-			end;
-		end);
-	end;
-end);
+
+task.spawn(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/DUngeonFarm.lua"))()
+end)
+AllCards={"Lifesteal","All Cooldowns","HYPER!","Fruit M1 Speed","Armor","Sniper","Overflow","Gun","Melee","Fruit","Defense","Fortress"}
+
+_G.Select_Cards=_G.Select_Cards or {Melee=true}
+
+Fruit:AddDropdown({
+	Name = "Chọn Thẻ",
+	Options=AllCards,
+	MultiSelect=true,
+	Flag="SelectCards",
+	Callback=function(v)
+		_G.Select_Cards=v
+		if ResetPick then ResetPick() end
+	end
+})
 
 Fruit:AddToggle({
-	Name = "Auto Drop Fruit",
-	Description = "Automatic drop devil fruit",
-	Default = false,
-	Callback = function(I)
-		_G.DropFruit = I;
-	end,
-});
-spawn(function()
-	while wait(Sec) do
-		if _G.DropFruit then
-			pcall(function()
-				DropFruits();
-			end);
-		end;
-	end;
-end);
-Fruit:AddToggle({
-	Name  = "Auto Store Fruit",
-    Description = "Automatic store devil fruit",
-    -- 1. Carrega se o armazenamento automático estava ligado
-    Default = GetSetting("AutoStoreFruit_Save", false),
-    Callback = function(I)
-        _G.StoreF = I
-        
-        -- 2. Guarda na memória de salvamento
-        _G.SaveData["AutoStoreFruit_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
+	Name = "Tự Động Chọn Thẻ Dungeon",
+	Flag = "Pickcard",
+	Description = "",
+	Default = true,
+	Callback = function(Value)
+		_G.Pickcard = Value
+		if not Value then ResetPick() end
+	end
 })
-spawn(function()
-	while wait(Sec) do
-		if _G.StoreF then
-			pcall(function()
-				UpdStFruit();
-			end);
-		end;
-	end;
-end);
-Fruit:AddToggle({
-	Name  = "Auto Tween to Fruit",
-    Description = "Automatic tween to get devil fruit",
-    -- 1. Carrega o estado salvo
-    Default = GetSetting("AutoTweenFruit_Save", false),
-    Callback = function(I)
-        _G.TwFruits = I
-        
-        -- 2. Guarda na memória de salvamento
-        _G.SaveData["AutoTweenFruit_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
-spawn(function()
-	while wait(Sec) do
-		if _G.TwFruits then
-			pcall(function()
-				for I, e in pairs(workspace:GetChildren()) do
-					if string.find(e.Name, "Fruit") then
-						_tp(e.Handle.CFrame);
-					end;
-				end;
-			end);
-		end;
-	end;
-end);
 
-Fruit:AddToggle({
-	Name  = "Auto Collect Fruit",
-    Description = "Automatic bring devil fruit",
-    -- 1. Carrega o estado salvo ou false por padrão
-    Default = GetSetting("AutoCollectFruit_Save", false),
-    Callback = function(I)
-        _G.InstanceF = I
-        
-        -- 2. Guarda na memória de salvamento
-        _G.SaveData["AutoCollectFruit_Save"] = I
-        
-        -- 3. Salva no arquivo Settings.json
-        SaveSettings()
-    end,
-})
-spawn(function()
-	while wait(Sec) do
-		if _G.InstanceF then
-			pcall(function()
-				collectFruits(_G.InstanceF);
-			end);
-		end;
-	end;
-end);
+
+
+
+
 Setting:AddSection({"Codes"});
 Setting:AddButton({
     Name = "Redeem All Codes",
