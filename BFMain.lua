@@ -97,43 +97,38 @@ Lighting.FogEnd = 1e10
 
 -- ========================================
 -- GLOBAL VARIABLES (Cached & Organized)
--- ========================================
+-- =================================
 do
-    ply = Services.Players
-    plr = ply.LocalPlayer
-    Root = plr.Character.HumanoidRootPart
-    replicated = Services.ReplicatedStorage
-    Lv = plr.Data.Level.Value
-    TeleportService = Services.TeleportService
-    TW = Services.TweenService
-    Lighting = Services.Lighting
-    Enemies = workspace.Enemies
-    vim1 = Services.VirtualInputManager
-    vim2 = Services.VirtualUser
-    TeamSelf = plr.Team
-    RunSer = Services.RunService
-    Stats = Services.Stats
-    Energy = plr.Character.Energy.Value
-    
-    -- Tables
-    Boss = {}
-    BringConnections = {}
-    MaterialList = {}
-    NPCList = {}
-    
-    -- Flags
-    shouldTween = false
-    SoulGuitar = false
-    KenTest = true
-    debug = false
-    Brazier1 = false
-    Brazier2 = false
-    Brazier3 = false
-    Sec = 0.1
-    ClickState = 0
-    Num_self = 25
+  ply = game.Players
+  plr = ply.LocalPlayer
+  Root = plr.Character.HumanoidRootPart
+  replicated = game:GetService("ReplicatedStorage")
+  Lv = game.Players.LocalPlayer.Data.Level.Value
+  TeleportService = game:GetService("TeleportService")
+  TW = game:GetService("TweenService")
+  Lighting = game:GetService("Lighting")
+  Enemies = workspace.Enemies
+  vim1 = game:GetService("VirtualInputManager")
+  vim2 = game:GetService("VirtualUser")
+  TeamSelf = plr.Team
+  RunSer = game:GetService("RunService")
+  Stats = game:GetService("Stats")
+  Energy = plr.Character.Energy.Value
+  BringConnections = {}
+  BossList = {}
+  MaterialList = {}
+  NPCList = {}
+  shouldTween = false
+  SoulGuitar = false
+  KenTest = true
+  debug = false
+  Brazier1 = false
+  Brazier2 = false
+  Brazier3 = false
+  Sec = 0.1
+  ClickState = 0
+  Num_self = 25
 end
-
 -- Wait for game to load
 -- Wait for game load
 local plr = game.Players.LocalPlayer
@@ -2357,7 +2352,7 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua"))():MakeWindow({
+	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/raw.txt"))():MakeWindow({
     Title = "BaCoNhǎo | Hub",
     SubTitle = "Blox Fruit",
     SaveFolder = "BaCoNhǎo.json"
@@ -4536,12 +4531,12 @@ end);
 if World3 then
 Farm:AddToggle({
     Name = "Tự Động Cày Bột Đế Vương",
-    Flag = "DoughKingFarm",
     Description = "",
     Default = false,
     Callback = function(Value)
     _G.AutoDoughKing = Value
-end})
+end,
+})
 
 task.spawn(function()
     while task.wait(Sec) do
