@@ -29,6 +29,7 @@ do
   ClickState = 0
   Num_self = 25
 end
+-- Biến chọn mode AI (thay đổi bằng dropdown)
 repeat local start = plr.PlayerGui:WaitForChild("Main"):WaitForChild("Loading") and game:IsLoaded() wait() until start
 World1 = game.PlaceId == 2753915549 or game.PlaceId == 85211729168715
 World2 = game.PlaceId == 4442272183 or game.PlaceId == 79091703265657
@@ -980,14 +981,14 @@ task.spawn(function()
 end)
 
 Window = redzlib:MakeWindow({
-  Title = "Domon Hub : Blox Fruits",
-  SubTitle = "",
+  Title = "Orange Hub : Blox Fruits",
+  SubTitle = "by_orgvip³⁶",
   SaveFolder = "OrangeV5.lua"
 })
 
 MinimizeButton = Window:AddMinimizeButton({
     Button = { 
-        Image = "rbxassetid://114476175638281", 
+        Image = "rbxassetid://104922707580804", 
         BackgroundTransparency = 0,
         Size = UDim2.new(0, 55, 0, 55),
         BackgroundColor3 = Color3.fromRGB(30, 30, 30),
@@ -1006,9 +1007,9 @@ Tabs = {
     Main = Window:MakeTab({ Title = "Tab General", Icon = "axe" }),
     Settings = Window:MakeTab({ Title = "Tab Setting", Icon = "rbxassetid://7734053495" }),
 }
+
+
 Tabs.Main:AddSection({"Dungeon Event"})
-
-
 Dungoenvp = Tabs.Main:AddToggle({
     Name = "Tự Động Farm Dungeon + Qua Cửa",
     Flag = "Dungoenvp",
@@ -1047,6 +1048,7 @@ Pickcard = Tabs.Main:AddToggle({
 		if not Value then ResetPick() end
 	end
 })
+
 
 Tabs.Settings:AddSection({"Settings / Configure"})
 
@@ -1331,6 +1333,74 @@ task.spawn(function()
     end)
   end
 end)
+WeaponDropdown = Tabs.Main:AddDropdown({
+    Name = "Chọn Vũ Khí",
+    Flag = "WeaponDropdown",
+    Options = {"Melee","Sword","Blox Fruit","Gun"},
+    Default = "Melee",
+    Callback = function(Value)
+    _G.ChooseWP = Value
+end})
+
+
+task.spawn(function()
+    while task.wait(0.5) do
+        pcall(function()
+            if _G.ChooseWP == "Melee" then
+                for _,v in pairs(plr.Backpack:GetChildren()) do
+                    if v.ToolTip == "Melee" then
+                        _G.SelectWeapon = v.Name
+                    end
+                end
+            elseif _G.ChooseWP == "Sword" then
+                for _,v in pairs(plr.Backpack:GetChildren()) do
+                    if v.ToolTip == "Sword" then
+                        _G.SelectWeapon = v.Name
+                    end
+                end
+            elseif _G.ChooseWP == "Gun" then
+                for _,v in pairs(plr.Backpack:GetChildren()) do
+                    if v.ToolTip == "Gun" then
+                        _G.SelectWeapon = v.Name
+                    end
+                end
+            elseif _G.ChooseWP == "Blox Fruit" then
+                for _,v in pairs(plr.Backpack:GetChildren()) do
+                    if v.ToolTip == "Blox Fruit" then
+                        _G.SelectWeapon = v.Name
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+AttackDropdown = Tabs.Main:AddDropdown({
+    Name = "Chọn Tốc Độ Đánh",
+    Flag = "AttackDropdown",
+    Options = {"Normal Attack","Fast Attack","Super Fast Attack","Orange Attack"},
+    Default = "Fast Attack",
+    Callback = function(Value)
+    _G.FastAttackGravity_Mode = Value
+end})
+
+
+DelayConfig = {
+    ["Normal Attack"] = 0.25,
+    ["Fast Attack"] = 0.15,
+    ["Super Fast Attack"] = 0.05,
+    ["Orange Attack"] = 0.1
+}
+
+task.spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+            if _G.FastAttackGravity_Mode and DelayConfig[_G.FastAttackGravity_Mode] then
+                _G.Fast_Delay = DelayConfig[_G.FastAttackGravity_Mode]
+            end
+        end)
+    end
+end)
 Players = game:GetService("Players")
 lp = Players.LocalPlayer
 
@@ -1476,186 +1546,171 @@ Tabs.Settings:AddSlider({
         end
     end
 })
-loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/attachgun.txt"))()
-_G.Settings = _G.Settings or {}
-_G.Settings.FastAttack = true
 
--- Tốc độ FastAttack
-local AttackDelay = 0.2
 
--- =========================
--- SERVICES
--- =========================
+Tabs.Info:AddSection("Thông Tin Chính")
+Tabs.Info:AddDiscordInvite({
+    Name = "Orange Hub",
+    Description = "Vào Discord Để Nhận Update Mới",
+    Logo = "rbxassetid://104922707580804",
+    Invite = "https://discord.gg/6McJU8HBa"
+})
 
-local Players = game:GetService("Players")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
+Players = game:GetService("Players")
+RS = game:GetService("ReplicatedStorage")
+RunService = game:GetService("RunService")
 
-local Player = Players.LocalPlayer
+plr = Players.LocalPlayer
 
-if not Player then
-    return
-end
-
--- =========================
--- NET
--- =========================
-
-local Net = ReplicatedStorage
-    :WaitForChild("Modules")
-    :WaitForChild("Net")
-
-local RegisterAttack =
-    Net:WaitForChild("RE/RegisterAttack")
-
-local RegisterHit =
-    Net:WaitForChild("RE/RegisterHit")
-
--- =========================
--- FOLDERS
--- =========================
-
-local Enemies =
-    workspace:FindFirstChild("Enemies")
-
-local Characters =
-    workspace:FindFirstChild("Characters")
-
--- =========================
--- CHECK
--- =========================
-
-local function IsAlive(Character)
-    local Humanoid =
-        Character and Character:FindFirstChildOfClass("Humanoid")
-
-    return Humanoid and Humanoid.Health > 0
-end
-
-local function GetCharacter()
-    local Character = Player.Character
-
-    if Character and IsAlive(Character) then
-        return Character
-    end
-
-    return nil
-end
-
--- =========================
--- FAST ATTACK
--- =========================
-
-local FastAttack = {
-    Distance = 55
+v1 = next
+v2 = {
+    RS:WaitForChild("Util"),
+    RS:WaitForChild("Common"),
+    RS:WaitForChild("Remotes"),
+    RS:WaitForChild("Assets"),
+    RS:WaitForChild("FX"),
 }
 
-function FastAttack:GetTargets()
+v3 = nil
+u4 = nil -- RemoteEvent found
+u5 = nil -- Id attribute
 
-    local Character = GetCharacter()
+do
+    while true do
+        local folder
+        v3, folder = v1(v2, v3)
+        if v3 == nil then break end
 
-    if not Character then
-        return {}, nil
-    end
-
-    local Root =
-        Character:FindFirstChild("HumanoidRootPart")
-
-    if not Root then
-        return {}, nil
-    end
-
-    local Targets = {}
-    local BasePart
-
-    local function Scan(Folder)
-
-        if not Folder then
-            return
+        for _, obj in ipairs(folder:GetChildren()) do
+            if obj:IsA("RemoteEvent") and obj:GetAttribute("Id") then
+                u5 = obj:GetAttribute("Id")
+                u4 = obj
+            end
         end
 
-        for _, Enemy in ipairs(Folder:GetChildren()) do
+        -- listen new children
+        folder.ChildAdded:Connect(function(obj)
+            if obj:IsA("RemoteEvent") and obj:GetAttribute("Id") then
+                u5 = obj:GetAttribute("Id")
+                u4 = obj
+            end
+        end)
+    end
+end
 
-            if Enemy ~= Character then
+local function BuildHits(character, range)
+    local hrp = character and character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return {} end
 
-                local Humanoid =
-                    Enemy:FindFirstChildOfClass("Humanoid")
-
-                if Humanoid and Humanoid.Health > 0 then
-
-                    local Part =
-                        Enemy:FindFirstChild("HumanoidRootPart")
-                        or Enemy:FindFirstChild("Head")
-
-                    if Part then
-
-                        local Offset =
-                            Root.Position - Part.Position
-
-                        if Offset:Dot(Offset)
-                            <= self.Distance * self.Distance then
-
-                            Targets[#Targets + 1] = {
-                                Enemy,
-                                Part
-                            }
-
-                            BasePart = Part
+    local hits = {}
+    for _, container in ipairs({workspace:FindFirstChild("Enemies"), workspace:FindFirstChild("Characters")}) do
+        if container then
+            for _, mob in ipairs(container:GetChildren()) do
+                if mob ~= character then
+                    local mhrp = mob:FindFirstChild("HumanoidRootPart")
+                    local hum = mob:FindFirstChildOfClass("Humanoid") or mob:FindFirstChild("Humanoid")
+                    if mhrp and hum and hum.Health > 0 then
+                        if (mhrp.Position - hrp.Position).Magnitude <= range then
+                            for _, part in ipairs(mob:GetChildren()) do
+                                if part:IsA("BasePart") then
+                                    if (mhrp.Position - hrp.Position).Magnitude <= range then
+                                        hits[#hits+1] = {mob, part}
+                                    end
+                                end
+                            end
                         end
                     end
                 end
             end
         end
     end
-
-    Scan(Enemies)
-    Scan(Characters)
-
-    return Targets, BasePart
+    return hits
 end
 
-function FastAttack:Attack()
 
-    local Targets, BasePart =
-        self:GetTargets()
+do
+    local Players = game:GetService("Players")
+    local RunService = game:GetService("RunService")
+    local ReplicatedStorage = game:GetService("ReplicatedStorage")
+    local Workspace = game:GetService("Workspace")
 
-    if not BasePart or #Targets == 0 then
-        return
+    local Player = Players.LocalPlayer
+    local Net = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
+    local RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
+    local RegisterHit = Net:WaitForChild("RE/RegisterHit")
+
+    local ATTACK_RANGE = 65
+    local ATTACK_COOLDOWN = 0.2
+    local SCAN_INTERVAL = 0.25
+
+    local enemyCache = {}
+    local lastAttackTime = 0
+    local lastScanTime = 0
+
+    local function UpdateEnemyCache()
+        local character = Player.Character
+        if not character then return end
+        local rootPart = character:FindFirstChild("HumanoidRootPart")
+        if not rootPart then return end
+
+        local newCache = {}
+        local enemies = Workspace:FindFirstChild("Enemies")
+        if not enemies then return end
+
+        for _, enemy in pairs(enemies:GetChildren()) do
+            local hrp = enemy:FindFirstChild("HumanoidRootPart")
+            local hum = enemy:FindFirstChild("Humanoid")
+            if hrp and hum and hum.Health > 0 then
+                if (hrp.Position - rootPart.Position).Magnitude <= ATTACK_RANGE then
+                    table.insert(newCache, enemy)
+                end
+            end
+        end
+        enemyCache = newCache
     end
 
-    pcall(function()
+    local function SendHits()
+        local now = tick()
+        if now - lastAttackTime < ATTACK_COOLDOWN then return end
 
-        RegisterAttack:FireServer(0)
+        if now - lastScanTime >= SCAN_INTERVAL then
+            lastScanTime = now
+            UpdateEnemyCache()
+        end
 
-        RegisterHit:FireServer(
-            BasePart,
-            Targets
-        )
+        if #enemyCache == 0 then return end
 
-    end)
-end
+        local args = { [1] = nil, [2] = {} }
 
--- =========================
--- LOOP
--- =========================
-
-task.spawn(function()
-
-    while _G.Settings.FastAttack do
-
-        local Character = GetCharacter()
-
-        if Character then
-
-            local Tool =
-                Character:FindFirstChildOfClass("Tool")
-
-            if Tool and Tool.ToolTip ~= "Gun" then
-                FastAttack:Attack()
+        for idx, enemy in ipairs(enemyCache) do
+            local hrp = enemy:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                if not args[1] then
+                    args[1] = enemy:FindFirstChild("Head") or hrp
+                end
+                args[2][idx] = { [1] = enemy, [2] = hrp }
             end
         end
 
-        task.wait(AttackDelay)
-    end
-end)
+        if not args[1] or #args[2] == 0 then return end
 
-print("[FastAttack] Started | Delay:", AttackDelay)
+        pcall(function()
+            RegisterAttack:FireServer(0)
+            RegisterHit:FireServer(unpack(args))
+        end)
+
+        lastAttackTime = now
+    end
+
+    RunService.Heartbeat:Connect(function()
+        SendHits()
+    end)
+
+    Player.CharacterAdded:Connect(function()
+        enemyCache = {}
+        lastScanTime = 0
+        lastAttackTime = 0
+    end)
+end
+
+end
