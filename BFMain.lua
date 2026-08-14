@@ -2352,7 +2352,7 @@ QuestNeta = function()
 			[6] = PosQ,
 		};
 	end;
-	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/raw.txt"))():MakeWindow({
+	local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/xRedzLib.lua"))():MakeWindow({
     Title = "BaCoNhǎo | Hub",
     SubTitle = "Blox Fruit",
     SaveFolder = "BaCoNhǎo.json"
@@ -4732,7 +4732,7 @@ local function setupAutoExecute()
         if _G.SaveData["AutoExecute_Save"] and not executed then
             executed = true
             queue([[
-                loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/BFMain.lua"))()
+              loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/BFMain.lua"))()
             ]])
         end
     end)
