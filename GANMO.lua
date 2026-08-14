@@ -902,7 +902,7 @@ task.spawn(function()
     Test.Name = "highlight"
     Test.Enabled = true
     Test.FillColor = Color3.fromRGB(255,165,0)
-    Test.OutlineColor = Color3.fromRGB(255,0,0)
+    Test.OutlineColor = Color3.fromRGB(255,255,255)
     Test.FillTransparency = 0.5
     Test.OutlineTransparency = 0.2
     Test.Parent = plr.Character
@@ -981,14 +981,14 @@ task.spawn(function()
 end)
 
 Window = redzlib:MakeWindow({
-  Title = "Orange Hub : Blox Fruits",
-  SubTitle = "by_orgvip³⁶",
+  Title = "DoMon Hub : Blox Fruits",
+  SubTitle = "",
   SaveFolder = "OrangeV5.lua"
 })
 
 MinimizeButton = Window:AddMinimizeButton({
     Button = { 
-        Image = "rbxassetid://104922707580804", 
+        Image = "rbxassetid://114476175638281", 
         BackgroundTransparency = 0,
         Size = UDim2.new(0, 55, 0, 55),
         BackgroundColor3 = Color3.fromRGB(30, 30, 30),
@@ -1003,7 +1003,6 @@ MinimizeButton = Window:AddMinimizeButton({
 -- Bỏ toàn bộ task.spawn hiệu ứng cầu vồng
 
 Tabs = {
-    Info = Window:MakeTab({ Title = "Trang Chủ", Icon = "home" }),
     Main = Window:MakeTab({ Title = "Tab General", Icon = "axe" }),
     Settings = Window:MakeTab({ Title = "Tab Setting", Icon = "rbxassetid://7734053495" }),
 }
@@ -1049,7 +1048,32 @@ Pickcard = Tabs.Main:AddToggle({
 	end
 })
 
+AttackDropdown = Tabs.Main:AddDropdown({
+    Name = "Chọn Tốc Độ Đánh",
+    Flag = "AttackDropdown",
+    Options = {"Normal Attack","Fast Attack","Super Fast Attack","Orange Attack"},
+    Default = "Fast Attack",
+    Callback = function(Value)
+    _G.FastAttackGravity_Mode = Value
+end})
 
+
+DelayConfig = {
+    ["Normal Attack"] = 0.25,
+    ["Fast Attack"] = 0.15,
+    ["Super Fast Attack"] = 0.05,
+    ["Orange Attack"] = 0.1
+}
+
+task.spawn(function()
+    while task.wait(0.1) do
+        pcall(function()
+            if _G.FastAttackGravity_Mode and DelayConfig[_G.FastAttackGravity_Mode] then
+                _G.Fast_Delay = DelayConfig[_G.FastAttackGravity_Mode]
+            end
+        end)
+    end
+end)
 Tabs.Settings:AddSection({"Settings / Configure"})
 
 Tabs.Settings:AddButton({
@@ -1198,84 +1222,6 @@ task.spawn(function()
         end
     end
 end)
-Initialize = Tabs.Settings:AddToggle({
-Name = "Đánh Nhanh", 
-Flag = "Initialize",
-Description = "", 
-Default = true,
-Callback = function(Value)
-  _G.Seriality = Value
-end})
-Bringmob = Tabs.Settings:AddToggle({
-    Name = "Kéo Quái", 
-    Flag = "Bringmob",
-    Description = "", 
-    Default = true,
-    Callback = function(Value)
-        _B = Value
-        _G.BringMob = Value
-    end
-})
-
-Tabs.Settings:AddSlider({
-    Name = "Số Lượng Quái Kéo",
-    Flag = "MobAmount",
-    Description = "Kéo Max Lên Nhé",
-    Min = 8,
-    Max = 16,
-    Default = _G.MobM,
-    Increment = 1,
-    Callback = function(Value)
-        _G.MobM = Value
-    end
-})
-
-Tabs.Settings:AddSlider({
-    Name = "Range Kéo Quái",
-    Flag = "BringRange",
-    Description = "",
-    Min = 300,
-    Max = 350,
-    Default = _G.BringRange,
-    Increment = 10,
-    Callback = function(Value)
-        _G.BringRange = Value
-    end
-})
-
-
--- 🌀 Toggle Auto Server Hop mỗi 30 phút
-HopToggle = Tabs.Settings:AddToggle({
-    Name = "Tự Động Chuyển Server Mỗi 30 Phút",
-    Flag = "HopToggle",
-    Description = "",
-    Default = false,
-    Callback = function(Value)
-    _G.AutoHopServer = Value
-end})
-
--- 🕒 Bộ đếm và xử lý hop
-task.spawn(function()
-    while task.wait(1) do
-        pcall(function()
-            if _G.AutoHopServer then
-                if not _G.HopTimer then
-                    _G.HopTimer = tick()
-                end
-                local elapsed = tick() - _G.HopTimer
-                if elapsed >= 1800 then -- 1800s = 30 phút
-                    _G.HopTimer = tick()
-                    if syn and syn.queue_on_teleport then
-                        syn.queue_on_teleport("loadstring(game:HttpGet('https://pastefy.app/iiFOhcot/raw'))()")
-                    end
-                    game:GetService("TeleportService"):Teleport(game.PlaceId, game.Players.LocalPlayer)
-                end
-            else
-                _G.HopTimer = nil
-            end
-        end)
-    end
-end)
 BusuAura = Tabs.Settings:AddToggle({
 Name = "Tự Động Bật Haki", 
 Flag = "BusuAura",
@@ -1332,74 +1278,6 @@ task.spawn(function()
       end 
     end)
   end
-end)
-WeaponDropdown = Tabs.Main:AddDropdown({
-    Name = "Chọn Vũ Khí",
-    Flag = "WeaponDropdown",
-    Options = {"Melee","Sword","Blox Fruit","Gun"},
-    Default = "Melee",
-    Callback = function(Value)
-    _G.ChooseWP = Value
-end})
-
-
-task.spawn(function()
-    while task.wait(0.5) do
-        pcall(function()
-            if _G.ChooseWP == "Melee" then
-                for _,v in pairs(plr.Backpack:GetChildren()) do
-                    if v.ToolTip == "Melee" then
-                        _G.SelectWeapon = v.Name
-                    end
-                end
-            elseif _G.ChooseWP == "Sword" then
-                for _,v in pairs(plr.Backpack:GetChildren()) do
-                    if v.ToolTip == "Sword" then
-                        _G.SelectWeapon = v.Name
-                    end
-                end
-            elseif _G.ChooseWP == "Gun" then
-                for _,v in pairs(plr.Backpack:GetChildren()) do
-                    if v.ToolTip == "Gun" then
-                        _G.SelectWeapon = v.Name
-                    end
-                end
-            elseif _G.ChooseWP == "Blox Fruit" then
-                for _,v in pairs(plr.Backpack:GetChildren()) do
-                    if v.ToolTip == "Blox Fruit" then
-                        _G.SelectWeapon = v.Name
-                    end
-                end
-            end
-        end)
-    end
-end)
-
-AttackDropdown = Tabs.Main:AddDropdown({
-    Name = "Chọn Tốc Độ Đánh",
-    Flag = "AttackDropdown",
-    Options = {"Normal Attack","Fast Attack","Super Fast Attack","Orange Attack"},
-    Default = "Fast Attack",
-    Callback = function(Value)
-    _G.FastAttackGravity_Mode = Value
-end})
-
-
-DelayConfig = {
-    ["Normal Attack"] = 0.25,
-    ["Fast Attack"] = 0.15,
-    ["Super Fast Attack"] = 0.05,
-    ["Orange Attack"] = 0.1
-}
-
-task.spawn(function()
-    while task.wait(0.1) do
-        pcall(function()
-            if _G.FastAttackGravity_Mode and DelayConfig[_G.FastAttackGravity_Mode] then
-                _G.Fast_Delay = DelayConfig[_G.FastAttackGravity_Mode]
-            end
-        end)
-    end
 end)
 Players = game:GetService("Players")
 lp = Players.LocalPlayer
@@ -1546,171 +1424,3 @@ Tabs.Settings:AddSlider({
         end
     end
 })
-
-
-Tabs.Info:AddSection("Thông Tin Chính")
-Tabs.Info:AddDiscordInvite({
-    Name = "Orange Hub",
-    Description = "Vào Discord Để Nhận Update Mới",
-    Logo = "rbxassetid://104922707580804",
-    Invite = "https://discord.gg/6McJU8HBa"
-})
-
-Players = game:GetService("Players")
-RS = game:GetService("ReplicatedStorage")
-RunService = game:GetService("RunService")
-
-plr = Players.LocalPlayer
-
-v1 = next
-v2 = {
-    RS:WaitForChild("Util"),
-    RS:WaitForChild("Common"),
-    RS:WaitForChild("Remotes"),
-    RS:WaitForChild("Assets"),
-    RS:WaitForChild("FX"),
-}
-
-v3 = nil
-u4 = nil -- RemoteEvent found
-u5 = nil -- Id attribute
-
-do
-    while true do
-        local folder
-        v3, folder = v1(v2, v3)
-        if v3 == nil then break end
-
-        for _, obj in ipairs(folder:GetChildren()) do
-            if obj:IsA("RemoteEvent") and obj:GetAttribute("Id") then
-                u5 = obj:GetAttribute("Id")
-                u4 = obj
-            end
-        end
-
-        -- listen new children
-        folder.ChildAdded:Connect(function(obj)
-            if obj:IsA("RemoteEvent") and obj:GetAttribute("Id") then
-                u5 = obj:GetAttribute("Id")
-                u4 = obj
-            end
-        end)
-    end
-end
-
-local function BuildHits(character, range)
-    local hrp = character and character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return {} end
-
-    local hits = {}
-    for _, container in ipairs({workspace:FindFirstChild("Enemies"), workspace:FindFirstChild("Characters")}) do
-        if container then
-            for _, mob in ipairs(container:GetChildren()) do
-                if mob ~= character then
-                    local mhrp = mob:FindFirstChild("HumanoidRootPart")
-                    local hum = mob:FindFirstChildOfClass("Humanoid") or mob:FindFirstChild("Humanoid")
-                    if mhrp and hum and hum.Health > 0 then
-                        if (mhrp.Position - hrp.Position).Magnitude <= range then
-                            for _, part in ipairs(mob:GetChildren()) do
-                                if part:IsA("BasePart") then
-                                    if (mhrp.Position - hrp.Position).Magnitude <= range then
-                                        hits[#hits+1] = {mob, part}
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-    end
-    return hits
-end
-
-
-do
-    local Players = game:GetService("Players")
-    local RunService = game:GetService("RunService")
-    local ReplicatedStorage = game:GetService("ReplicatedStorage")
-    local Workspace = game:GetService("Workspace")
-
-    local Player = Players.LocalPlayer
-    local Net = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
-    local RegisterAttack = Net:WaitForChild("RE/RegisterAttack")
-    local RegisterHit = Net:WaitForChild("RE/RegisterHit")
-
-    local ATTACK_RANGE = 65
-    local ATTACK_COOLDOWN = 0.2
-    local SCAN_INTERVAL = 0.25
-
-    local enemyCache = {}
-    local lastAttackTime = 0
-    local lastScanTime = 0
-
-    local function UpdateEnemyCache()
-        local character = Player.Character
-        if not character then return end
-        local rootPart = character:FindFirstChild("HumanoidRootPart")
-        if not rootPart then return end
-
-        local newCache = {}
-        local enemies = Workspace:FindFirstChild("Enemies")
-        if not enemies then return end
-
-        for _, enemy in pairs(enemies:GetChildren()) do
-            local hrp = enemy:FindFirstChild("HumanoidRootPart")
-            local hum = enemy:FindFirstChild("Humanoid")
-            if hrp and hum and hum.Health > 0 then
-                if (hrp.Position - rootPart.Position).Magnitude <= ATTACK_RANGE then
-                    table.insert(newCache, enemy)
-                end
-            end
-        end
-        enemyCache = newCache
-    end
-
-    local function SendHits()
-        local now = tick()
-        if now - lastAttackTime < ATTACK_COOLDOWN then return end
-
-        if now - lastScanTime >= SCAN_INTERVAL then
-            lastScanTime = now
-            UpdateEnemyCache()
-        end
-
-        if #enemyCache == 0 then return end
-
-        local args = { [1] = nil, [2] = {} }
-
-        for idx, enemy in ipairs(enemyCache) do
-            local hrp = enemy:FindFirstChild("HumanoidRootPart")
-            if hrp then
-                if not args[1] then
-                    args[1] = enemy:FindFirstChild("Head") or hrp
-                end
-                args[2][idx] = { [1] = enemy, [2] = hrp }
-            end
-        end
-
-        if not args[1] or #args[2] == 0 then return end
-
-        pcall(function()
-            RegisterAttack:FireServer(0)
-            RegisterHit:FireServer(unpack(args))
-        end)
-
-        lastAttackTime = now
-    end
-
-    RunService.Heartbeat:Connect(function()
-        SendHits()
-    end)
-
-    Player.CharacterAdded:Connect(function()
-        enemyCache = {}
-        lastScanTime = 0
-        lastAttackTime = 0
-    end)
-end
-
-end
