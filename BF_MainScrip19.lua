@@ -162,17 +162,13 @@ repeat
     task.wait()
 until game:IsLoaded() and not (loading and loading.Visible)
 
-World1 = false
 World2 = false
 World3 = false
 Dungeon = false
 
 local placeId = game.PlaceId
 
-if placeId == 2753915549 or placeId == 85211729168715 then
-    World1 = true
-
-elseif placeId == 4442272183 or placeId == 79091703265657 then
+if placeId == 4442272183 or placeId == 79091703265657 then
     World2 = true
 
 elseif placeId == 7449423635 or placeId == 100117331123089 then
@@ -182,13 +178,7 @@ elseif placeId == 73902483975735 then
     Dungeon = true
 end
 
-if Dungeon then
-    loadstring(game:HttpGet(
-        "https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/HUB.lua"
-    ))()
-else
-    Sea = World1 or World2 or World3
-end
+Sea = World2 or World3
 
 Marines = function()
     replicated.Remotes.CommF_:InvokeServer("SetTeam", "Marines")
@@ -660,8 +650,8 @@ Status:AddDiscordInvite({
     Logo = "rbxassetid://114476175638281",
     Invite = ""
 })
-Fruit:AddSection({"Farm Ngục tối "})
-Fruit:AddToggle({
+Farm:AddSection({"Farm Ngục tối "})
+Farm:AddToggle({
     Name = "Tự Động Farm Dungeon + Qua Cửa",
     Flag = "Dungoenvp",
     Description = "",
