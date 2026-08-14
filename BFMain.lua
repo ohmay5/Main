@@ -2542,7 +2542,7 @@ local Setting = Library:MakeTab({
     Icon = "rbxassetid://7734053495"
 })
 Status:AddDiscordInvite({
-    Name = "ThanhLong Hub",
+    Name = "BaCon Hub",
     Description = "",
     Logo = "rbxassetid://114476175638281",
     Invite = ""
