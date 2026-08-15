@@ -128,7 +128,7 @@ do
   Sec = 0.1
   ClickState = 0
   Num_self = 25
-
+end
 local plr = game.Players.LocalPlayer
 
 repeat
@@ -6465,18 +6465,16 @@ local z5 = {
         local H5 = {
             "Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite",
         };
-   Event:AddDropdown({
+Event:AddDropdown({
     Name = "Select Level Sea",
-    Description = "chọn mức độ để di chuyển trên biển",
-    Options = H5,
-    Default = GetSetting["DangerSc_Save"] or "Lv 1",
-    Multi = false,
+    Description = "Chọn mức độ để di chuyển trên biển",
+    Values = H5,
+    Default = "Lv 1",
     Callback = function(I)
         _G.DangerSc = I
-        _G.SaveData["DangerSc_Save"] = I
-        SaveSettings()
     end,
 })
+
 
     Event:AddToggle({
         Name = "Auto Start farm",
