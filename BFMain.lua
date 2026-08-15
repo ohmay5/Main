@@ -327,11 +327,6 @@ local w = {
 		Ghost = CFrame.new(5251, 5, 1111),
 	};
 	
-Remotes = {
-    RFSubmarineWorkerSpeak = replicated.Modules.Net["RF/SubmarineWorkerSpeak"],
-    RFJobsRemoteFunction = replicated.Modules.Net["RF/JobsRemoteFunction"], 
-    RFCraft = replicated:WaitForChild("Modules"):WaitForChild("Net"):WaitForChild("RF/Craft")
-}
 EquipWeapon = function(I)
 		if not I then
 			return;
@@ -6470,13 +6465,12 @@ local z5 = {
         local H5 = {
             "Lv 1", "Lv 2", "Lv 3", "Lv 4", "Lv 5", "Lv 6", "Lv Infinite",
         };
-        Event:AddDropdown({
+   Event:AddDropdown({
     Name = "Select Level Sea",
     Description = "chọn mức độ để di chuyển trên biển",
     Options = H5,
-    Default = _G.SaveData["DangerSc_Save"] or "Lv 1",
+    Default = GetSetting["DangerSc_Save"] or "Lv 1",
     Multi = false,
-
     Callback = function(I)
         _G.DangerSc = I
         _G.SaveData["DangerSc_Save"] = I
@@ -11117,7 +11111,7 @@ Teleport:AddToggle({
                     end
                     
                     -- 4. Desligar Automático
-                    _G.Teleport = false
+                    _G.Teleport = false 
                     -- Nota: Para o botão visual do menu "desligar" sozinho, 
                     -- depende da biblioteca que você está usando (ex: Fluent, Orion, Rayfield).
                     -- Geralmente: NomeDaVariavelDoToggle:SetValue(false)
