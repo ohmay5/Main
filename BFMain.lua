@@ -161,7 +161,9 @@ elseif placeId == 73902483975735 then
 end
 
 if Dungeon then
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/LOME.lua"))()
+    loadstring(game:HttpGet(
+        "https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/LOME.lua"
+    ))()
 else
     Sea = World1 or World2 or World3
 end
