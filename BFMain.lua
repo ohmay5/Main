@@ -654,7 +654,7 @@ end
 -- FUNÇÃO PRINCIPAL: BRING
 --==================================================
 BringEnemy = function()
-    if not (FarmAtivo() or _G.AutoBartilo or _G.AutoFarmNear or _G.AutoFarm_Bone) or not _B then return end
+    if not (FarmAtivo() or _G.AutoBartilo or _G.AutoFarmNear) or not _B then return end
 
     local plr = game.Players.LocalPlayer  
     local char = plr.Character  
@@ -719,7 +719,7 @@ BringEnemy = function()
 end
 task.spawn(function()
     while task.wait(0.1) do
-        if FarmAtivo() or _G.AutoBartilo or _G.AutoFarmNear or _G.AutoFarm_Bone then
+        if FarmAtivo() or _G.AutoBartilo or _G.AutoFarmNear then
             _B = true
             BringEnemy()
         else  
