@@ -143,6 +143,7 @@ until game:IsLoaded() and (not loading or not loading.Visible)
 World1 = false
 World2 = false
 World3 = false
+Dungeon = false
 
 local placeId = game.PlaceId
 
@@ -154,6 +155,14 @@ elseif placeId == 4442272183 or placeId == 79091703265657 then
 
 elseif placeId == 7449423635 or placeId == 100117331123089 then
     World3 = true
+
+elseif placeId == 73902483975735 then
+    Dungeon = true
+end
+
+if Dungeon then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/LOME.lua"))()
+else
     Sea = World1 or World2 or World3
 end
 
