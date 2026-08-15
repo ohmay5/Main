@@ -868,7 +868,7 @@ blockfind = workspace:FindFirstChild(block.Name)
 if blockfind and blockfind ~= block then blockfind:Destroy() end
 
 getgenv().TweenSpeedFar  = 300
-getgenv().TweenSpeedNear = 600
+getgenv().TweenSpeedNear = 400
 
 _tp = function(I)
     local e = plr.Character
@@ -891,7 +891,7 @@ _tp = function(I)
     end
 
     local speed = dist <= 15
-        and (getgenv().TweenSpeedNear or 600)
+        and (getgenv().TweenSpeedNear or 400)
         or  (getgenv().TweenSpeedFar  or 300)
 
     local info  = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)
@@ -937,7 +937,7 @@ task.spawn(function()
     Test.Name = "highlight"
     Test.Enabled = true
     Test.FillColor = Color3.fromRGB(255,165,0)
-    Test.OutlineColor = Color3.fromRGB(255,0,0)
+    Test.OutlineColor = Color3.fromRGB(255,255,255)
     Test.FillTransparency = 0.5
     Test.OutlineTransparency = 0.2
     Test.Parent = plr.Character
@@ -6330,23 +6330,60 @@ Q = Tabs.Quests:AddToggle({
 task.spawn(function()
     while task.wait(Sec) do
         pcall(function()
-            if _G.Auto_Yama then
-                if replicated.Remotes.CommF_:InvokeServer("EliteHunter", "Progress") < 30 then
-                    _G.FarmEliteHunt = true
-                elseif replicated.Remotes.CommF_:InvokeServer("EliteHunter", "Progress") > 30 then
-                    _G.FarmEliteHunt = false
-                    if (workspace.Map.Waterfall.SealedKatana.Handle.Position - plr.Character.HumanoidRootPart.Position).Magnitude >= 20 then
-                        _tp(workspace.Map.Waterfall.SealedKatana.Handle.CFrame)
-                        local zx = GetConnectionEnemies("Ghost")
-                        if zx then
-                            repeat
-                                wait()
-                                Attack.Kill(zx, _G.Auto_Yama)
-                            until zx.Humanoid.Health <= 0 or not zx.Parent or not _G.Auto_Yama
-                            fireclickdetector(workspace.Map.Waterfall.SealedKatana.Handle.ClickDetector)
-                        end
-                    end
+            if not _G.Auto_Yama then
+                return
+            end
+
+            local progress = replicated.Remotes.CommF_:InvokeServer(
+                "EliteHunter",
+                "Progress"
+            )
+
+            if progress < 30 then
+                _G.FarmEliteHunt = true
+                return
+            end
+
+            -- Đủ 30 Elite
+            _G.FarmEliteHunt = false
+
+            local character = plr.Character
+            local hrp = character and character:FindFirstChild("HumanoidRootPart")
+            local katana = workspace.Map.Waterfall:FindFirstChild("SealedKatana")
+
+            if not hrp or not katana then
+                return
+            end
+
+            local handle = katana:FindFirstChild("Handle")
+            if not handle then
+                return
+            end
+
+            if (handle.Position - hrp.Position).Magnitude >= 20 then
+                _tp(handle.CFrame)
+                task.wait(0.5)
+            end
+
+            local zx = GetConnectionEnemies("Ghost")
+
+            if zx and zx.Parent then
+                local humanoid = zx:FindFirstChildOfClass("Humanoid")
+
+                if humanoid then
+                    repeat
+                        task.wait()
+                        Attack.Kill(zx, _G.Auto_Yama)
+                    until humanoid.Health <= 0
+                        or not zx.Parent
+                        or not _G.Auto_Yama
                 end
+            end
+
+            local click = handle:FindFirstChildOfClass("ClickDetector")
+
+            if click and _G.Auto_Yama then
+                fireclickdetector(click)
             end
         end)
     end

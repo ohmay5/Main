@@ -285,10 +285,8 @@ local function GoNextFloor()
     repeat task.wait(0.2) until IsInDungeon() or tick() > mapTimeout
 
     for _ = 1, 8 do
-        -- dọn prop nếu đang floor 16 (tránh bay về 15)
         Floor16CleanerTick()
 
-        -- ưu tiên exit floor hiện tại
         local currentFloor = GetCurrentFloor()
         local exitPart = GetExitFromFloor(currentFloor) or GetNearestExit()
 
@@ -300,7 +298,12 @@ local function GoNextFloor()
                 task.wait(0.1)
                 hrp = GetHRP()
                 if hrp and (hrp.Position - exitPart.Position).Magnitude <= 8 then
+                    -- ĐÃ ĐẾN CỬA / SANG TẦNG MỚI:
                     _G.GoingExit = false
+                    
+                    -- 👉 THÊM ĐOẠN NÀY ĐỂ CHỜ QUÁI SPAWN KỊP
+                    task.wait(1.5) -- Chờ 1.5 giây cho quái xuất hiện rồi mới cho phép farm
+                    
                     return
                 end
             until tick() > reachTimeout
@@ -459,8 +462,8 @@ task.spawn(function()
                 local mhrp = mob:FindFirstChild("HumanoidRootPart")
                 if not mhrp then break end
 
-task.wait(tonumber(_G.Settings.FastAttack) or 0.06)
-G.Kill(mob, true)
+task.wait(tonumber(_G.Fast_Delay) or 0.06)
+Attack.Kill(mob, true)
             until false
 
             StartBring = (_G.DungeonBring ~= false)
@@ -476,7 +479,7 @@ G.Kill(mob, true)
 end)
 
 local _EmptySince = 0
-local EMPTY_DELAY = 0.3 -- trống ~0.9s mới next (đỡ next sớm)
+local EMPTY_DELAY = 1.5 -- trống ~0.9s mới next (đỡ next sớm)
 
 task.spawn(function()
     local emptySince = 0
@@ -514,7 +517,7 @@ task.spawn(function()
             if not IsInDungeon() then break end
 
             Attack.dungeon(mob, true)
-            task.wait(tonumber(_G.Settings.FastAttack) or 0.06)
+            task.wait(tonumber(_G.Fast_Delay) or 0.06)
 
             hum = mob:FindFirstChildOfClass("Humanoid")
         end
