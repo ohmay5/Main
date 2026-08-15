@@ -129,6 +129,7 @@ do
   ClickState = 0
   Num_self = 25
 end
+
 local plr = game.Players.LocalPlayer
 
 repeat
@@ -13580,7 +13581,7 @@ _G.Settings = _G.Settings or {}
 _G.Settings.FastAttack = true
 
 -- Tốc độ FastAttack
-local AttackDelay = 0.2
+local AttackDelay = 0.15
 
 -- =========================
 -- SERVICES
