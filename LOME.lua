@@ -501,6 +501,193 @@ Tabs.Settings:AddButton({
         end)
     end
 })
+Tabs.Main:AddSection({"Dungeon Event"})
+Dungoenvp = Tabs.Main:AddToggle({
+    Name = "Tự Động Farm Dungeon + Qua Cửa",
+    Flag = "Dungoenvp",
+    Description = "",
+    Default = false,
+    Callback = function(Value)
+        _G.Dungeonh = Value
+    end
+})
+
+task.spawn(function()
+    loadstring(game:HttpGet("https://pastefy.app/10LRDk2J/raw"))()
+end)
+AllCards={"Lifesteal","All Cooldowns","HYPER!","Fruit M1 Speed","Armor","Sniper","Overflow","Gun","Melee","Fruit","Defense","Fortress"}
+
+_G.Select_Cards=_G.Select_Cards or {Melee=true}
+
+Card=Tabs.Main:AddDropdown({
+	Name = "Chọn Thẻ",
+	Options=AllCards,
+	MultiSelect=true,
+	Flag="SelectCards",
+	Callback=function(v)
+		_G.Select_Cards=v
+		if ResetPick then ResetPick() end
+	end
+})
+
+Pickcard = Tabs.Main:AddToggle({
+	Name = "Tự Động Chọn Thẻ Dungeon",
+	Flag = "Pickcard",
+	Description = "",
+	Default = true,
+	Callback = function(Value)
+		_G.Pickcard = Value
+		if not Value then ResetPick() end
+	end
+})
+
+
+
+Players = game:GetService("Players")
+lp = Players.LocalPlayer
+
+-- Giá trị mặc định
+getgenv().WalkSpeedValue = 30
+getgenv().JumpValue = 50
+
+-- ==============================
+-- 1. HÀM ÉP BUỘC HUMANOID
+-- ==============================
+local function ApplyHumanoid(char)
+    local hum = char:WaitForChild("Humanoid", 5)
+    if not hum then return end
+
+    local isApplying = false -- ✅ Flag chống loop conflict
+
+    local function SetJump()
+        if isApplying then return end
+        isApplying = true
+        hum.UseJumpPower = true
+        hum.JumpPower = getgenv().JumpValue
+        isApplying = false
+    end
+
+    local function SetSpeed()
+        hum.WalkSpeed = getgenv().WalkSpeedValue
+    end
+
+    -- Gán giá trị ban đầu
+    SetJump()
+    SetSpeed()
+
+    -- ✅ FIX CHÍNH: Bắt đúng state để reapply
+    hum.StateChanged:Connect(function(_, newState)
+        if newState == Enum.HumanoidStateType.Landed then
+            task.wait(0.05) -- Chờ physics ổn định
+            SetJump()
+        elseif newState == Enum.HumanoidStateType.Jumping then
+            -- Giữ JumpPower trong lúc nhảy
+            SetJump()
+        elseif newState == Enum.HumanoidStateType.Freefall then
+            SetJump()
+        elseif newState == Enum.HumanoidStateType.Running
+            or newState == Enum.HumanoidStateType.RunningNoPhysics then
+            SetJump()
+        end
+    end)
+
+    -- Chống game tắt UseJumpPower
+    hum:GetPropertyChangedSignal("UseJumpPower"):Connect(function()
+        if not hum.UseJumpPower then
+            SetJump()
+        end
+    end)
+
+    -- Chống game đổi WalkSpeed
+    hum:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+        if hum.WalkSpeed ~= getgenv().WalkSpeedValue then
+            SetSpeed()
+        end
+    end)
+
+    -- ✅ Bỏ GetPropertyChangedSignal("JumpPower") vì nó gây conflict loop
+    -- Thay bằng loop ngắn riêng bên dưới
+end
+
+-- ==============================
+-- 2. KHI NHÂN VẬT XUẤT HIỆN
+-- ==============================
+lp.CharacterAdded:Connect(function(char)
+    ApplyHumanoid(char)
+end)
+
+if lp.Character then
+    ApplyHumanoid(lp.Character)
+end
+
+-- ==============================
+-- 3. LOOP DỰ PHÒNG
+-- ==============================
+task.spawn(function()
+    while task.wait(0.2) do
+        local char = lp.Character
+        if char then
+            local hum = char:FindFirstChild("Humanoid")
+            if hum then
+                -- Chỉ fix khi đang đứng/chạy, KHÔNG fix khi đang nhảy
+                local state = hum:GetState()
+                local isMidAir = (
+                    state == Enum.HumanoidStateType.Jumping or
+                    state == Enum.HumanoidStateType.Freefall
+                )
+
+                if not isMidAir then
+                    if not hum.UseJumpPower then
+                        hum.UseJumpPower = true
+                    end
+                    if hum.JumpPower ~= getgenv().JumpValue then
+                        hum.JumpPower = getgenv().JumpValue
+                    end
+                end
+
+                if hum.WalkSpeed ~= getgenv().WalkSpeedValue then
+                    hum.WalkSpeed = getgenv().WalkSpeedValue
+                end
+            end
+        end
+    end
+end)
+
+-- ==============================
+-- 4. SLIDER UI
+-- ==============================
+
+-- Slider Tăng Tốc Chạy
+Tabs.Main:AddSlider({
+    Name = "Tăng Tốc Chạy",
+    Min = 100,
+    Max = 300,
+    Default = getgenv().WalkSpeedValue,
+    Callback = function(Value)
+        getgenv().WalkSpeedValue = Value
+        local hum = lp.Character and lp.Character:FindFirstChild("Humanoid")
+        if hum then
+            hum.WalkSpeed = Value
+        end
+    end
+})
+
+-- Slider Tăng Sức Bật Nhảy
+Tabs.Main:AddSlider({
+    Name = "Tăng Sức Bật Nhảy",
+    Min = 70,
+    Max = 350,
+    Default = getgenv().JumpValue,
+    Description = "Chỉnh Tối Đa Từ 200-300 Là Ngon Nhất",
+    Callback = function(Value)
+        getgenv().JumpValue = Value
+        local hum = lp.Character and lp.Character:FindFirstChild("Humanoid")
+        if hum then
+            hum.UseJumpPower = true
+            hum.JumpPower = Value
+        end
+    end
+})
 
 -- ========== TOGGLE ==========
 Tabs.Settings:AddToggle({
@@ -647,214 +834,7 @@ task.spawn(function()
   end
 end)
 
-
-
-Tabs.Raids:AddSection({"Dungeon Event"})
-Dungoenvp = Tabs.Raids:AddToggle({
-    Name = "Tự Động Farm Dungeon + Qua Cửa",
-    Flag = "Dungoenvp",
-    Description = "",
-    Default = false,
-    Callback = function(Value)
-        _G.Dungeonh = Value
-    end
-})
-
-task.spawn(function()
-    loadstring(game:HttpGet("https://pastefy.app/10LRDk2J/raw"))()
-end)
-AllCards={"Lifesteal","All Cooldowns","HYPER!","Fruit M1 Speed","Armor","Sniper","Overflow","Gun","Melee","Fruit","Defense","Fortress"}
-
-_G.Select_Cards=_G.Select_Cards or {Melee=true}
-
-Card=Tabs.Raids:AddDropdown({
-	Name = "Chọn Thẻ",
-	Options=AllCards,
-	MultiSelect=true,
-	Flag="SelectCards",
-	Callback=function(v)
-		_G.Select_Cards=v
-		if ResetPick then ResetPick() end
-	end
-})
-
-Pickcard = Tabs.Raids:AddToggle({
-	Name = "Tự Động Chọn Thẻ Dungeon",
-	Flag = "Pickcard",
-	Description = "",
-	Default = true,
-	Callback = function(Value)
-		_G.Pickcard = Value
-		if not Value then ResetPick() end
-	end
-})
-
-
-Loaded_InstantKill = false -- Biến kiểm tra
-
-Tabs.PlayerPVP:AddButton({
-    Name = "Instant Kill",
-    Description = "Click",
-    Callback = function()
-        if not Loaded_InstantKill then
-            Loaded_InstantKill = true
-            task.spawn(function()
-                loadstring(game:HttpGet("https://pastefy.app/mcYpDq6u/raw"))()
-            end)
-        else
-        end
-    end
-})
-
-
-
-Players = game:GetService("Players")
-lp = Players.LocalPlayer
-
--- Giá trị mặc định
-getgenv().WalkSpeedValue = 30
-getgenv().JumpValue = 50
-
--- ==============================
--- 1. HÀM ÉP BUỘC HUMANOID
--- ==============================
-local function ApplyHumanoid(char)
-    local hum = char:WaitForChild("Humanoid", 5)
-    if not hum then return end
-
-    local isApplying = false -- ✅ Flag chống loop conflict
-
-    local function SetJump()
-        if isApplying then return end
-        isApplying = true
-        hum.UseJumpPower = true
-        hum.JumpPower = getgenv().JumpValue
-        isApplying = false
-    end
-
-    local function SetSpeed()
-        hum.WalkSpeed = getgenv().WalkSpeedValue
-    end
-
-    -- Gán giá trị ban đầu
-    SetJump()
-    SetSpeed()
-
-    -- ✅ FIX CHÍNH: Bắt đúng state để reapply
-    hum.StateChanged:Connect(function(_, newState)
-        if newState == Enum.HumanoidStateType.Landed then
-            task.wait(0.05) -- Chờ physics ổn định
-            SetJump()
-        elseif newState == Enum.HumanoidStateType.Jumping then
-            -- Giữ JumpPower trong lúc nhảy
-            SetJump()
-        elseif newState == Enum.HumanoidStateType.Freefall then
-            SetJump()
-        elseif newState == Enum.HumanoidStateType.Running
-            or newState == Enum.HumanoidStateType.RunningNoPhysics then
-            SetJump()
-        end
-    end)
-
-    -- Chống game tắt UseJumpPower
-    hum:GetPropertyChangedSignal("UseJumpPower"):Connect(function()
-        if not hum.UseJumpPower then
-            SetJump()
-        end
-    end)
-
-    -- Chống game đổi WalkSpeed
-    hum:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
-        if hum.WalkSpeed ~= getgenv().WalkSpeedValue then
-            SetSpeed()
-        end
-    end)
-
-    -- ✅ Bỏ GetPropertyChangedSignal("JumpPower") vì nó gây conflict loop
-    -- Thay bằng loop ngắn riêng bên dưới
-end
-
--- ==============================
--- 2. KHI NHÂN VẬT XUẤT HIỆN
--- ==============================
-lp.CharacterAdded:Connect(function(char)
-    ApplyHumanoid(char)
-end)
-
-if lp.Character then
-    ApplyHumanoid(lp.Character)
-end
-
--- ==============================
--- 3. LOOP DỰ PHÒNG
--- ==============================
-task.spawn(function()
-    while task.wait(0.2) do
-        local char = lp.Character
-        if char then
-            local hum = char:FindFirstChild("Humanoid")
-            if hum then
-                -- Chỉ fix khi đang đứng/chạy, KHÔNG fix khi đang nhảy
-                local state = hum:GetState()
-                local isMidAir = (
-                    state == Enum.HumanoidStateType.Jumping or
-                    state == Enum.HumanoidStateType.Freefall
-                )
-
-                if not isMidAir then
-                    if not hum.UseJumpPower then
-                        hum.UseJumpPower = true
-                    end
-                    if hum.JumpPower ~= getgenv().JumpValue then
-                        hum.JumpPower = getgenv().JumpValue
-                    end
-                end
-
-                if hum.WalkSpeed ~= getgenv().WalkSpeedValue then
-                    hum.WalkSpeed = getgenv().WalkSpeedValue
-                end
-            end
-        end
-    end
-end)
-
--- ==============================
--- 4. SLIDER UI
--- ==============================
-
--- Slider Tăng Tốc Chạy
-Tabs.PlayerPVP:AddSlider({
-    Name = "Tăng Tốc Chạy",
-    Min = 100,
-    Max = 300,
-    Default = getgenv().WalkSpeedValue,
-    Callback = function(Value)
-        getgenv().WalkSpeedValue = Value
-        local hum = lp.Character and lp.Character:FindFirstChild("Humanoid")
-        if hum then
-            hum.WalkSpeed = Value
-        end
-    end
-})
-
--- Slider Tăng Sức Bật Nhảy
-Tabs.PlayerPVP:AddSlider({
-    Name = "Tăng Sức Bật Nhảy",
-    Min = 70,
-    Max = 350,
-    Default = getgenv().JumpValue,
-    Description = "Chỉnh Tối Đa Từ 200-300 Là Ngon Nhất",
-    Callback = function(Value)
-        getgenv().JumpValue = Value
-        local hum = lp.Character and lp.Character:FindFirstChild("Humanoid")
-        if hum then
-            hum.UseJumpPower = true
-            hum.JumpPower = Value
-        end
-    end
-})
-
-Tabs.Misc:AddButton({
+Tabs.Settings:AddButton({
 Name = "Bật Chế Độ Nhanh", 
 Description = "",
 Callback = function()
@@ -872,7 +852,7 @@ Callback = function()
 end})
 
 Tabs.Settings:AddSection({"Configure - God"})
-briggt1 = Tabs.Misc:AddToggle({
+briggt1 = Tabs.Settings:AddToggle({
 Name = "Bật Max Tầm Nhìn", 
 Flag = "briggt1",
 Description = "", 
