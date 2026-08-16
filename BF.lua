@@ -4045,7 +4045,7 @@ Farm:AddSection({"Other"})
 
 -- Configuração da Distância Máxima (em studs)
 -- Aumente se quiser pegar mobs um pouco mais longe, diminua se quiser bem perto.
-_G.MaxFarmDistance = 500
+_G.MaxFarmDistance = 1000
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -4202,51 +4202,67 @@ spawn(function()
     while wait(Sec) do
         if _G.AutoRaidCastle then
             pcall(function()
-                local TargetCFrame = CFrame.new(-5496.17432, 313.768921, -2841.53027, .924894512, 7.37058015e-09, .380223751, 3.5881019e-08, 1, -1.06665446e-07, -0.380223751, 1.12297109e-07, .924894512)
-                local CheckCFrame = CFrame.new(-5539.3115234375, 313.80053710938, -2972.3723144531)
+                local TargetCFrame = CFrame.new(
+                    -5496.17432, 313.768921, -2841.53027,
+                    .924894512, 7.37058015e-09, .380223751,
+                    3.5881019e-08, 1, -1.06665446e-07,
+                    -.380223751, 1.12297109e-07, .924894512
+                )
 
-                if (CheckCFrame.Position - Root.Position).Magnitude <= 500 then
+                local EnemyList = {
+                    "Galley Pirate",
+                    "Galley Captain",
+                    "Raider",
+                    "Mercenary",
+                    "Vampire",
+                    "Zombie",
+                    "Snow Trooper",
+                    "Winter Warrior",
+                    "Lab Subordinate",
+                    "Horned Warrior",
+                    "Magma Ninja",
+                    "Lava Pirate",
+                    "Ship Deckhand",
+                    "Ship Engineer",
+                    "Ship Steward",
+                    "Ship Officer",
+                    "Arctic Warrior",
+                    "Snow Lurker",
+                    "Sea Soldier",
+                    "Water Fighter",
+                }
+
+                -- 1. Luôn di chuyển tới đảo trước
+                if (TargetCFrame.Position - Root.Position).Magnitude > 50 then
+                    _tp(TargetCFrame)
+                end
+
+                -- 2. Chỉ duyệt quái sau khi đã tới đảo
+                if (TargetCFrame.Position - Root.Position).Magnitude <= 100 then
                     for _, e in pairs(workspace.Enemies:GetChildren()) do
-                        if e:FindFirstChild("HumanoidRootPart") and e:FindFirstChild("Humanoid") and e.Humanoid.Health > 0 then
-                            if (e.HumanoidRootPart.Position - Root.Position).Magnitude <= 2000 then
-                                repeat
-                                    wait()
-                                    G.Kill(e, _G.AutoRaidCastle)
-                                until not _G.AutoRaidCastle or not e.Parent or e.Humanoid.Health <= 0 or not workspace.Enemies:FindFirstChild(e.Name)
-                            end
+                        if not _G.AutoRaidCastle then
+                            break
                         end
-                    end
-                else
-                    local EnemyList = {
-                        "Galley Pirate",
-                        "Galley Captain",
-                        "Raider",
-                        "Mercenary",
-                        "Vampire",
-                        "Zombie",
-                        "Snow Trooper",
-                        "Winter Warrior",
-                        "Lab Subordinate",
-                        "Horned Warrior",
-                        "Magma Ninja",
-                        "Lava Pirate",
-                        "Ship Deckhand",
-                        "Ship Engineer",
-                        "Ship Steward",
-                        "Ship Officer",
-                        "Arctic Warrior",
-                        "Snow Lurker",
-                        "Sea Soldier",
-                        "Water Fighter",
-                    }
 
-                    for _, enemyName in pairs(EnemyList) do
-                        if replicated:FindFirstChild(enemyName) then
-                            for _, n in pairs(replicated:GetChildren()) do
-                                if table.find(EnemyList, n.Name) then
-                                    _tp(TargetCFrame)
+                        local Humanoid = e:FindFirstChild("Humanoid")
+                        local HRP = e:FindFirstChild("HumanoidRootPart")
+
+                        if Humanoid
+                            and HRP
+                            and Humanoid.Health > 0
+                            and table.find(EnemyList, e.Name)
+                        then
+                            repeat
+                                task.wait()
+                                if not _G.AutoRaidCastle then
+                                    break
                                 end
-                            end
+
+                                G.Kill(e, _G.AutoRaidCastle)
+
+                            until not e.Parent
+                                or Humanoid.Health <= 0
+                                or not _G.AutoRaidCastle
                         end
                     end
                 end
