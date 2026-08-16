@@ -3743,20 +3743,37 @@ spawn(function()
                 local plr = game.Players.LocalPlayer
                 local boss = workspace.Enemies:FindFirstChild("Tyrant of the Skies")
                 local eyes = GetEyesCount()
+            if boss
+                 and boss:FindFirstChild("HumanoidRootPart")
+                 and boss:FindFirstChild("Humanoid")
+                 and boss.Humanoid.Health > 0 then
+   
+                    local bossRoot = boss.HumanoidRootPart
+                    local targetPos = bossRoot.Position + Vector3.new(0, FarmHeight, 0)
 
-                -- [PRIORIDADE 1] MATAR BOSS
-                if boss and boss.Humanoid.Health > 0 then
-                    _tp(boss.HumanoidRootPart.CFrame * CFrame.new(0, FarmHeight, 0))
-                    repeat task.wait()
-                        if boss and boss:FindFirstChild("HumanoidRootPart") then
-                            _tp(boss.HumanoidRootPart.CFrame * CFrame.new(0, FarmHeight, 0))
-                            EquipWeapon(_G.SelectWeapon)
-                            G.Kill(boss, true)
-                        else
-                            break
-                        end
-                    until not boss.Parent or boss.Humanoid.Health <= 0 or not _G.StartFarm or not _G.AutoTyrant
+    -- Tween tới boss 1 lần
+                    _tp(CFrame.new(targetPos))
 
+                repeat
+                       task.wait()
+
+                 if not boss.Parent then
+                   break
+                end
+
+                  bossRoot = boss:FindFirstChild("HumanoidRootPart")
+
+                if not bossRoot then
+                  break
+               end
+
+                EquipWeapon(_G.SelectWeapon)
+             G.Kill(boss, true)
+
+               until boss.Humanoid.Health <= 0
+             or not _G.StartFarm
+        or not _G.AutoTyrant
+end
                 -- [PRIORIDADE 2] QUEBRAR 4 VASOS PARA INVOCAR
                 elseif eyes == 4 then
                     local targetsty = {
@@ -12555,166 +12572,6 @@ Fruit:AddToggle({
 	end
 })
 
-Fruit:AddSection({"Raid Farming"});
-
-Fruit:AddToggle({
-    Name = "Auto Raid",
-    Description = "Auto Start Raid + Auto Complete Raid",
-    Default = false,
-
-    Callback = function(I)
-        _G.Auto_StartRaid = I
-        _G.Raiding = I
-
-        if not I then
-            _G.Auto_StartRaid = false
-            _G.Raiding = false
-            NextIs = false
-        end
-    end,
-});
-task.spawn(function()
-    while task.wait(Sec) do -- Dùng task.wait trực tiếp trong điều kiện vòng lặp
-        if _G.Auto_StartRaid then
-            pcall(function()
-                -- Kiểm tra Raid Timer và Microchip
-                local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
-                if not raidTimer.Visible and GetBP("Special Microchip") then
-                    
-                    -- Lưu vị trí hiện tại của người chơi để sau này quay lại
-                    local oldPos = plr.Character:GetPivot()
-                    
-                    if World2 then
-                        _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
-                        task.wait(0.5) -- Đợi teleport hoàn tất
-                        fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
-                        
-                    elseif World3 then
-                        -- Thử vào cổng nếu cần
-                        replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
-                        task.wait(0.8) 
-                        
-                        -- Di chuyển đến nút bấm
-                        _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
-                        task.wait(0.5)
-                        fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
-                    end
-                    
-                    -- Quay lại vị trí cũ sau khi đã bấm nút
-                    task.wait(0.5)
-                    _tp(oldPos)
-                    print("Đã kích hoạt Raid và quay trở lại vị trí cũ.")
-                end
-            end)
-        end
-    end
-end)
-function IsIslandRaid(cu)
-    local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
-    if locs:FindFirstChild("Island " .. cu) then
-        local min = 4500
-
-        for _, v in ipairs(locs:GetChildren()) do
-            if v.Name == "Island " .. cu then
-                local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist < min then
-                    min = dist
-                end
-            end
-        end
-
-        for _, v in ipairs(locs:GetChildren()) do
-            if v.Name == "Island " .. cu then
-                local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist <= min then
-                    return v
-                end
-            end
-        end
-    end
-end
-
--- Ordem das ilhas (5 → 1)
-function getNextIsland()
-    local order = {5,4,3,2,1}
-    for _, id in ipairs(order) do
-        local island = IsIslandRaid(id)
-        if island then
-            local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-            if dist <= 4500 then
-                return island
-            end
-        end
-    end
-end
-
--- Atacar inimigos usando SEU G.Kill
-function attackNearbyEnemies()
-    for _, mob in pairs(workspace.Enemies:GetChildren()) do
-        if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
-            if mob.Humanoid.Health > 0 then
-                local dist = (mob.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
-                if dist <= 1000 then
-                    repeat
-                        G.Kill(mob, _G.Raiding)
-                        task.wait()
-                    until not _G.Raiding or not mob.Parent or mob.Humanoid.Health <= 0
-                end
-            end
-        end
-    end
-end
-
--- Loop principal (igual ao seu)
-spawn(function()
-pcall(function()
-while wait(Sec) do
-    if _G.Raiding then
-
-        if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
-
-            -- Matar próximos
-            attackNearbyEnemies()
-
-            -- Pegar ilha certa
-            local nextIsland = getNextIsland()
-            if nextIsland then
-                -- USA SEU TELEPORTE REAL
-                _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
-
-                NextIs = true
-            else
-                NextIs = false
-            end
-
-        else
-            NextIs = false
-        end
-
-    else
-        NextIs = false
-    end
-end
-end)
-end)
-Fruit:AddToggle({
-	Name = "Auto Awakening",
-	Description = "",
-	Default = false,
-	Callback = function(I)
-		_G.Auto_Awakener = I;
-	end,
-});
-spawn(function()
-	while wait(Sec) do
-		pcall(function()
-			if _G.Auto_Awakener then
-				replicated.Remotes.CommF_:InvokeServer("Awakener", "Check");
-				replicated.Remotes.CommF_:InvokeServer("Awakener", "Awaken");
-			end;
-		end);
-	end;
-end);
 Fruit:AddSection({"Fruits Options"});
 local J5 = {};
 local function i5(I)
@@ -12893,6 +12750,268 @@ spawn(function()
 				collectFruits(_G.InstanceF);
 			end);
 		end;
+	end;
+end);
+Fruit:AddSection({"Raiding"});
+e = {
+		"Flame",
+		"Ice",
+		"Quake",
+		"Light",
+		"Dark",
+		"String",
+		"Rumble",
+		"Magma",
+		"Human: Buddha",
+		"Sand",
+		"Bird: Phoenix",
+		"Dough",
+	};
+Fruit:AddDropdown({
+	Name = "Select Chip",
+	Description = "",
+	Options = e,
+	Default = "Flame",
+	Multi = false,
+	Callback = function(I)
+		_G.SelectChip = I;
+	end,
+});
+spawn(function()
+	while wait(Sec) do
+		if _G.AutoSelectDungeon then
+			pcall(function()
+				if GetBP("Flame-Flame") then
+					_G.SelectChip = "Flame";
+				elseif GetBP("Ice-Ice") then
+					_G.SelectChip = "Ice";
+				elseif GetBP("Quake-Quake") then
+					_G.SelectChip = "Quake";
+				elseif GetBP("Light-Light") then
+					_G.SelectChip = "Light";
+				elseif GetBP("Dark-Dark") then
+					_G.SelectChip = "Dark";
+				elseif GetBP("String-String") then
+					_G.SelectChip = "String";
+				elseif GetBP("Rumble-Rumble") then
+					_G.SelectChip = "Rumble";
+				elseif GetBP("Magma-Magma") then
+					_G.SelectChip = "Magma";
+				elseif GetBP("Human-Human: Buddha Fruit") then
+					_G.SelectChip = "Human: Buddha";
+				elseif GetBP("Dough-Dough") then
+					_G.SelectChip = "Dough";
+				elseif GetBP("Sand-Sand") then
+					_G.SelectChip = "Sand";
+				elseif GetBP("Bird-Bird: Phoenix") then
+					_G.SelectChip = "Bird: Phoenix";
+				else
+					_G.SelectChip = "Ice";
+				end;
+			end);
+		end;
+	end;
+end);
+Fruit:AddToggle({
+	Name = "Buy Chip With Fruit",
+	Description = "Use your lowest fruit in your bag",
+	Default = false,
+	Callback = function(state)
+		_G.AutoBuyChip = state
+
+		task.spawn(function()
+			while _G.AutoBuyChip do
+
+				if not GetBP("Special Microchip") then
+					
+					local I = {} -- Lista de frutas válidas
+
+					for _, data in next, replicated.Remotes.CommF_:InvokeServer("GetFruits") do
+						local rarity = tostring(data.Rarity or ""):lower()
+
+						-- Aceita frutas até 1.150.000 OU raridades Common/Uncommon/Rare
+						if data.Price <= 1000000
+							or rarity == "common"
+							or rarity == "uncommon"
+							or rarity == "rare"
+						then
+							table.insert(I, data.Name)
+						end
+					end
+
+					-- Usar frutas válidas para comprar chip
+					for _, fruitName in pairs(I) do
+						if not GetBP("Special Microchip") then
+							replicated.Remotes.CommF_:InvokeServer("LoadFruit", fruitName)
+							replicated.Remotes.CommF_:InvokeServer("RaidsNpc", "Select", _G.SelectChip)
+						end
+					end
+				end
+
+				task.wait(3)
+			end
+		end)
+	end
+})
+
+Fruit:AddSection({"Raid Farming"});
+
+Fruit:AddToggle({
+    Name = "Auto Raid",
+    Description = "Auto Start Raid + Auto Complete Raid",
+    Default = false,
+
+    Callback = function(I)
+        _G.Auto_StartRaid = I
+        _G.Raiding = I
+
+        if not I then
+            _G.Auto_StartRaid = false
+            _G.Raiding = false
+            NextIs = false
+        end
+    end,
+});
+task.spawn(function()
+    while task.wait(Sec) do -- Dùng task.wait trực tiếp trong điều kiện vòng lặp
+        if _G.Auto_StartRaid then
+            pcall(function()
+                -- Kiểm tra Raid Timer và Microchip
+                local raidTimer = plr.PlayerGui.Main.TopHUDList.RaidTimer
+                if not raidTimer.Visible and GetBP("Special Microchip") then
+                    
+                    -- Lưu vị trí hiện tại của người chơi để sau này quay lại
+                    local oldPos = plr.Character:GetPivot()
+                    
+                    if World2 then
+                        _tp(CFrame.new(-6438.73535, 250.645355, -4501.50684))
+                        task.wait(0.5) -- Đợi teleport hoàn tất
+                        fireclickdetector(workspace.Map.CircleIsland.RaidSummon2.Button.Main.ClickDetector)
+                        
+                    elseif World3 then
+                        -- Thử vào cổng nếu cần
+                        replicated.Remotes.CommF_:InvokeServer("requestEntrance", Vector3.new(-5097.93164, 316.447021, -3142.66602))
+                        task.wait(0.8) 
+                        
+                        -- Di chuyển đến nút bấm
+                        _tp(CFrame.new(-5033.50879, 315.014252, -2947.77539))
+                        task.wait(0.5)
+                        fireclickdetector(workspace.Map["Boat Castle"].RaidSummon2.Button.Main.ClickDetector)
+                    end
+                    
+                    -- Quay lại vị trí cũ sau khi đã bấm nút
+                    task.wait(0.5)
+                    _tp(oldPos)
+                    print("Đã kích hoạt Raid và quay trở lại vị trí cũ.")
+                end
+            end)
+        end
+    end
+end)
+function IsIslandRaid(cu)
+    local locs = game:GetService("Workspace")["_WorldOrigin"].Locations
+    if locs:FindFirstChild("Island " .. cu) then
+        local min = 4500
+
+        for _, v in ipairs(locs:GetChildren()) do
+            if v.Name == "Island " .. cu then
+                local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                if dist < min then
+                    min = dist
+                end
+            end
+        end
+
+        for _, v in ipairs(locs:GetChildren()) do
+            if v.Name == "Island " .. cu then
+                local dist = (v.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                if dist <= min then
+                    return v
+                end
+            end
+        end
+    end
+end
+
+-- Ordem das ilhas (5 → 1)
+function getNextIsland()
+    local order = {5,4,3,2,1}
+    for _, id in ipairs(order) do
+        local island = IsIslandRaid(id)
+        if island then
+            local dist = (island.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+            if dist <= 4500 then
+                return island
+            end
+        end
+    end
+end
+
+-- Atacar inimigos usando SEU G.Kill
+function attackNearbyEnemies()
+    for _, mob in pairs(workspace.Enemies:GetChildren()) do
+        if mob:FindFirstChild("HumanoidRootPart") and mob:FindFirstChild("Humanoid") then
+            if mob.Humanoid.Health > 0 then
+                local dist = (mob.HumanoidRootPart.Position - plr.Character.HumanoidRootPart.Position).Magnitude
+                if dist <= 1000 then
+                    repeat
+                        G.Kill(mob, _G.Raiding)
+                        task.wait()
+                    until not _G.Raiding or not mob.Parent or mob.Humanoid.Health <= 0
+                end
+            end
+        end
+    end
+end
+
+-- Loop principal (igual ao seu)
+spawn(function()
+pcall(function()
+while wait(Sec) do
+    if _G.Raiding then
+
+        if plr.PlayerGui.Main.TopHUDList.RaidTimer.Visible == true then
+
+            -- Matar próximos
+            attackNearbyEnemies()
+
+            -- Pegar ilha certa
+            local nextIsland = getNextIsland()
+            if nextIsland then
+                -- USA SEU TELEPORTE REAL
+                _tp(nextIsland.CFrame * CFrame.new(0, 50, 0))
+
+                NextIs = true
+            else
+                NextIs = false
+            end
+
+        else
+            NextIs = false
+        end
+
+    else
+        NextIs = false
+    end
+end
+end)
+end)
+Fruit:AddToggle({
+	Name = "Auto Awakening",
+	Description = "",
+	Default = false,
+	Callback = function(I)
+		_G.Auto_Awakener = I;
+	end,
+});
+spawn(function()
+	while wait(Sec) do
+		pcall(function()
+			if _G.Auto_Awakener then
+				replicated.Remotes.CommF_:InvokeServer("Awakener", "Check");
+				replicated.Remotes.CommF_:InvokeServer("Awakener", "Awaken");
+			end;
+		end);
 	end;
 end);
 Setting:AddSection({"Codes"});
@@ -13085,7 +13204,7 @@ _G.Settings = _G.Settings or {}
 _G.Settings.FastAttack = true
 
 -- Tốc độ FastAttack
-local AttackDelay = 0.2
+local AttackDelay = 0.15
 
 -- =========================
 -- SERVICES
