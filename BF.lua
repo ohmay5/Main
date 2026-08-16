@@ -659,7 +659,7 @@ end
 -- FUNÇÃO PRINCIPAL: BRING
 --==================================================
 BringEnemy = function()
-    if not (FarmAtivo() or _G.AutoBartilo) or not _B then return end
+    if not (FarmAtivo() or _G.AutoBartilo or _G.AutoFarmNear) or not _B then return end
 
     local plr = game.Players.LocalPlayer  
     local char = plr.Character  
@@ -724,7 +724,7 @@ BringEnemy = function()
 end
 task.spawn(function()
     while task.wait(0.1) do
-        if FarmAtivo() or _G.AutoBartilo then
+        if FarmAtivo() or _G.AutoBartilo or _G.AutoFarmNear then
             _B = true
             BringEnemy()
         else  
@@ -1150,7 +1150,7 @@ end);
 
 -- [[ VARIÁVEIS PARA O SEU INPUT ]] --
 getgenv().TweenSpeedFar = 255  -- Velocidade Padrão (Longe)
-getgenv().TweenSpeedNear = 255  -- Velocidade Boost (Perto <= 15 studs)
+getgenv().TweenSpeedNear = 300  -- Velocidade Boost (Perto <= 15 studs)
 
 _tp = function(I)
 local e = plr.Character;
@@ -1176,7 +1176,7 @@ local dist = (I.Position - HRP.Position).Magnitude
 --  SE ESTIVER ATÉ 15 STUDS → USA A VELOCIDADE DE PERTO
 --  CASO CONTRÁRIO → USA A VELOCIDADE PADRÃO
 -- ===============================  
-local speed = dist <= 15 and (getgenv().TweenSpeedNear or 255) or (getgenv().TweenSpeedFar or 255)
+local speed = dist <= 15 and (getgenv().TweenSpeedNear or 300) or (getgenv().TweenSpeedFar or 255)
 
 local info = TweenInfo.new(dist / speed, Enum.EasingStyle.Linear)  
 local tween = game:GetService("TweenService"):Create(C, info, { CFrame = I })  
@@ -1249,10 +1249,10 @@ spawn(function()
     local Test = Instance.new("Highlight")
     Test.Name = "highlight"
     Test.Enabled = true
-    Test.FillColor = Color3.fromRGB(255,165,0)
-    Test.OutlineColor = Color3.fromRGB(255,0,0)
-    Test.FillTransparency = 0.5
-    Test.OutlineTransparency = 0.2
+    Test.FillColor = Color3.fromRGB(255, 255, 255)
+Test.OutlineColor = Color3.fromRGB(190, 190, 190)
+    Test.FillTransparency = 0.65
+    Test.OutlineTransparency = 0
     Test.Parent = plr.Character
 end
         for _, no in pairs(plr.Character:GetDescendants()) do if no:IsA("BasePart") then no.CanCollide = false end end
@@ -4921,12 +4921,22 @@ Setting:AddSection({"Ngôn ngữ"})
 local HttpService = game:GetService("HttpService")
 local CoreGui = game:GetService("CoreGui")
 
-_G.AutoTranslate = false
-_G.TargetLang = "vi"
+--==================================================
+-- SAVE DATA
+--==================================================
+
+_G.SaveData = _G.SaveData or {}
+
+_G.TargetLang = _G.SaveData["TargetLang_Save"] or "en-US"
+_G.AutoTranslate = _G.SaveData["AutoTranslate_Save"] or false
 
 local TranslatedCache = {}
 local TranslationBusy = {}
 local TranslationWatcher
+
+--==================================================
+-- LANGUAGE LIST
+--==================================================
 
 local LanguageList = {
     ["Tiếng Việt"] = "vi",
@@ -4982,6 +4992,19 @@ end
 table.sort(LanguageOptions)
 
 --==================================================
+-- FIND SAVED LANGUAGE NAME
+--==================================================
+
+local DefaultLanguage = "English (US)"
+
+for Name, Code in pairs(LanguageList) do
+    if Code == _G.TargetLang then
+        DefaultLanguage = Name
+        break
+    end
+end
+
+--==================================================
 -- GOOGLE TRANSLATE
 --==================================================
 
@@ -5006,7 +5029,6 @@ local function GoogleTranslate(text, targetLang)
         return TranslatedCache[cacheKey]
     end
 
-    -- Tránh gửi cùng một request nhiều lần
     if TranslationBusy[cacheKey] then
         return nil
     end
@@ -5077,7 +5099,7 @@ local function UpdateUI(obj)
         return
     end
 
-    -- Tắt dịch → trả về text gốc ngay
+    -- Auto Translation OFF
     if not _G.AutoTranslate then
         if obj.Text ~= raw then
             obj.Text = raw
@@ -5094,9 +5116,12 @@ local function UpdateUI(obj)
             return
         end
 
-        -- Chỉ thay nếu vẫn đang bật và vẫn cùng ngôn ngữ
-        if _G.AutoTranslate and _G.TargetLang == targetLang then
-            if obj.Parent and obj.Text ~= translated then
+        -- Kiểm tra lại ngôn ngữ trước khi thay Text
+        if _G.AutoTranslate
+            and _G.TargetLang == targetLang
+            and obj.Parent then
+
+            if obj.Text ~= translated then
                 obj.Text = translated
             end
         end
@@ -5104,25 +5129,23 @@ local function UpdateUI(obj)
 end
 
 --==================================================
--- UPDATE TOÀN BỘ UI
+-- UPDATE ALL UI
 --==================================================
 
 local function UpdateAllUI()
-    local objects = CoreGui:GetDescendants()
-
-    for _, obj in ipairs(objects) do
+    for _, obj in ipairs(CoreGui:GetDescendants()) do
         UpdateUI(obj)
     end
 end
 
 --==================================================
--- DROPDOWN
+-- SELECT LANGUAGE
 --==================================================
 
 Setting:AddDropdown({
     Name = "Select Language",
     Options = LanguageOptions,
-    Default = "English (US)",
+    Default = DefaultLanguage,
 
     Callback = function(Value)
         local lang = LanguageList[Value]
@@ -5132,6 +5155,10 @@ Setting:AddDropdown({
         end
 
         _G.TargetLang = lang
+
+        -- SAVE LANGUAGE
+        _G.SaveData["TargetLang_Save"] = lang
+        SaveSettings()
 
         if _G.AutoTranslate then
             -- Đổi ngôn ngữ ngay lập tức
@@ -5146,13 +5173,17 @@ Setting:AddDropdown({
 
 Setting:AddToggle({
     Name = "Auto Translation",
-    Default = false,
+    Default = _G.AutoTranslate,
 
     Callback = function(Value)
         _G.AutoTranslate = Value
 
+        -- SAVE AUTO TRANSLATION
+        _G.SaveData["AutoTranslate_Save"] = Value
+        SaveSettings()
+
         if Value then
-            -- Bấm ON → bắt đầu dịch ngay
+            -- ON → dịch ngay
             UpdateAllUI()
 
             -- Chỉ tạo watcher một lần
@@ -5167,8 +5198,9 @@ Setting:AddToggle({
 
                 _G.TranslationWatcher = TranslationWatcher
             end
+
         else
-            -- Bấm OFF → trả UI về nguyên bản
+            -- OFF → trả UI về nguyên bản
             for _, obj in ipairs(CoreGui:GetDescendants()) do
                 if obj:IsA("TextLabel")
                     or obj:IsA("TextButton")
@@ -5184,7 +5216,6 @@ Setting:AddToggle({
         end
     end
 })
-
 Setting:AddSection({"Select"})
 _G.BringRange = _G.SaveData["BringRange_Save"] or 250
 
