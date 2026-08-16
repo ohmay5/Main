@@ -3743,37 +3743,19 @@ spawn(function()
                 local plr = game.Players.LocalPlayer
                 local boss = workspace.Enemies:FindFirstChild("Tyrant of the Skies")
                 local eyes = GetEyesCount()
-            if boss
-                 and boss:FindFirstChild("HumanoidRootPart")
-                 and boss:FindFirstChild("Humanoid")
-                 and boss.Humanoid.Health > 0 then
-   
-                    local bossRoot = boss.HumanoidRootPart
-                    local targetPos = bossRoot.Position + Vector3.new(0, FarmHeight, 0)
+                
+                            if boss and boss.Humanoid.Health > 0 then
+                    _tp(boss.HumanoidRootPart.CFrame * CFrame.new(0, FarmHeight, 0))
+                    repeat task.wait()
+                        if boss and boss:FindFirstChild("HumanoidRootPart") then
+                            _tp(boss.HumanoidRootPart.CFrame * CFrame.new(0, FarmHeight, 0))
+                            EquipWeapon(_G.SelectWeapon)
+                            G.Kill(boss, true)
+                        else
+                            break
+                        end
+                    until not boss.Parent or boss.Humanoid.Health <= 0 or not _G.StartFarm or not _G.AutoTyrant
 
-    -- Tween tới boss 1 lần
-                    _tp(CFrame.new(targetPos))
-
-                repeat
-                       task.wait()
-
-                 if not boss.Parent then
-                   break
-                end
-
-                  bossRoot = boss:FindFirstChild("HumanoidRootPart")
-
-                if not bossRoot then
-                  break
-               end
-
-                EquipWeapon(_G.SelectWeapon)
-             G.Kill(boss, true)
-
-               until boss.Humanoid.Health <= 0
-             or not _G.StartFarm
-        or not _G.AutoTyrant
-end
                 -- [PRIORIDADE 2] QUEBRAR 4 VASOS PARA INVOCAR
                 elseif eyes == 4 then
                     local targetsty = {
@@ -12470,107 +12452,6 @@ spawn(function()
 	end;
 end);
 end
-Fruit:AddSection({"Raiding"});
-e = {
-		"Flame",
-		"Ice",
-		"Quake",
-		"Light",
-		"Dark",
-		"String",
-		"Rumble",
-		"Magma",
-		"Human: Buddha",
-		"Sand",
-		"Bird: Phoenix",
-		"Dough",
-	};
-Fruit:AddDropdown({
-	Name = "Select Chip",
-	Description = "",
-	Options = e,
-	Default = "Flame",
-	Multi = false,
-	Callback = function(I)
-		_G.SelectChip = I;
-	end,
-});
-spawn(function()
-	while wait(Sec) do
-		if _G.AutoSelectDungeon then
-			pcall(function()
-				if GetBP("Flame-Flame") then
-					_G.SelectChip = "Flame";
-				elseif GetBP("Ice-Ice") then
-					_G.SelectChip = "Ice";
-				elseif GetBP("Quake-Quake") then
-					_G.SelectChip = "Quake";
-				elseif GetBP("Light-Light") then
-					_G.SelectChip = "Light";
-				elseif GetBP("Dark-Dark") then
-					_G.SelectChip = "Dark";
-				elseif GetBP("String-String") then
-					_G.SelectChip = "String";
-				elseif GetBP("Rumble-Rumble") then
-					_G.SelectChip = "Rumble";
-				elseif GetBP("Magma-Magma") then
-					_G.SelectChip = "Magma";
-				elseif GetBP("Human-Human: Buddha Fruit") then
-					_G.SelectChip = "Human: Buddha";
-				elseif GetBP("Dough-Dough") then
-					_G.SelectChip = "Dough";
-				elseif GetBP("Sand-Sand") then
-					_G.SelectChip = "Sand";
-				elseif GetBP("Bird-Bird: Phoenix") then
-					_G.SelectChip = "Bird: Phoenix";
-				else
-					_G.SelectChip = "Ice";
-				end;
-			end);
-		end;
-	end;
-end);
-Fruit:AddToggle({
-	Name = "Buy Chip With Fruit",
-	Description = "Use your lowest fruit in your bag",
-	Default = false,
-	Callback = function(state)
-		_G.AutoBuyChip = state
-
-		task.spawn(function()
-			while _G.AutoBuyChip do
-
-				if not GetBP("Special Microchip") then
-					
-					local I = {} -- Lista de frutas válidas
-
-					for _, data in next, replicated.Remotes.CommF_:InvokeServer("GetFruits") do
-						local rarity = tostring(data.Rarity or ""):lower()
-
-						-- Aceita frutas até 1.150.000 OU raridades Common/Uncommon/Rare
-						if data.Price <= 1000000
-							or rarity == "common"
-							or rarity == "uncommon"
-							or rarity == "rare"
-						then
-							table.insert(I, data.Name)
-						end
-					end
-
-					-- Usar frutas válidas para comprar chip
-					for _, fruitName in pairs(I) do
-						if not GetBP("Special Microchip") then
-							replicated.Remotes.CommF_:InvokeServer("LoadFruit", fruitName)
-							replicated.Remotes.CommF_:InvokeServer("RaidsNpc", "Select", _G.SelectChip)
-						end
-					end
-				end
-
-				task.wait(3)
-			end
-		end)
-	end
-})
 
 Fruit:AddSection({"Fruits Options"});
 local J5 = {};
