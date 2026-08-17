@@ -61,6 +61,7 @@ local worldMap = {
     [4442272183] = true,
     [7449423635] = true
 }
+
 if worldMap[placeId] then
     if placeId == 2753915549 then
         World1 = true
@@ -69,8 +70,6 @@ if worldMap[placeId] then
     elseif placeId == 7449423635 then
         World3 = true
     end
-else
-    game.Players.LocalPlayer:Kick("Unsupported Game")
 end
 repeat
     wait()
