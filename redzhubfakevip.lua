@@ -3736,7 +3736,7 @@ function CheckItemBPCRBPCR(v463)
         end
     end
 end
-local vu32 = loadstring(game:HttpGet("https://raw.githubusercontent.com/PlockScripts/Library-ui/refs/heads/main/redz-V5-remake/main.luau"))()
+local vu32 = loadstring(game:HttpGet("https://raw.githubusercontent.com/ohmay5/Main/refs/heads/main/main.luau.txt"))()
 local v466 = vu32:MakeWindow({
     Title = "redz hub [ SKIDDED VERSION BY ZERO ] : Blox Fruits",
     SubTitle = "skidded version",
