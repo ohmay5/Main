@@ -666,14 +666,10 @@ BringEnemy = function()
     local hrp = char and char:FindFirstChild("HumanoidRootPart")  
     if not hrp then return end  
 
-    pcall(function()  
-        sethiddenproperty(plr, "SimulationRadius", math.huge)  
-    end)  
-
     local targetPos = PosMon or hrp.Position  
     local enemies = workspace.Enemies:GetChildren()  
     
-    -- SẮP XẾP QUÁI THEO KHOẢNG CÁCH (Ưu tiên kéo quái ở gần trước)
+    -- Sắp xếp quái theo khoảng cách gần nhất
     table.sort(enemies, function(a, b)
         local rootA = a:FindFirstChild("HumanoidRootPart")
         local rootB = b:FindFirstChild("HumanoidRootPart")
@@ -686,7 +682,7 @@ BringEnemy = function()
     local count = 0  
 
     for _, mob in ipairs(enemies) do  
-        if count >= _G.MaxBringMobs then break end  
+        if count >= (_G.MaxBringMobs or 10) then break end  
 
         local hum = mob:FindFirstChild("Humanoid")  
         local root = mob:FindFirstChild("HumanoidRootPart")  
@@ -694,36 +690,30 @@ BringEnemy = function()
         if hum and root and hum.Health > 0 and not IsRaidMob(mob) then  
             local dist = (root.Position - targetPos).Magnitude  
 
-            if dist <= _G.BringRange then  
+            if dist <= (_G.BringRange or 250) then  
                 count += 1  
 
+                -- Tắt va chạm để quái chồng lên nhau không bị đẩy văng
                 for _, part in ipairs(mob:GetChildren()) do
                     if part:IsA("BasePart") then
                         part.CanCollide = false
                     end
                 end
 
-                hum:ChangeState(Enum.HumanoidStateType.Physics)
-                root.Velocity = Vector3.zero
-                root.RotVelocity = Vector3.zero
-
-                if dist < 6 then
-                    root.CFrame = CFrame.new(targetPos)
-                else
-                    root.CFrame = root.CFrame:Lerp(CFrame.new(targetPos), 0.3)
+                -- Chỉ kéo nếu khoảng cách lớn hơn 3 mét để tránh giật lag/ghost
+                if dist > 3 then
+                    root.Velocity = Vector3.zero
+                    root.RotVelocity = Vector3.zero
+                    -- Dùng Lerp nhẹ nhàng thay vì gán thẳng CFrame đột ngột
+                    root.CFrame = root.CFrame:Lerp(CFrame.new(targetPos), 0.5)
                 end
-
-                task.defer(function()
-                    if hum and hum.Health > 0 then
-                        hum:ChangeState(Enum.HumanoidStateType.GettingUp)
-                    end
-                end)
             end  
         end  
     end
 end
+
 task.spawn(function()
-    while task.wait(0.1) do
+    while task.wait(0.15) do -- Tăng thời gian chờ lên một chút (0.15s) để server thở, giảm nghẽn mạng
         if FarmAtivo() or _G.AutoBartilo or _G.AutoFarmNear then
             _B = true
             BringEnemy()
